@@ -725,6 +725,10 @@ Mission 완료,
 시설 개방 등이 표시됩니다.
 
 Recent Log를 선택하면
+
+Explorer Log(Log Book)를 Overlay로 확인할 수 있습니다.
+
+
 ### Unlock Rule
 
 시설은
@@ -780,7 +784,7 @@ MAP만 보아도
 
 Nova Land는
 
-퍼센트 중심의 진행도를 사용하지 않습니다.
+퍼센트 중심의 시설 진행도를 사용하지 않습니다.
 
 중요한 것은
 
@@ -794,7 +798,9 @@ Nova Land는
 
 MAP 변화가
 
-진행도를 대신합니다.
+노바랜드의 회복을 표현합니다.
+
+MAP UI에서는 별도의 퍼센트, Mission Progress 또는 Progress Bar를 사용하지 않습니다.
 
 진행 상태는 Mission List의 시설 상태와 Cosmic Voyage의 잠금 또는 개방 상태로 전달합니다.
 
