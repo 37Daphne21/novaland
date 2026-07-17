@@ -156,6 +156,20 @@ Nova Land의 디자인은 다음 원칙을 따릅니다.
 AI에서만 가능한 표현은 사용하지 않습니다.
 
 
+### 레이어 및 구현 원칙
+
+월드맵 배경과 UI는 분리하여 관리합니다.
+
+- 월드맵 배경은 독립 이미지 자산으로 관리합니다.
+- 패널, 카드, 텍스트, 테두리, Glow는 HTML/CSS로 구현합니다.
+- 아바타, 시설 썸네일, 배경처럼 이미지가 필요한 요소만 별도 이미지 자산으로 관리합니다.
+- 아이콘은 SVG Sprite를 우선 사용합니다.
+- Mission List, EVE, Recent Log는 각각 독립 컴포넌트로 관리합니다.
+- 완성된 PNG 시안은 디자인 참고용으로 사용하며 구현 원본으로 사용하지 않습니다.
+
+Figma 시안을 제작할 때도 배경, UI 패널, 이미지 자산을 분리하고 패널은 개별 Frame 또는 Component로 관리합니다.
+
+
 ### 일관된 UI 시스템
 
 시설마다 분위기는 다르지만
@@ -568,11 +582,119 @@ Explorer는
 
 ### MAP 역할
 
+MAP은 Nova Land의 Home이다.
+
+Explorer는 언제나 MAP으로 돌아온다.
+
+MAP에서는
+
 - 시설 선택
-- 현재 진행 상태 확인
+- 시설 상태 확인
 - 잠금 시설 확인
-- Explorer 진행도 확인
 - Cosmic Voyage 개방 확인
+
+을 수행한다.
+
+MAP에서는 Mission을 시작하지 않는다.
+
+Mission은 Control Room에서 시작한다.
+
+
+### MAP Layout
+
+상단
+- Nova Land Logo
+- Explorer
+- Time
+- Weather
+- Notification
+- Setting
+
+좌측
+- Mission List
+- 화면 하단에 정렬
+- 패널 높이는 콘텐츠 크기만큼만 유지
+
+중앙
+- World Map
+
+우측
+- EVE
+- Recent Log
+- EVE는 Recent Log 바로 위에 배치
+- EVE와 Recent Log를 하나의 세로 그룹으로 구성
+- Recent Log 하단을 Mission List 하단과 동일한 기준선에 정렬
+- 각 패널 높이는 콘텐츠 크기만큼만 유지
+- 남는 공간을 채우지 않음
+
+
+### Mission List
+
+Mission List는 기본으로 열린 상태이다.
+
+접기(Collapse)와 닫기(Close)는 지원하지 않는다.
+
+항상 펼쳐진 상태이므로 펼침 또는 접기 아이콘을 사용하지 않는다.
+
+Explorer는
+
+현재 진행 가능한 시설과
+
+시설 상태를 확인할 수 있다.
+
+Mission List는
+
+Mission을 시작하는 기능이 아니라
+
+현재 진행 가능한 시설을 선택하고 확인하는 역할을 한다.
+
+시설을 선택하면
+
+선택 상태가 변경되고
+
+World Map과 EVE가 함께 갱신된다.
+
+Mission은
+
+World Map에서 시설을 선택하여
+
+Control Room으로 진입한 뒤 시작한다.
+
+Mission List 하단에는
+
+Cosmic Voyage의 잠금 또는 개방 상태를 표시한다.
+
+별도의 Mission Progress와 Progress Bar는 사용하지 않는다.
+
+
+### MAP Interaction
+
+시설 선택
+( Mission List 또는 World Map )
+
+↓
+
+선택 상태 변경
+
+↓
+
+World Map Highlight
+
+↓
+
+Control Room 진입
+
+↓
+
+Mission Guide
+
+↓
+
+Countdown
+
+↓
+
+Play
 
 
 ### MAP 상태
@@ -590,6 +712,19 @@ Explorer는
 MAP도 함께 변화합니다.
 
 
+### Recent Log
+
+Recent Log는
+
+Explorer의 최근 활동을 간단하게 보여주는 영역입니다.
+
+최근 시설 복구,
+
+Mission 완료,
+
+시설 개방 등이 표시됩니다.
+
+Recent Log를 선택하면
 ### Unlock Rule
 
 시설은
@@ -660,6 +795,8 @@ Nova Land는
 MAP 변화가
 
 진행도를 대신합니다.
+
+진행 상태는 Mission List의 시설 상태와 Cosmic Voyage의 잠금 또는 개방 상태로 전달합니다.
 
 
 ### Cosmic Voyage
@@ -824,10 +961,22 @@ Explorer를 지원하는 안내 시스템입니다.
 
 ### 역할
 
-- 시설 안내
-- 상태 전달
-- Mission 지원
-- 복구 진행 안내
+- Explorer 안내
+- Mission 대화
+- 상황 브리핑
+- 질문 응답
+
+MAP에서는
+
+짧은 안내 메시지만 제공합니다.
+
+Notice나 긴 대화는 사용하지 않습니다.
+
+MAP의 EVE는 대화 전용 패널입니다.
+
+시설 정보 Row, Status Dashboard, 수치 중심 정보 패널은 사용하지 않습니다.
+
+시설 상태가 필요한 경우 짧은 대화 메시지 안에서 전달합니다.
 
 
 ### 표현 방식
@@ -853,7 +1002,7 @@ Explorer를 응원하지만
 
 EVE는
 
-시설의 현재 상태를 알려줍니다.
+시설의 현재 상태를 짧은 대화 메시지로 알려줍니다.
 
 예시
 
@@ -2031,6 +2180,16 @@ Roadmap은 제작 일정을,
 ---
 
 ## 변경 이력
+
+### v1.1
+
+- MAP 패널 하단 정렬 기준 확정
+- Mission List 상시 펼침 상태 확정
+- MAP Mission Progress 제거
+- EVE 대화 전용 패널 확정
+- 레이어 및 구현 원칙 추가
+- MAP 승인 시안 경로 추가
+
 
 ### v1.0
 
