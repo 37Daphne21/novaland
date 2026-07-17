@@ -24,62 +24,85 @@ Playful Portfolio Project
 
 ## 세계관
 
-### 사용자 역할
+### 노바 시민
 
-개장 전 노바랜드 시설을 점검하는 탐험가
+노바랜드는 실제 도시의 일부이다.
 
-### 스토리
+- Nova Coaster : 교통 시설
+- Luna Light Garden : 공공 정원
+- Spark Energy Tower : 에너지 시설
+- Wonder Parade Hall : 문화 시설
+- Cosmic Voyage : 미래 관측 시설
 
-노바랜드 개장을 앞두고 주요 시설에 이상이 발생한다.
+### 탐험가
 
-탐험가는 각 시설을 점검하고 문제를 해결하여 노바랜드의 개장을 완성해야 한다.
+사용자는 개장 전 시설 점검 탐험가이다.
 
-### 관제 시스템
+노바랜드 개장을 위해 각 시설의 문제를 해결한다.
 
-EVE
+### EVE
 
-- 시설 미션 안내
+시설 관리 AI
+
+- 시설 안내
 - 상태 보고
-- 엔딩 메시지 제공
+- 미션 설명
+- 엔딩 메시지
 
 ---
 
 ## 메인 플로우
 
 ```text
-인트로
+Intro
 
 ↓
 
-탐험가 등록
+Explorer Registration
 
 ↓
 
-노바랜드 맵
+MAP
 
 ↓
 
-시설 탐험
+Control Room
 
 ↓
 
-스탬프 획득
+Mission Start
 
 ↓
 
-4개 시설 완료
+Mission Guide
 
 ↓
 
-Cosmic Voyage 오픈
+Countdown
 
 ↓
 
-노바랜드 개장
+Play
 
 ↓
 
-최종 보상
+Pause / Fail / Complete
+
+↓
+
+MAP 복귀
+
+↓
+
+Stamp / Unlock
+
+↓
+
+Cosmic Voyage
+
+↓
+
+Reward / Ending
 ```
 
 ---
@@ -92,7 +115,11 @@ Cosmic Voyage 오픈
 - 랜덤 닉네임 생성
 - 닉네임 재설정 가능
 
-### 설정 메뉴
+---
+
+## 설정
+
+### 기능
 
 - 처음부터 다시 시작
 - 탐험가 이름 변경
@@ -113,23 +140,72 @@ Cosmic Voyage 오픈
 
 ---
 
-## 공통 시스템
+## MAP
 
-### 좌측 메뉴
+### 완료
+
+- 메인 맵 PC
+- 메인 맵 Mobile
+- 진행 상태
+- 잠금 시설
+- Cosmic Voyage 봉인 상태
+- BEFORE / AFTER 구조
+
+---
+
+## Control Room
+
+### 완료
+
+#### PC
+
+- Nova Coaster
+- Luna Light Garden
+- Spark Energy Tower
+- Wonder Parade Hall
+
+#### Mobile
+
+- Nova Coaster
+- Luna Light Garden
+- Spark Energy Tower
+- Wonder Parade Hall
+
+---
+
+## Control Room 공통 UI
+
+### 좌측 상단
 
 - MAP
-- NOVA CONTROL
-- LOG BOOK
-- SETTING
 
-### 우측 카드
+### 우측 상단
 
-- EVE 메시지
+- EVE
+
+### 우측 하단
+
+- STATUS
+
+### 좌측 하단
+
 - Mission Objective
 
-### 하단 CTA
+### 하단 중앙
 
-MISSION START
+- Mission Start
+
+---
+
+## Control Room 공통 규칙
+
+- STATUS는 실제 게임 상태만 표시
+- Mission Objective는 브리핑 역할
+- Timer 삭제
+- Progress 삭제
+- Log Book 삭제
+- Setting 삭제
+- 불필요한 메뉴 삭제
 
 ---
 
@@ -137,10 +213,10 @@ MISSION START
 
 | 시설 | 메인 컬러 |
 |------|----------|
-| Nova Coaster | Blue + Cyan |
+| Nova Coaster | Blue + Violet |
 | Luna Light Garden | Green + Mint |
-| Spark Energy Tower | Yellow + Orange |
-| Wonder Parade Hall | Pink + Coral |
+| Spark Energy Tower | Gold + Orange |
+| Wonder Parade Hall | Pink + Rose |
 | Cosmic Voyage | White + Gold |
 
 ---
@@ -149,44 +225,21 @@ MISSION START
 
 ## 컨셉
 
-우주 열차 관제 미션
+우주 채굴 열차
 
-## 플레이 방식
+## 미션
 
-팝업형 퍼즐
+- 레일 연결
+- 시운전
+- 안전 점검
 
-## 플로우
+## 플레이
 
-```text
-관제실
-
-↓
-
-플레이 방법
-
-↓
-
-카운트다운
-
-↓
-
-레일 연결
-
-↓
-
-MISSION COMPLETE
-
-↓
-
-관제실 복귀
-```
-
-## 특징
-
-- 유일한 팝업 플레이
 - 레일 퍼즐
 - 카운트다운
-- 일시정지 기능
+- 실패 가능
+
+※ 플레이 화면 구성 및 전환 방식 미확정
 
 ---
 
@@ -194,24 +247,21 @@ MISSION COMPLETE
 
 ## 컨셉
 
-야간 정원 복구 미션
+야간 정원 복구
 
-## 플레이 방식
+## 미션
 
-전체 화면 탐험
+- 빛의 조각 수집
+- 빛의 경로 복구
+- 정원 복원
 
 ## 플레이
 
-- 빛의 조각 발견
-- 반딧불 유도
-- 유리돔 복구
-- 정원 점등
-
-## 특징
-
-- 시간 제한 없음
+- 탐험
+- 힐링
 - 실패 없음
-- 탐험 + 힐링
+
+※ 플레이 화면 구성 및 전환 방식 미확정
 
 ---
 
@@ -219,47 +269,20 @@ MISSION COMPLETE
 
 ## 컨셉
 
-에너지 코어 복구 미션
+에너지 코어 복구
 
-## 플레이 방식
+## 미션
 
-전체 화면
+- 코어 정렬
+- 회로 활성화
+- 에너지 빔 발사
 
 ## 플레이
 
-### Round 1
-
-코어 정렬
-
-25%
-
-### Round 2
-
-코어 정렬
-
-50%
-
-### Round 3
-
-코어 정렬
-
-75%
-
-### Round 4
-
-최종 정렬
-
-100%
-
-### 완료
-
-에너지 발사
-
-## 특징
-
-- 4단계 난이도
-- 점진적 에너지 충전
+- 단계별 진행
 - 가장 높은 난이도
+
+※ 플레이 화면 구성 및 전환 방식 미확정
 
 ---
 
@@ -267,66 +290,72 @@ MISSION COMPLETE
 
 ## 컨셉
 
-퍼레이드 준비 미션
+퍼레이드 준비
 
-## 플레이 방식
+## 미션
 
-전체 화면
+- 위치 기억
+- 캐릭터 배치
+- 퍼레이드 시작
 
-## Round 1
+## 플레이
 
-캐릭터 위치 기억
+- 기억 게임
+- 감성적 분위기
 
-```text
-1 2
-3 4
-```
+※ 플레이 화면 구성 및 전환 방식 미확정
 
-↓
+---
 
-암전
+# STATUS 철학
 
-↓
+STATUS는 장식용 수치가 아니다.
 
-위치 변경
+실제 게임 상태를 표현한다.
 
-↓
+예시
 
-원래 위치 복구
+- 빛의 조각
+- 에너지 상태
+- 복구 진행
+- 캐릭터 상태
 
-## Round 2
+가짜 퍼센트 사용 금지.
 
-캐릭터 동작 기억
+---
 
-### 캐릭터 1
+# Mission Guide
 
-2개 입력
+## 역할
 
-### 캐릭터 2
+Mission Objective를 반복하는 화면가 아니다.
 
-4개 입력
+실제 플레이 방법을 안내하는 게임 튜토리얼이다.
 
-### 캐릭터 3
+### 구성
 
-6개 입력
+- 게임 목표
+- 조작 방법
+- 이미지 기반 설명
+- 성공 조건
 
-### 캐릭터 4
+※ 시설별 Guide는 아직 미제작
 
-8개 입력
+---
 
-### 예시
+# Countdown
 
-```text
-↑ →
+## 역할
 
-→ ↑ ← ↓
-```
+Mission Guide 이후 플레이 시작을 알리는 공통 시스템
 
-## 특징
+※ 공통 연출 미확정
 
-- 기억
-- 순발력
-- 퍼레이드 연출
+---
+
+# Pause / Fail / Complete
+
+※ 공통 시스템 설계 예정
 
 ---
 
@@ -354,7 +383,7 @@ MISSION COMPLETE
 
 ## 최종 보상
 
-4개 스탬프 완료 시
+4개 시설 완료 시
 
 Cosmic Voyage 오픈
 
@@ -368,50 +397,17 @@ Cosmic Voyage 오픈
 
 ## 컨셉
 
-플라잉 시어터
+미래를 여는 여행
 
-우주와 시간을 여행하는 최종 어트랙션
+### 키워드
 
-## 플레이
+- 미래
+- 과거
+- 현재
+- 우주
+- 가능성
 
-```text
-4개 시설 완료
-
-↓
-
-게이트 활성화
-
-↓
-
-탑승
-
-↓
-
-과거
-
-↓
-
-현재
-
-↓
-
-미래
-
-↓
-
-노바랜드 개장
-```
-
-## 조작
-
-- 마우스 시점 이동
-- 모바일 자이로
-
-## 특징
-
-- 게임 없음
-- 체험형 콘텐츠
-- 엔딩 시퀀스
+※ 플레이 및 외형은 미완료
 
 ---
 
@@ -443,47 +439,29 @@ Cosmic Voyage 종료
 NOVA LAND GRAND OPEN
 ```
 
-## EVE 메시지
-
-탐험가님 덕분에 노바랜드가 개장했습니다.
-
-## 최종 화면
-
-```text
-THANK YOU EXPLORER
-
-NOVA LAND
-
-MISSION COMPLETE
-```
-
 ---
 
-# 제작 우선순위
+# 제작 순서
 
 ## Phase 1
 
-- Intro
-- 탐험가 등록
-- 메인 맵
-- 설정
-- EVE
+- Mission Guide
 
 ## Phase 2
 
-- Nova Coaster
+- Countdown
 
 ## Phase 3
 
-- Luna Light Garden
+- Play
 
 ## Phase 4
 
-- Spark Energy Tower
+- Pause / Fail / Complete
 
 ## Phase 5
 
-- Wonder Parade Hall
+- Stamp Book
 
 ## Phase 6
 
@@ -491,9 +469,7 @@ MISSION COMPLETE
 
 ## Phase 7
 
-- 엔딩
-- 보상
-- 스탬프북
+- Reward / Ending
 
 ---
 
@@ -503,17 +479,53 @@ MISSION COMPLETE
 
 95%
 
+### 완료
+
+- 컨셉
+- 세계관
+- IA
+- 유저 플로우
+- 시설 설정
+- STATUS 철학
+
+---
+
 ## 디자인
 
-85%
+### 완료
+
+- MAP PC
+- MAP Mobile
+- Control Room PC 4종
+- Control Room Mobile 4종
+
+### 미완료
+
+- Mission Guide
+- Countdown
+- Play
+- Pause
+- Fail
+- Complete
+- Stamp Book
+- Cosmic Voyage
+- Reward / Ending
+
+---
 
 ## 개발
 
 0%
 
-## 다음 단계
+---
 
-- 전체 시안 제작
-- IA 설계
-- 개발 로드맵
-- 실제 제작 시작
+# 다음 작업
+
+1. Mission Guide 공통 규칙 확정
+2. Nova Coaster Mission Guide
+3. Luna Light Garden Mission Guide
+4. Spark Energy Tower Mission Guide
+5. Wonder Parade Hall Mission Guide
+6. Countdown 공통 시스템
+7. Play 화면 전환 방식
+8. Pause / Fail / Complete
