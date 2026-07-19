@@ -27,17 +27,9 @@
   border-right: .0625rem solid var(--color-line);
 }
 
-.brand__symbol {
-  width: 3.25rem;
-  height: 3.25rem;
-}
-
-.brand__name {
-  color: #f5e8cf;
-  font-family: Georgia, serif;
-  font-size: .8125rem;
-  line-height: 1.25;
-  letter-spacing: .32em;
+.brand__lockup {
+  width: 11.5rem;
+  height: 3.75rem;
 }
 
 .explorer-profile {
@@ -180,8 +172,8 @@
 
 .notification-count {
   position: absolute;
-  right: .25rem;
-  top: .25rem;
+  right: -.55rem;
+  top: -.45rem;
   display: grid;
   place-items: center;
   width: .9375rem;
@@ -235,17 +227,27 @@
   border-color: var(--facility-color);
 }
 
-.facility-card.is-selected .facility-card__image {
+.facility-card.is-selected .facility-card__icon {
   width: 5.25rem;
   height: 5.25rem;
 }
 
-.facility-card__image {
+.facility-card__icon {
+  display: grid;
+  place-items: center;
   width: 2.75rem;
   height: 2.75rem;
   border: .0625rem solid color-mix(in srgb, var(--facility-color) 52%, transparent);
   border-radius: 50%;
-  object-fit: cover;
+  color: var(--facility-color);
+  background: radial-gradient(circle, color-mix(in srgb, var(--facility-color) 15%, transparent), transparent 68%);
+  box-shadow: inset 0 0 1rem color-mix(in srgb, var(--facility-color) 14%, transparent), 0 0 .75rem color-mix(in srgb, var(--facility-color) 12%, transparent);
+}
+
+.facility-card__icon .ui-icon {
+  width: 58%;
+  height: 58%;
+  filter: drop-shadow(0 0 .35rem currentColor);
 }
 
 .facility-card__content {
@@ -327,6 +329,52 @@
   color: var(--color-cosmic);
   font-size: .5625rem;
   font-weight: 700;
+}
+
+.mission-progress {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+  padding-top: var(--space-3);
+  border-top: .0625rem solid rgba(116, 188, 224, .12);
+}
+
+.mission-progress__header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.mission-progress__header strong {
+  color: var(--color-text);
+  font-size: .875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.mission-progress__header span {
+  color: var(--color-text-muted);
+  font-size: .5625rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+}
+
+.mission-progress__track {
+  display: block;
+  height: .25rem;
+  overflow: hidden;
+  border-radius: var(--radius-pill);
+  background: rgba(116, 188, 224, .14);
+}
+
+.mission-progress__track i {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--color-primary), #76e6ff);
+  box-shadow: 0 0 .75rem rgba(56, 200, 255, .72);
+  transition: width .5s var(--ease-out);
 }
 
 .world-map {
@@ -535,18 +583,44 @@
 
 .signal-wave i {
   width: .125rem;
-  height: .375rem;
+  height: .35rem;
   background: currentColor;
   box-shadow: 0 0 .5rem currentColor;
+  transform-origin: center;
 }
 
-.signal-wave i:nth-child(2),
-.signal-wave i:nth-child(4) {
-  height: .875rem;
+.signal-wave.is-speaking i {
+  animation: eve-signal-wave .42s ease-in-out infinite alternate;
 }
 
-.signal-wave i:nth-child(3) {
-  height: 1.25rem;
+.signal-wave.is-speaking i:nth-child(2) {
+  animation-duration: .58s;
+  animation-delay: -.18s;
+}
+
+.signal-wave.is-speaking i:nth-child(3) {
+  animation-duration: .34s;
+  animation-delay: -.3s;
+}
+
+.signal-wave.is-speaking i:nth-child(4) {
+  animation-duration: .5s;
+  animation-delay: -.12s;
+}
+
+.signal-wave.is-speaking i:nth-child(5) {
+  animation-duration: .38s;
+  animation-delay: -.24s;
+}
+
+@keyframes eve-signal-wave {
+  from {
+    transform: scaleY(.65);
+  }
+
+  to {
+    transform: scaleY(3.4);
+  }
 }
 
 .eve-panel__body {
@@ -736,12 +810,11 @@ body.is-overlay-open {
     min-height: 4rem;
   }
 
-  .brand__symbol {
-    width: 2.5rem;
-    height: 2.5rem;
+  .brand__lockup {
+    width: 7.5rem;
+    height: auto;
   }
 
-  .brand__name,
   .explorer-profile > span {
     display: none;
   }

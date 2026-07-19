@@ -38,4 +38,21 @@
     <path d="m3 6 5-3 8 3 5-3v15l-5 3-8-3-5 3Z"></path>
     <path d="M8 3v15M16 6v15"></path>
   </symbol>
+  <symbol id="icon-facility-coaster" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 19c3-8 7-9 10-2 2 4 5 4 8-2"></path>
+    <path d="m6 8 10-2 4 6-13 2-3-3 2-3Z"></path>
+    <path d="m8 8 2 5M13 7l2 5"></path>
+    <circle cx="9" cy="15.5" r="1.4"></circle>
+    <circle cx="17" cy="14" r="1.4"></circle>
+  </symbol>
+  <symbol id="icon-facility-luna" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M20 15.5A8.5 8.5 0 0 1 8.5 4 8.5 8.5 0 1 0 20 15.5Z"></path>
+  </symbol>
+  <symbol id="icon-facility-spark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="m13 2-8 12h6l-1 8 9-13h-6V2Z"></path>
+  </symbol>
+  <symbol id="icon-facility-wonder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 20h16M6 20v-7h12v7M5 13l7-8 7 8"></path>
+    <path d="M12 5v-3M12 2l3 1.5L12 5M9 13v7M15 13v7M6 16h12"></path>
+  </symbol>
 </svg>

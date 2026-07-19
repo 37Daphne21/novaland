@@ -100,6 +100,7 @@
 - 짧은 대화형 EVE Panel
 - Recent Log
 - Setting 진입 버튼
+- 4단계 Mission Progress Bar
 
 
 ### 인터랙션
@@ -114,7 +115,6 @@
 
 ### 제외 항목
 
-- Mission Progress Bar
 - World Status와 Bottom Status
 - MAP에서 Mission 직접 시작
 

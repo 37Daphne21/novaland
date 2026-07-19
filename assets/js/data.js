@@ -2,9 +2,9 @@ export const facilities = [
   {
     id: 'coaster',
     name: 'NOVA COASTER',
-    type: 'Movement Facility',
+    type: '이동 시설',
+    icon: 'facility-coaster',
     state: 'available',
-    thumbnail: './assets/images/map/thumbnail-coaster.webp',
     position: { x: 17, y: 12 },
     glow: { x: 28, y: 31 },
     message: '탐험가님, NOVA COASTER에 진입할 준비가 됐어요.',
@@ -14,9 +14,9 @@ export const facilities = [
   {
     id: 'luna',
     name: 'LUNA LIGHT GARDEN',
-    type: 'Energy Facility',
+    type: '생명 시설',
+    icon: 'facility-luna',
     state: 'locked',
-    thumbnail: './assets/images/map/thumbnail-luna.webp',
     position: { x: 63, y: 13 },
     glow: { x: 64, y: 30 },
     message: 'LUNA LIGHT GARDEN의 빛 에너지가 안정됐어요.',
@@ -26,9 +26,9 @@ export const facilities = [
   {
     id: 'spark',
     name: 'SPARK ENERGY TOWER',
-    type: 'Play Facility',
+    type: '에너지 시설',
+    icon: 'facility-spark',
     state: 'locked',
-    thumbnail: './assets/images/map/thumbnail-spark.webp',
     position: { x: 8, y: 45 },
     glow: { x: 27, y: 58 },
     message: 'SPARK ENERGY TOWER의 에너지를 확인할 수 있어요.',
@@ -38,9 +38,9 @@ export const facilities = [
   {
     id: 'wonder',
     name: 'WONDER PARADE HALL',
-    type: 'Culture Facility',
+    type: '즐거움 시설',
+    icon: 'facility-wonder',
     state: 'locked',
-    thumbnail: './assets/images/map/thumbnail-wonder.webp',
     position: { x: 72, y: 43 },
     glow: { x: 72, y: 55 },
     message: 'WONDER PARADE HALL의 퍼레이드를 준비할 수 있어요.',
@@ -52,7 +52,7 @@ export const facilities = [
 export const cosmicVoyage = {
   id: 'cosmic',
   name: 'COSMIC VOYAGE',
-  type: 'Final Experience',
+  type: '마지막 경험',
   state: 'sealed',
   position: { x: 49, y: 68 },
   glow: { x: 50, y: 66 },
@@ -60,11 +60,11 @@ export const cosmicVoyage = {
 };
 
 export const facilityStates = {
-  available: { label: 'ONLINE', icon: 'check' },
-  locked: { label: 'LOCKED', icon: 'lock' },
-  completed: { label: 'RESTORED', icon: 'check' },
-  sealed: { label: 'SEALED', icon: 'lock' },
-  open: { label: 'OPEN', icon: 'check' }
+  available: { label: '활성화', icon: 'check' },
+  locked: { label: '잠금', icon: 'lock' },
+  completed: { label: '복구 완료', icon: 'check' },
+  sealed: { label: '봉인', icon: 'lock' },
+  open: { label: '개방', icon: 'check' }
 };
 
 export const recentLogs = [

@@ -6,13 +6,21 @@ const cosmicStatus = document.querySelector('#cosmic-status');
 const facilityGlow = document.querySelector('#facility-glow');
 const recentLogList = document.querySelector('#recent-log-list');
 const eveMessage = document.querySelector('#eve-message');
+const evePanel = document.querySelector('.eve-panel');
+const eveSignalWave = document.querySelector('#eve-signal-wave');
+const missionProgress = document.querySelector('#mission-progress');
+const missionProgressValue = document.querySelector('#mission-progress-value');
+const missionProgressBar = document.querySelector('#mission-progress-bar');
 const toast = document.querySelector('#app-toast');
 const languageOptions = document.querySelector('#language-options');
 const controlRoomTitle = document.querySelector('#control-room-title');
 const controlRoomType = document.querySelector('#control-room-type');
 const screens = document.querySelectorAll('[data-screen]');
+const initialEveMessage = eveMessage?.textContent.trim() ?? '';
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 let toastTimer = null;
+let eveTypingTimer = null;
 let activeOverlay = null;
 let previouslyFocused = null;
 let selectedFacilityId = 'coaster';
@@ -35,6 +43,55 @@ function showToast(message) {
   }, 2200);
 }
 
+function finishEveSpeech() {
+  window.clearInterval(eveTypingTimer);
+  eveTypingTimer = null;
+  eveSignalWave?.classList.remove('is-speaking');
+  evePanel?.setAttribute('aria-busy', 'false');
+}
+
+function speakEve(message) {
+  if (!eveMessage || !message) {
+    return;
+  }
+
+  finishEveSpeech();
+
+  if (prefersReducedMotion) {
+    eveMessage.textContent = message;
+    return;
+  }
+
+  const characters = Array.from(message);
+  let characterIndex = 0;
+
+  eveMessage.textContent = '';
+  evePanel?.setAttribute('aria-busy', 'true');
+  eveSignalWave?.classList.add('is-speaking');
+
+  eveTypingTimer = window.setInterval(() => {
+    eveMessage.textContent += characters[characterIndex];
+    characterIndex += 1;
+
+    if (characterIndex >= characters.length) {
+      finishEveSpeech();
+    }
+  }, 34);
+}
+
+function renderMissionProgress() {
+  if (!missionProgress || !missionProgressValue || !missionProgressBar) {
+    return;
+  }
+
+  const currentStep = Math.max(1, facilities.filter((facility) => facility.state !== 'locked').length);
+  const progress = currentStep / facilities.length * 100;
+
+  missionProgress.setAttribute('aria-valuenow', String(currentStep));
+  missionProgressValue.textContent = `${currentStep} / ${facilities.length}`;
+  missionProgressBar.style.width = `${progress}%`;
+}
+
 function renderFacilities() {
   if (!facilityList) {
     return;
@@ -44,11 +101,12 @@ function renderFacilities() {
     const state = facilityStates[facility.state];
     const isSelected = facility.id === selectedFacilityId;
     const isDisabled = facility.state === 'locked';
+    const facilityColor = isDisabled ? 'var(--color-locked)' : `var(--color-${facility.id})`;
 
     return `
       <li>
-        <button class="facility-card ui-card is-state-${facility.state}${isSelected ? ' is-selected' : ''}" type="button" data-facility="${facility.id}" aria-pressed="${isSelected}"${isDisabled ? ' aria-disabled="true"' : ''} style="--facility-color: var(--color-${facility.id});">
-          <img class="facility-card__image" src="${facility.thumbnail}" alt="">
+        <button class="facility-card ui-card is-state-${facility.state}${isSelected ? ' is-selected' : ''}" type="button" data-facility="${facility.id}" aria-pressed="${isSelected}"${isDisabled ? ' aria-disabled="true"' : ''} style="--facility-color: ${facilityColor};">
+          <span class="facility-card__icon" aria-hidden="true">${getIcon(facility.icon)}</span>
           <span class="facility-card__content">
             <strong class="facility-card__name">${String(index + 1).padStart(2, '0')} · ${facility.name}</strong>
             <span class="facility-card__type">${facility.type}</span>
@@ -70,20 +128,22 @@ function renderMapCards() {
     const state = facilityStates[facility.state];
     const isSelected = facility.id === selectedFacilityId;
     const isDisabled = facility.state === 'locked';
+    const marker = isDisabled ? getIcon('lock') : String(index + 1).padStart(2, '0');
 
     return `
-      <button class="map-facility-card is-state-${facility.state}${isSelected ? ' is-selected' : ''}" type="button" data-facility="${facility.id}" aria-pressed="${isSelected}"${isDisabled ? ' aria-disabled="true"' : ''} style="--marker-x: ${facility.position.x}%; --marker-y: ${facility.position.y}%; --facility-color: var(--color-${facility.id});">
-        <span class="map-facility-card__number">${String(index + 1).padStart(2, '0')}</span>
+      <button class="map-facility-card is-state-${facility.state}${isSelected ? ' is-selected' : ''}" type="button" data-facility="${facility.id}" data-control-room-entry aria-pressed="${isSelected}"${isDisabled ? ' aria-disabled="true"' : ''} style="--marker-x: ${facility.position.x}%; --marker-y: ${facility.position.y}%; --facility-color: var(--color-${facility.id});">
+        <span class="map-facility-card__number">${marker}</span>
         <span class="map-facility-card__content"><strong>${facility.name}</strong><small>${facility.type}</small><i>${getIcon(state.icon)}${state.label}</i></span>
       </button>
     `;
   }).join('');
 
   const cosmicState = facilityStates[cosmicVoyage.state];
+  const cosmicName = cosmicVoyage.state === 'sealed' ? '???' : cosmicVoyage.name;
   const cosmicCard = `
-    <button class="map-facility-card map-facility-card--cosmic is-state-${cosmicVoyage.state}" type="button" data-facility="cosmic" aria-disabled="${cosmicVoyage.state === 'sealed'}" style="--marker-x: ${cosmicVoyage.position.x}%; --marker-y: ${cosmicVoyage.position.y}%; --facility-color: var(--color-cosmic);">
+    <button class="map-facility-card map-facility-card--cosmic is-state-${cosmicVoyage.state}" type="button" data-facility="cosmic" data-control-room-entry aria-disabled="${cosmicVoyage.state === 'sealed'}" style="--marker-x: ${cosmicVoyage.position.x}%; --marker-y: ${cosmicVoyage.position.y}%; --facility-color: var(--color-cosmic);">
       <span class="map-facility-card__number">${getIcon(cosmicState.icon)}</span>
-      <span class="map-facility-card__content"><strong>${cosmicVoyage.name}</strong><i>${cosmicState.label}</i></span>
+      <span class="map-facility-card__content"><strong>${cosmicName}</strong><i>${cosmicState.label}</i></span>
     </button>
   `;
 
@@ -96,9 +156,10 @@ function renderCosmicStatus() {
   }
 
   const state = facilityStates[cosmicVoyage.state];
+  const cosmicName = cosmicVoyage.state === 'sealed' ? '???' : cosmicVoyage.name;
   cosmicStatus.className = `cosmic-status is-state-${cosmicVoyage.state}`;
   cosmicStatus.setAttribute('aria-disabled', String(cosmicVoyage.state === 'sealed'));
-  cosmicStatus.innerHTML = `${getIcon(state.icon)}<span><strong>${cosmicVoyage.name}</strong><small>${state.label}</small></span>`;
+  cosmicStatus.innerHTML = `${getIcon(state.icon)}<span><strong>${cosmicName}</strong><small>${state.label}</small></span>`;
 }
 
 function updateFacilityGlow(facility) {
@@ -146,9 +207,7 @@ function selectFacility(button) {
   }
 
   if (facility.state === 'locked' || facility.state === 'sealed') {
-    if (eveMessage) {
-      eveMessage.textContent = facility.lockedMessage;
-    }
+    speakEve(facility.lockedMessage);
 
     showToast(uiCopy.lockedFacility);
     return;
@@ -164,11 +223,14 @@ function selectFacility(button) {
   renderMapCards();
   updateFacilityGlow(facility);
 
-  if (eveMessage) {
-    eveMessage.textContent = facility.message;
+  speakEve(facility.message);
+
+  if (button.hasAttribute('data-control-room-entry')) {
+    enterControlRoom(facility);
+    return;
   }
 
-  enterControlRoom(facility);
+  showToast(facility.name + ' 시설을 선택했어요.');
 }
 
 function showScreen(screenName) {
@@ -266,9 +328,11 @@ function handleKeydown(event) {
 renderFacilities();
 renderMapCards();
 renderCosmicStatus();
+renderMissionProgress();
 renderRecentLogs();
 renderLanguages();
 updateFacilityGlow(facilities.find((facility) => facility.id === selectedFacilityId));
+speakEve(initialEveMessage);
 
 document.addEventListener('click', handleDocumentClick);
 document.addEventListener('keydown', handleKeydown);
