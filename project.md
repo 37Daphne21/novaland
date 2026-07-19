@@ -2360,8 +2360,8 @@ Roadmap은 제작 일정을,
 - 1단계: 구현에 사용할 배경, EVE, 시설 이미지와 아이콘 자산 목록 정리 → 완료
 - 2단계: MAP 배경, EVE, Explorer 프로필, 심볼과 시설 썸네일 제작 → 완료
 - 3단계: 프로젝트 기반, 디자인 토큰과 공통 UI 컴포넌트 구조 확정 → 완료
-- 4단계: MAP PC 화면과 시설 선택 인터랙션 구현 → 다음 작업
-- 5단계: Explorer, 설정, 언어, 저장, Log와 Passport 공통 시스템 구현 → 예정
+- 4단계: MAP PC 화면과 시설 선택 인터랙션 구현 → 완료
+- 5단계: Explorer, 설정, 언어, 저장, Log와 Passport 공통 시스템 구현 → 다음 작업
 - 6단계: Nova Coaster 자산, Control Room 공통 구조와 공통 Mission Flow 구현 → 예정
 - 7단계: Luna Light Garden 자산과 Mission 구현 → 예정
 - 8단계: Spark Energy Tower 자산과 Mission 구현 → 예정
@@ -2372,6 +2372,15 @@ Roadmap은 제작 일정을,
 ---
 
 ## 변경 이력
+
+### v1.8
+
+- Top Navigation, Mission List, World Map 시설 Card, EVE와 Recent Log를 MAP PC 화면에 구현
+- Mission List와 World Map Card의 선택 상태를 공통 시설 데이터로 동기화
+- 잠금, 선택 가능, 완료와 봉인 상태 및 선택 시설 Glow 구현
+- 잠금 시설 EVE 안내와 선택 가능 시설의 Control Room 진입 흐름 구현
+- MAP 배경과 UI를 독립 레이어로 유지하고 4단계 완료
+
 
 ### v1.7
 

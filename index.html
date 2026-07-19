@@ -11,7 +11,7 @@
 </head>
 <body>
   <div id="app" class="app">
-    <main class="screen screen--foundation is-active" data-screen="foundation">
+    <main class="screen screen--map is-active" data-screen="map">
       <div class="screen__backdrop" aria-hidden="true"></div>
       <header class="top-navigation ui-panel" aria-label="상단 내비게이션">
         <a class="brand" href="#" aria-label="Nova Land 홈">
@@ -21,40 +21,39 @@
         <div class="explorer-profile">
           <img class="explorer-profile__image" src="./assets/images/common/explorer.webp" alt="탐험가 프로필">
           <span><small>EXPLORER</small><strong>ING</strong></span>
+          <button class="explorer-profile__edit" type="button" data-toast="Explorer 정보 수정은 공통 시스템 단계에서 연결돼요." aria-label="Explorer 정보 수정">
+            <svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-edit"></use></svg>
+          </button>
         </div>
         <div class="top-navigation__status" aria-label="현재 환경">
           <div class="status-chip"><svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-clock"></use></svg><span><strong>09:45</strong><small>DAY</small></span></div>
           <div class="status-chip"><svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-weather"></use></svg><span><strong>24°C</strong><small>CLEAR</small></span></div>
         </div>
         <nav class="top-navigation__actions" aria-label="사용자 메뉴">
-          <button class="ui-button ui-button--icon" type="button" data-toast="새 알림이 3개 있어요." aria-label="알림 3개 확인"><svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-bell"></use></svg><span class="notification-count" aria-hidden="true">3</span></button>
-          <button class="ui-button ui-button--icon" type="button" data-overlay-open="settings-overlay" aria-label="설정 열기"><svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-settings"></use></svg></button>
+          <button class="utility-button" type="button" data-toast="새 알림이 3개 있어요." aria-label="알림 3개 확인"><span><svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-bell"></use></svg><i class="notification-count" aria-hidden="true">3</i></span><small>NOTIFICATION</small></button>
+          <button class="utility-button" type="button" data-overlay-open="settings-overlay" aria-label="설정 열기"><span><svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-settings"></use></svg></span><small>SETTING</small></button>
         </nav>
       </header>
-      <div class="foundation-layout">
-        <section class="mission-preview ui-panel" aria-labelledby="mission-title">
+      <div class="map-layout">
+        <section class="mission-panel ui-panel" aria-labelledby="mission-title">
           <header class="ui-panel__header">
-            <div><span class="ui-panel__eyebrow">FACILITY</span><h1 id="mission-title" class="ui-panel__title">MISSION</h1></div>
-            <span class="ui-badge ui-badge--active">ONLINE</span>
+            <h1 id="mission-title" class="ui-panel__title">MISSION</h1>
           </header>
           <ol id="facility-list" class="facility-list" aria-label="시설 목록"></ol>
-          <div class="cosmic-status"><svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-lock"></use></svg><span><strong>COSMIC VOYAGE</strong><small>SEALED</small></span></div>
+          <button id="cosmic-status" class="cosmic-status" type="button" data-facility="cosmic" aria-disabled="true"></button>
         </section>
-        <section class="world-preview" aria-labelledby="world-title">
-          <span class="world-preview__line" aria-hidden="true"></span>
-          <div class="world-preview__heading"><p>NOVA LAND OVERVIEW</p><h2 id="world-title">WORLD MAP</h2></div>
-          <div class="world-preview__action">
-            <span class="ui-badge ui-badge--active">SYSTEM READY</span>
-            <button class="ui-button ui-button--primary" type="button" data-toast="공통 UI 시스템이 준비됐어요.">UI STATUS<svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-arrow-right"></use></svg></button>
-          </div>
+        <section class="world-map" aria-labelledby="world-title">
+          <header class="world-map__heading"><h2 id="world-title">WORLD MAP</h2><p>NOVA LAND OVERVIEW</p></header>
+          <div id="facility-glow" class="facility-glow" aria-hidden="true"></div>
+          <div id="map-card-list" class="map-card-list" aria-label="월드맵 시설"></div>
         </section>
         <div class="side-stack">
-          <aside class="eve-preview ui-panel" aria-labelledby="eve-title" aria-live="polite">
+          <aside class="eve-panel ui-panel" aria-labelledby="eve-title" aria-live="polite">
             <header class="ui-panel__header">
-              <div><span class="ui-panel__eyebrow">NOVA CONTROL</span><h2 id="eve-title" class="ui-panel__title">EVE</h2></div>
+              <h2 id="eve-title" class="ui-panel__title">EVE</h2>
               <span class="signal-wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
             </header>
-            <div class="eve-preview__body"><img src="./assets/images/common/eve.webp" alt="EVE 홀로그램"><p id="eve-message">탐험가님, 노바랜드의 시설 시스템을 확인했어요.</p></div>
+            <div class="eve-panel__body"><img src="./assets/images/common/eve.webp" alt="EVE 홀로그램"><p id="eve-message">탐험가님, 노바랜드의 시설 시스템을 확인했어요.</p></div>
           </aside>
           <section class="recent-log ui-panel" aria-labelledby="recent-log-title">
             <header class="ui-panel__header">
@@ -66,6 +65,20 @@
         </div>
       </div>
     </main>
+    <section class="screen screen--control-room" data-screen="control-room" hidden>
+      <div class="control-room-shell">
+        <button class="ui-button ui-button--primary" type="button" data-screen-back="map">
+          <svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-map"></use></svg>
+          MAP
+        </button>
+        <div class="control-room-shell__content ui-panel">
+          <span class="ui-badge ui-badge--active">CONTROL ROOM CONNECTED</span>
+          <p id="control-room-type">Movement Facility</p>
+          <h1 id="control-room-title">NOVA COASTER</h1>
+          <p>시설 관제실 연결이 확인됐어요. Mission 기능은 시설 구현 단계에서 이어집니다.</p>
+        </div>
+      </div>
+    </section>
     <section id="settings-overlay" class="ui-overlay" aria-labelledby="settings-title" aria-modal="true" role="dialog" hidden>
       <button class="ui-overlay__backdrop" type="button" data-overlay-close aria-label="설정 닫기"></button>
       <div class="ui-overlay__dialog ui-panel" tabindex="-1">

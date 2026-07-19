@@ -1,14 +1,21 @@
-import { facilities, languages, recentLogs, uiCopy } from './data.js';
+import { cosmicVoyage, facilities, facilityStates, languages, recentLogs, uiCopy } from './data.js';
 
 const facilityList = document.querySelector('#facility-list');
+const mapCardList = document.querySelector('#map-card-list');
+const cosmicStatus = document.querySelector('#cosmic-status');
+const facilityGlow = document.querySelector('#facility-glow');
 const recentLogList = document.querySelector('#recent-log-list');
 const eveMessage = document.querySelector('#eve-message');
 const toast = document.querySelector('#app-toast');
 const languageOptions = document.querySelector('#language-options');
+const controlRoomTitle = document.querySelector('#control-room-title');
+const controlRoomType = document.querySelector('#control-room-type');
+const screens = document.querySelectorAll('[data-screen]');
 
 let toastTimer = null;
 let activeOverlay = null;
 let previouslyFocused = null;
+let selectedFacilityId = 'coaster';
 
 function getIcon(icon) {
   return `<svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-${icon}"></use></svg>`;
@@ -34,23 +41,75 @@ function renderFacilities() {
   }
 
   facilityList.innerHTML = facilities.map((facility, index) => {
-    const isSelected = facility.state === 'active';
+    const state = facilityStates[facility.state];
+    const isSelected = facility.id === selectedFacilityId;
     const isDisabled = facility.state === 'locked';
-    const stateIcon = isDisabled ? 'lock' : 'check';
 
     return `
       <li>
-        <button class="facility-card ui-card${isSelected ? ' is-selected' : ''}" type="button" data-facility="${facility.id}" aria-pressed="${isSelected}"${isDisabled ? ' aria-disabled="true"' : ''} style="--facility-color: var(--color-${facility.id});">
+        <button class="facility-card ui-card is-state-${facility.state}${isSelected ? ' is-selected' : ''}" type="button" data-facility="${facility.id}" aria-pressed="${isSelected}"${isDisabled ? ' aria-disabled="true"' : ''} style="--facility-color: var(--color-${facility.id});">
           <img class="facility-card__image" src="${facility.thumbnail}" alt="">
           <span class="facility-card__content">
             <strong class="facility-card__name">${String(index + 1).padStart(2, '0')} · ${facility.name}</strong>
             <span class="facility-card__type">${facility.type}</span>
           </span>
-          <span class="facility-card__state">${getIcon(stateIcon)}${facility.stateLabel}</span>
+          <span class="facility-card__state">${getIcon(state.icon)}${state.label}</span>
+          ${isSelected && !isDisabled ? `<span class="facility-card__enter" aria-hidden="true">${getIcon('arrow-right')}</span>` : ''}
         </button>
       </li>
     `;
   }).join('');
+}
+
+function renderMapCards() {
+  if (!mapCardList) {
+    return;
+  }
+
+  const facilityCards = facilities.map((facility, index) => {
+    const state = facilityStates[facility.state];
+    const isSelected = facility.id === selectedFacilityId;
+    const isDisabled = facility.state === 'locked';
+
+    return `
+      <button class="map-facility-card is-state-${facility.state}${isSelected ? ' is-selected' : ''}" type="button" data-facility="${facility.id}" aria-pressed="${isSelected}"${isDisabled ? ' aria-disabled="true"' : ''} style="--marker-x: ${facility.position.x}%; --marker-y: ${facility.position.y}%; --facility-color: var(--color-${facility.id});">
+        <span class="map-facility-card__number">${String(index + 1).padStart(2, '0')}</span>
+        <span class="map-facility-card__content"><strong>${facility.name}</strong><small>${facility.type}</small><i>${getIcon(state.icon)}${state.label}</i></span>
+      </button>
+    `;
+  }).join('');
+
+  const cosmicState = facilityStates[cosmicVoyage.state];
+  const cosmicCard = `
+    <button class="map-facility-card map-facility-card--cosmic is-state-${cosmicVoyage.state}" type="button" data-facility="cosmic" aria-disabled="${cosmicVoyage.state === 'sealed'}" style="--marker-x: ${cosmicVoyage.position.x}%; --marker-y: ${cosmicVoyage.position.y}%; --facility-color: var(--color-cosmic);">
+      <span class="map-facility-card__number">${getIcon(cosmicState.icon)}</span>
+      <span class="map-facility-card__content"><strong>${cosmicVoyage.name}</strong><i>${cosmicState.label}</i></span>
+    </button>
+  `;
+
+  mapCardList.innerHTML = facilityCards + cosmicCard;
+}
+
+function renderCosmicStatus() {
+  if (!cosmicStatus) {
+    return;
+  }
+
+  const state = facilityStates[cosmicVoyage.state];
+  cosmicStatus.className = `cosmic-status is-state-${cosmicVoyage.state}`;
+  cosmicStatus.setAttribute('aria-disabled', String(cosmicVoyage.state === 'sealed'));
+  cosmicStatus.innerHTML = `${getIcon(state.icon)}<span><strong>${cosmicVoyage.name}</strong><small>${state.label}</small></span>`;
+}
+
+function updateFacilityGlow(facility) {
+  if (!facilityGlow || !facility) {
+    return;
+  }
+
+  facilityGlow.style.setProperty('--glow-x', `${facility.glow.x}%`);
+  facilityGlow.style.setProperty('--glow-y', `${facility.glow.y}%`);
+  facilityGlow.style.setProperty('--facility-color', `var(--color-${facility.id})`);
+  facilityGlow.classList.add('is-visible');
 }
 
 function renderRecentLogs() {
@@ -77,28 +136,62 @@ function renderLanguages() {
 }
 
 function selectFacility(button) {
-  const facility = facilities.find((item) => item.id === button.dataset.facility);
+  const facilityId = button.dataset.facility;
+  const facility = facilityId === 'cosmic'
+    ? cosmicVoyage
+    : facilities.find((item) => item.id === facilityId);
 
   if (!facility) {
     return;
   }
 
-  if (facility.state === 'locked') {
+  if (facility.state === 'locked' || facility.state === 'sealed') {
+    if (eveMessage) {
+      eveMessage.textContent = facility.lockedMessage;
+    }
+
     showToast(uiCopy.lockedFacility);
     return;
   }
 
-  document.querySelectorAll('[data-facility]').forEach((item) => {
-    const isSelected = item === button;
-    item.classList.toggle('is-selected', isSelected);
-    item.setAttribute('aria-pressed', String(isSelected));
-  });
+  if (facility.id === 'cosmic') {
+    showToast('COSMIC VOYAGE는 마지막 경험 단계에서 연결돼요.');
+    return;
+  }
+
+  selectedFacilityId = facility.id;
+  renderFacilities();
+  renderMapCards();
+  updateFacilityGlow(facility);
 
   if (eveMessage) {
     eveMessage.textContent = facility.message;
   }
 
-  showToast(`${facility.name} 시설을 선택했어요.`);
+  enterControlRoom(facility);
+}
+
+function showScreen(screenName) {
+  screens.forEach((screen) => {
+    const isActive = screen.dataset.screen === screenName;
+    screen.hidden = !isActive;
+    screen.classList.toggle('is-active', isActive);
+  });
+}
+
+function enterControlRoom(facility) {
+  if (controlRoomTitle) {
+    controlRoomTitle.textContent = facility.name;
+  }
+
+  if (controlRoomType) {
+    controlRoomType.textContent = facility.type;
+  }
+
+  window.setTimeout(() => {
+    showScreen('control-room');
+    showToast(facility.controlRoomMessage);
+  }, 180);
 }
 
 function openOverlay(overlay) {
@@ -130,6 +223,7 @@ function handleDocumentClick(event) {
   const overlayOpenButton = event.target.closest('[data-overlay-open]');
   const overlayCloseButton = event.target.closest('[data-overlay-close]');
   const languageButton = event.target.closest('[data-language]');
+  const screenBackButton = event.target.closest('[data-screen-back]');
 
   if (facilityButton) {
     selectFacility(facilityButton);
@@ -156,6 +250,11 @@ function handleDocumentClick(event) {
 
     showToast(languageButton.dataset.language === 'ko' ? uiCopy.languageKorean : uiCopy.languageEnglish);
   }
+
+  if (screenBackButton) {
+    showScreen(screenBackButton.dataset.screenBack);
+    document.querySelector(`[data-screen="map"] [data-facility="${selectedFacilityId}"]`)?.focus();
+  }
 }
 
 function handleKeydown(event) {
@@ -165,8 +264,11 @@ function handleKeydown(event) {
 }
 
 renderFacilities();
+renderMapCards();
+renderCosmicStatus();
 renderRecentLogs();
 renderLanguages();
+updateFacilityGlow(facilities.find((facility) => facility.id === selectedFacilityId));
 
 document.addEventListener('click', handleDocumentClick);
 document.addEventListener('keydown', handleKeydown);

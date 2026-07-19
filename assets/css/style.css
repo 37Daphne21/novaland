@@ -1,4 +1,4 @@
-.screen--foundation {
+.screen--map {
   --screen-background: url("../images/map/bg-map.webp");
   display: grid;
   grid-template-rows: auto 1fr;
@@ -76,6 +76,27 @@
   letter-spacing: .06em;
 }
 
+.explorer-profile__edit {
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: .0625rem solid var(--color-line);
+  border-radius: 50%;
+  color: var(--color-text-muted);
+}
+
+.explorer-profile__edit:hover,
+.explorer-profile__edit:focus-visible {
+  border-color: var(--color-line-strong);
+  color: var(--color-primary);
+}
+
+.explorer-profile__edit .ui-icon {
+  width: .875rem;
+  height: .875rem;
+}
+
 .top-navigation__status {
   display: flex;
   align-items: stretch;
@@ -114,9 +135,47 @@
 
 .top-navigation__actions {
   display: flex;
-  gap: var(--space-2);
+  align-self: stretch;
+  gap: 0;
   padding-left: var(--space-6);
   border-left: .0625rem solid var(--color-line);
+}
+
+.utility-button {
+  display: grid;
+  place-items: center;
+  gap: .25rem;
+  min-width: 6.5rem;
+  padding: .375rem .75rem;
+  color: var(--color-text-subtle);
+}
+
+.utility-button + .utility-button {
+  border-left: .0625rem solid var(--color-line);
+}
+
+.utility-button > span {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.utility-button .ui-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.utility-button small {
+  color: var(--color-text-muted);
+  font-size: .5rem;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: .05em;
+}
+
+.utility-button:hover,
+.utility-button:focus-visible {
+  color: var(--color-primary);
 }
 
 .notification-count {
@@ -134,23 +193,23 @@
   background: #ff4e58;
 }
 
-.foundation-layout {
+.map-layout {
   position: relative;
   z-index: var(--z-content);
   display: grid;
-  grid-template-columns: minmax(17rem, 20rem) minmax(20rem, 1fr) minmax(17rem, 19rem);
+  grid-template-columns: clamp(20rem, 21vw, 23.5rem) minmax(20rem, 1fr) clamp(18rem, 18vw, 20rem);
   align-items: end;
   gap: var(--space-4);
   min-height: 0;
 }
 
-.mission-preview,
-.eve-preview,
+.mission-panel,
+.eve-panel,
 .recent-log {
   padding: var(--space-4);
 }
 
-.mission-preview {
+.mission-panel {
   border-color: rgba(213, 167, 97, .34);
 }
 
@@ -163,11 +222,22 @@
 .facility-card {
   --facility-color: var(--color-primary);
   display: grid;
-  grid-template-columns: 2.75rem 1fr auto;
+  grid-template-columns: 2.75rem minmax(0, 1fr) auto auto;
   align-items: center;
   gap: var(--space-3);
-  min-height: 4rem;
+  min-height: 4.75rem;
   padding: .5rem .625rem;
+}
+
+.facility-card.is-selected {
+  grid-template-columns: 5.25rem minmax(0, 1fr) auto auto;
+  min-height: 8rem;
+  border-color: var(--facility-color);
+}
+
+.facility-card.is-selected .facility-card__image {
+  width: 5.25rem;
+  height: 5.25rem;
 }
 
 .facility-card__image {
@@ -212,6 +282,19 @@
   height: .875rem;
 }
 
+.facility-card__enter {
+  color: var(--facility-color);
+}
+
+.facility-card__enter .ui-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.facility-card.is-state-completed .facility-card__state {
+  color: var(--color-success);
+}
+
 .cosmic-status {
   display: flex;
   align-items: center;
@@ -223,6 +306,11 @@
   border-radius: var(--radius-md);
   color: var(--color-text-muted);
   background: rgba(35, 17, 55, .34);
+  width: 100%;
+}
+
+.cosmic-status[aria-disabled="true"] {
+  cursor: not-allowed;
 }
 
 .cosmic-status .ui-icon {
@@ -241,45 +329,190 @@
   font-weight: 700;
 }
 
-.world-preview {
+.world-map {
+  position: relative;
   align-self: stretch;
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  justify-items: center;
   min-height: 30rem;
-  padding: var(--space-4) 0 var(--space-8);
+}
+
+.world-map__heading {
+  position: absolute;
+  left: 50%;
+  top: .75rem;
+  z-index: 4;
   text-align: center;
+  text-shadow: 0 .125rem 1rem rgba(0, 0, 0, .9);
+  transform: translateX(-50%);
 }
 
-.world-preview__line {
-  width: min(26rem, 70%);
+.world-map__heading::before,
+.world-map__heading::after {
+  content: "";
+  position: absolute;
+  top: .9rem;
+  width: 5rem;
   height: .0625rem;
-  background: linear-gradient(90deg, transparent, rgba(229, 190, 124, .8), transparent);
+  background: linear-gradient(90deg, transparent, rgba(229, 190, 124, .9));
 }
 
-.world-preview__heading {
-  align-self: start;
-  margin-top: var(--space-4);
-  text-shadow: 0 .125rem 1rem rgba(0, 0, 0, .8);
+.world-map__heading::before {
+  right: calc(100% + 1.25rem);
 }
 
-.world-preview__heading p {
-  margin-bottom: .375rem;
+.world-map__heading::after {
+  left: calc(100% + 1.25rem);
+  transform: scaleX(-1);
+}
+
+.world-map__heading h2 {
+  font-size: clamp(1.5rem, 2.2vw, 2.25rem);
+  font-weight: 500;
+  letter-spacing: .32em;
+  white-space: nowrap;
+}
+
+.world-map__heading p {
+  margin-top: .375rem;
   color: var(--color-text-subtle);
   font-size: .625rem;
   letter-spacing: .2em;
 }
 
-.world-preview__heading h2 {
-  font-size: clamp(1.5rem, 2.2vw, 2.25rem);
-  font-weight: 500;
-  letter-spacing: .32em;
+.map-card-list {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
 }
 
-.world-preview__action {
+.facility-glow {
+  --glow-x: 28%;
+  --glow-y: 31%;
+  --facility-color: var(--color-coaster);
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: 0;
+  background: radial-gradient(circle at var(--glow-x) var(--glow-y), color-mix(in srgb, var(--facility-color) 36%, transparent) 0, color-mix(in srgb, var(--facility-color) 18%, transparent) 8%, transparent 24%);
+  filter: saturate(1.2);
+  transition: opacity var(--motion-base) ease, background var(--motion-base) ease;
+  pointer-events: none;
+}
+
+.facility-glow.is-visible {
+  opacity: 1;
+  animation: facility-glow-pulse 2.8s ease-in-out infinite;
+}
+
+@keyframes facility-glow-pulse {
+  50% {
+    opacity: .68;
+  }
+}
+
+.map-facility-card {
+  position: absolute;
+  left: var(--marker-x);
+  top: var(--marker-y);
   display: grid;
-  justify-items: center;
-  gap: var(--space-3);
+  grid-template-columns: 3rem minmax(0, 1fr);
+  align-items: center;
+  gap: .625rem;
+  width: 14rem;
+  min-height: 4.5rem;
+  padding: .625rem .875rem;
+  border: .0625rem solid color-mix(in srgb, var(--facility-color) 46%, transparent);
+  border-radius: 2rem;
+  color: var(--color-text);
+  text-align: left;
+  background: rgba(5, 13, 25, .8);
+  box-shadow: inset 0 0 1.25rem color-mix(in srgb, var(--facility-color) 8%, transparent), 0 .75rem 2rem rgba(0, 0, 0, .35);
+  backdrop-filter: blur(.75rem);
+  transform: translate(-50%, -50%);
+  transition: border-color var(--motion-base) ease, box-shadow var(--motion-base) ease, opacity var(--motion-base) ease, transform var(--motion-base) var(--ease-out);
+  pointer-events: auto;
+}
+
+.map-facility-card:hover:not([aria-disabled="true"]),
+.map-facility-card:focus-visible {
+  border-color: var(--facility-color);
+  transform: translate(-50%, calc(-50% - .125rem));
+}
+
+.map-facility-card.is-selected {
+  border-color: var(--facility-color);
+  box-shadow: inset 0 0 1.75rem color-mix(in srgb, var(--facility-color) 18%, transparent), 0 0 1.75rem color-mix(in srgb, var(--facility-color) 48%, transparent);
+}
+
+.map-facility-card[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: .68;
+}
+
+.map-facility-card__number {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border: .0625rem solid var(--facility-color);
+  border-radius: 50%;
+  color: var(--facility-color);
+  font-size: 1rem;
+  font-weight: 700;
+  box-shadow: inset 0 0 1rem color-mix(in srgb, var(--facility-color) 16%, transparent);
+}
+
+.map-facility-card__number .ui-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.map-facility-card__content {
+  display: grid;
+  gap: .1875rem;
+  min-width: 0;
+}
+
+.map-facility-card__content strong {
+  overflow: hidden;
+  font-size: .75rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.map-facility-card__content small {
+  color: var(--color-text-muted);
+  font-size: .5625rem;
+}
+
+.map-facility-card__content i {
+  display: inline-flex;
+  align-items: center;
+  gap: .25rem;
+  color: var(--facility-color);
+  font-size: .5625rem;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: .05em;
+}
+
+.map-facility-card__content i .ui-icon {
+  width: .75rem;
+  height: .75rem;
+}
+
+.map-facility-card--cosmic {
+  width: 13rem;
+  border-radius: var(--radius-pill);
+}
+
+.map-facility-card.is-state-completed {
+  --facility-color: var(--color-success);
+}
+
+.map-facility-card.is-state-sealed {
+  color: var(--color-text-subtle);
+  background: rgba(14, 9, 28, .8);
 }
 
 .side-stack {
@@ -287,7 +520,7 @@
   gap: var(--space-3);
 }
 
-.eve-preview {
+.eve-panel {
   overflow: hidden;
   border-color: rgba(56, 200, 255, .36);
 }
@@ -316,24 +549,25 @@
   height: 1.25rem;
 }
 
-.eve-preview__body {
+.eve-panel__body {
   display: grid;
-  grid-template-columns: 5.25rem 1fr;
+  grid-template-columns: 7rem 1fr;
   align-items: center;
   gap: var(--space-3);
+  min-height: 10rem;
   margin-top: var(--space-3);
 }
 
-.eve-preview__body img {
+.eve-panel__body img {
   align-self: end;
-  width: 5.25rem;
-  height: 6.5rem;
+  width: 7rem;
+  height: 9.5rem;
   object-fit: cover;
   object-position: 50% 18%;
   filter: drop-shadow(0 0 .8rem rgba(56, 200, 255, .48));
 }
 
-.eve-preview__body p {
+.eve-panel__body p {
   color: var(--color-text-subtle);
   font-size: .6875rem;
   line-height: 1.65;
@@ -348,12 +582,14 @@
 .recent-log__item {
   display: grid;
   grid-template-columns: auto 1fr;
+  align-items: center;
   gap: var(--space-3);
   padding-top: var(--space-2);
   border-top: .0625rem solid rgba(116, 188, 224, .1);
   color: var(--color-text-subtle);
   font-size: .625rem;
   line-height: 1.45;
+  min-height: 2.75rem;
 }
 
 .recent-log__time {
@@ -409,6 +645,52 @@
   box-shadow: 0 0 .75rem rgba(56, 200, 255, .16);
 }
 
+body.is-overlay-open {
+  overflow: hidden;
+}
+
+.screen--control-room {
+  display: grid;
+  place-items: center;
+  min-height: 100svh;
+  padding: var(--space-8);
+  background: radial-gradient(circle at 50% 25%, rgba(43, 110, 158, .28), transparent 36%), linear-gradient(145deg, #06101e, #02070d);
+}
+
+.control-room-shell {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-6);
+  width: min(44rem, 100%);
+}
+
+.control-room-shell__content {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: clamp(2rem, 5vw, 4rem);
+  text-align: center;
+}
+
+.control-room-shell__content > p:first-of-type {
+  color: var(--color-primary);
+  font-size: .75rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+}
+
+.control-room-shell__content h1 {
+  font-size: clamp(2rem, 6vw, 4.5rem);
+  letter-spacing: .08em;
+}
+
+.control-room-shell__content > p:last-child {
+  max-width: 32rem;
+  color: var(--color-text-subtle);
+  line-height: 1.7;
+}
+
 @media (max-width: 68rem) {
   .top-navigation {
     grid-template-columns: auto 1fr auto;
@@ -422,22 +704,22 @@
     min-width: 0;
   }
 
-  .foundation-layout {
+  .map-layout {
     grid-template-columns: minmax(16rem, 18rem) 1fr minmax(16rem, 18rem);
   }
 }
 
 @media (max-width: 52rem) {
-  .screen--foundation {
+  .screen--map {
     overflow: auto;
   }
 
-  .foundation-layout {
+  .map-layout {
     grid-template-columns: 1fr 1fr;
     align-items: start;
   }
 
-  .world-preview {
+  .world-map {
     grid-column: 1 / -1;
     grid-row: 1;
     min-height: 18rem;
@@ -445,7 +727,7 @@
 }
 
 @media (max-width: 40rem) {
-  .screen--foundation {
+  .screen--map {
     padding: var(--space-2);
   }
 
@@ -478,11 +760,24 @@
     padding-left: var(--space-2);
   }
 
-  .foundation-layout {
+  .utility-button {
+    min-width: 2.75rem;
+    padding: .25rem;
+  }
+
+  .utility-button small {
+    display: none;
+  }
+
+  .explorer-profile__edit {
+    display: none;
+  }
+
+  .map-layout {
     grid-template-columns: 1fr;
   }
 
-  .world-preview {
+  .world-map {
     grid-column: auto;
     min-height: 15rem;
   }

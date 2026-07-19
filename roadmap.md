@@ -90,7 +90,7 @@
 
 ## Phase 4. MAP PC 구현
 
-상태: 다음 작업
+상태: 완료
 
 ### 화면
 
@@ -370,15 +370,15 @@
 ## 현재 우선순위
 
 ```text
-Phase 4. MAP PC 구현
-
-→
-
 Phase 5. 공통 시스템
 
 →
 
 Phase 6. Nova Coaster와 공통 Mission Flow
+
+→
+
+Phase 7. Luna Light Garden Mission
 ```
 
-공통 UI 기반을 사용해 MAP을 구현하고, 공통 시스템을 연결한 뒤 Nova Coaster에서 Control Room과 Mission Flow의 재사용 구조를 완성합니다.
+완료된 MAP PC 화면에 공통 시스템을 연결한 뒤 Nova Coaster에서 Control Room과 Mission Flow의 재사용 구조를 완성합니다.
