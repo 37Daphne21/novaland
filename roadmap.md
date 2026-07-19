@@ -34,7 +34,7 @@
 
 ## Phase 2. MAP 필수 자산 제작
 
-상태: 다음 작업
+상태: 완료
 
 ### 제작 자산
 
@@ -57,13 +57,13 @@
 ### 완료 조건
 
 - 모든 MAP 필수 자산이 `assets`의 확정 경로에 저장되어야 합니다.
-- PC 기준 크기와 투명도, 선명도 검수를 통과해야 합니다.
+- MAP 배경은 1920 × 1080을 기준으로 하고, 투명 자산은 투명도와 선명도 검수를 통과해야 합니다.
 
 ---
 
 ## Phase 3. 프로젝트 기반과 공통 UI
 
-상태: 예정
+상태: 완료
 
 ### 구조
 
@@ -90,7 +90,7 @@
 
 ## Phase 4. MAP PC 구현
 
-상태: 예정
+상태: 다음 작업
 
 ### 화면
 
@@ -370,15 +370,15 @@
 ## 현재 우선순위
 
 ```text
-Phase 2. MAP 필수 자산 제작
-
-→
-
-Phase 3. 프로젝트 기반과 공통 UI
-
-→
-
 Phase 4. MAP PC 구현
+
+→
+
+Phase 5. 공통 시스템
+
+→
+
+Phase 6. Nova Coaster와 공통 Mission Flow
 ```
 
-MAP이 동작한 뒤 공통 시스템을 연결하고, Nova Coaster에서 Control Room과 Mission Flow의 재사용 구조를 완성합니다.
+공통 UI 기반을 사용해 MAP을 구현하고, 공통 시스템을 연결한 뒤 Nova Coaster에서 Control Room과 Mission Flow의 재사용 구조를 완성합니다.

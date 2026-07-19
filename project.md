@@ -226,7 +226,11 @@ UI는
 ### 현재 자산 상태
 
 - 기존 `assets/images/map/map.png`는 이전 버전이므로 삭제했습니다.
-- 현재 새 구현에 사용할 수 있는 확정 이미지, SVG와 폰트 자산은 없습니다.
+- MAP 배경 `assets/images/map/bg-map.webp` 제작을 완료했습니다.
+- 시설 썸네일 4개를 `assets/images/map/thumbnail-*.webp`로 제작했습니다.
+- 공통 EVE, Explorer 프로필과 Nova Land 심볼을 `assets/images/common`에 제작했습니다.
+- MAP 필수 이미지와 SVG 자산은 모두 확보했습니다.
+- Control Room 배경 자산은 각 시설 구현 단계에서 제작합니다.
 - Nova Coaster와 Luna Light Garden의 확정시안은 화면 구성과 컬러를 확인하는 참고 자료로만 사용합니다.
 - Spark Energy Tower와 Wonder Parade Hall의 이전 시안은 시설별 분위기와 Modifier를 확인하는 히스토리 자료로만 사용합니다.
 
@@ -235,7 +239,7 @@ UI는
 
 | 우선순위 | 자산 | 수량 | 요구사항 |
 | --- | --- | ---: | --- |
-| 1 | MAP 배경 | 1 | UI, 텍스트, 패널과 카드가 없는 PC용 월드맵 배경 |
+| 1 | MAP 배경 | 1 | UI, 텍스트, 패널과 카드가 없는 1920 × 1080 PC용 월드맵 배경 |
 | 1 | 공통 EVE 홀로그램 | 1 | 동일 인물, 투명 배경, MAP에서는 Blue 컬러 사용 |
 | 1 | Explorer 프로필 | 1 | 상단 Navigation 프로필용 이미지 |
 | 2 | Nova Land 심볼 | 1 | SVG Sprite에 넣을 수 있는 심볼 원본 |
@@ -2351,12 +2355,12 @@ Roadmap은 제작 일정을,
 
 ### 개발
 
-준비 단계
+진행 중
 
 - 1단계: 구현에 사용할 배경, EVE, 시설 이미지와 아이콘 자산 목록 정리 → 완료
-- 2단계: MAP 배경, EVE, Explorer 프로필, 심볼과 시설 썸네일 제작 → 다음 작업
-- 3단계: 프로젝트 기반, 디자인 토큰과 공통 UI 컴포넌트 구조 확정 → 예정
-- 4단계: MAP PC 화면과 시설 선택 인터랙션 구현 → 예정
+- 2단계: MAP 배경, EVE, Explorer 프로필, 심볼과 시설 썸네일 제작 → 완료
+- 3단계: 프로젝트 기반, 디자인 토큰과 공통 UI 컴포넌트 구조 확정 → 완료
+- 4단계: MAP PC 화면과 시설 선택 인터랙션 구현 → 다음 작업
 - 5단계: Explorer, 설정, 언어, 저장, Log와 Passport 공통 시스템 구현 → 예정
 - 6단계: Nova Coaster 자산, Control Room 공통 구조와 공통 Mission Flow 구현 → 예정
 - 7단계: Luna Light Garden 자산과 Mission 구현 → 예정
@@ -2368,6 +2372,24 @@ Roadmap은 제작 일정을,
 ---
 
 ## 변경 이력
+
+### v1.7
+
+- 기존 HTML, CSS와 JavaScript를 최신 기획 기준으로 재작성
+- 디자인 토큰과 공통 Panel, Button, Card, Badge, Toast, Overlay 구현
+- 시설, 상태, 문구와 언어 데이터를 JavaScript Module로 분리
+- 공통 SVG Sprite와 기본 Focus, Hover 상태 구축
+- 3단계 완료 및 MAP PC 구현 단계 전환
+
+
+### v1.6
+
+- UI가 없는 1920 × 1080 MAP 배경 제작
+- 공통 EVE와 Explorer 프로필 투명 WebP 제작
+- Nova Land 심볼 SVG 제작
+- MAP 시설 썸네일 4개 제작
+- MAP 필수 자산 제작 완료 및 3단계 작업 전환
+
 
 ### v1.5
 

@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#050b14">
   <title>Nova Land</title>
   <link rel="stylesheet" href="./assets/css/reset.css">
   <link rel="stylesheet" href="./assets/css/common.css">
@@ -10,190 +11,76 @@
 </head>
 <body>
   <div id="app" class="app">
-    <main class="map" data-screen="map">
-      <h1 class="map__logo">NOVA LAND</h1>
-
-      <section class="explorer" aria-label="탐험가 정보">
-        <h2 class="blind">탐험가 정보</h2>
-        <strong class="explorer__title">EXPLORER ING</strong>
-
-        <div class="explorer__status">
-          <span class="explorer__level">LV. 03</span>
-          <span class="explorer__exp">EXP 2,450 / 5,000</span>
-          <span class="explorer__bar">
-            <span class="explorer__progress" style="width: 46%;"></span>
-          </span>
+    <main class="screen screen--foundation is-active" data-screen="foundation">
+      <div class="screen__backdrop" aria-hidden="true"></div>
+      <header class="top-navigation ui-panel" aria-label="상단 내비게이션">
+        <a class="brand" href="#" aria-label="Nova Land 홈">
+          <img class="brand__symbol" src="./assets/images/common/logo-symbol.svg" alt="">
+          <span class="brand__name">NOVA<br>LAND</span>
+        </a>
+        <div class="explorer-profile">
+          <img class="explorer-profile__image" src="./assets/images/common/explorer.webp" alt="탐험가 프로필">
+          <span><small>EXPLORER</small><strong>ING</strong></span>
         </div>
-      </section>
-
-      <nav class="map-utility" aria-label="지도 유틸리티">
-        <button class="map-utility__button" type="button" data-panel="control">
-          <span class="map-utility__icon" aria-hidden="true">⌁</span>
-          <span class="map-utility__text">NOVA CONTROL</span>
-        </button>
-
-        <button class="map-utility__button" type="button" data-panel="log">
-          <span class="map-utility__icon" aria-hidden="true">□</span>
-          <span class="map-utility__text">LOG BOOK</span>
-        </button>
-
-        <button class="map-utility__button" type="button" data-panel="settings">
-          <span class="map-utility__icon" aria-hidden="true">⚙</span>
-          <span class="map-utility__text">SETTINGS</span>
-        </button>
-      </nav>
-
-      <section class="map-stage" aria-label="노바랜드 시설 지도">
-        <button class="map-marker map-marker--spark is-locked" type="button" data-facility="spark" aria-disabled="true">
-          <span class="map-marker__lock" aria-hidden="true">🔒</span>
-          <span class="map-marker__content">
-            <strong class="map-marker__title">SPARK</strong>
-            <span class="map-marker__desc">ENERGY TOWER</span>
-          </span>
-        </button>
-
-        <button class="map-marker map-marker--luna is-locked" type="button" data-facility="luna" aria-disabled="true">
-          <span class="map-marker__lock" aria-hidden="true">🔒</span>
-          <span class="map-marker__content">
-            <strong class="map-marker__title">LUNA</strong>
-            <span class="map-marker__desc">LIGHT GARDEN</span>
-          </span>
-        </button>
-
-        <button class="map-marker map-marker--wonder is-locked" type="button" data-facility="wonder" aria-disabled="true">
-          <span class="map-marker__lock" aria-hidden="true">🔒</span>
-          <span class="map-marker__content">
-            <strong class="map-marker__title">WONDER</strong>
-            <span class="map-marker__desc">PARADE PLAZA</span>
-          </span>
-        </button>
-
-        <button class="map-marker map-marker--coaster is-active" type="button" data-facility="coaster">
-          <span class="map-marker__number">01</span>
-          <span class="map-marker__content">
-            <strong class="map-marker__title">NOVA</strong>
-            <span class="map-marker__desc">COASTER STATION</span>
-          </span>
-        </button>
-
-        <button class="map-marker map-marker--cosmic is-sealed" type="button" data-facility="cosmic" aria-disabled="true">
-          <span class="map-marker__unknown">???</span>
-          <span class="map-marker__lock" aria-hidden="true">🔒</span>
-          <span class="map-marker__content">
-            <strong class="map-marker__title">UNKNOWN SIGNAL</strong>
-          </span>
-        </button>
-      </section>
-
-      <aside class="mission-panel" aria-label="미션 진행 현황">
-        <div class="mission-panel__header">
-          <h2 class="mission-panel__title">MISSION</h2>
-          <span class="mission-panel__count">01 / 04</span>
+        <div class="top-navigation__status" aria-label="현재 환경">
+          <div class="status-chip"><svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-clock"></use></svg><span><strong>09:45</strong><small>DAY</small></span></div>
+          <div class="status-chip"><svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-weather"></use></svg><span><strong>24°C</strong><small>CLEAR</small></span></div>
         </div>
-
-        <ol class="mission-panel__list">
-          <li class="mission-panel__item is-active">
-            <button class="mission-card mission-card--active" type="button" data-facility="coaster">
-              <span class="mission-card__number">01</span>
-              <span class="mission-card__content">
-                <strong class="mission-card__title">NOVA COASTER</strong>
-                <span class="mission-card__desc">코스터를 타고 모험을 시작하세요.</span>
-              </span>
-              <span class="mission-card__meta">0 / 15</span>
-              <span class="mission-card__arrow" aria-hidden="true">›</span>
-            </button>
-          </li>
-
-          <li class="mission-panel__item is-locked">
-            <button class="mission-card" type="button" data-facility="luna" aria-disabled="true">
-              <span class="mission-card__lock" aria-hidden="true">🔒</span>
-              <span class="mission-card__content">
-                <strong class="mission-card__title">Luna Light Garden</strong>
-                <span class="mission-card__desc">잠금 해제 조건을 완료하세요.</span>
-              </span>
-            </button>
-          </li>
-
-          <li class="mission-panel__item is-locked">
-            <button class="mission-card" type="button" data-facility="spark" aria-disabled="true">
-              <span class="mission-card__lock" aria-hidden="true">🔒</span>
-              <span class="mission-card__content">
-                <strong class="mission-card__title">Spark Energy Tower</strong>
-                <span class="mission-card__desc">잠금 해제 조건을 완료하세요.</span>
-              </span>
-            </button>
-          </li>
-
-          <li class="mission-panel__item is-locked">
-            <button class="mission-card" type="button" data-facility="wonder" aria-disabled="true">
-              <span class="mission-card__lock" aria-hidden="true">🔒</span>
-              <span class="mission-card__content">
-                <strong class="mission-card__title">Wonder Parade Plaza</strong>
-                <span class="mission-card__desc">잠금 해제 조건을 완료하세요.</span>
-              </span>
-            </button>
-          </li>
-
-          <li class="mission-panel__item is-sealed">
-            <button class="mission-card" type="button" data-facility="cosmic" aria-disabled="true">
-              <span class="mission-card__lock" aria-hidden="true">🔒</span>
-              <span class="mission-card__content">
-                <strong class="mission-card__title">COSMIC VOYAGE</strong>
-                <span class="mission-card__desc">모든 미션을 완료하면 잠금이 해제됩니다.</span>
-              </span>
-              <span class="mission-card__state">SEALED</span>
-            </button>
-          </li>
-        </ol>
-
-        <div class="mission-progress" aria-label="전체 미션 진행도">
-          <strong class="mission-progress__count">1 / 4</strong>
-          <span class="mission-progress__label">MISSION PROGRESS</span>
-          <span class="mission-progress__bar">
-            <span class="mission-progress__value" style="width: 25%;"></span>
-          </span>
-        </div>
-      </aside>
-
-      <aside class="eve-panel" aria-live="polite">
-        <div class="eve-panel__header">
-          <span class="eve-panel__signal" aria-hidden="true">⌁</span>
-          <strong class="eve-panel__title">NOVA CONTROL</strong>
-          <button class="eve-panel__close" type="button" aria-label="EVE 메시지 닫기">×</button>
-        </div>
-
-        <div class="eve-panel__body">
-          <div class="eve-panel__avatar" aria-hidden="true"></div>
-          <div class="eve-panel__content">
-            <strong class="eve-panel__name">EVE</strong>
-            <p class="eve-panel__message">탐험가 ING님, 노바 코스터 점검을 시작하세요!</p>
+        <nav class="top-navigation__actions" aria-label="사용자 메뉴">
+          <button class="ui-button ui-button--icon" type="button" data-toast="새 알림이 3개 있어요." aria-label="알림 3개 확인"><svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-bell"></use></svg><span class="notification-count" aria-hidden="true">3</span></button>
+          <button class="ui-button ui-button--icon" type="button" data-overlay-open="settings-overlay" aria-label="설정 열기"><svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-settings"></use></svg></button>
+        </nav>
+      </header>
+      <div class="foundation-layout">
+        <section class="mission-preview ui-panel" aria-labelledby="mission-title">
+          <header class="ui-panel__header">
+            <div><span class="ui-panel__eyebrow">FACILITY</span><h1 id="mission-title" class="ui-panel__title">MISSION</h1></div>
+            <span class="ui-badge ui-badge--active">ONLINE</span>
+          </header>
+          <ol id="facility-list" class="facility-list" aria-label="시설 목록"></ol>
+          <div class="cosmic-status"><svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-lock"></use></svg><span><strong>COSMIC VOYAGE</strong><small>SEALED</small></span></div>
+        </section>
+        <section class="world-preview" aria-labelledby="world-title">
+          <span class="world-preview__line" aria-hidden="true"></span>
+          <div class="world-preview__heading"><p>NOVA LAND OVERVIEW</p><h2 id="world-title">WORLD MAP</h2></div>
+          <div class="world-preview__action">
+            <span class="ui-badge ui-badge--active">SYSTEM READY</span>
+            <button class="ui-button ui-button--primary" type="button" data-toast="공통 UI 시스템이 준비됐어요.">UI STATUS<svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-arrow-right"></use></svg></button>
           </div>
+        </section>
+        <div class="side-stack">
+          <aside class="eve-preview ui-panel" aria-labelledby="eve-title" aria-live="polite">
+            <header class="ui-panel__header">
+              <div><span class="ui-panel__eyebrow">NOVA CONTROL</span><h2 id="eve-title" class="ui-panel__title">EVE</h2></div>
+              <span class="signal-wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+            </header>
+            <div class="eve-preview__body"><img src="./assets/images/common/eve.webp" alt="EVE 홀로그램"><p id="eve-message">탐험가님, 노바랜드의 시설 시스템을 확인했어요.</p></div>
+          </aside>
+          <section class="recent-log ui-panel" aria-labelledby="recent-log-title">
+            <header class="ui-panel__header">
+              <h2 id="recent-log-title" class="ui-panel__title">RECENT LOG</h2>
+              <button class="ui-button ui-button--text" type="button" data-toast="Log Book은 공통 시스템 단계에서 연결돼요.">VIEW LOG BOOK<svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-arrow-right"></use></svg></button>
+            </header>
+            <ul id="recent-log-list" class="recent-log__list"></ul>
+          </section>
         </div>
-
-        <span class="eve-panel__wave" aria-hidden="true"></span>
-      </aside>
-
-      <section class="map-status" aria-label="지도 상태">
-        <dl class="map-status__item">
-          <dt>TIME</dt>
-          <dd>SUNSET</dd>
-        </dl>
-
-        <dl class="map-status__item">
-          <dt>WEATHER</dt>
-          <dd>CLEAR</dd>
-        </dl>
-
-        <dl class="map-status__item">
-          <dt>STATUS</dt>
-          <dd>COASTER ACTIVE</dd>
-        </dl>
-      </section>
-
-      <div class="map-toast" role="status" aria-live="polite"></div>
+      </div>
     </main>
+    <section id="settings-overlay" class="ui-overlay" aria-labelledby="settings-title" aria-modal="true" role="dialog" hidden>
+      <button class="ui-overlay__backdrop" type="button" data-overlay-close aria-label="설정 닫기"></button>
+      <div class="ui-overlay__dialog ui-panel" tabindex="-1">
+        <header class="ui-panel__header">
+          <div><span class="ui-panel__eyebrow">SYSTEM</span><h2 id="settings-title" class="ui-panel__title">설정</h2></div>
+          <button class="ui-button ui-button--icon ui-button--small" type="button" data-overlay-close aria-label="설정 닫기"><svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-close"></use></svg></button>
+        </header>
+        <div class="settings-list">
+          <div class="settings-item"><span><strong>언어</strong><small>화면에 표시할 언어를 선택해요.</small></span><div id="language-options" class="segmented-control" aria-label="언어 선택"></div></div>
+          <div class="settings-item"><span><strong>사운드</strong><small>효과음은 공통 시스템 단계에서 연결돼요.</small></span><span class="ui-badge">준비 중</span></div>
+        </div>
+      </div>
+    </section>
+    <div id="app-toast" class="ui-toast" role="status" aria-live="polite" aria-atomic="true"></div>
   </div>
-
   <script type="module" src="./assets/js/main.js"></script>
 </body>
 </html>
