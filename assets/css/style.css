@@ -28,9 +28,8 @@
 }
 
 .brand__lockup {
-  width: 11.5rem;
-  height: 3.75rem;
-}
+  width: 10rem;
+  height: auto;}
 
 .explorer-profile {
   display: flex;
