@@ -1,401 +1,384 @@
 # Nova Land - 제작 로드맵
 
-## 목표
+## 제작 원칙
 
-실제 제작 가능한 단위로 분리하여 단계별 완성.
-
-각 단계가 끝날 때마다 GitHub 배포 및 테스트를 진행한다.
+- `project.md`를 기능, 문구와 상태 규칙의 기준 문서로 사용합니다.
+- 완성된 화면 PNG는 비주얼 참고용으로만 사용하고 구현 원본으로 사용하지 않습니다.
+- 배경, EVE와 프로필처럼 이미지가 필요한 요소만 독립 자산으로 제작합니다.
+- 패널, 버튼, 텍스트, 테두리, Glow, Progress Bar와 Badge는 HTML/CSS로 구현합니다.
+- 아이콘은 SVG Sprite로 관리합니다.
+- 기존 `index.html`, CSS와 JavaScript 파일은 삭제하지 않고 같은 경로에서 새 구조로 재작성합니다.
+- 기술 기반은 HTML, CSS와 JavaScript ES Module을 사용하며 프레임워크는 도입하지 않습니다.
+- 각 Phase는 구현, 기능 검증, 반응형 기본 확인과 Git diff 검수를 마친 뒤 완료 처리합니다.
 
 ---
 
-# Phase 1. 프로젝트 세팅
+## Phase 1. 구현 자산 목록 정리
 
-## 목표
-
-기본 환경 구축
+상태: 완료
 
 ### 작업
 
-- Vite 또는 Vanilla 환경 구성
-- 폴더 구조 설계
-- 공통 변수 작성
-- BGM 시스템 준비
-- SVG 아이콘 정리
-- 공통 컴포넌트 구조 작성
+- MAP과 Control Room의 배경 자산 구분
+- 공통 EVE, Explorer 프로필, 로고 심볼과 시설 썸네일 정의
+- 코드로 구현할 UI와 이미지로 제작할 요소 구분
+- 자산 폴더와 파일명 계획 수립
+- 기존 완성 PNG를 참고 시안으로 분류
+
 
 ### 완료 조건
 
-- 기본 레이아웃 표시
-- 라우팅 없이 화면 전환 가능
+- 필요한 자산의 수량, 역할, 우선순위와 파일 경로가 `project.md`에 기록되어 있어야 합니다.
 
 ---
 
-# Phase 2. 공통 시스템
+## Phase 2. MAP 필수 자산 제작
 
-## 개발
+상태: 다음 작업
 
-### Intro
+### 제작 자산
 
-- 로고 애니메이션
-- EVE 연결
-- 시작 버튼
+- UI와 텍스트가 없는 MAP 배경
+- Blue 컬러의 공통 EVE 홀로그램
+- Explorer 프로필
+- Nova Land 심볼
+- Nova, Luna, Spark와 Wonder 시설 썸네일
 
-### 탐험가 등록
 
-- 닉네임 입력
-- 랜덤 닉네임
-- localStorage 저장
+### 제작 기준
 
-### 설정
+- 배경에 패널, 버튼, 카드와 문구를 포함하지 않습니다.
+- 실제 구현 위치에서 잘리지 않도록 충분한 여백을 확보합니다.
+- 투명 자산은 가장자리 Halo와 배경색 잔여 여부를 확인합니다.
+- 원본 PNG 또는 WebP를 보관하고 용도에 맞게 최적화합니다.
+- 전체 화면 시안을 새로 만들지 않고 독립 자산만 제작합니다.
 
-- 이름 변경
-- BGM
-- Day / Sunset / Night
-- 처음부터 다시하기
-
-### EVE 시스템
-
-- 메시지 컴포넌트
-- 대사 변경
-
-### 스탬프 시스템
-
-- 저장
-- 완료 여부
-
-### localStorage
-
-- 시설 진행 상태
-- 시간 설정
-- 탐험가 이름
 
 ### 완료 조건
 
-메인 시스템 동작
+- 모든 MAP 필수 자산이 `assets`의 확정 경로에 저장되어야 합니다.
+- PC 기준 크기와 투명도, 선명도 검수를 통과해야 합니다.
 
 ---
 
-# Phase 3. 메인 맵
+## Phase 3. 프로젝트 기반과 공통 UI
 
-## 개발
+상태: 예정
 
-- 시설 위치
-- 시설 활성화
-- 스탬프 표시
-- 잠금 시설 표시
-- Cosmic 숨김 상태
+### 구조
+
+- `index.html`의 `<head>`, CSS·JavaScript 연결과 `#app` 유지
+- 기존 MAP 본문을 최신 기획 기준으로 재작성
+- 화면 전환을 위한 공통 Screen 구조 정의
+- 시설, 상태, 문구와 언어 데이터를 JavaScript Module로 분리
+
+
+### 스타일
+
+- 색상, 간격, 크기, Z-index, Motion과 시설 컬러를 CSS 변수로 정의
+- 공통 Panel, Button, Card, Badge, Toast와 Overlay 구조 작성
+- SVG Sprite 구축
+- 기본 Focus와 Hover 상태 정의
+
+
+### 완료 조건
+
+- 임시 배경에서도 공통 컴포넌트가 독립적으로 표시되어야 합니다.
+- Undefined CSS 변수와 중복 컴포넌트가 없어야 합니다.
+
+---
+
+## Phase 4. MAP PC 구현
+
+상태: 예정
+
+### 화면
+
+- Top Navigation
+- Mission List
+- World Map와 시설 Card
+- 짧은 대화형 EVE Panel
+- Recent Log
+- Setting 진입 버튼
+
 
 ### 인터랙션
 
-- Hover
-- Active
-- 완료 상태
+- 시설 선택과 선택 상태 동기화
+- 잠금, 선택 가능, 완료와 봉인 상태 표시
+- 선택 시설 Glow 강조
+- Mission List와 World Map Card 연동
+- EVE 메시지 갱신
+- Control Room 진입
+
+
+### 제외 항목
+
+- Mission Progress Bar
+- World Status와 Bottom Status
+- MAP에서 Mission 직접 시작
+
 
 ### 완료 조건
 
-시설 진입 가능
+- PC에서 시설 선택, 잠금 안내와 Control Room 진입 흐름이 동작해야 합니다.
+- MAP 배경과 UI가 독립 레이어로 유지되어야 합니다.
 
 ---
 
-# Phase 4. Nova Coaster
+## Phase 5. 공통 시스템
 
-## 개발
+상태: 예정
 
-### 관제실
+### Explorer
 
-- EVE
-- Objective
-- Mission Start
+- Explorer 등록과 이름 변경
+- Explorer 프로필 표시
+- Explorer Log
+- Explorer Passport
 
-### 팝업
 
-- 플레이 방법
-- 카운트다운
+### Setting
 
-### 게임
+- 한국어와 영어 전환
+- BGM과 효과음 조절
+- Day, Sunset과 Night 변경
+- 처음부터 다시 시작
 
-- 레일 연결
-- 성공 판정
 
-### 완료
+### 상태 저장
 
-- 스탬프
-- 쿠폰
+- Explorer 정보
+- 시설 잠금과 완료 상태
+- Mission 진행 상태
+- 언어, 시간과 사운드 설정
+- Recent Log
+
 
 ### 완료 조건
 
-시설 1개 완료
+- 새로고침 후 저장 상태가 복원되어야 합니다.
+- 언어 변경이 공통 UI와 안내 문구에 즉시 반영되어야 합니다.
 
 ---
 
-# Phase 5. Luna Light Garden
+## Phase 6. Nova Coaster와 공통 Mission Flow
 
-## 개발
+상태: 예정
 
-### 정원 화면
+### 자산
 
-- 이동
-- 빛 수집
+- UI와 텍스트가 없는 Nova Coaster Control Room 배경
+- Purple 컬러 EVE 적용
 
-### 반딧불
 
-- 따라오기
-- 애니메이션
+### 공통 Control Room
 
-### 유리돔
+- 시설 정보
+- EVE Panel
+- Mission Objective
+- 시설 상태 Panel
+- MISSION START
+- MAP과 Setting 버튼
 
-- 점등
-- 진행률
 
-### 완료
+### 공통 Mission Flow
 
-- 스탬프
-- 쿠폰
+- Mission Guide
+- Countdown
+- Play
+- Pause
+- Fail
+- Complete
+- Control Room 복귀와 진행 상태 복원
+
+
+### Nova Coaster Mission
+
+- 필수 레일 연결
+- 시스템 점검
+- 열차 운행 테스트
+- 안전 도착 판정
+
 
 ### 완료 조건
 
-시설 2개 완료
+- MAP 진입부터 Nova Coaster 완료와 MAP 상태 갱신까지 하나의 흐름으로 동작해야 합니다.
+- 공통 Mission Flow가 다음 시설에서 재사용 가능한 구조여야 합니다.
 
 ---
 
-# Phase 6. Spark Energy Tower
+## Phase 7. Luna Light Garden
 
-## 개발
+상태: 예정
 
-### 관제실
+### 자산
 
-- EVE
-- Objective
+- UI와 텍스트가 없는 Luna Light Garden Control Room 배경
+- Mint 컬러 EVE 적용
 
-### Round 1
 
-25%
+### Mission
 
-### Round 2
+- Light Fragment 수집
+- Prism 활성화와 90도 회전
+- 빛의 경로 연결
+- 꽃과 식물 활성화
+- 중앙 Lotus 개화
 
-50%
 
-### Round 3
+### 상태 연동
 
-75%
+- 빛 조각 수
+- 경로 연결률
+- 정원 활성화 상태
+- 복구 상태
 
-### Round 4
-
-100%
-
-### 연출
-
-- 전기
-- 충전
-- 발사
-
-### 완료
-
-- 스탬프
-- 쿠폰
 
 ### 완료 조건
 
-시설 3개 완료
+- Luna 완료 후 MAP의 시설 상태와 Recent Log가 갱신되어야 합니다.
 
 ---
 
-# Phase 7. Wonder Parade Hall
+## Phase 8. Spark Energy Tower
 
-## Round 1
+상태: 예정
 
-### 위치 기억
+### 자산
 
-- 캐릭터 공개
-- 위치 변경
-- 위치 복구
+- UI와 텍스트가 없는 Spark Energy Tower Control Room 배경
+- Orange 컬러 EVE 적용
 
-## Round 2
 
-### 동작 기억
+### Mission
 
-- 방향 입력
-- 캐릭터별 난이도
+- Core의 모양, 색상과 위치 기억
+- Core Drag
+- 빈 Slot 배치
+- Charge 100% 달성
+- Energy Tower 재가동
 
-### 완료
-
-- 퍼레이드
-- 스탬프
-- 쿠폰
 
 ### 완료 조건
 
-시설 4개 완료
+- 난이도별 Core 수와 공개 시간이 적용되어야 합니다.
+- Spark 완료 후 MAP 상태와 Recent Log가 갱신되어야 합니다.
 
 ---
 
-# Phase 8. 스탬프북
+## Phase 9. Wonder Parade Hall
 
-## 개발
+상태: 예정
 
-- 시설 상태
-- 쿠폰
-- 완료 여부
+### 자산
 
-### 기능
+- UI와 텍스트가 없는 Wonder Parade Hall Control Room 배경
+- Pink 컬러 EVE 적용
 
-- 쿠폰 받기
-- 완료 확인
+
+### Mission
+
+- Parade Character 확인
+- 지정 위치와 행진 순서 기억
+- Character Drag와 배치
+- 무대 활성화
+- Parade 시작
+
 
 ### 완료 조건
 
-4개 스탬프 표시
+- 난이도별 Character 수와 배치 조건이 적용되어야 합니다.
+- Wonder 완료 후 Cosmic Voyage가 개방되어야 합니다.
 
 ---
 
-# Phase 9. Cosmic Voyage
+## Phase 10. Cosmic Voyage와 Ending
 
-## 개발
+상태: 예정
 
-### 게이트 오픈
+### 자산
 
-- 시설 에너지 집결
+- Cosmic Voyage 배경
+- 전체 시설 에너지가 연결되는 연출 자산
 
-### 체험
 
-- 시점 이동
-- 우주 여행
+### Cosmic Voyage
 
-### 연출
+- 4개 시설 완료 조건 확인
+- Gate 개방
+- Movement, Life, Energy와 Joy 연결
+- Harmony 체험
 
-- 과거
-- 현재
-- 미래
+
+### Ending
+
+- Explorer Certification
+- Explorer Passport 최종 상태
+- Nova Land 복구 연출
+- EVE 최종 메시지
+- Ending과 프로젝트 소개 연결
+
 
 ### 완료 조건
 
-최종 시설 완료
+- 첫 진입부터 Ending까지 전체 User Flow가 끊김 없이 동작해야 합니다.
 
 ---
 
-# Phase 10. 엔딩
+## Phase 11. 반응형과 최종 QA
 
-## 연출
+상태: 예정
 
-- 점등
-- 퍼레이드
-- 불꽃놀이
+### 반응형
 
-## EVE
-
-최종 메시지
-
-## 최종 보상
-
-- VIP Pass
-- 응모
-- 프로젝트 소개
-
-### 완료 조건
-
-NOVA LAND GRAND OPEN
-
----
-
-# Phase 11. 폴리싱
-
-## 최적화
-
-- 모바일
-- 태블릿
+- Mobile
+- Tablet
 - PC
+- 가로·세로 전환
+- Touch 조작
 
-## 접근성
 
-- 키보드
-- 포커스
-- aria
+### 접근성
 
-## 사운드
+- 키보드 조작
+- Focus 이동과 Focus Visible
+- Button과 Dialog 이름
+- 상태 변화 Live Region
+- 명도 대비
+- `prefers-reduced-motion`
 
-- BGM
-- 효과음
 
-## 애니메이션
+### 품질
 
-- 전환
-- 등장
-- 성공 연출
+- 이미지 WebP 변환과 용량 최적화
+- 필요한 이미지 Preload와 Lazy Loading 구분
+- 애니메이션 성능
+- BGM과 효과음 정책
+- Chrome, Edge, Safari와 Mobile Browser 확인
+- 저장 데이터 초기화와 오류 복구
+- GitHub 배포와 최종 회귀 테스트
+
+
+### 완료 조건
+
+- 주요 화면과 Mission을 PC와 Mobile에서 완료할 수 있어야 합니다.
+- 치명적인 접근성, 저장, 성능과 화면 깨짐 문제가 없어야 합니다.
 
 ---
 
-# 예상 제작 순서
+## 현재 우선순위
 
 ```text
-1주차
+Phase 2. MAP 필수 자산 제작
 
-공통 시스템
-메인 맵
+→
 
-↓
+Phase 3. 프로젝트 기반과 공통 UI
 
-2주차
+→
 
-Nova
-Luna
-
-↓
-
-3주차
-
-Spark
-Wonder
-
-↓
-
-4주차
-
-Cosmic
-엔딩
-
-↓
-
-5주차
-
-폴리싱
-포트폴리오 정리
+Phase 4. MAP PC 구현
 ```
 
----
-
-# 현재 우선순위
-
-1. 공통 시스템
-2. 메인 맵
-3. Nova Coaster
-4. Luna Light Garden
-5. Spark Energy Tower
-6. Wonder Parade Hall
-7. Cosmic Voyage
-8. 엔딩
-9. 최적화
-
----
-
-# 개발 시작 추천
-
-## 첫 작업
-
-```text
-index.html
-
-↓
-
-공통 UI
-
-↓
-
-메인 맵
-
-↓
-
-Nova 제작
-```
-
-Nova가 가장 많은 시스템을 포함하고 있으므로
-이후 시설 개발 속도를 크게 높여준다.
+MAP이 동작한 뒤 공통 시스템을 연결하고, Nova Coaster에서 Control Room과 Mission Flow의 재사용 구조를 완성합니다.

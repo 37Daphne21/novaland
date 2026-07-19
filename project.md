@@ -171,7 +171,7 @@ AI에서만 가능한 표현은 사용하지 않습니다.
 - 시안의 문구, 간격, 정렬과 상태 표현이 본 문서와 다르면 `project.md`를 기준으로 HTML/CSS 구현 단계에서 수정합니다.
 - 완성된 PNG 위에 패널, 인물, 텍스트를 다시 합성하여 시안을 수정하지 않습니다.
 
-Figma 시안을 제작할 때도 배경, UI 패널, 이미지 자산을 분리하고 패널은 개별 Frame 또는 Component로 관리합니다.
+추후 Figma 작업이 필요해지면 배경, UI 패널, 이미지 자산을 분리하고 패널은 개별 Frame 또는 Component로 관리합니다.
 
 
 ### 일관된 UI 시스템
@@ -209,6 +209,98 @@ UI는
 조명이 켜지는 과정
 
 환경이 변화하는 과정을 중요하게 생각합니다.
+
+---
+
+## 구현 자산 명세
+
+### 관리 원칙
+
+- 실제 화면에서 사용하는 이미지, SVG와 폰트는 프로젝트의 `assets` 내부에서 관리합니다.
+- 외부 시안 폴더와 완성된 화면 PNG는 비주얼 참고용이며 HTML/CSS에서 직접 참조하지 않습니다.
+- 패널, 카드, 버튼, 텍스트, 테두리, Glow, Progress Bar와 상태 Badge는 HTML/CSS로 구현합니다.
+- 설정, 알림, 잠금, 시간과 시설 기능 아이콘은 SVG Sprite로 관리합니다.
+- 구현에 필요한 자산이 없는 경우 임의의 이전 버전 이미지로 대체하지 않고 누락 상태로 관리합니다.
+
+
+### 현재 자산 상태
+
+- 기존 `assets/images/map/map.png`는 이전 버전이므로 삭제했습니다.
+- 현재 새 구현에 사용할 수 있는 확정 이미지, SVG와 폰트 자산은 없습니다.
+- Nova Coaster와 Luna Light Garden의 확정시안은 화면 구성과 컬러를 확인하는 참고 자료로만 사용합니다.
+- Spark Energy Tower와 Wonder Parade Hall의 이전 시안은 시설별 분위기와 Modifier를 확인하는 히스토리 자료로만 사용합니다.
+
+
+### MAP 필수 자산
+
+| 우선순위 | 자산 | 수량 | 요구사항 |
+| --- | --- | ---: | --- |
+| 1 | MAP 배경 | 1 | UI, 텍스트, 패널과 카드가 없는 PC용 월드맵 배경 |
+| 1 | 공통 EVE 홀로그램 | 1 | 동일 인물, 투명 배경, MAP에서는 Blue 컬러 사용 |
+| 1 | Explorer 프로필 | 1 | 상단 Navigation 프로필용 이미지 |
+| 2 | Nova Land 심볼 | 1 | SVG Sprite에 넣을 수 있는 심볼 원본 |
+| 2 | 시설 썸네일 | 4 | Nova, Luna, Spark, Wonder Mission Card용 이미지 |
+
+MAP 배경이 준비되기 전에도 HTML 구조와 공통 UI 컴포넌트는 구현할 수 있지만, 시설 카드 위치와 최종 비율 검수는 배경 적용 후 진행합니다.
+
+
+### Control Room 필수 자산
+
+| 우선순위 | 자산 | 수량 | 요구사항 |
+| --- | --- | ---: | --- |
+| 1 | Nova Coaster 배경 | 1 | UI와 텍스트가 없고 열차와 공간 비주얼이 포함된 16:9 이미지 |
+| 1 | Luna Light Garden 배경 | 1 | UI와 텍스트가 없고 정원과 중앙 Lotus가 포함된 16:9 이미지 |
+| 2 | Spark Energy Tower 배경 | 1 | UI와 텍스트가 없는 16:9 이미지 |
+| 2 | Wonder Parade Hall 배경 | 1 | UI와 텍스트가 없는 16:9 이미지 |
+| 3 | Cosmic Voyage 배경 | 1 | 전체 시설 완료 이후 화면용 16:9 이미지 |
+
+Control Room의 EVE는 공통 홀로그램 인물을 사용하고 시설마다 컬러만 변경합니다.
+
+- MAP: Blue
+- Nova Coaster: Purple
+- Luna Light Garden: Mint
+- Spark Energy Tower: Orange
+- Wonder Parade Hall: Pink
+
+
+### 폴더 계획
+
+```text
+assets/
+  fonts/
+  icons/
+    sprite.svg
+  images/
+    common/
+      eve.webp
+      explorer.webp
+      logo-symbol.svg
+    map/
+      bg-map.webp
+      thumbnail-coaster.webp
+      thumbnail-luna.webp
+      thumbnail-spark.webp
+      thumbnail-wonder.webp
+    control-room/
+      bg-coaster.webp
+      bg-luna.webp
+      bg-spark.webp
+      bg-wonder.webp
+      bg-cosmic.webp
+```
+
+실제 자산이 준비될 때 해당 폴더와 파일을 추가하며 빈 폴더는 미리 생성하지 않습니다.
+
+
+### 기존 코드 처리
+
+- `index.html`의 문서 기본 구조, CSS·JavaScript 연결과 `#app`은 유지합니다.
+- `index.html`의 기존 MAP 본문은 새 기획을 기준으로 다시 작성합니다.
+- `reset.css`는 유지합니다.
+- `common.css`는 새 디자인 토큰과 공통 컴포넌트를 기준으로 재정리합니다.
+- `style.css`의 기존 MAP 스타일은 새로 작성합니다.
+- `main.js`는 시설 데이터, 상태와 화면 전환 구조를 기준으로 다시 작성합니다.
+- 기존 파일은 삭제하지 않고 같은 파일 경로에서 필요한 범위만 교체합니다.
 
 ---
 
@@ -2261,16 +2353,38 @@ Roadmap은 제작 일정을,
 
 준비 단계
 
-- 1단계: 구현에 사용할 배경, EVE, 시설 이미지와 아이콘 자산 목록 정리
-- 2단계: 공통 레이아웃과 UI 컴포넌트 구조 확정
-- 3단계: MAP PC 화면 구현
-- 4단계: Control Room 공통 구조와 Nova Coaster 구현
-- 5단계: 시설별 Modifier를 사용하여 Luna, Spark, Wonder 확장
-- 6단계: Mobile 반응형과 Mission Flow 화면 구현
+- 1단계: 구현에 사용할 배경, EVE, 시설 이미지와 아이콘 자산 목록 정리 → 완료
+- 2단계: MAP 배경, EVE, Explorer 프로필, 심볼과 시설 썸네일 제작 → 다음 작업
+- 3단계: 프로젝트 기반, 디자인 토큰과 공통 UI 컴포넌트 구조 확정 → 예정
+- 4단계: MAP PC 화면과 시설 선택 인터랙션 구현 → 예정
+- 5단계: Explorer, 설정, 언어, 저장, Log와 Passport 공통 시스템 구현 → 예정
+- 6단계: Nova Coaster 자산, Control Room 공통 구조와 공통 Mission Flow 구현 → 예정
+- 7단계: Luna Light Garden 자산과 Mission 구현 → 예정
+- 8단계: Spark Energy Tower 자산과 Mission 구현 → 예정
+- 9단계: Wonder Parade Hall 자산과 Mission 구현 → 예정
+- 10단계: Cosmic Voyage, Explorer Certification과 Ending 구현 → 예정
+- 11단계: Mobile·Tablet 반응형, 접근성, 성능, 사운드와 최종 QA → 예정
 
 ---
 
 ## 변경 이력
+
+### v1.5
+
+- 자산 제작이 누락되지 않도록 전체 개발 순서 재설계
+- 공통 시스템, 시설별 자산과 Mission 구현 순서 분리
+- 반응형, 접근성, 성능, 사운드와 최종 QA 단계 추가
+- `roadmap.md`를 최신 Mission 기획과 동일한 기준으로 개편
+
+
+### v1.4
+
+- 구현 자산 관리 원칙 확정
+- MAP과 Control Room의 필수 이미지 자산 정의
+- 공통 EVE의 시설별 컬러 기준 확정
+- 구현용 자산 폴더 계획 추가
+- 기존 코드는 파일을 폐기하지 않고 기본 구조만 유지한 뒤 재작성하도록 확정
+
 
 ### v1.3
 
