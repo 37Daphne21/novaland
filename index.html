@@ -51,6 +51,7 @@
           </section>
           <hgroup class="world-map__heading"><h1 id="world-title">WORLD MAP</h1><p>노바랜드 전체 보기</p></hgroup>
           <div class="world-map">
+            <div id="facility-dim-list" class="facility-dim-list" aria-hidden="true"></div>
             <div id="facility-glow" class="facility-glow" aria-hidden="true"></div>
             <div id="map-card-list" class="map-card-list" aria-label="월드맵 시설"></div>
           </div>
@@ -96,6 +97,7 @@
         </header>
         <div class="settings-list">
           <div class="settings-item"><span><strong>언어</strong><small>화면에 표시할 언어를 선택해요.</small></span><div id="language-options" class="segmented-control" aria-label="언어 선택"></div></div>
+          <div class="settings-item"><span><strong>전체 화면</strong><small>브라우저 UI를 숨기고 화면을 넓게 사용해요.</small></span><button id="fullscreen-toggle" class="ui-switch" type="button" role="switch" aria-label="전체 화면" aria-checked="false" data-fullscreen-toggle><span class="ui-switch__track" aria-hidden="true"><i></i></span><b>OFF</b></button></div>
           <div class="settings-item"><span><strong>사운드</strong><small>효과음은 공통 시스템 단계에서 연결돼요.</small></span><span class="ui-badge">준비 중</span></div>
         </div>
       </div>

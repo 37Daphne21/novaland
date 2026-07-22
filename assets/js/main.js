@@ -2,6 +2,7 @@ import { cosmicVoyage, facilities, facilityStates, languages, recentLogs, uiCopy
 
 const facilityList = document.querySelector('#facility-list');
 const mapCardList = document.querySelector('#map-card-list');
+const facilityDimList = document.querySelector('#facility-dim-list');
 const cosmicStatus = document.querySelector('#cosmic-status');
 const facilityGlow = document.querySelector('#facility-glow');
 const recentLogList = document.querySelector('#recent-log-list');
@@ -14,6 +15,8 @@ const missionProgressBar = document.querySelector('#mission-progress-bar');
 const missionProgressLabel = missionProgress?.querySelector('.mission-progress__header span');
 const toast = document.querySelector('#app-toast');
 const languageOptions = document.querySelector('#language-options');
+const fullscreenToggle = document.querySelector('#fullscreen-toggle');
+const fullscreenToggleLabel = fullscreenToggle?.querySelector('b');
 const controlRoomTitle = document.querySelector('#control-room-title');
 const controlRoomType = document.querySelector('#control-room-type');
 const screens = document.querySelectorAll('[data-screen]');
@@ -56,7 +59,10 @@ function syncMapState() {
   const isRestored = isMapRestored();
 
   cosmicVoyage.state = isRestored ? 'open' : 'sealed';
-  if (isRestored) selectedFacilityId = null;
+  if (isRestored) {
+    selectedFacilityId = null;
+    clearFacilityGuide();
+  }
   document.querySelector('[data-screen="map"]')?.classList.toggle('is-restored', isRestored);
 }
 
@@ -171,6 +177,34 @@ function renderFacilities() {
   }).join('');
 }
 
+function renderFacilityDims() {
+  if (!facilityDimList) {
+    return;
+  }
+
+  [...facilities, cosmicVoyage].forEach((facility) => {
+    if (!facility.dim) {
+      return;
+    }
+
+    let dim = facilityDimList.querySelector(`[data-facility-dim="${facility.id}"]`);
+
+    if (!dim) {
+      dim = document.createElement('span');
+      dim.className = 'facility-dim';
+      dim.dataset.facilityDim = facility.id;
+      dim.style.setProperty('--dim-x', `${facility.dim.x}%`);
+      dim.style.setProperty('--dim-y', `${facility.dim.y}%`);
+      dim.style.setProperty('--dim-width', `${facility.dim.width}%`);
+      dim.style.setProperty('--dim-height', `${facility.dim.height}%`);
+      dim.style.setProperty('--dim-opacity', facility.dim.opacity);
+      facilityDimList.append(dim);
+    }
+
+    dim.classList.toggle('is-dimmed', facility.state === 'locked' || facility.state === 'sealed');
+  });
+}
+
 function renderMapCards() {
   if (!mapCardList) {
     return;
@@ -194,8 +228,9 @@ function renderMapCards() {
   const cosmicState = facilityStates[cosmicVoyage.state];
   const cosmicName = getFacilityDisplayName(cosmicVoyage);
   const isCosmicSealed = cosmicVoyage.state === 'sealed';
+  const cosmicPosition = isCosmicSealed ? cosmicVoyage.position : cosmicVoyage.openPosition;
   const cosmicCard = `
-    <button class="map-facility-card map-facility-card--cosmic is-state-${cosmicVoyage.state}" type="button" data-facility="cosmic" data-control-room-entry${isCosmicSealed ? ' aria-disabled="true"' : ''} style="--marker-x: ${cosmicVoyage.position.x}%; --marker-y: ${cosmicVoyage.position.y}%;">
+    <button class="map-facility-card map-facility-card--cosmic is-state-${cosmicVoyage.state}" type="button" data-facility="cosmic" data-control-room-entry${isCosmicSealed ? ' aria-disabled="true"' : ''} style="--marker-x: ${cosmicPosition.x}%; --marker-y: ${cosmicPosition.y}%;">
       <span class="map-facility-card__number">${getIcon(cosmicState.icon)}</span>
       <span class="map-facility-card__content"><strong>${cosmicName}</strong><i>${cosmicState.label}</i></span>
     </button>
@@ -240,6 +275,11 @@ function clearFacilityGuide() {
 }
 
 function guideFacility(facility) {
+  if (isMapRestored()) {
+    clearFacilityGuide();
+    return;
+  }
+
   mapCardList?.querySelector(`[data-facility="${facility.id}"]`)?.classList.add('is-guided');
   updateFacilityGlow(facility);
 }
@@ -263,6 +303,7 @@ function renderRecentLogs() {
 
 function renderMapState() {
   syncMapState();
+  renderFacilityDims();
   renderFacilities();
   renderMapCards();
   renderCosmicStatus();
@@ -278,6 +319,33 @@ function renderLanguages() {
   languageOptions.innerHTML = languages.map((language) => `
     <button class="${language.default ? 'is-selected' : ''}" type="button" data-language="${language.code}" aria-pressed="${language.default}">${language.label}</button>
   `).join('');
+}
+
+function syncFullscreenToggle() {
+  if (!fullscreenToggle || !fullscreenToggleLabel) {
+    return;
+  }
+
+  const isFullscreen = Boolean(document.fullscreenElement);
+  fullscreenToggle.setAttribute('aria-checked', String(isFullscreen));
+  fullscreenToggleLabel.textContent = isFullscreen ? 'ON' : 'OFF';
+}
+
+async function toggleFullscreen() {
+  if (!document.fullscreenEnabled) {
+    showToast('이 브라우저에서는 전체 화면을 사용할 수 없어요.');
+    return;
+  }
+
+  try {
+    if (document.fullscreenElement) {
+      await document.exitFullscreen();
+    } else {
+      await document.documentElement.requestFullscreen();
+    }
+  } catch {
+    showToast('전체 화면을 전환하지 못했어요.');
+  }
 }
 
 function selectFacility(button) {
@@ -411,6 +479,7 @@ function handleDocumentClick(event) {
   const overlayOpenButton = event.target.closest('[data-overlay-open]');
   const overlayCloseButton = event.target.closest('[data-overlay-close]');
   const languageButton = event.target.closest('[data-language]');
+  const fullscreenButton = event.target.closest('[data-fullscreen-toggle]');
   const screenBackButton = event.target.closest('[data-screen-back]');
 
   if (facilityButton) {
@@ -427,6 +496,10 @@ function handleDocumentClick(event) {
 
   if (overlayCloseButton) {
     closeOverlay();
+  }
+
+  if (fullscreenButton) {
+    toggleFullscreen();
   }
 
   if (languageButton) {
@@ -454,9 +527,11 @@ function handleKeydown(event) {
 
 renderMapState();
 renderLanguages();
+syncFullscreenToggle();
 playWorldMapIntro();
 const isRestoredAtLaunch = isMapRestored();
-speakEve(isRestoredAtLaunch ? uiCopy.mapRestored : initialEveMessage, isRestoredAtLaunch ? () => guideFacility(cosmicVoyage) : null);
+speakEve(isRestoredAtLaunch ? uiCopy.mapRestored : initialEveMessage);
 
 document.addEventListener('click', handleDocumentClick);
 document.addEventListener('keydown', handleKeydown);
+document.addEventListener('fullscreenchange', syncFullscreenToggle);
