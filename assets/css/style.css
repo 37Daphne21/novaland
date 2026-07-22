@@ -917,6 +917,16 @@
   font-size: 1rem;
 }
 
+.recent-log__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.mobile-panel-toggle {
+  display: none;
+}
+
 .recent-log__list {
   display: grid;
   gap: var(--space-2);
@@ -1078,84 +1088,599 @@ body.is-overlay-open {
   }
 }
 
-@media (max-width: 52rem) {
+@media (max-width: 56rem) {
   .screen--map {
-    overflow: auto;
-  }
-
-  .map-layout {
-    grid-template-columns: 1fr 1fr;
-    align-items: start;
-  }
-
-  .world-map {
-    grid-column: 1 / -1;
-    grid-row: 1;
-    min-height: 18rem;
-  }
-}
-
-@media (max-width: 40rem) {
-  .screen--map {
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: var(--space-2);
+    height: 100svh;
+    min-height: 100svh;
+    overflow: hidden;
     padding: var(--space-2);
   }
 
+  .screen--map .screen__backdrop {
+    background: #020813;
+  }
+
   .top-navigation {
+    grid-template-columns: minmax(0, auto) minmax(0, auto);
+    gap: var(--space-2);
     min-height: 4rem;
   }
 
   .top-navigation__identity,
+  .top-navigation__status,
   .top-navigation__actions {
     min-height: 4rem;
   }
 
-  .brand__lockup {
-    width: 7.5rem;
-    height: auto;
-  }
-
-  .explorer-profile > span {
-    display: none;
-  }
-
-  .explorer-profile {
-    justify-content: center;
-    padding: 0;
-  }
-
-  .explorer-profile__image {
-    width: 3rem;
-    height: 3rem;
-  }
-
-  .top-navigation__actions {
+  .top-navigation__identity {
     padding: .375rem .5rem;
   }
 
+  .brand {
+    padding-right: var(--space-3);
+  }
+
+  .brand__lockup {
+    width: 6rem;
+  }
+
+  .explorer-profile {
+    min-width: 0;
+    padding: 0 0 0 var(--space-3);
+  }
+
+  .explorer-profile__image {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .explorer-profile > span,
+  .explorer-profile__edit {
+    display: none;
+  }
+
+  .top-navigation__right {
+    gap: var(--space-2);
+  }
+
+  .top-navigation__status {
+    display: flex;
+    padding: .375rem .25rem;
+  }
+
+  .status-chip {
+    gap: .375rem;
+    min-width: 4rem;
+    padding: .375rem .5rem;
+  }
+
+  .status-chip .ui-icon {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+
+  .status-chip strong {
+    font-size: .875rem;
+  }
+
+  .status-chip small {
+    display: none;
+  }
+
+  .top-navigation__actions {
+    padding: .375rem;
+  }
+
+  .top-navigation__actions .utility-button,
   .utility-button {
     min-width: 2.75rem;
     padding: .25rem;
+  }
+
+  .utility-button .ui-icon {
+    width: 1.375rem;
+    height: 1.375rem;
   }
 
   .utility-button small {
     display: none;
   }
 
-  .explorer-profile__edit {
-    display: none;
-  }
-
   .map-layout {
-    grid-template-columns: 1fr;
+    position: relative;
+    display: block;
+    min-height: 0;
+    height: 100%;
   }
 
   .world-map {
-    grid-column: auto;
-    min-height: 15rem;
+    position: absolute;
+    inset: 0;
+    min-height: 0;
+    overflow: hidden;
+    border: .0625rem solid rgba(126, 205, 240, .14);
+    border-radius: var(--radius-lg);
+    background: url("../images/map/bg-map-mobile.webp") center / cover no-repeat;
+    box-shadow: inset 0 0 3rem rgba(0, 5, 14, .12);
+  }
+
+  .world-map__heading {
+    top: .75rem;
+  }
+
+  .world-map__heading::before,
+  .world-map__heading::after {
+    top: .75rem;
+    width: 2.75rem;
+  }
+
+  .world-map__heading::before {
+    right: calc(100% + .75rem);
+  }
+
+  .world-map__heading::after {
+    left: calc(100% + .75rem);
+  }
+
+  .world-map__heading h1 {
+    font-size: clamp(1.375rem, 6vw, 1.75rem);
+    letter-spacing: .16em;
+  }
+
+  .world-map__heading p {
+    margin-top: .25rem;
+    font-size: .75rem;
+    letter-spacing: .08em;
+  }
+
+  .facility-dim {
+    left: var(--mobile-dim-x);
+    top: var(--mobile-dim-y);
+    width: var(--mobile-dim-width);
+    height: var(--mobile-dim-height);
+  }
+
+  .facility-glow {
+    background: radial-gradient(circle at var(--mobile-glow-x) var(--mobile-glow-y), color-mix(in srgb, var(--facility-color) 40%, transparent) 0, color-mix(in srgb, var(--facility-color) 18%, transparent) 7%, transparent 19%);
+  }
+
+  .map-facility-card {
+    left: var(--mobile-marker-x);
+    top: var(--mobile-marker-y);
+    grid-template-columns: 2.25rem minmax(0, 1fr);
+    gap: var(--space-2);
+    width: clamp(9.5rem, 26vw, 11rem);
+    min-width: 0;
+    max-width: calc(50% - 1rem);
+    min-height: 3.5rem;
+    padding: .5rem .625rem;
+    border-radius: 1.5rem;
+    backdrop-filter: blur(.5rem);
+  }
+
+  .map-facility-card.is-guided {
+    padding-right: 1.75rem;
+  }
+
+  .map-facility-card__number {
+    width: 2.25rem;
+    height: 2.25rem;
+    font-size: 1.125rem;
+  }
+
+  .map-facility-card__number .ui-icon {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+
+  .map-facility-card__content {
+    gap: .25rem;
+  }
+
+  .map-facility-card__content strong {
+    font-size: .75rem;
+  }
+
+  .map-facility-card__content small {
+    display: none;
+  }
+
+  .map-facility-card__content i {
+    font-size: .6875rem;
+  }
+
+  .map-facility-card__content i .ui-icon {
+    width: .875rem;
+    height: .875rem;
+  }
+
+  .map-facility-card__enter {
+    right: .5rem;
+  }
+
+  .map-facility-card--cosmic {
+    width: 11rem;
+    max-width: calc(100% - 2rem);
+  }
+
+  .mission-panel {
+    position: absolute;
+    left: 50%;
+    right: auto;
+    bottom: .5rem;
+    z-index: 8;
+    width: min(28rem, calc(100% - 1rem));
+    max-height: 6.75rem;
+    padding: .75rem;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    transform: translateX(-50%);
+    transition: max-height .48s var(--ease-out), background var(--motion-base) ease, box-shadow var(--motion-base) ease;
+  }
+
+  .mission-panel.is-mobile-open {
+    max-height: min(78svh, 44rem);
+    overflow-y: auto;
+    background: linear-gradient(155deg, rgba(18, 35, 52, .96), rgba(5, 14, 26, .94) 48%, rgba(13, 29, 46, .96));
+    box-shadow: 0 1rem 3.5rem rgba(0, 0, 0, .52), inset 0 .0625rem 0 rgba(218, 244, 255, .1);
+  }
+
+  .mission-panel > .ui-panel__header {
+    padding-bottom: var(--space-2);
+  }
+
+  .mission-panel .ui-panel__title {
+    font-size: 1rem;
+  }
+
+  .mobile-panel-toggle {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    min-height: 2.75rem;
+    border: .0625rem solid rgba(116, 188, 224, .2);
+    border-radius: 50%;
+    color: var(--color-primary);
+    background: rgba(6, 18, 32, .54);
+  }
+
+  .mobile-panel-toggle:focus-visible {
+    outline: .125rem solid var(--color-primary);
+    outline-offset: .125rem;
+  }
+
+  .mobile-panel-toggle .ui-icon {
+    width: 1rem;
+    height: 1rem;
+    transform: rotate(90deg);
+    transition: transform var(--motion-base) var(--ease-out);
+  }
+
+  .is-mobile-open .mobile-panel-toggle .ui-icon {
+    transform: rotate(-90deg);
+  }
+
+  .mission-panel .facility-list,
+  .mission-panel .cosmic-status {
+    visibility: hidden;
+    max-height: 0;
+    margin-top: 0;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(.5rem);
+    pointer-events: none;
+    transition: visibility 0s linear .32s, max-height .42s var(--ease-out), margin var(--motion-base) ease, padding var(--motion-base) ease, opacity var(--motion-base) ease, transform var(--motion-base) var(--ease-out);
+  }
+
+  .mission-panel .cosmic-status {
+    padding-block: 0;
+  }
+
+  .mission-panel.is-mobile-open .facility-list,
+  .mission-panel.is-mobile-open .cosmic-status {
+    visibility: visible;
+    max-height: 30rem;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    transition-delay: 0s;
+  }
+
+  .mission-panel.is-mobile-open .facility-list {
+    margin-top: var(--space-3);
+  }
+
+  .mission-panel.is-mobile-open .cosmic-status {
+    max-height: 4rem;
+    margin-top: var(--space-2);
+    padding-block: .5rem;
+  }
+
+  .mission-progress {
+    gap: var(--space-1);
+    margin-top: var(--space-2);
+    padding-top: var(--space-2);
+  }
+
+  .mission-progress__header strong {
+    font-size: 1rem;
+  }
+
+  .mission-progress__header span {
+    font-size: .6875rem;
+  }
+
+  .side-stack {
+    position: absolute;
+    inset: 0;
+    z-index: 7;
+    display: block;
+    pointer-events: none;
+  }
+
+  .side-stack > * {
+    pointer-events: auto;
+  }
+
+  .eve-panel {
+    position: absolute;
+    left: 50%;
+    right: auto;
+    bottom: 7rem;
+    width: min(30rem, calc(100% - 1.5rem));
+    visibility: hidden;
+    padding: .75rem;
+    opacity: 0;
+    transform: translate(-50%, .75rem);
+    transition: visibility 0s linear .32s, opacity .32s ease, transform .42s var(--ease-out);
+    pointer-events: none;
+  }
+
+  .eve-panel.is-visible {
+    visibility: visible;
+    opacity: 1;
+    transform: translate(-50%, 0);
+    transition-delay: 0s;
+    pointer-events: auto;
+  }
+
+  .eve-panel .ui-panel__title {
+    font-size: 1rem;
+  }
+
+  .eve-panel .ui-panel__heading > .ui-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .eve-panel__body {
+    grid-template-columns: 4.5rem 1fr;
+    gap: var(--space-3);
+    min-height: 5.5rem;
+    margin-top: var(--space-2);
+  }
+
+  .eve-panel__body img {
+    width: 4.5rem;
+    height: 6rem;
+  }
+
+  .eve-panel__body p {
+    font-size: .8125rem;
+    line-height: 1.55;
+  }
+
+  .recent-log {
+    position: absolute;
+    right: .5rem;
+    top: 4.75rem;
+    bottom: auto;
+    width: 9.75rem;
+    max-height: 3.75rem;
+    padding: .5rem .75rem;
+    overflow: hidden;
+    opacity: 1;
+    transition: visibility 0s, width .38s var(--ease-out), max-height .42s var(--ease-out), opacity var(--motion-base) ease, transform var(--motion-base) var(--ease-out);
+  }
+
+  .recent-log.is-mobile-open {
+    width: min(28rem, calc(100% - 1rem));
+    max-height: 19rem;
+    padding: .75rem;
+  }
+
+  .recent-log .ui-panel__title {
+    font-size: .8125rem;
+  }
+
+  .recent-log__actions .ui-button--text {
+    display: none;
+  }
+
+  .recent-log__actions {
+    gap: var(--space-1);
+  }
+
+
+  .recent-log__list {
+    visibility: hidden;
+    max-height: 0;
+    margin-top: 0;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(.5rem);
+    transition: visibility 0s linear .28s, max-height .38s var(--ease-out), margin var(--motion-base) ease, opacity var(--motion-base) ease, transform var(--motion-base) var(--ease-out);
+  }
+
+  .recent-log.is-mobile-open .recent-log__list {
+    visibility: visible;
+    max-height: 14rem;
+    margin-top: var(--space-3);
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 0s;
+  }
+
+  .map-layout.has-mobile-mission-open .recent-log,
+  .eve-panel.is-visible + .recent-log {
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(.5rem);
+    pointer-events: none;
+  }
+
+  .map-layout.has-mobile-mission-open .eve-panel {
+    visibility: hidden;
+    opacity: 0;
+    transform: translate(-50%, .5rem);
+    pointer-events: none;
+  }
+
+  .ui-toast {
+    bottom: 7rem;
+    border-radius: var(--radius-md);
+  }
+
+  .ui-overlay {
+    align-items: end;
+    padding: var(--space-2);
+  }
+
+  .ui-overlay__dialog {
+    width: 100%;
+    max-height: calc(100svh - 1rem);
+    padding: var(--space-5);
+    overflow-y: auto;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+
+  .settings-list {
+    margin-top: var(--space-5);
   }
 
   .settings-item {
     align-items: flex-start;
     flex-direction: column;
+    gap: var(--space-3);
+  }
+}
+
+@media (max-width: 40rem) {
+  .brand__lockup {
+    width: 5.25rem;
+  }
+
+  .explorer-profile {
+    padding-left: var(--space-2);
+  }
+
+  .explorer-profile__image {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+
+  .status-chip {
+    min-width: 3.5rem;
+    padding-inline: .375rem;
+  }
+
+  .map-facility-card {
+    width: 9.25rem;
+  }
+
+  .map-facility-card__content strong {
+    font-size: .6875rem;
+  }
+
+  .map-facility-card--cosmic {
+    width: 10.5rem;
+  }
+}
+
+@media (max-width: 23rem) {
+  .status-chip:nth-child(2) {
+    display: none;
+  }
+
+  .map-facility-card {
+    width: 8.75rem;
+  }
+}
+
+@media (max-width: 56rem) and (orientation: landscape), (max-width: 56rem) and (max-height: 35rem) {
+  .screen--map {
+    gap: .375rem;
+    padding: .375rem;
+  }
+
+  .top-navigation,
+  .top-navigation__identity,
+  .top-navigation__status,
+  .top-navigation__actions {
+    min-height: 3.5rem;
+  }
+
+  .world-map {
+    background-image: url("../images/map/bg-map.webp");
+  }
+
+  .world-map__heading {
+    top: .25rem;
+  }
+
+  .world-map__heading h1 {
+    font-size: 1.25rem;
+  }
+
+  .facility-dim {
+    left: var(--dim-x);
+    top: var(--dim-y);
+    width: var(--dim-width);
+    height: var(--dim-height);
+  }
+
+  .facility-glow {
+    background: radial-gradient(circle at var(--glow-x) var(--glow-y), color-mix(in srgb, var(--facility-color) 36%, transparent) 0, color-mix(in srgb, var(--facility-color) 18%, transparent) 8%, transparent 24%);
+  }
+
+  .map-facility-card {
+    left: var(--marker-x);
+    top: var(--marker-y);
+    width: 10.5rem;
+  }
+
+  .mission-panel {
+    left: .375rem;
+    right: auto;
+    bottom: .375rem;
+    width: 18.5rem;
+    max-height: 5.75rem;
+    transform: none;
+  }
+
+  .mission-panel.is-mobile-open {
+    max-height: calc(100% - .75rem);
+  }
+
+  .eve-panel {
+    left: auto;
+    right: .375rem;
+    bottom: .375rem;
+    width: 18.5rem;
+    transform: translateY(.75rem);
+  }
+
+  .eve-panel.is-visible {
+    transform: translateY(0);
+  }
+
+  .recent-log {
+    display: none;
+  }
+
+  .ui-toast {
+    bottom: 1rem;
   }
 }

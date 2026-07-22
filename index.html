@@ -41,6 +41,7 @@
           <section class="mission-panel ui-panel" aria-labelledby="mission-title">
             <header class="ui-panel__header">
               <div class="ui-panel__heading"><svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-mission"></use></svg><h2 id="mission-title" class="ui-panel__title">미션</h2></div>
+              <button class="mobile-panel-toggle" type="button" data-mobile-panel-toggle="mission-panel" aria-controls="facility-list cosmic-status mission-progress" aria-expanded="false" aria-label="미션 목록 펼치기"><svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-arrow-right"></use></svg></button>
             </header>
             <ol id="facility-list" class="facility-list" aria-label="시설 목록"></ol>
             <button id="cosmic-status" class="cosmic-status" type="button" data-facility="cosmic" aria-disabled="true"></button>
@@ -66,7 +67,10 @@
             <section class="recent-log ui-panel" aria-labelledby="recent-log-title">
               <header class="ui-panel__header">
                 <h2 id="recent-log-title" class="ui-panel__title">최근 기록</h2>
-                <button class="ui-button ui-button--text" type="button" data-toast="탐험 기록은 공통 시스템 단계에서 연결돼요.">기록 보기<svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-arrow-right"></use></svg></button>
+                <div class="recent-log__actions">
+                  <button class="ui-button ui-button--text" type="button" data-toast="탐험 기록은 공통 시스템 단계에서 연결돼요.">기록 보기<svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-arrow-right"></use></svg></button>
+                  <button class="mobile-panel-toggle" type="button" data-mobile-panel-toggle="recent-log" aria-controls="recent-log-list" aria-expanded="false" aria-label="최근 기록 펼치기"><svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-arrow-right"></use></svg></button>
+                </div>
               </header>
               <ul id="recent-log-list" class="recent-log__list"></ul>
             </section>

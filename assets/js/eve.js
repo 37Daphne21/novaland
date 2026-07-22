@@ -5,13 +5,17 @@ export function createEveController() {
   const initialMessage = messageElement?.textContent.trim() ?? '';
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let typingTimer = null;
+  let visibilityTimer = null;
   let onSpeechComplete = null;
 
   function cancel() {
     window.clearInterval(typingTimer);
+    window.clearTimeout(visibilityTimer);
     typingTimer = null;
+    visibilityTimer = null;
     onSpeechComplete = null;
     signalWave?.classList.add('is-paused');
+    panel?.classList.remove('is-visible');
     panel?.setAttribute('aria-busy', 'false');
   }
 
@@ -20,6 +24,10 @@ export function createEveController() {
     typingTimer = null;
     signalWave?.classList.add('is-paused');
     panel?.setAttribute('aria-busy', 'false');
+    visibilityTimer = window.setTimeout(() => {
+      panel?.classList.remove('is-visible');
+      visibilityTimer = null;
+    }, 3200);
 
     const onComplete = onSpeechComplete;
     onSpeechComplete = null;
@@ -33,6 +41,7 @@ export function createEveController() {
 
     cancel();
     onSpeechComplete = onComplete;
+    panel?.classList.add('is-visible');
 
     if (prefersReducedMotion) {
       messageElement.textContent = message;

@@ -5,8 +5,11 @@ export const facilities = [
     type: '이동 시설',
     state: 'available',
     position: { x: 17, y: 14 },
+    mobilePosition: { x: 24, y: 37 },
     glow: { x: 28, y: 31 },
+    mobileGlow: { x: 25, y: 43 },
     dim: { x: 27, y: 31, width: 44, height: 38, opacity: .62 },
+    mobileDim: { x: 25, y: 43, width: 48, height: 28, opacity: .62 },
     message: '탐험가님, NOVA COASTER에 진입할 준비가 됐어요.',
     lockedMessage: '',
     controlRoomMessage: '열차 시스템 관제실에 연결했어요.'
@@ -17,8 +20,11 @@ export const facilities = [
     type: '생명 시설',
     state: 'locked',
     position: { x: 72, y: 19 },
+    mobilePosition: { x: 76, y: 37 },
     glow: { x: 64, y: 30 },
+    mobileGlow: { x: 75, y: 43 },
     dim: { x: 66, y: 31, width: 38, height: 34, opacity: .66 },
+    mobileDim: { x: 75, y: 43, width: 46, height: 27, opacity: .66 },
     message: 'LUNA LIGHT GARDEN의 빛 에너지가 안정됐어요.',
     lockedMessage: 'NOVA COASTER를 먼저 복구하면 LUNA LIGHT GARDEN이 열려요.',
     controlRoomMessage: '정원 에너지 관제실에 연결했어요.'
@@ -29,8 +35,11 @@ export const facilities = [
     type: '에너지 시설',
     state: 'locked',
     position: { x: 18, y: 47 },
+    mobilePosition: { x: 24, y: 59 },
     glow: { x: 27, y: 58 },
+    mobileGlow: { x: 24, y: 61 },
     dim: { x: 24, y: 62, width: 34, height: 48, opacity: .68 },
+    mobileDim: { x: 24, y: 61, width: 44, height: 29, opacity: .68 },
     message: 'SPARK ENERGY TOWER의 에너지를 확인할 수 있어요.',
     lockedMessage: 'LUNA LIGHT GARDEN을 먼저 복구하면 SPARK ENERGY TOWER가 열려요.',
     controlRoomMessage: '에너지 타워 관제실에 연결했어요.'
@@ -41,8 +50,11 @@ export const facilities = [
     type: '즐거움 시설',
     state: 'locked',
     position: { x: 72, y: 46 },
+    mobilePosition: { x: 76, y: 59 },
     glow: { x: 72, y: 55 },
+    mobileGlow: { x: 76, y: 61 },
     dim: { x: 76, y: 61, width: 38, height: 40, opacity: .68 },
+    mobileDim: { x: 76, y: 61, width: 44, height: 29, opacity: .68 },
     message: 'WONDER PARADE HALL의 퍼레이드를 준비할 수 있어요.',
     lockedMessage: 'SPARK ENERGY TOWER를 먼저 복구하면 WONDER PARADE HALL이 열려요.',
     controlRoomMessage: '퍼레이드 관제실에 연결했어요.'
@@ -55,9 +67,13 @@ export const cosmicVoyage = {
   type: '마지막 경험',
   state: 'sealed',
   position: { x: 49, y: 71 },
+  mobilePosition: { x: 50, y: 76 },
   openPosition: { x: 49, y: 82 },
+  openMobilePosition: { x: 50, y: 81 },
   glow: { x: 50, y: 66 },
+  mobileGlow: { x: 50, y: 80 },
   dim: { x: 50, y: 52, width: 34, height: 94, opacity: .72 },
+  mobileDim: { x: 50, y: 58, width: 48, height: 76, opacity: .72 },
   lockedMessage: '네 개의 시설을 모두 복구하면 COSMIC VOYAGE가 개방돼요.'
 };
 

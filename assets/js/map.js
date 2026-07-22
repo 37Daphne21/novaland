@@ -6,8 +6,11 @@ function cloneFacility(facility) {
   return {
     ...facility,
     position: { ...facility.position },
+    mobilePosition: { ...facility.mobilePosition },
     glow: { ...facility.glow },
-    dim: { ...facility.dim }
+    mobileGlow: { ...facility.mobileGlow },
+    dim: { ...facility.dim },
+    mobileDim: { ...facility.mobileDim }
   };
 }
 
@@ -15,7 +18,8 @@ function createRuntimeState() {
   const facilities = facilityDefinitions.map(cloneFacility);
   const cosmicVoyage = {
     ...cloneFacility(cosmicVoyageDefinition),
-    openPosition: { ...cosmicVoyageDefinition.openPosition }
+    openPosition: { ...cosmicVoyageDefinition.openPosition },
+    openMobilePosition: { ...cosmicVoyageDefinition.openMobilePosition }
   };
   const isRestoredPreview = ['localhost', '127.0.0.1'].includes(window.location.hostname)
     && new URLSearchParams(window.location.search).get('map-state') === 'restored';
@@ -143,6 +147,10 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, showT
         dim.style.setProperty('--dim-y', `${facility.dim.y}%`);
         dim.style.setProperty('--dim-width', `${facility.dim.width}%`);
         dim.style.setProperty('--dim-height', `${facility.dim.height}%`);
+        dim.style.setProperty('--mobile-dim-x', `${facility.mobileDim.x}%`);
+        dim.style.setProperty('--mobile-dim-y', `${facility.mobileDim.y}%`);
+        dim.style.setProperty('--mobile-dim-width', `${facility.mobileDim.width}%`);
+        dim.style.setProperty('--mobile-dim-height', `${facility.mobileDim.height}%`);
         dim.style.setProperty('--dim-opacity', facility.dim.opacity);
         facilityDimList.append(dim);
       }
@@ -161,7 +169,7 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, showT
       const marker = view.isDisabled ? getIcon('lock') : String(index + 1).padStart(2, '0');
 
       return `
-        <button class="map-facility-card is-state-${facility.state}${view.isSelected ? ' is-selected' : ''}" type="button" data-facility="${facility.id}" data-control-room-entry aria-pressed="${view.isSelected}"${view.isDisabled ? ' aria-disabled="true"' : ''} style="--marker-x: ${facility.position.x}%; --marker-y: ${facility.position.y}%; --facility-color: var(--color-${facility.id});">
+        <button class="map-facility-card is-state-${facility.state}${view.isSelected ? ' is-selected' : ''}" type="button" data-facility="${facility.id}" data-control-room-entry aria-pressed="${view.isSelected}"${view.isDisabled ? ' aria-disabled="true"' : ''} style="--marker-x: ${facility.position.x}%; --marker-y: ${facility.position.y}%; --mobile-marker-x: ${facility.mobilePosition.x}%; --mobile-marker-y: ${facility.mobilePosition.y}%; --facility-color: var(--color-${facility.id});">
           <span class="map-facility-card__number">${marker}</span>
           <span class="map-facility-card__content"><strong>${facility.name}</strong><small>${facility.type}</small><i>${getIcon(view.state.icon)}${view.state.label}</i></span>
           <span class="map-facility-card__enter" aria-hidden="true">${getIcon('arrow-right')}</span>
@@ -173,8 +181,9 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, showT
     const isCosmicSealed = state.cosmicVoyage.state === 'sealed';
     const cosmicName = isCosmicSealed ? '???' : state.cosmicVoyage.name;
     const cosmicPosition = isCosmicSealed ? state.cosmicVoyage.position : state.cosmicVoyage.openPosition;
+    const cosmicMobilePosition = isCosmicSealed ? state.cosmicVoyage.mobilePosition : state.cosmicVoyage.openMobilePosition;
     const cosmicCard = `
-      <button class="map-facility-card map-facility-card--cosmic is-state-${state.cosmicVoyage.state}" type="button" data-facility="cosmic" data-control-room-entry${isCosmicSealed ? ' aria-disabled="true"' : ''} style="--marker-x: ${cosmicPosition.x}%; --marker-y: ${cosmicPosition.y}%;">
+      <button class="map-facility-card map-facility-card--cosmic is-state-${state.cosmicVoyage.state}" type="button" data-facility="cosmic" data-control-room-entry${isCosmicSealed ? ' aria-disabled="true"' : ''} style="--marker-x: ${cosmicPosition.x}%; --marker-y: ${cosmicPosition.y}%; --mobile-marker-x: ${cosmicMobilePosition.x}%; --mobile-marker-y: ${cosmicMobilePosition.y}%;">
         <span class="map-facility-card__number">${getIcon(cosmicState.icon)}</span>
         <span class="map-facility-card__content"><strong>${cosmicName}</strong><i>${cosmicState.label}</i></span>
       </button>
@@ -238,6 +247,8 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, showT
 
     facilityGlow.style.setProperty('--glow-x', `${facility.glow.x}%`);
     facilityGlow.style.setProperty('--glow-y', `${facility.glow.y}%`);
+    facilityGlow.style.setProperty('--mobile-glow-x', `${facility.mobileGlow.x}%`);
+    facilityGlow.style.setProperty('--mobile-glow-y', `${facility.mobileGlow.y}%`);
     facilityGlow.style.setProperty('--facility-color', `var(--color-${facility.id})`);
     facilityGlow.classList.add('is-visible');
   }

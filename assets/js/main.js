@@ -1,5 +1,6 @@
 import { createEveController } from './eve.js';
 import { createMapController } from './map.js';
+import { createMobileMapController } from './mobile.js';
 import { createSettingsController } from './settings.js';
 import { createOverlayController, createToast } from './ui.js';
 
@@ -9,6 +10,7 @@ const controlRoomType = document.querySelector('#control-room-type');
 const toast = createToast();
 const overlay = createOverlayController();
 const eve = createEveController();
+const mobileMap = createMobileMapController();
 let map = null;
 
 function showScreen(screenName) {
@@ -51,7 +53,16 @@ const settings = createSettingsController({ showToast: toast.show });
 function handleDocumentClick(event) {
   const facilityButton = event.target.closest('[data-facility]');
   if (facilityButton) {
+    if (facilityButton.closest('.mission-panel')) {
+      mobileMap.collapseMission();
+    }
     map.selectFacility(facilityButton);
+    return;
+  }
+
+  const mobilePanelToggle = event.target.closest('[data-mobile-panel-toggle]');
+  if (mobilePanelToggle) {
+    mobileMap.toggle(mobilePanelToggle);
     return;
   }
 
@@ -91,7 +102,9 @@ function handleDocumentClick(event) {
 }
 
 function handleKeydown(event) {
-  overlay.handleKeydown(event);
+  if (!overlay.handleKeydown(event)) {
+    mobileMap.handleKeydown(event);
+  }
 }
 
 map.render();
