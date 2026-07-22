@@ -3,7 +3,6 @@ export const facilities = [
     id: 'coaster',
     name: 'NOVA COASTER',
     type: '이동 시설',
-    icon: 'facility-coaster',
     state: 'available',
     position: { x: 17, y: 14 },
     glow: { x: 28, y: 31 },
@@ -16,7 +15,6 @@ export const facilities = [
     id: 'luna',
     name: 'LUNA LIGHT GARDEN',
     type: '생명 시설',
-    icon: 'facility-luna',
     state: 'locked',
     position: { x: 72, y: 19 },
     glow: { x: 64, y: 30 },
@@ -29,7 +27,6 @@ export const facilities = [
     id: 'spark',
     name: 'SPARK ENERGY TOWER',
     type: '에너지 시설',
-    icon: 'facility-spark',
     state: 'locked',
     position: { x: 18, y: 47 },
     glow: { x: 27, y: 58 },
@@ -42,7 +39,6 @@ export const facilities = [
     id: 'wonder',
     name: 'WONDER PARADE HALL',
     type: '즐거움 시설',
-    icon: 'facility-wonder',
     state: 'locked',
     position: { x: 72, y: 46 },
     glow: { x: 72, y: 55 },
@@ -90,17 +86,3 @@ export const recentLogs = [
     message: 'Nova Land 시스템이 시작됐어요.'
   }
 ];
-
-export const languages = [
-  { code: 'ko', label: '한국어', default: true },
-  { code: 'en', label: 'English', default: false }
-];
-
-export const uiCopy = {
-  lockedFacility: '이전 시설을 먼저 복구해주세요.',
-  lockedCondition: '잠금 해제 조건을 완료하세요.',
-  cosmicCondition: '모든 시설을 복구하면 개방됩니다.',
-  mapRestored: '탐험가님, 네 개의 시설 복구가 완료됐어요. COSMIC VOYAGE가 개방됐습니다.',
-  languageKorean: '한국어를 선택했어요.',
-  languageEnglish: '영어 전환은 공통 시스템 단계에서 연결돼요.'
-};

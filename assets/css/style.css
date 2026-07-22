@@ -333,12 +333,6 @@
   box-shadow: inset 0 0 1rem color-mix(in srgb, var(--facility-color) 14%, transparent), 0 0 .75rem color-mix(in srgb, var(--facility-color) 12%, transparent);
 }
 
-.facility-card__icon .ui-icon {
-  width: 58%;
-  height: 58%;
-  filter: drop-shadow(0 0 .35rem currentColor);
-}
-
 .facility-card__icon img {
   width: 82%;
   height: 82%;
@@ -738,9 +732,11 @@
 }
 
 .map-facility-card__content strong {
+  overflow: hidden;
   font-size: .8125rem;
   font-weight: 700;
   letter-spacing: .015em;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
@@ -992,70 +988,6 @@
   color: var(--color-text);
   background: var(--color-primary-soft);
   box-shadow: 0 0 .75rem rgba(56, 200, 255, .16);
-}
-
-.ui-switch {
-  display: inline-flex;
-  align-items: center;
-  gap: .625rem;
-  padding: .375rem .625rem;
-  border: .0625rem solid var(--color-line);
-  border-radius: var(--radius-pill);
-  color: var(--color-text-muted);
-  background: rgba(4, 12, 22, .64);
-  transition: border-color var(--motion-base) ease, color var(--motion-base) ease, background var(--motion-base) ease, box-shadow var(--motion-base) ease;
-}
-
-.ui-switch__track {
-  position: relative;
-  width: 2.75rem;
-  height: 1.5rem;
-  border-radius: var(--radius-pill);
-  background: rgba(99, 126, 148, .28);
-  box-shadow: inset 0 0 .5rem rgba(0, 0, 0, .36);
-  transition: background var(--motion-base) ease, box-shadow var(--motion-base) ease;
-}
-
-.ui-switch__track i {
-  position: absolute;
-  left: .25rem;
-  top: .25rem;
-  width: 1rem;
-  height: 1rem;
-  border-radius: 50%;
-  background: var(--color-text-muted);
-  box-shadow: 0 0 .5rem rgba(205, 230, 244, .2);
-  transition: background var(--motion-base) ease, box-shadow var(--motion-base) ease, transform var(--motion-base) var(--ease-out);
-}
-
-.ui-switch b {
-  min-width: 1.75rem;
-  font-size: .8125rem;
-  font-weight: 700;
-  text-align: center;
-}
-
-.ui-switch[aria-checked="true"] {
-  border-color: var(--color-primary);
-  color: var(--color-primary);
-  background: var(--color-primary-soft);
-  box-shadow: 0 0 .875rem rgba(56, 200, 255, .14);
-}
-
-.ui-switch[aria-checked="true"] .ui-switch__track {
-  background: rgba(56, 200, 255, .28);
-  box-shadow: inset 0 0 .5rem rgba(56, 200, 255, .18);
-}
-
-.ui-switch[aria-checked="true"] .ui-switch__track i {
-  background: var(--color-primary);
-  box-shadow: 0 0 .625rem rgba(56, 200, 255, .68);
-  transform: translateX(1.25rem);
-}
-
-.ui-switch:focus-visible {
-  outline: .125rem solid var(--color-primary);
-  outline-offset: .1875rem;
 }
 
 body.is-overlay-open {

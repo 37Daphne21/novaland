@@ -1,388 +1,15 @@
-import { cosmicVoyage, facilities, facilityStates, languages, recentLogs, uiCopy } from './data.js';
+import { createEveController } from './eve.js';
+import { createMapController } from './map.js';
+import { createSettingsController } from './settings.js';
+import { createOverlayController, createToast } from './ui.js';
 
-const facilityList = document.querySelector('#facility-list');
-const mapCardList = document.querySelector('#map-card-list');
-const facilityDimList = document.querySelector('#facility-dim-list');
-const cosmicStatus = document.querySelector('#cosmic-status');
-const facilityGlow = document.querySelector('#facility-glow');
-const recentLogList = document.querySelector('#recent-log-list');
-const eveMessage = document.querySelector('#eve-message');
-const evePanel = document.querySelector('.eve-panel');
-const eveSignalWave = document.querySelector('#eve-signal-wave');
-const missionProgress = document.querySelector('#mission-progress');
-const missionProgressValue = document.querySelector('#mission-progress-value');
-const missionProgressBar = document.querySelector('#mission-progress-bar');
-const missionProgressLabel = missionProgress?.querySelector('.mission-progress__header span');
-const toast = document.querySelector('#app-toast');
-const languageOptions = document.querySelector('#language-options');
-const fullscreenToggle = document.querySelector('#fullscreen-toggle');
-const fullscreenToggleLabel = fullscreenToggle?.querySelector('b');
+const screens = document.querySelectorAll('[data-screen]');
 const controlRoomTitle = document.querySelector('#control-room-title');
 const controlRoomType = document.querySelector('#control-room-type');
-const screens = document.querySelectorAll('[data-screen]');
-const worldMapHeading = document.querySelector('.world-map__heading');
-const worldMapTitle = document.querySelector('#world-title');
-const worldMapSubtitle = worldMapHeading?.querySelector('p');
-const initialEveMessage = eveMessage?.textContent.trim() ?? '';
-const worldMapTitleText = worldMapTitle?.textContent.trim() ?? '';
-const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-const isLocalRestoredPreview = ['localhost', '127.0.0.1'].includes(window.location.hostname)
-  && new URLSearchParams(window.location.search).get('map-state') === 'restored';
-
-if (isLocalRestoredPreview) {
-  facilities.forEach((facility) => {
-    facility.state = 'completed';
-  });
-}
-
-let toastTimer = null;
-let eveTypingTimer = null;
-let worldMapTypingTimer = null;
-let eveSpeechComplete = null;
-let activeOverlay = null;
-let previouslyFocused = null;
-let selectedFacilityId = 'coaster';
-
-function getIcon(icon) {
-  return `<svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-${icon}"></use></svg>`;
-}
-
-function getFacilityDisplayName(facility) {
-  return facility.state === 'sealed' ? '???' : facility.name;
-}
-
-function isMapRestored() {
-  return facilities.every((facility) => facility.state === 'completed');
-}
-
-function syncMapState() {
-  const isRestored = isMapRestored();
-
-  cosmicVoyage.state = isRestored ? 'open' : 'sealed';
-  if (isRestored) {
-    selectedFacilityId = null;
-    clearFacilityGuide();
-  }
-  document.querySelector('[data-screen="map"]')?.classList.toggle('is-restored', isRestored);
-}
-
-function showToast(message) {
-  if (!toast || !message) {
-    return;
-  }
-
-  window.clearTimeout(toastTimer);
-  toast.textContent = message;
-  toast.classList.add('is-visible');
-
-  toastTimer = window.setTimeout(() => {
-    toast.classList.remove('is-visible');
-  }, 2200);
-}
-
-function cancelEveSpeech() {
-  window.clearInterval(eveTypingTimer);
-  eveTypingTimer = null;
-  eveSpeechComplete = null;
-  eveSignalWave?.classList.add('is-paused');
-  evePanel?.setAttribute('aria-busy', 'false');
-}
-
-function finishEveSpeech() {
-  window.clearInterval(eveTypingTimer);
-  eveTypingTimer = null;
-  eveSignalWave?.classList.add('is-paused');
-  evePanel?.setAttribute('aria-busy', 'false');
-
-  const onComplete = eveSpeechComplete;
-  eveSpeechComplete = null;
-  onComplete?.();
-}
-
-function speakEve(message, onComplete = null) {
-  if (!eveMessage || !message) {
-    return;
-  }
-
-  cancelEveSpeech();
-  eveSpeechComplete = onComplete;
-
-  if (prefersReducedMotion) {
-    eveMessage.textContent = message;
-    finishEveSpeech();
-    return;
-  }
-
-  const characters = Array.from(message);
-  let characterIndex = 0;
-
-  eveMessage.textContent = '';
-  evePanel?.setAttribute('aria-busy', 'true');
-  eveSignalWave?.classList.add('is-speaking');
-  eveSignalWave?.classList.remove('is-paused');
-
-  eveTypingTimer = window.setInterval(() => {
-    eveMessage.textContent += characters[characterIndex];
-    characterIndex += 1;
-
-    if (characterIndex >= characters.length) {
-      finishEveSpeech();
-    }
-  }, 34);
-}
-
-function renderMissionProgress() {
-  if (!missionProgress || !missionProgressValue || !missionProgressBar || !missionProgressLabel) {
-    return;
-  }
-
-  const currentStep = Math.max(1, facilities.filter((facility) => facility.state !== 'locked').length);
-  const progress = currentStep / facilities.length * 100;
-  const isRestored = isMapRestored();
-  const progressLabel = isRestored ? '전체 복구 완료' : '복구 진행';
-
-  missionProgress.setAttribute('aria-valuenow', String(currentStep));
-  missionProgress.setAttribute('aria-valuetext', `${currentStep} / ${facilities.length}, ${progressLabel}`);
-  missionProgress.classList.toggle('is-completed', isRestored);
-  missionProgressValue.textContent = `${currentStep} / ${facilities.length}`;
-  missionProgressLabel.textContent = progressLabel;
-  missionProgressBar.style.width = `${progress}%`;
-}
-
-function renderFacilities() {
-  if (!facilityList) {
-    return;
-  }
-
-  facilityList.innerHTML = facilities.map((facility, index) => {
-    const state = facilityStates[facility.state];
-    const isSelected = facility.id === selectedFacilityId;
-    const isDisabled = facility.state === 'locked';
-    const facilityColor = isDisabled ? 'var(--color-locked)' : `var(--color-${facility.id})`;
-    const description = isDisabled ? uiCopy.lockedCondition : facility.type;
-
-    return `
-      <li>
-        <button class="facility-card ui-card is-state-${facility.state}${isSelected ? ' is-selected' : ''}" type="button" data-facility="${facility.id}" aria-pressed="${isSelected}"${isDisabled ? ' aria-disabled="true"' : ''} style="--facility-color: ${facilityColor};">
-          <span class="facility-card__number">${String(index + 1).padStart(2, '0')}</span>
-          <span class="facility-card__icon" aria-hidden="true"><img src="./assets/images/common/facility-${facility.id}.png" alt="" width="256" height="256"></span>
-          <span class="facility-card__content">
-            <strong class="facility-card__name">${facility.name}</strong>
-            <span class="facility-card__description">${description}</span>
-            <span class="facility-card__state">${getIcon(state.icon)}${state.label}</span>
-          </span>
-        </button>
-      </li>
-    `;
-  }).join('');
-}
-
-function renderFacilityDims() {
-  if (!facilityDimList) {
-    return;
-  }
-
-  [...facilities, cosmicVoyage].forEach((facility) => {
-    if (!facility.dim) {
-      return;
-    }
-
-    let dim = facilityDimList.querySelector(`[data-facility-dim="${facility.id}"]`);
-
-    if (!dim) {
-      dim = document.createElement('span');
-      dim.className = 'facility-dim';
-      dim.dataset.facilityDim = facility.id;
-      dim.style.setProperty('--dim-x', `${facility.dim.x}%`);
-      dim.style.setProperty('--dim-y', `${facility.dim.y}%`);
-      dim.style.setProperty('--dim-width', `${facility.dim.width}%`);
-      dim.style.setProperty('--dim-height', `${facility.dim.height}%`);
-      dim.style.setProperty('--dim-opacity', facility.dim.opacity);
-      facilityDimList.append(dim);
-    }
-
-    dim.classList.toggle('is-dimmed', facility.state === 'locked' || facility.state === 'sealed');
-  });
-}
-
-function renderMapCards() {
-  if (!mapCardList) {
-    return;
-  }
-
-  const facilityCards = facilities.map((facility, index) => {
-    const state = facilityStates[facility.state];
-    const isSelected = facility.id === selectedFacilityId;
-    const isDisabled = facility.state === 'locked';
-    const marker = isDisabled ? getIcon('lock') : String(index + 1).padStart(2, '0');
-
-    return `
-      <button class="map-facility-card is-state-${facility.state}${isSelected ? ' is-selected' : ''}" type="button" data-facility="${facility.id}" data-control-room-entry aria-pressed="${isSelected}"${isDisabled ? ' aria-disabled="true"' : ''} style="--marker-x: ${facility.position.x}%; --marker-y: ${facility.position.y}%; --facility-color: var(--color-${facility.id});">
-        <span class="map-facility-card__number">${marker}</span>
-        <span class="map-facility-card__content"><strong>${facility.name}</strong><small>${facility.type}</small><i>${getIcon(state.icon)}${state.label}</i></span>
-        <span class="map-facility-card__enter" aria-hidden="true">${getIcon('arrow-right')}</span>
-      </button>
-    `;
-  }).join('');
-
-  const cosmicState = facilityStates[cosmicVoyage.state];
-  const cosmicName = getFacilityDisplayName(cosmicVoyage);
-  const isCosmicSealed = cosmicVoyage.state === 'sealed';
-  const cosmicPosition = isCosmicSealed ? cosmicVoyage.position : cosmicVoyage.openPosition;
-  const cosmicCard = `
-    <button class="map-facility-card map-facility-card--cosmic is-state-${cosmicVoyage.state}" type="button" data-facility="cosmic" data-control-room-entry${isCosmicSealed ? ' aria-disabled="true"' : ''} style="--marker-x: ${cosmicPosition.x}%; --marker-y: ${cosmicPosition.y}%;">
-      <span class="map-facility-card__number">${getIcon(cosmicState.icon)}</span>
-      <span class="map-facility-card__content"><strong>${cosmicName}</strong><i>${cosmicState.label}</i></span>
-    </button>
-  `;
-
-  mapCardList.innerHTML = facilityCards + cosmicCard;
-}
-
-function renderCosmicStatus() {
-  if (!cosmicStatus) {
-    return;
-  }
-
-  const state = facilityStates[cosmicVoyage.state];
-  const cosmicName = getFacilityDisplayName(cosmicVoyage);
-  cosmicStatus.className = `cosmic-status is-state-${cosmicVoyage.state}`;
-  cosmicStatus.setAttribute('aria-disabled', String(cosmicVoyage.state === 'sealed'));
-  cosmicStatus.innerHTML = `
-    <span class="cosmic-status__icon" aria-hidden="true">${getIcon(state.icon)}</span>
-    <span class="cosmic-status__content">
-      <strong>${cosmicName}</strong>
-      <small>${cosmicVoyage.state === 'sealed' ? uiCopy.cosmicCondition : cosmicVoyage.type}</small>
-      <i>${getIcon(state.icon)}${state.label}</i>
-    </span>
-  `;
-}
-
-function updateFacilityGlow(facility) {
-  if (!facilityGlow || !facility) {
-    return;
-  }
-
-  facilityGlow.style.setProperty('--glow-x', `${facility.glow.x}%`);
-  facilityGlow.style.setProperty('--glow-y', `${facility.glow.y}%`);
-  facilityGlow.style.setProperty('--facility-color', `var(--color-${facility.id})`);
-  facilityGlow.classList.add('is-visible');
-}
-
-function clearFacilityGuide() {
-  facilityGlow?.classList.remove('is-visible');
-  mapCardList?.querySelector('.map-facility-card.is-guided')?.classList.remove('is-guided');
-}
-
-function guideFacility(facility) {
-  if (isMapRestored()) {
-    clearFacilityGuide();
-    return;
-  }
-
-  mapCardList?.querySelector(`[data-facility="${facility.id}"]`)?.classList.add('is-guided');
-  updateFacilityGlow(facility);
-}
-
-function renderRecentLogs() {
-  if (!recentLogList) {
-    return;
-  }
-
-  const visibleLogs = isMapRestored()
-    ? [{ time: '09:45', datetime: '09:45', message: '모든 시설 복구가 완료됐어요.' }, ...recentLogs].slice(0, 3)
-    : recentLogs;
-
-  recentLogList.innerHTML = visibleLogs.map((log) => `
-    <li class="recent-log__item">
-      <time class="recent-log__time" datetime="${log.datetime}">${log.time}</time>
-      <span>${log.message}</span>
-    </li>
-  `).join('');
-}
-
-function renderMapState() {
-  syncMapState();
-  renderFacilityDims();
-  renderFacilities();
-  renderMapCards();
-  renderCosmicStatus();
-  renderMissionProgress();
-  renderRecentLogs();
-}
-
-function renderLanguages() {
-  if (!languageOptions) {
-    return;
-  }
-
-  languageOptions.innerHTML = languages.map((language) => `
-    <button class="${language.default ? 'is-selected' : ''}" type="button" data-language="${language.code}" aria-pressed="${language.default}">${language.label}</button>
-  `).join('');
-}
-
-function syncFullscreenToggle() {
-  if (!fullscreenToggle || !fullscreenToggleLabel) {
-    return;
-  }
-
-  const isFullscreen = Boolean(document.fullscreenElement);
-  fullscreenToggle.setAttribute('aria-checked', String(isFullscreen));
-  fullscreenToggleLabel.textContent = isFullscreen ? 'ON' : 'OFF';
-}
-
-async function toggleFullscreen() {
-  if (!document.fullscreenEnabled) {
-    showToast('이 브라우저에서는 전체 화면을 사용할 수 없어요.');
-    return;
-  }
-
-  try {
-    if (document.fullscreenElement) {
-      await document.exitFullscreen();
-    } else {
-      await document.documentElement.requestFullscreen();
-    }
-  } catch {
-    showToast('전체 화면을 전환하지 못했어요.');
-  }
-}
-
-function selectFacility(button) {
-  const facilityId = button.dataset.facility;
-  const facility = facilityId === 'cosmic'
-    ? cosmicVoyage
-    : facilities.find((item) => item.id === facilityId);
-
-  if (!facility) {
-    return;
-  }
-
-  if (facility.state === 'locked' || facility.state === 'sealed') {
-    clearFacilityGuide();
-    renderMapCards();
-    speakEve(facility.lockedMessage);
-    return;
-  }
-
-  if (facility.id === 'cosmic') {
-    showToast('COSMIC VOYAGE는 마지막 경험 단계에서 연결돼요.');
-    return;
-  }
-
-  selectedFacilityId = facility.id;
-  clearFacilityGuide();
-  renderFacilities();
-  renderMapCards();
-
-  if (button.hasAttribute('data-control-room-entry')) {
-    cancelEveSpeech();
-    enterControlRoom(facility);
-    return;
-  }
-
-  speakEve(facility.message, () => guideFacility(facility));
-}
+const toast = createToast();
+const overlay = createOverlayController();
+const eve = createEveController();
+let map = null;
 
 function showScreen(screenName) {
   screens.forEach((screen) => {
@@ -392,47 +19,9 @@ function showScreen(screenName) {
   });
 
   if (screenName === 'map') {
-    renderMapState();
-    playWorldMapIntro();
+    map.render();
+    map.playIntro();
   }
-}
-
-function playWorldMapIntro() {
-  if (!worldMapHeading || !worldMapTitle || !worldMapSubtitle || !worldMapTitleText) return;
-
-  window.clearInterval(worldMapTypingTimer);
-  worldMapTypingTimer = null;
-  worldMapHeading.classList.add('is-intro-ready');
-  worldMapSubtitle.classList.remove('is-visible');
-  worldMapTitle.dataset.text = worldMapTitleText;
-  worldMapTitle.setAttribute('aria-label', worldMapTitleText);
-
-  if (prefersReducedMotion) {
-    worldMapTitle.textContent = worldMapTitleText;
-    worldMapTitle.classList.remove('is-typing');
-    worldMapSubtitle.classList.add('is-visible');
-    return;
-  }
-
-  const visualTitle = document.createElement('span');
-  const characters = Array.from(worldMapTitleText);
-  let characterIndex = 0;
-
-  visualTitle.setAttribute('aria-hidden', 'true');
-  worldMapTitle.classList.add('is-typing');
-  worldMapTitle.replaceChildren(visualTitle);
-
-  worldMapTypingTimer = window.setInterval(() => {
-    visualTitle.textContent += characters[characterIndex];
-    characterIndex += 1;
-
-    if (characterIndex >= characters.length) {
-      window.clearInterval(worldMapTypingTimer);
-      worldMapTypingTimer = null;
-      worldMapTitle.classList.remove('is-typing');
-      worldMapSubtitle.classList.add('is-visible');
-    }
-  }, 90);
 }
 
 function enterControlRoom(facility) {
@@ -446,92 +35,70 @@ function enterControlRoom(facility) {
 
   window.setTimeout(() => {
     showScreen('control-room');
-    showToast(facility.controlRoomMessage);
+    toast.show(facility.controlRoomMessage);
   }, 180);
 }
 
-function openOverlay(overlay) {
-  if (!overlay) {
-    return;
-  }
+map = createMapController({
+  cancelEveSpeech: eve.cancel,
+  onEnterControlRoom: enterControlRoom,
+  showToast: toast.show,
+  speakEve: eve.speak
+});
 
-  previouslyFocused = document.activeElement;
-  activeOverlay = overlay;
-  overlay.hidden = false;
-  document.body.classList.add('is-overlay-open');
-  overlay.querySelector('.ui-overlay__dialog')?.focus();
-}
-
-function closeOverlay() {
-  if (!activeOverlay) {
-    return;
-  }
-
-  activeOverlay.hidden = true;
-  activeOverlay = null;
-  document.body.classList.remove('is-overlay-open');
-  previouslyFocused?.focus();
-}
+const settings = createSettingsController({ showToast: toast.show });
 
 function handleDocumentClick(event) {
   const facilityButton = event.target.closest('[data-facility]');
-  const toastButton = event.target.closest('[data-toast]');
-  const overlayOpenButton = event.target.closest('[data-overlay-open]');
-  const overlayCloseButton = event.target.closest('[data-overlay-close]');
-  const languageButton = event.target.closest('[data-language]');
-  const fullscreenButton = event.target.closest('[data-fullscreen-toggle]');
-  const screenBackButton = event.target.closest('[data-screen-back]');
-
   if (facilityButton) {
-    selectFacility(facilityButton);
+    map.selectFacility(facilityButton);
+    return;
   }
 
+  const toastButton = event.target.closest('[data-toast]');
   if (toastButton) {
-    showToast(toastButton.dataset.toast);
+    toast.show(toastButton.dataset.toast);
+    return;
   }
 
+  const overlayOpenButton = event.target.closest('[data-overlay-open]');
   if (overlayOpenButton) {
-    openOverlay(document.querySelector(`#${overlayOpenButton.dataset.overlayOpen}`));
+    overlay.open(document.querySelector(`#${overlayOpenButton.dataset.overlayOpen}`));
+    return;
   }
 
-  if (overlayCloseButton) {
-    closeOverlay();
+  if (event.target.closest('[data-overlay-close]')) {
+    overlay.close();
+    return;
   }
 
-  if (fullscreenButton) {
-    toggleFullscreen();
+  if (event.target.closest('[data-fullscreen-toggle]')) {
+    settings.toggleFullscreen();
+    return;
   }
 
+  const languageButton = event.target.closest('[data-language]');
   if (languageButton) {
-    languageOptions.querySelectorAll('button').forEach((button) => {
-      const isSelected = button === languageButton;
-      button.classList.toggle('is-selected', isSelected);
-      button.setAttribute('aria-pressed', String(isSelected));
-    });
-
-    showToast(languageButton.dataset.language === 'ko' ? uiCopy.languageKorean : uiCopy.languageEnglish);
+    settings.selectLanguage(languageButton);
+    return;
   }
 
+  const screenBackButton = event.target.closest('[data-screen-back]');
   if (screenBackButton) {
     showScreen(screenBackButton.dataset.screenBack);
-    const focusFacilityId = selectedFacilityId ?? (isMapRestored() ? 'cosmic' : 'coaster');
-    document.querySelector(`[data-screen="map"] [data-facility="${focusFacilityId}"]`)?.focus();
+    map.focusReturnTarget();
   }
 }
 
 function handleKeydown(event) {
-  if (event.key === 'Escape') {
-    closeOverlay();
-  }
+  overlay.handleKeydown(event);
 }
 
-renderMapState();
-renderLanguages();
-syncFullscreenToggle();
-playWorldMapIntro();
-const isRestoredAtLaunch = isMapRestored();
-speakEve(isRestoredAtLaunch ? uiCopy.mapRestored : initialEveMessage);
+map.render();
+settings.render();
+map.playIntro();
+eve.speak(map.getStartupMessage(eve.initialMessage));
 
 document.addEventListener('click', handleDocumentClick);
 document.addEventListener('keydown', handleKeydown);
-document.addEventListener('fullscreenchange', syncFullscreenToggle);
+document.addEventListener('fullscreenchange', settings.syncFullscreenToggle);
