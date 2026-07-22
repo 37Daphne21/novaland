@@ -94,6 +94,7 @@ export const uiCopy = {
   lockedFacility: '이전 시설을 먼저 복구해주세요.',
   lockedCondition: '잠금 해제 조건을 완료하세요.',
   cosmicCondition: '모든 시설을 복구하면 개방됩니다.',
+  mapRestored: '탐험가님, 네 개의 시설 복구가 완료됐어요. COSMIC VOYAGE가 개방됐습니다.',
   languageKorean: '한국어를 선택했어요.',
   languageEnglish: '영어 전환은 공통 시스템 단계에서 연결돼요.'
 };

@@ -393,6 +393,11 @@
   color: var(--color-success);
 }
 
+.screen--map .facility-card.is-state-completed:not(.is-selected) {
+  border-color: color-mix(in srgb, var(--facility-color) 34%, transparent);
+  background: linear-gradient(105deg, color-mix(in srgb, var(--facility-color) 8%, transparent), rgba(7, 19, 34, .42));
+}
+
 .cosmic-status {
   --cosmic-status-color: var(--color-cosmic);
   display: grid;
@@ -467,6 +472,14 @@
   height: .875rem;
 }
 
+.cosmic-status.is-state-open {
+  --cosmic-status-color: #eefaff;
+  border-color: rgba(226, 246, 255, .58);
+  color: var(--color-text);
+  background: linear-gradient(110deg, rgba(140, 114, 255, .2), rgba(81, 231, 204, .14), rgba(255, 184, 74, .14), rgba(255, 110, 182, .18));
+  box-shadow: inset 0 0 1.25rem rgba(238, 250, 255, .08), 0 0 1.25rem rgba(184, 119, 255, .16);
+}
+
 .mission-progress {
   display: grid;
   gap: var(--space-2);
@@ -512,6 +525,16 @@
   background: linear-gradient(90deg, var(--color-primary), #76e6ff);
   box-shadow: 0 0 .75rem rgba(56, 200, 255, .72);
   transition: width .5s var(--ease-out);
+}
+
+.mission-progress.is-completed .mission-progress__header strong,
+.mission-progress.is-completed .mission-progress__header span {
+  color: var(--color-success);
+}
+
+.mission-progress.is-completed .mission-progress__track i {
+  background: linear-gradient(90deg, var(--color-coaster), var(--color-luna), var(--color-spark), var(--color-wonder));
+  box-shadow: 0 0 .875rem rgba(210, 235, 255, .72);
 }
 
 .world-map {
@@ -747,10 +770,6 @@
   animation: map-facility-guide 1s ease-in-out .7s infinite alternate;
 }
 
-.map-facility-card.is-guided .map-facility-card__content {
-  padding-right: 1.5rem;
-}
-
 @keyframes map-facility-guide {
   to {
     transform: translateX(.35rem);
@@ -758,17 +777,25 @@
 }
 
 .map-facility-card--cosmic {
+  --facility-color: var(--color-cosmic);
   min-width: 13rem;
   border-radius: var(--radius-pill);
 }
 
-.map-facility-card.is-state-completed {
-  --facility-color: var(--color-success);
+.map-facility-card.is-state-completed .map-facility-card__content i {
+  color: var(--color-success);
 }
 
 .map-facility-card.is-state-sealed {
   color: var(--color-text-subtle);
   background: rgba(14, 9, 28, .8);
+}
+
+.map-facility-card--cosmic.is-state-open {
+  --facility-color: #eefaff;
+  border-color: rgba(226, 246, 255, .72);
+  background: linear-gradient(110deg, rgba(140, 114, 255, .28), rgba(81, 231, 204, .18), rgba(255, 184, 74, .16), rgba(255, 110, 182, .22));
+  box-shadow: inset 0 0 1.5rem rgba(238, 250, 255, .1), 0 0 1.5rem rgba(184, 119, 255, .22);
 }
 
 .side-stack {

@@ -91,7 +91,7 @@
 
 ## Phase 4. MAP PC 구현
 
-상태: 완료
+상태: 마무리 중
 
 ### 화면
 
@@ -121,6 +121,23 @@
 - Control Room 진입
 
 
+### 완료 전 To Do
+
+- [x] 네 시설의 활성화·복구 완료 상태와 `4 / 4` Progress UI 구현
+- [x] Mission List와 World Map Card의 잠금 해제·복구 완료 상태 동기화
+- [x] Cosmic Voyage의 `???`·봉인 상태를 실제 이름·개방 상태와 Aurora 표현으로 전환
+- [x] 전체 복구 시 EVE 완료 안내와 Recent Log 갱신
+- [x] 완료 상태의 시설 컬러와 선택·Guide Glow 우선순위 검수
+- [ ] 1920px, 1440px, 1366px, 1024px, 768px와 390px 기준 반응형 조정
+- [ ] 작은 화면에서 World Map Title과 시설 Card의 퍼센트 좌표·겹침 검수
+- [ ] 모든 UI 문구를 10px보다 크게 유지하고 긴 영문 시설명 말줄임 검수
+- [ ] 키보드 Focus, 잠금 Button, EVE 타이핑·Wave와 시설 행동 유도 재검수
+- [x] MAP 배경 명도와 전체 화면 Overlay 제거 확정
+- [ ] `project.md`, `roadmap.md`와 `README.md` 최신화 및 제거된 알림 관련 문서 정리
+
+로컬에서는 URL에 `?map-state=restored`를 추가하여 전체 복구 상태를 검수합니다.
+
+
 ### 제외 항목
 
 - World Status와 Bottom Status
@@ -131,6 +148,7 @@
 
 - PC에서 시설 선택, 잠금 안내와 Control Room 진입 흐름이 동작해야 합니다.
 - MAP 배경과 UI가 독립 레이어로 유지되어야 합니다.
+- 전체 활성화 상태와 주요 반응형 화면 검수를 통과해야 합니다.
 
 ---
 

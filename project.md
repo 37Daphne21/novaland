@@ -2476,7 +2476,7 @@ Roadmap은 제작 일정을,
 - 1단계: 구현에 사용할 배경, EVE, 시설 이미지와 아이콘 자산 목록 정리 → 완료
 - 2단계: MAP 배경, EVE, Explorer 프로필, Logo와 시설별 SVG Icon 제작 → 완료
 - 3단계: 프로젝트 기반, 디자인 토큰과 공통 UI 컴포넌트 구조 확정 → 완료
-- 4단계: MAP PC 화면과 시설 선택 인터랙션 구현 → 완료
+- 4단계: MAP PC 화면과 시설 선택 인터랙션 구현 → 마무리 중
 - 5단계: 시설 Identity Color 정리, Explorer Archive, 설정, 언어와 저장 공통 시스템 구현 → 다음 작업
 - 6단계: Nova Coaster 자산, Control Room 공통 구조와 공통 Mission Flow 구현 → 예정
 - 7단계: Luna Light Garden 자산과 Mission 구현 → 예정
@@ -2484,6 +2484,23 @@ Roadmap은 제작 일정을,
 - 9단계: Wonder Parade Hall 자산과 Mission 구현 → 예정
 - 10단계: Cosmic Voyage, Explorer Certification과 Ending 구현 → 예정
 - 11단계: Mobile·Tablet 반응형, 접근성, 성능, 사운드와 최종 QA → 예정
+
+
+### MAP 완료 전 To Do
+
+- [x] 네 시설의 활성화·복구 완료 상태와 Mission Progress `4 / 4` 구현
+- [x] Mission List와 World Map Card의 잠금 해제·복구 완료 상태 동기화
+- [x] Cosmic Voyage의 비공개명·봉인 상태를 실제 이름·개방 상태와 Aurora 표현으로 전환
+- [x] 전체 복구 시 EVE 완료 안내와 Recent Log 갱신
+- [x] 완료 상태의 시설 컬러와 선택·Guide Glow 우선순위 검수
+- [ ] 1920px, 1440px, 1366px, 1024px, 768px와 390px 기준 반응형 조정
+- [ ] 작은 화면의 World Map Title, 시설 Card 좌표와 패널 겹침 검수
+- [ ] 10px 이하 글자 금지, 긴 영문 시설명과 말줄임 검수
+- [ ] 키보드 Focus, 잠금 Button, EVE 타이핑·Wave와 행동 유도 재검수
+- [x] MAP 배경 명도와 전체 화면 Overlay 제거 확정
+- [ ] MAP 최종 QA 후 문서 진행 상태와 제거된 알림 관련 내용 동기화
+
+로컬에서는 URL에 `?map-state=restored`를 추가하여 전체 복구 상태를 검수합니다.
 
 ---
 

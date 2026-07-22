@@ -11,6 +11,7 @@ const eveSignalWave = document.querySelector('#eve-signal-wave');
 const missionProgress = document.querySelector('#mission-progress');
 const missionProgressValue = document.querySelector('#mission-progress-value');
 const missionProgressBar = document.querySelector('#mission-progress-bar');
+const missionProgressLabel = missionProgress?.querySelector('.mission-progress__header span');
 const toast = document.querySelector('#app-toast');
 const languageOptions = document.querySelector('#language-options');
 const controlRoomTitle = document.querySelector('#control-room-title');
@@ -22,6 +23,14 @@ const worldMapSubtitle = worldMapHeading?.querySelector('p');
 const initialEveMessage = eveMessage?.textContent.trim() ?? '';
 const worldMapTitleText = worldMapTitle?.textContent.trim() ?? '';
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const isLocalRestoredPreview = ['localhost', '127.0.0.1'].includes(window.location.hostname)
+  && new URLSearchParams(window.location.search).get('map-state') === 'restored';
+
+if (isLocalRestoredPreview) {
+  facilities.forEach((facility) => {
+    facility.state = 'completed';
+  });
+}
 
 let toastTimer = null;
 let eveTypingTimer = null;
@@ -37,6 +46,18 @@ function getIcon(icon) {
 
 function getFacilityDisplayName(facility) {
   return facility.state === 'sealed' ? '???' : facility.name;
+}
+
+function isMapRestored() {
+  return facilities.every((facility) => facility.state === 'completed');
+}
+
+function syncMapState() {
+  const isRestored = isMapRestored();
+
+  cosmicVoyage.state = isRestored ? 'open' : 'sealed';
+  if (isRestored) selectedFacilityId = null;
+  document.querySelector('[data-screen="map"]')?.classList.toggle('is-restored', isRestored);
 }
 
 function showToast(message) {
@@ -105,15 +126,20 @@ function speakEve(message, onComplete = null) {
 }
 
 function renderMissionProgress() {
-  if (!missionProgress || !missionProgressValue || !missionProgressBar) {
+  if (!missionProgress || !missionProgressValue || !missionProgressBar || !missionProgressLabel) {
     return;
   }
 
   const currentStep = Math.max(1, facilities.filter((facility) => facility.state !== 'locked').length);
   const progress = currentStep / facilities.length * 100;
+  const isRestored = isMapRestored();
+  const progressLabel = isRestored ? '전체 복구 완료' : '복구 진행';
 
   missionProgress.setAttribute('aria-valuenow', String(currentStep));
+  missionProgress.setAttribute('aria-valuetext', `${currentStep} / ${facilities.length}, ${progressLabel}`);
+  missionProgress.classList.toggle('is-completed', isRestored);
   missionProgressValue.textContent = `${currentStep} / ${facilities.length}`;
+  missionProgressLabel.textContent = progressLabel;
   missionProgressBar.style.width = `${progress}%`;
 }
 
@@ -167,8 +193,9 @@ function renderMapCards() {
 
   const cosmicState = facilityStates[cosmicVoyage.state];
   const cosmicName = getFacilityDisplayName(cosmicVoyage);
+  const isCosmicSealed = cosmicVoyage.state === 'sealed';
   const cosmicCard = `
-    <button class="map-facility-card map-facility-card--cosmic is-state-${cosmicVoyage.state}" type="button" data-facility="cosmic" data-control-room-entry aria-disabled="${cosmicVoyage.state === 'sealed'}" style="--marker-x: ${cosmicVoyage.position.x}%; --marker-y: ${cosmicVoyage.position.y}%; --facility-color: var(--color-cosmic);">
+    <button class="map-facility-card map-facility-card--cosmic is-state-${cosmicVoyage.state}" type="button" data-facility="cosmic" data-control-room-entry${isCosmicSealed ? ' aria-disabled="true"' : ''} style="--marker-x: ${cosmicVoyage.position.x}%; --marker-y: ${cosmicVoyage.position.y}%;">
       <span class="map-facility-card__number">${getIcon(cosmicState.icon)}</span>
       <span class="map-facility-card__content"><strong>${cosmicName}</strong><i>${cosmicState.label}</i></span>
     </button>
@@ -222,12 +249,25 @@ function renderRecentLogs() {
     return;
   }
 
-  recentLogList.innerHTML = recentLogs.map((log) => `
+  const visibleLogs = isMapRestored()
+    ? [{ time: '09:45', datetime: '09:45', message: '모든 시설 복구가 완료됐어요.' }, ...recentLogs].slice(0, 3)
+    : recentLogs;
+
+  recentLogList.innerHTML = visibleLogs.map((log) => `
     <li class="recent-log__item">
       <time class="recent-log__time" datetime="${log.datetime}">${log.time}</time>
       <span>${log.message}</span>
     </li>
   `).join('');
+}
+
+function renderMapState() {
+  syncMapState();
+  renderFacilities();
+  renderMapCards();
+  renderCosmicStatus();
+  renderMissionProgress();
+  renderRecentLogs();
 }
 
 function renderLanguages() {
@@ -283,7 +323,10 @@ function showScreen(screenName) {
     screen.classList.toggle('is-active', isActive);
   });
 
-  if (screenName === 'map') playWorldMapIntro();
+  if (screenName === 'map') {
+    renderMapState();
+    playWorldMapIntro();
+  }
 }
 
 function playWorldMapIntro() {
@@ -398,7 +441,8 @@ function handleDocumentClick(event) {
 
   if (screenBackButton) {
     showScreen(screenBackButton.dataset.screenBack);
-    document.querySelector(`[data-screen="map"] [data-facility="${selectedFacilityId}"]`)?.focus();
+    const focusFacilityId = selectedFacilityId ?? (isMapRestored() ? 'cosmic' : 'coaster');
+    document.querySelector(`[data-screen="map"] [data-facility="${focusFacilityId}"]`)?.focus();
   }
 }
 
@@ -408,14 +452,11 @@ function handleKeydown(event) {
   }
 }
 
-renderFacilities();
-renderMapCards();
-renderCosmicStatus();
-renderMissionProgress();
-renderRecentLogs();
+renderMapState();
 renderLanguages();
 playWorldMapIntro();
-speakEve(initialEveMessage);
+const isRestoredAtLaunch = isMapRestored();
+speakEve(isRestoredAtLaunch ? uiCopy.mapRestored : initialEveMessage, isRestoredAtLaunch ? () => guideFacility(cosmicVoyage) : null);
 
 document.addEventListener('click', handleDocumentClick);
 document.addEventListener('keydown', handleKeydown);

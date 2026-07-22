@@ -69,7 +69,7 @@
   --shadow-panel: 0 1.25rem 4rem rgba(0, 0, 0, .34), inset 0 0 2rem rgba(33, 163, 220, .04);
   --shadow-glow: 0 0 1.5rem rgba(56, 200, 255, .22);
   --z-content: 10;
-  --z-toast: 50;
+  --z-toast: 110;
   --z-overlay: 100;
   --motion-fast: 160ms;
   --motion-base: 240ms;
@@ -94,12 +94,6 @@
   background: var(--screen-background) center / cover no-repeat;
 }
 
-.screen__backdrop::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(2, 7, 14, .2), rgba(2, 7, 14, .48));
-}
 
 .ui-icon {
   width: var(--size-icon);
