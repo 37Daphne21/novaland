@@ -7,6 +7,7 @@
 - 배경, EVE와 프로필처럼 이미지가 필요한 요소만 독립 자산으로 제작합니다.
 - 패널, 버튼, 텍스트, 테두리, Glow, Progress Bar와 Badge는 HTML/CSS로 구현합니다.
 - 아이콘은 SVG Sprite로 관리합니다.
+- 숫자 UI는 로컬 Rajdhani 500·600, 영문 타이틀은 Orbitron, 한글 본문은 Pretendard Variable을 사용합니다.
 - 기존 `index.html`, CSS와 JavaScript 파일은 삭제하지 않고 같은 경로에서 새 구조로 재작성합니다.
 - 기술 기반은 HTML, CSS와 JavaScript ES Module을 사용하며 프레임워크는 도입하지 않습니다.
 - 각 Phase는 구현, 기능 검증, 반응형 기본 확인과 Git diff 검수를 마친 뒤 완료 처리합니다.
@@ -101,6 +102,8 @@
 - Recent Log
 - Setting 진입 버튼
 - 4단계 Mission Progress Bar
+- Compact Mission Card와 Cosmic Voyage 조건 Card
+- Mission·EVE Panel 제목 아이콘과 Rajdhani 숫자 스타일
 
 
 ### 인터랙션
@@ -112,6 +115,9 @@
 - Mission List 선택 후 EVE 시설 안내
 - EVE 안내 종료 후 World Map 시설 Card에 Guide Glow와 Arrow 표시
 - EVE 안내와 중복되는 Toast 제거
+- 선택 상태와 관계없이 동일한 Mission Card 높이와 Icon 크기 유지
+- Number, Icon, Description과 Status의 고정 열 정렬
+- 잠금 Card의 해제 조건 안내와 하단 Status 표시
 - Control Room 진입
 
 

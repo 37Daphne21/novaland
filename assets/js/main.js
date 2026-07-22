@@ -118,16 +118,18 @@ function renderFacilities() {
     const isSelected = facility.id === selectedFacilityId;
     const isDisabled = facility.state === 'locked';
     const facilityColor = isDisabled ? 'var(--color-locked)' : `var(--color-${facility.id})`;
+    const description = isDisabled ? uiCopy.lockedCondition : facility.type;
 
     return `
       <li>
         <button class="facility-card ui-card is-state-${facility.state}${isSelected ? ' is-selected' : ''}" type="button" data-facility="${facility.id}" aria-pressed="${isSelected}"${isDisabled ? ' aria-disabled="true"' : ''} style="--facility-color: ${facilityColor};">
+          <span class="facility-card__number">${String(index + 1).padStart(2, '0')}</span>
           <span class="facility-card__icon" aria-hidden="true">${getIcon(facility.icon)}</span>
           <span class="facility-card__content">
-            <strong class="facility-card__name">${String(index + 1).padStart(2, '0')} · ${facility.name}</strong>
-            <span class="facility-card__type">${facility.type}</span>
+            <strong class="facility-card__name">${facility.name}</strong>
+            <span class="facility-card__description">${description}</span>
+            <span class="facility-card__state">${getIcon(state.icon)}${state.label}</span>
           </span>
-          <span class="facility-card__state">${getIcon(state.icon)}${state.label}</span>
         </button>
       </li>
     `;
@@ -172,10 +174,16 @@ function renderCosmicStatus() {
   }
 
   const state = facilityStates[cosmicVoyage.state];
-  const cosmicName = cosmicVoyage.state === 'sealed' ? '???' : cosmicVoyage.name;
   cosmicStatus.className = `cosmic-status is-state-${cosmicVoyage.state}`;
   cosmicStatus.setAttribute('aria-disabled', String(cosmicVoyage.state === 'sealed'));
-  cosmicStatus.innerHTML = `${getIcon(state.icon)}<span><strong>${cosmicName}</strong><small>${state.label}</small></span>`;
+  cosmicStatus.innerHTML = `
+    <span class="cosmic-status__icon" aria-hidden="true">${getIcon(state.icon)}</span>
+    <span class="cosmic-status__content">
+      <strong>${cosmicVoyage.name}</strong>
+      <small>${cosmicVoyage.state === 'sealed' ? uiCopy.cosmicCondition : cosmicVoyage.type}</small>
+      <i>${getIcon(state.icon)}${state.label}</i>
+    </span>
+  `;
 }
 
 function updateFacilityGlow(facility) {

@@ -29,7 +29,7 @@ export const facilities = [
     type: '에너지 시설',
     icon: 'facility-spark',
     state: 'locked',
-    position: { x: 8, y: 45 },
+    position: { x: 18, y: 45 },
     glow: { x: 27, y: 58 },
     message: 'SPARK ENERGY TOWER의 에너지를 확인할 수 있어요.',
     lockedMessage: 'LUNA LIGHT GARDEN을 먼저 복구하면 SPARK ENERGY TOWER가 열려요.',
@@ -92,6 +92,8 @@ export const languages = [
 
 export const uiCopy = {
   lockedFacility: '이전 시설을 먼저 복구해주세요.',
+  lockedCondition: '잠금 해제 조건을 완료하세요.',
+  cosmicCondition: '모든 시설을 복구하면 개방됩니다.',
   languageKorean: '한국어를 선택했어요.',
   languageEnglish: '영어 전환은 공통 시스템 단계에서 연결돼요.'
 };

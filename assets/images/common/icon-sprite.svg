@@ -38,6 +38,14 @@
     <path d="m3 6 5-3 8 3 5-3v15l-5 3-8-3-5 3Z"></path>
     <path d="M8 3v15M16 6v15"></path>
   </symbol>
+  <symbol id="icon-mission" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 2v20M2 12h20M5 5l14 14M19 5 5 19"></path>
+    <circle cx="12" cy="12" r="2.5"></circle>
+  </symbol>
+  <symbol id="icon-signal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 13v8M9 21h6M10 13l2-4 2 4"></path>
+    <path d="M5.6 8.6a9 9 0 0 1 12.8 0M8.5 11.5a5 5 0 0 1 7 0"></path>
+  </symbol>
   <symbol id="icon-facility-coaster" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
     <path d="M3 19c3-8 7-9 10-2 2 4 5 4 8-2"></path>
     <path d="m6 8 10-2 4 6-13 2-3-3 2-3Z"></path>

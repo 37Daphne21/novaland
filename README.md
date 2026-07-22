@@ -226,6 +226,7 @@ Ending
 - 배경, EVE와 프로필만 독립 이미지 자산으로 사용
 - Panel, Card, Button, Text, Border와 Glow는 HTML/CSS로 구현
 - 아이콘은 SVG Sprite로 관리
+- 한글 본문은 Pretendard Variable, 영문 타이틀은 Orbitron, 숫자 UI는 Rajdhani 로컬 폰트 사용
 - 시설별 UI는 공통 컴포넌트와 Modifier로 확장
 - PC 구조를 기준으로 Mobile과 Tablet 반응형 구현
 - 완성된 화면 PNG는 비주얼 참고용으로만 사용

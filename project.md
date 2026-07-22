@@ -187,6 +187,14 @@ AI에서만 가능한 표현은 사용하지 않습니다.
 동일한 사용 경험을 얻을 수 있어야 합니다.
 
 
+### 타이포그래피
+
+- 한글 본문과 UI 문구는 Pretendard Variable을 사용합니다.
+- 영문 타이틀과 시설명은 Orbitron을 사용합니다.
+- 시간, 온도, 알림 수, 시설 번호와 진행 수치는 Rajdhani 500·600을 사용합니다.
+- 모든 폰트는 프로젝트 내부 로컬 자산으로 관리하며 Rajdhani는 SIL OFL 1.1 라이선스를 따릅니다.
+
+
 ### 정보보다 분위기
 
 Nova Land는
@@ -219,7 +227,7 @@ UI는
 - 실제 화면에서 사용하는 이미지, SVG와 폰트는 프로젝트의 `assets` 내부에서 관리합니다.
 - 외부 시안 폴더와 완성된 화면 PNG는 비주얼 참고용이며 HTML/CSS에서 직접 참조하지 않습니다.
 - 패널, 카드, 버튼, 텍스트, 테두리, Glow, Progress Bar와 상태 Badge는 HTML/CSS로 구현합니다.
-- 설정, 알림, 잠금, 시간과 시설 기능 아이콘은 SVG Sprite로 관리합니다.
+- 설정, 알림, 잠금, 시간, 패널 제목과 시설 기능 아이콘은 SVG Sprite로 관리합니다.
 - 구현에 필요한 자산이 없는 경우 임의의 이전 버전 이미지로 대체하지 않고 누락 상태로 관리합니다.
 
 
@@ -228,7 +236,8 @@ UI는
 - 기존 `assets/images/map/map.png`는 이전 버전이므로 삭제했습니다.
 - MAP 배경 `assets/images/map/bg-map.webp` 제작을 완료했습니다.
 - 기존 시설 썸네일은 Mission List에서 제거하고 시설별 SVG 아이콘으로 교체했습니다.
-- 공통 EVE, Explorer 프로필, Nova Land Logo Lockup과 시설 아이콘을 `assets/images/common`에 제작했습니다.
+- 공통 EVE, Explorer 프로필, Nova Land Logo Lockup, 시설 아이콘과 Mission·EVE 패널 제목 아이콘을 `assets/images/common`에 제작했습니다.
+- 숫자 전용 Rajdhani 500·600과 SIL OFL 1.1 라이선스를 `assets/fonts`에 추가했습니다.
 - MAP 필수 이미지와 SVG 자산은 모두 확보했습니다.
 - Control Room 배경 자산은 각 시설 구현 단계에서 제작합니다.
 - Nova Coaster와 Luna Light Garden의 확정시안은 화면 구성과 컬러를 확인하는 참고 자료로만 사용합니다.
@@ -821,6 +830,10 @@ Mission List는 기본으로 열린 상태이다.
 
 항상 펼쳐진 상태이므로 펼침 또는 접기 아이콘을 사용하지 않는다.
 
+Panel Header에는 현재 언어에 맞는 `미션` 또는 `MISSION` Title만 표시한다.
+
+`FACILITY MISSION`과 같이 역할이 중복되는 Eyebrow는 사용하지 않는다.
+
 Explorer는
 
 현재 진행 가능한 시설과
@@ -868,6 +881,28 @@ Cosmic Voyage의 잠금 또는 개방 상태를 표시한다.
 퍼센트 숫자는 표시하지 않는다.
 
 잠긴 Mission Card의 아이콘과 상태는 시설 컬러를 사용하지 않고 동일한 회색으로 표시한다.
+
+Mission Panel의 PC 폭은 우측 Panel Group과 같은 `19rem ~ 21rem` 범위를 사용하여
+
+World Map의 가용 영역을 확보한다.
+
+Mission Card는 선택 상태와 관계없이 동일한 높이와 Icon 크기를 유지한다.
+
+순서 번호, 시설 Icon과 시설 정보를 고정된 열로 분리하여
+
+활성화와 잠금 상태가 바뀌어도 정렬이 이동하지 않도록 한다.
+
+상태는 시설명 오른쪽이 아니라 시설 정보 아래에 표시한다.
+
+활성화된 시설은 시설 유형과 상태를 표시하고,
+
+잠긴 시설은 `잠금 해제 조건을 완료하세요.` 안내와 잠금 상태를 표시한다.
+
+Mission List에는 별도의 시설 이미지를 사용하지 않고 시설별 SVG Icon을 사용한다.
+
+Cosmic Voyage는 별도의 Compact Card로 표시하며
+
+봉인 상태에서도 이름, 개방 조건과 봉인 상태를 함께 제공한다.
 
 
 ### MAP Interaction
@@ -2456,8 +2491,15 @@ Roadmap은 제작 일정을,
 
 ### v1.9
 
+- 숫자 전용 Rajdhani 500·600 로컬 폰트와 SIL OFL 1.1 라이선스 추가
+- Mission과 EVE Panel 제목에 공통 SVG Sprite 아이콘 적용
+- Mission Panel의 금색 상단 장식선을 제거하고 공통 Blue 계열 Border로 정리
+- Mission·World Map Card·EVE·Recent Log의 타이포와 내부 여백을 시안 비율에 맞게 확대
 - Mission List 선택, EVE 안내와 World Map 시설 진입을 순차 행동 유도로 연결
 - EVE 안내 종료 후 선택 시설에만 Guide Glow와 Arrow가 표시되도록 상태 분리
+- Mission Panel의 중복 Eyebrow를 제거하고 Compact Card 구조로 변경
+- Mission Card의 Number, Icon, Description과 Status 정렬을 상태와 관계없이 통일
+- Cosmic Voyage 봉인 Card에 이름, 개방 조건과 상태를 함께 표시
 - Explorer Log와 Explorer Passport를 Explorer Archive 공통 Overlay의 동등한 Tab으로 확정
 - Recent Log와 Explorer Profile의 Explorer Archive 진입 역할 확정
 - Nova Coaster를 Electric Violet, Luna를 Mint로 분리하는 시설 Identity Color 방향 확정
