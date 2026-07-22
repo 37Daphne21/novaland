@@ -1,431 +1,232 @@
-# Nova Land - 제작 로드맵
+# Nova Land Roadmap
 
-## 제작 원칙
+이 문서는 완료된 기능 명세를 반복하지 않고 현재 작업과 이후 제작 순서만 관리한다.
 
-- `project.md`를 기능, 문구와 상태 규칙의 기준 문서로 사용합니다.
-- 완성된 화면 PNG는 비주얼 참고용으로만 사용하고 구현 원본으로 사용하지 않습니다.
-- 배경, EVE와 프로필처럼 이미지가 필요한 요소만 독립 자산으로 제작합니다.
-- 패널, 버튼, 텍스트, 테두리, Glow, Progress Bar와 Badge는 HTML/CSS로 구현합니다.
-- 아이콘은 SVG Sprite로 관리합니다.
-- 숫자 UI는 로컬 Rajdhani 500·600, 영문 타이틀은 Orbitron, 한글 본문은 Pretendard Variable을 사용합니다.
-- 기존 `index.html`, CSS와 JavaScript 파일은 삭제하지 않고 같은 경로에서 새 구조로 재작성합니다.
-- 기술 기반은 HTML, CSS와 JavaScript ES Module을 사용하며 프레임워크는 도입하지 않습니다.
-- 각 Phase는 구현, 기능 검증, 반응형 기본 확인과 Git diff 검수를 마친 뒤 완료 처리합니다.
+확정된 기획과 UX 규칙은 project.md, 외부 공개용 소개는 README.md를 기준으로 한다.
 
 ---
 
-## Phase 1. 구현 자산 목록 정리
+## 완료된 기반
 
-상태: 완료
+- 프로젝트 세계관과 전체 User Flow
+- 시설 역할, Identity Color와 Mission 방향
+- HTML, CSS와 JavaScript ES Module 기반
+- 공통 디자인 Token과 UI Component
+- 한국어·영어 전환
+- Settings Overlay와 전체 화면 제어
+- MAP용 공통 이미지와 Icon
+- PC MAP 기본 상태와 전체 복구 상태
+- Mission List와 지도 시설 상태 동기화
+- Mission 선택 → EVE 안내 → 지도 행동 유도
+- COSMIC VOYAGE 봉인·개방 전환
+- PC MAP 1차 Refactoring
+- 모바일 전용 MAP 배경
+- Mobile·Tablet 반응형 1차 구현
 
-### 작업
+---
 
-- MAP과 Control Room의 배경 자산 구분
-- 공통 EVE, Explorer 프로필, Logo Lockup·Symbol과 시설별 SVG Icon 정의
-- 코드로 구현할 UI와 이미지로 제작할 요소 구분
-- 자산 폴더와 파일명 계획 수립
-- 기존 완성 PNG를 참고 시안으로 분류
+## Now. 모바일 MAP 재설계
+
+상태: 진행 중
+
+현재 반응형 구현은 기능 검증용 1차 버전이다. PC 패널을 축소한 인상이 강하므로 모바일 게임형 HUD를 기준으로 시각 구조를 다시 확정한다.
+
+
+### 먼저 결정할 것
+
+- [ ] 390px 세로 화면 Wireframe
+- [ ] 지도 속 시설 직접 Tap을 주 동작으로 사용할지 확정
+- [ ] 시설 Marker의 기본·선택·잠금 표현
+- [ ] Mission 진입을 Bottom Sheet로 유지할지 확정
+- [ ] Recent Log와 Settings의 상단 Utility Button 구성
+- [ ] Logo, Explorer와 시간 정보의 우선순위
+
+
+### 확인된 수정 사항
+
+- [ ] 접힌 Mission Panel에 남는 Divider와 빈 공간 제거
+- [ ] Recent Log의 크기와 시각 비중 축소
+- [ ] PC와 동일한 큰 Glass Box 구조 제거
+- [ ] 시설 건물이 UI보다 먼저 보이도록 Label과 Card 축소
+- [ ] 상단 Header의 큰 박스 분할 완화
+- [ ] EVE가 지도와 시설을 가리지 않도록 노출 방식 조정
+- [ ] 10px 이하 글자 금지와 일반 UI 13px 기준 유지
+
+
+### 구현 원칙
+
+- 기존 시설 데이터, 진행 상태와 선택 로직을 재사용한다.
+- PC와 Mobile의 동일 상태를 중복 관리하지 않는다.
+- Mobile 전용 표현 마크업은 필요할 때만 추가한다.
+- 시각 방향을 확정한 뒤 현재 1차 CSS를 정리한다.
+- 세로 화면을 먼저 완성한 뒤 가로와 Tablet을 조정한다.
 
 
 ### 완료 조건
 
-- 필요한 자산의 수량, 역할, 우선순위와 파일 경로가 `project.md`에 기록되어 있어야 합니다.
+- 360px과 390px 세로 화면에서 시설과 핵심 행동이 한눈에 보여야 한다.
+- Mission, Recent Log와 EVE가 시설을 불필요하게 가리지 않아야 한다.
+- 시설 Tap → 안내 → 다음 행동 흐름이 명확해야 한다.
+- 768px Tablet과 Mobile Landscape에서 화면 넘침과 Panel 충돌이 없어야 한다.
+- 키보드, Touch Target, Focus와 Reduced Motion을 다시 검수해야 한다.
 
 ---
 
-## Phase 2. MAP 필수 자산 제작
+## Next. 공통 시스템 완성
 
-상태: 완료
-
-### 제작 자산
-
-- UI와 텍스트가 없는 MAP 배경
-- Blue 컬러의 공통 EVE 홀로그램
-- Explorer 프로필
-- Nova Land Logo Lockup과 Symbol
-- Nova, Luna, Spark와 Wonder 시설별 SVG Icon
+상태: 모바일 MAP 확정 후 진행
 
 
-### 제작 기준
+### Explorer Archive
 
-- 배경에 패널, 버튼, 카드와 문구를 포함하지 않습니다.
-- 실제 구현 위치에서 잘리지 않도록 충분한 여백을 확보합니다.
-- 투명 자산은 가장자리 Halo와 배경색 잔여 여부를 확인합니다.
-- 원본 PNG 또는 WebP를 보관하고 용도에 맞게 최적화합니다.
-- 전체 화면 시안을 새로 만들지 않고 독립 자산만 제작합니다.
+- [ ] Explorer Log와 Explorer Passport 공통 Overlay
+- [ ] 두 화면을 동등한 Tab으로 전환
+- [ ] Recent Log에서 Explorer Log 진입
+- [ ] Explorer Profile에서 Passport 진입
+- [ ] 시설 완료 기록과 Stamp 갱신
+
+
+### 저장과 설정
+
+- [ ] Explorer 이름 등록·변경과 복원
+- [ ] 시설 잠금·진행·완료 상태 저장
+- [ ] Mission 진행 상태 저장
+- [ ] 언어, 시간과 사운드 설정 저장
+- [ ] Recent Log 저장
+- [ ] 처음부터 다시 시작과 저장 데이터 초기화
+- [ ] Fullscreen 상태 예외와 브라우저별 동작 검수
 
 
 ### 완료 조건
 
-- 모든 MAP 필수 자산이 `assets`의 확정 경로에 저장되어야 합니다.
-- MAP 배경은 1920 × 1080을 기준으로 하고, 투명 자산은 투명도와 선명도 검수를 통과해야 합니다.
+- 새로고침 후 사용자와 시설 상태가 정확히 복원되어야 한다.
+- 언어 변경이 모든 공통 UI에 즉시 반영되어야 한다.
+- Explorer Log와 Passport가 역할을 유지하면서 같은 Overlay 안에서 동작해야 한다.
 
 ---
 
-## Phase 3. 프로젝트 기반과 공통 UI
-
-상태: 완료
-
-### 구조
-
-- `index.html`의 `<head>`, CSS·JavaScript 연결과 `#app` 유지
-- 기존 MAP 본문을 최신 기획 기준으로 재작성
-- 화면 전환을 위한 공통 Screen 구조 정의
-- 시설, 상태, 문구와 언어 데이터를 JavaScript Module로 분리
-
-
-### 스타일
-
-- 색상, 간격, 크기, Z-index, Motion과 시설 컬러를 CSS 변수로 정의
-- 공통 Panel, Button, Card, Badge, Toast와 Overlay 구조 작성
-- SVG Sprite 구축
-- 기본 Focus와 Hover 상태 정의
-
-
-### 완료 조건
-
-- 임시 배경에서도 공통 컴포넌트가 독립적으로 표시되어야 합니다.
-- Undefined CSS 변수와 중복 컴포넌트가 없어야 합니다.
-
----
-
-## Phase 4. MAP PC 구현
-
-상태: 마무리 중
-
-### 화면
-
-- Top Navigation
-- Mission List
-- World Map와 시설 Card
-- 짧은 대화형 EVE Panel
-- Recent Log
-- Setting 진입 버튼
-- 4단계 Mission Progress Bar
-- Compact Mission Card와 Cosmic Voyage 조건 Card
-- Mission·EVE Panel 제목 아이콘과 Rajdhani 숫자 스타일
-
-
-### 인터랙션
-
-- 시설 선택과 선택 상태 동기화
-- 잠금, 선택 가능, 완료와 봉인 상태 표시
-- 선택 상태는 정적인 Border와 Background로 표시
-- Mission List와 World Map Card 연동
-- Mission List 선택 후 EVE 시설 안내
-- EVE 안내 종료 후 World Map 시설 Card에 Guide Glow와 Arrow 표시
-- EVE 안내와 중복되는 Toast 제거
-- 선택 상태와 관계없이 동일한 Mission Card 높이와 Icon 크기 유지
-- Number, Icon, Description과 Status의 고정 열 정렬
-- 잠금 Card의 해제 조건 안내와 하단 Status 표시
-- Control Room 진입
-
-
-### 완료 전 To Do
-
-- [x] 네 시설의 활성화·복구 완료 상태와 `4 / 4` Progress UI 구현
-- [x] Mission List와 World Map Card의 잠금 해제·복구 완료 상태 동기화
-- [x] Cosmic Voyage의 `???`·봉인 상태를 실제 이름·개방 상태와 Aurora 표현으로 전환
-- [x] 전체 복구 시 EVE 완료 안내와 Recent Log 갱신
-- [x] 완료 상태의 시설 컬러와 선택·Guide Glow 우선순위 검수
-- [ ] 1920px, 1440px, 1366px, 1024px, 768px와 390px 기준 반응형 조정
-- [ ] 작은 화면에서 World Map Title과 시설 Card의 퍼센트 좌표·겹침 검수
-- [ ] 모든 UI 문구를 10px보다 크게 유지하고 긴 영문 시설명 말줄임 검수
-- [ ] 키보드 Focus, 잠금 Button, EVE 타이핑·Wave와 시설 행동 유도 재검수
-- [x] MAP 배경 명도와 전체 화면 Overlay 제거 확정
-- [ ] `project.md`, `roadmap.md`와 `README.md` 최신화 및 제거된 알림 관련 문서 정리
-
-로컬에서는 URL에 `?map-state=restored`를 추가하여 전체 복구 상태를 검수합니다.
-
-
-### 제외 항목
-
-- World Status와 Bottom Status
-- MAP에서 Mission 직접 시작
-
-
-### 완료 조건
-
-- PC에서 시설 선택, 잠금 안내와 Control Room 진입 흐름이 동작해야 합니다.
-- MAP 배경과 UI가 독립 레이어로 유지되어야 합니다.
-- 전체 활성화 상태와 주요 반응형 화면 검수를 통과해야 합니다.
-
----
-
-## Phase 5. 공통 시스템
-
-상태: 다음 작업
-
-### Facility Identity Color
-
-- MAP과 공통 UI의 Nova Coaster Color Token을 Electric Violet `#8c72ff`로 변경
-- Luna Light Garden은 Mint `#51e7cc`로 유지
-- Spark Energy Tower는 Orange `#ffb84a`로 유지
-- Wonder Parade Hall은 Pink `#ff6eb6`로 유지
-- Cosmic Voyage는 봉인 상태에서 Gray를 사용하고 개방 상태의 Aurora Gradient는 Phase 10에서 연결
-
-
-### Explorer
-
-- Explorer 등록과 이름 변경
-- Explorer 프로필 표시
-- Explorer Log와 Explorer Passport를 제공하는 Explorer Archive 공통 Overlay
-- Recent Log에서 탐험 기록 Tab 진입
-- Explorer Profile에서 탐험가 패스포트 Tab 진입
-- Mission 완료 후 탐험 기록 확인, 패스포트 도장 갱신과 MAP 복귀 흐름
-
-
-### Setting
-
-- 한국어와 영어 전환
-- BGM과 효과음 조절
-- Day, Sunset과 Night 변경
-- 처음부터 다시 시작
-
-
-### 상태 저장
-
-- Explorer 정보
-- 시설 잠금과 완료 상태
-- Mission 진행 상태
-- 언어, 시간과 사운드 설정
-- Recent Log
-
-
-### 완료 조건
-
-- 시설별 Identity Color가 MAP, Glow와 시설 UI에서 명확하게 구분되어야 합니다.
-- 새로고침 후 저장 상태가 복원되어야 합니다.
-- 언어 변경이 공통 UI와 안내 문구에 즉시 반영되어야 합니다.
-- Explorer Log와 Explorer Passport가 같은 Overlay 안에서 독립된 Tab으로 전환되어야 합니다.
-
----
-
-## Phase 6. Nova Coaster와 공통 Mission Flow
+## Phase 1. NOVA COASTER와 공통 Mission Flow
 
 상태: 예정
 
-### 자산
+- [ ] Control Room 공통 Layout
+- [ ] 시설별 Theme Modifier
+- [ ] EVE와 Mission Objective
+- [ ] 시설 상태 Panel
+- [ ] Mission Guide
+- [ ] Countdown
+- [ ] Play
+- [ ] Pause
+- [ ] Fail
+- [ ] Complete
+- [ ] MAP 복귀와 상태 갱신
+- [ ] Rail Connection Puzzle
 
-- UI와 텍스트가 없는 Nova Coaster Control Room 배경
-- Electric Violet 컬러 EVE 적용
-
-
-### 공통 Control Room
-
-- 시설 정보
-- EVE Panel
-- Mission Objective
-- 시설 상태 Panel
-- MISSION START
-- MAP과 Setting 버튼
-
-
-### 공통 Mission Flow
-
-- Mission Guide
-- Countdown
-- Play
-- Pause
-- Fail
-- Complete
-- Control Room 복귀와 진행 상태 복원
-
-
-### Nova Coaster Mission
-
-- 필수 레일 연결
-- 시스템 점검
-- 열차 운행 테스트
-- 안전 도착 판정
-
-
-### 완료 조건
-
-- MAP 진입부터 Nova Coaster 완료와 MAP 상태 갱신까지 하나의 흐름으로 동작해야 합니다.
-- 공통 Mission Flow가 다음 시설에서 재사용 가능한 구조여야 합니다.
+완료 조건: MAP 진입부터 NOVA COASTER 복구와 기록 갱신까지 하나의 흐름으로 동작하고, 다음 시설에서 Control Room과 Overlay를 재사용할 수 있어야 한다.
 
 ---
 
-## Phase 7. Luna Light Garden
+## Phase 2. LUNA LIGHT GARDEN
 
 상태: 예정
 
-### 자산
-
-- UI와 텍스트가 없는 Luna Light Garden Control Room 배경
-- Mint 컬러 EVE 적용
-
-
-### Mission
-
-- Light Fragment 수집
-- Prism 활성화와 90도 회전
-- 빛의 경로 연결
-- 꽃과 식물 활성화
-- 중앙 Lotus 개화
-
-
-### 상태 연동
-
-- 빛 조각 수
-- 경로 연결률
-- 정원 활성화 상태
-- 복구 상태
-
-
-### 완료 조건
-
-- Luna 완료 후 MAP의 시설 상태와 Recent Log가 갱신되어야 합니다.
+- [ ] 시설 배경과 Mint Theme
+- [ ] Light Fragment 수집
+- [ ] Prism 회전과 빛 경로 연결
+- [ ] 꽃과 식물 활성화
+- [ ] 중앙 Lotus 개화
+- [ ] MAP과 Archive 갱신
 
 ---
 
-## Phase 8. Spark Energy Tower
+## Phase 3. SPARK ENERGY TOWER
 
 상태: 예정
 
-### 자산
-
-- UI와 텍스트가 없는 Spark Energy Tower Control Room 배경
-- Orange 컬러 EVE 적용
-
-
-### Mission
-
-- Core의 모양, 색상과 위치 기억
-- Core Drag
-- 빈 Slot 배치
-- Charge 100% 달성
-- Energy Tower 재가동
-
-
-### 완료 조건
-
-- 난이도별 Core 수와 공개 시간이 적용되어야 합니다.
-- Spark 완료 후 MAP 상태와 Recent Log가 갱신되어야 합니다.
+- [ ] 시설 배경과 Orange Theme
+- [ ] Core 정보 공개와 기억 단계
+- [ ] Core Drag와 Slot 배치
+- [ ] Charge 100%
+- [ ] 난이도별 Core 수와 공개 시간
+- [ ] MAP과 Archive 갱신
 
 ---
 
-## Phase 9. Wonder Parade Hall
+## Phase 4. WONDER PARADE HALL
 
 상태: 예정
 
-### 자산
-
-- UI와 텍스트가 없는 Wonder Parade Hall Control Room 배경
-- Pink 컬러 EVE 적용
-
-
-### Mission
-
-- Parade Character 확인
-- 지정 위치와 행진 순서 기억
-- Character Drag와 배치
-- 무대 활성화
-- Parade 시작
-
-
-### 완료 조건
-
-- 난이도별 Character 수와 배치 조건이 적용되어야 합니다.
-- Wonder 완료 후 Cosmic Voyage가 개방되어야 합니다.
+- [ ] 시설 배경과 Pink Theme
+- [ ] Character 확인
+- [ ] 위치와 행진 순서 배치
+- [ ] Stage 활성화와 Parade 시작
+- [ ] 난이도별 Character와 Hint
+- [ ] MAP과 Archive 갱신
 
 ---
 
-## Phase 10. Cosmic Voyage와 Ending
+## Phase 5. COSMIC VOYAGE와 Ending
 
 상태: 예정
 
-### 자산
-
-- Cosmic Voyage 배경
-- 전체 시설 에너지가 연결되는 연출 자산
-
-
-### 컬러 연출
-
-- Pearl White 중심광
-- Pale Silver Blue 보조광
-- Nova, Luna, Spark와 Wonder 컬러가 연결되는 Aurora Gradient
-- 봉인 상태 Gray와 개방 상태 Aurora의 명확한 전환
-
-
-### Cosmic Voyage
-
-- 4개 시설 완료 조건 확인
-- Gate 개방
-- Movement, Life, Energy와 Joy 연결
-- Harmony 체험
-
-
-### Ending
-
-- Explorer Certification
-- Explorer Passport 최종 상태
-- Nova Land 복구 연출
-- EVE 최종 메시지
-- Ending과 프로젝트 소개 연결
-
-
-### 완료 조건
-
-- 첫 진입부터 Ending까지 전체 User Flow가 끊김 없이 동작해야 합니다.
+- [ ] 네 시설 완료 조건 확인
+- [ ] 봉인 해제와 Gate 개방
+- [ ] 네 시설 에너지 연결
+- [ ] Pearl White와 Aurora 연출
+- [ ] Explorer Passport 최종 상태
+- [ ] Explorer Certification
+- [ ] EVE 최종 Message
+- [ ] Ending과 프로젝트 소개 연결
 
 ---
 
-## Phase 11. 반응형과 최종 QA
+## Final. 전체 품질 검수
 
 상태: 예정
 
-### 반응형
 
-- Mobile
-- Tablet
-- PC
-- 가로·세로 전환
-- Touch 조작
+### Responsive
 
-
-### 접근성
-
-- 키보드 조작
-- Focus 이동과 Focus Visible
-- Button과 Dialog 이름
-- 상태 변화 Live Region
-- 명도 대비
-- `prefers-reduced-motion`
+- [ ] 360px
+- [ ] 390px
+- [ ] 768px
+- [ ] 1024px
+- [ ] 1366px
+- [ ] 1440px
+- [ ] 1920px
+- [ ] Mobile Landscape와 화면 회전
 
 
-### 품질
+### Accessibility
 
-- 이미지 WebP 변환과 용량 최적화
-- 필요한 이미지 Preload와 Lazy Loading 구분
-- 애니메이션 성능
-- BGM과 효과음 정책
-- Chrome, Edge, Safari와 Mobile Browser 확인
-- 저장 데이터 초기화와 오류 복구
-- GitHub 배포와 최종 회귀 테스트
+- [ ] Semantic 구조
+- [ ] 키보드 조작과 Focus 이동
+- [ ] Button과 Dialog의 접근 가능한 이름
+- [ ] 상태 변화 Live Region
+- [ ] 색 대비
+- [ ] Touch Target
+- [ ] prefers-reduced-motion
 
 
-### 완료 조건
+### Quality
 
-- 주요 화면과 Mission을 PC와 Mobile에서 완료할 수 있어야 합니다.
-- 치명적인 접근성, 저장, 성능과 화면 깨짐 문제가 없어야 합니다.
+- [ ] 이미지 용량과 Format
+- [ ] Preload와 Lazy Loading
+- [ ] Animation 성능
+- [ ] BGM과 효과음 정책
+- [ ] Chrome, Edge, Safari와 Mobile Browser
+- [ ] 저장 데이터 초기화와 오류 복구
+- [ ] 전체 User Flow 회귀 테스트
+- [ ] 배포 환경 검수
 
 ---
 
-## 현재 우선순위
+## 현재 작업 순서
 
-```text
-Phase 5. 공통 시스템
-
-→
-
-Phase 6. Nova Coaster와 공통 Mission Flow
-
-→
-
-Phase 7. Luna Light Garden Mission
-```
-
-완료된 MAP PC 화면에 공통 시스템을 연결한 뒤 Nova Coaster에서 Control Room과 Mission Flow의 재사용 구조를 완성합니다.
+    모바일 MAP Wireframe 확정
+    → 모바일 MAP UI 재구성
+    → 공통 시스템과 Explorer Archive
+    → NOVA COASTER와 공통 Mission Flow
+    → 나머지 시설
+    → COSMIC VOYAGE와 Ending
+    → 전체 QA와 배포
