@@ -20,7 +20,7 @@
 ### 작업
 
 - MAP과 Control Room의 배경 자산 구분
-- 공통 EVE, Explorer 프로필, 로고 심볼과 시설 썸네일 정의
+- 공통 EVE, Explorer 프로필, Logo Lockup·Symbol과 시설별 SVG Icon 정의
 - 코드로 구현할 UI와 이미지로 제작할 요소 구분
 - 자산 폴더와 파일명 계획 수립
 - 기존 완성 PNG를 참고 시안으로 분류
@@ -41,8 +41,8 @@
 - UI와 텍스트가 없는 MAP 배경
 - Blue 컬러의 공통 EVE 홀로그램
 - Explorer 프로필
-- Nova Land 심볼
-- Nova, Luna, Spark와 Wonder 시설 썸네일
+- Nova Land Logo Lockup과 Symbol
+- Nova, Luna, Spark와 Wonder 시설별 SVG Icon
 
 
 ### 제작 기준
@@ -107,9 +107,11 @@
 
 - 시설 선택과 선택 상태 동기화
 - 잠금, 선택 가능, 완료와 봉인 상태 표시
-- 선택 시설 Glow 강조
+- 선택 상태는 정적인 Border와 Background로 표시
 - Mission List와 World Map Card 연동
-- EVE 메시지 갱신
+- Mission List 선택 후 EVE 시설 안내
+- EVE 안내 종료 후 World Map 시설 Card에 Guide Glow와 Arrow 표시
+- EVE 안내와 중복되는 Toast 제거
 - Control Room 진입
 
 
@@ -128,14 +130,25 @@
 
 ## Phase 5. 공통 시스템
 
-상태: 예정
+상태: 다음 작업
+
+### Facility Identity Color
+
+- MAP과 공통 UI의 Nova Coaster Color Token을 Electric Violet `#8c72ff`로 변경
+- Luna Light Garden은 Mint `#51e7cc`로 유지
+- Spark Energy Tower는 Orange `#ffb84a`로 유지
+- Wonder Parade Hall은 Pink `#ff6eb6`로 유지
+- Cosmic Voyage는 봉인 상태에서 Gray를 사용하고 개방 상태의 Aurora Gradient는 Phase 10에서 연결
+
 
 ### Explorer
 
 - Explorer 등록과 이름 변경
 - Explorer 프로필 표시
-- Explorer Log
-- Explorer Passport
+- Explorer Log와 Explorer Passport를 제공하는 Explorer Archive 공통 Overlay
+- Recent Log에서 탐험 기록 Tab 진입
+- Explorer Profile에서 탐험가 패스포트 Tab 진입
+- Mission 완료 후 탐험 기록 확인, 패스포트 도장 갱신과 MAP 복귀 흐름
 
 
 ### Setting
@@ -157,8 +170,10 @@
 
 ### 완료 조건
 
+- 시설별 Identity Color가 MAP, Glow와 시설 UI에서 명확하게 구분되어야 합니다.
 - 새로고침 후 저장 상태가 복원되어야 합니다.
 - 언어 변경이 공통 UI와 안내 문구에 즉시 반영되어야 합니다.
+- Explorer Log와 Explorer Passport가 같은 Overlay 안에서 독립된 Tab으로 전환되어야 합니다.
 
 ---
 
@@ -169,7 +184,7 @@
 ### 자산
 
 - UI와 텍스트가 없는 Nova Coaster Control Room 배경
-- Purple 컬러 EVE 적용
+- Electric Violet 컬러 EVE 적용
 
 
 ### 공통 Control Room
@@ -301,6 +316,14 @@
 
 - Cosmic Voyage 배경
 - 전체 시설 에너지가 연결되는 연출 자산
+
+
+### 컬러 연출
+
+- Pearl White 중심광
+- Pale Silver Blue 보조광
+- Nova, Luna, Spark와 Wonder 컬러가 연결되는 Aurora Gradient
+- 봉인 상태 Gray와 개방 상태 Aurora의 명확한 전환
 
 
 ### Cosmic Voyage

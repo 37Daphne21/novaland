@@ -21,6 +21,7 @@ const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)
 
 let toastTimer = null;
 let eveTypingTimer = null;
+let eveSpeechComplete = null;
 let activeOverlay = null;
 let previouslyFocused = null;
 let selectedFacilityId = 'coaster';
@@ -43,22 +44,36 @@ function showToast(message) {
   }, 2200);
 }
 
+function cancelEveSpeech() {
+  window.clearInterval(eveTypingTimer);
+  eveTypingTimer = null;
+  eveSpeechComplete = null;
+  eveSignalWave?.classList.add('is-paused');
+  evePanel?.setAttribute('aria-busy', 'false');
+}
+
 function finishEveSpeech() {
   window.clearInterval(eveTypingTimer);
   eveTypingTimer = null;
   eveSignalWave?.classList.add('is-paused');
   evePanel?.setAttribute('aria-busy', 'false');
+
+  const onComplete = eveSpeechComplete;
+  eveSpeechComplete = null;
+  onComplete?.();
 }
 
-function speakEve(message) {
+function speakEve(message, onComplete = null) {
   if (!eveMessage || !message) {
     return;
   }
 
-  finishEveSpeech();
+  cancelEveSpeech();
+  eveSpeechComplete = onComplete;
 
   if (prefersReducedMotion) {
     eveMessage.textContent = message;
+    finishEveSpeech();
     return;
   }
 
@@ -113,7 +128,6 @@ function renderFacilities() {
             <span class="facility-card__type">${facility.type}</span>
           </span>
           <span class="facility-card__state">${getIcon(state.icon)}${state.label}</span>
-          ${isSelected && !isDisabled ? `<span class="facility-card__enter" aria-hidden="true">${getIcon('arrow-right')}</span>` : ''}
         </button>
       </li>
     `;
@@ -135,6 +149,7 @@ function renderMapCards() {
       <button class="map-facility-card is-state-${facility.state}${isSelected ? ' is-selected' : ''}" type="button" data-facility="${facility.id}" data-control-room-entry aria-pressed="${isSelected}"${isDisabled ? ' aria-disabled="true"' : ''} style="--marker-x: ${facility.position.x}%; --marker-y: ${facility.position.y}%; --facility-color: var(--color-${facility.id});">
         <span class="map-facility-card__number">${marker}</span>
         <span class="map-facility-card__content"><strong>${facility.name}</strong><small>${facility.type}</small><i>${getIcon(state.icon)}${state.label}</i></span>
+        <span class="map-facility-card__enter" aria-hidden="true">${getIcon('arrow-right')}</span>
       </button>
     `;
   }).join('');
@@ -174,6 +189,16 @@ function updateFacilityGlow(facility) {
   facilityGlow.classList.add('is-visible');
 }
 
+function clearFacilityGuide() {
+  facilityGlow?.classList.remove('is-visible');
+  mapCardList?.querySelector('.map-facility-card.is-guided')?.classList.remove('is-guided');
+}
+
+function guideFacility(facility) {
+  mapCardList?.querySelector(`[data-facility="${facility.id}"]`)?.classList.add('is-guided');
+  updateFacilityGlow(facility);
+}
+
 function renderRecentLogs() {
   if (!recentLogList) {
     return;
@@ -208,9 +233,9 @@ function selectFacility(button) {
   }
 
   if (facility.state === 'locked' || facility.state === 'sealed') {
+    clearFacilityGuide();
+    renderMapCards();
     speakEve(facility.lockedMessage);
-
-    showToast(uiCopy.lockedFacility);
     return;
   }
 
@@ -220,18 +245,17 @@ function selectFacility(button) {
   }
 
   selectedFacilityId = facility.id;
+  clearFacilityGuide();
   renderFacilities();
   renderMapCards();
-  updateFacilityGlow(facility);
-
-  speakEve(facility.message);
 
   if (button.hasAttribute('data-control-room-entry')) {
+    cancelEveSpeech();
     enterControlRoom(facility);
     return;
   }
 
-  showToast(facility.name + ' 시설을 선택했어요.');
+  speakEve(facility.message, () => guideFacility(facility));
 }
 
 function showScreen(screenName) {
@@ -332,7 +356,6 @@ renderCosmicStatus();
 renderMissionProgress();
 renderRecentLogs();
 renderLanguages();
-updateFacilityGlow(facilities.find((facility) => facility.id === selectedFacilityId));
 speakEve(initialEveMessage);
 
 document.addEventListener('click', handleDocumentClick);
