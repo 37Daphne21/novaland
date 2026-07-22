@@ -36,7 +36,8 @@
       <div class="map-layout">
         <section class="mission-panel ui-panel" aria-labelledby="mission-title">
           <header class="ui-panel__header">
-            <h1 id="mission-title" class="ui-panel__title">미션</h1>
+            <div><span class="ui-panel__eyebrow">FACILITY MISSION</span><h1 id="mission-title" class="ui-panel__title">미션</h1></div>
+            <span class="mission-panel__status"><i aria-hidden="true"></i>1개 시설 활성</span>
           </header>
           <ol id="facility-list" class="facility-list" aria-label="시설 목록"></ol>
           <button id="cosmic-status" class="cosmic-status" type="button" data-facility="cosmic" aria-disabled="true"></button>
@@ -45,8 +46,8 @@
             <span class="mission-progress__track" aria-hidden="true"><i id="mission-progress-bar"></i></span>
           </div>
         </section>
+        <header class="world-map__heading"><h2 id="world-title">WORLD MAP</h2><p>노바랜드 전체 보기</p></header>
         <section class="world-map" aria-labelledby="world-title">
-          <header class="world-map__heading"><h2 id="world-title">WORLD MAP</h2><p>노바랜드 전체 보기</p></header>
           <div id="facility-glow" class="facility-glow" aria-hidden="true"></div>
           <div id="map-card-list" class="map-card-list" aria-label="월드맵 시설"></div>
         </section>

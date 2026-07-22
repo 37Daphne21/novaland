@@ -36,7 +36,7 @@
       <stop offset=".5" stop-color="#E0B870" stop-opacity=".65"/>
       <stop offset="1" stop-color="#A8712F" stop-opacity="0"/>
     </linearGradient>
-    <linearGradient id="wordmark" x1="126" y1="15" x2="264" y2="84" gradientUnits="userSpaceOnUse">
+    <linearGradient id="wordmark" x1="0" y1="0" x2="140" y2="30" gradientUnits="userSpaceOnUse">
       <stop stop-color="#FFF5DE"/>
       <stop offset=".55" stop-color="#EFD6A8"/>
       <stop offset="1" stop-color="#C59249"/>

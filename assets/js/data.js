@@ -17,7 +17,7 @@ export const facilities = [
     type: '생명 시설',
     icon: 'facility-luna',
     state: 'locked',
-    position: { x: 63, y: 13 },
+    position: { x: 72, y: 24 },
     glow: { x: 64, y: 30 },
     message: 'LUNA LIGHT GARDEN의 빛 에너지가 안정됐어요.',
     lockedMessage: 'NOVA COASTER를 먼저 복구하면 LUNA LIGHT GARDEN이 열려요.',

@@ -46,7 +46,7 @@ function showToast(message) {
 function finishEveSpeech() {
   window.clearInterval(eveTypingTimer);
   eveTypingTimer = null;
-  eveSignalWave?.classList.remove('is-speaking');
+  eveSignalWave?.classList.add('is-paused');
   evePanel?.setAttribute('aria-busy', 'false');
 }
 
@@ -68,6 +68,7 @@ function speakEve(message) {
   eveMessage.textContent = '';
   evePanel?.setAttribute('aria-busy', 'true');
   eveSignalWave?.classList.add('is-speaking');
+  eveSignalWave?.classList.remove('is-paused');
 
   eveTypingTimer = window.setInterval(() => {
     eveMessage.textContent += characters[characterIndex];

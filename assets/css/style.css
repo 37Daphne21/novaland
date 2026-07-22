@@ -8,6 +8,21 @@
   padding: var(--space-4);
 }
 
+.explorer-profile small,
+.status-chip strong,
+.notification-count,
+.facility-card__name,
+.cosmic-status strong,
+.mission-progress__header strong,
+.world-map__heading h2,
+.map-facility-card__number,
+.map-facility-card__content strong,
+.eve-panel .ui-panel__title,
+.recent-log__time,
+.control-room-shell__content h1 {
+  font-family: var(--font-display);
+}
+
 .top-navigation {
   position: relative;
   z-index: var(--z-content);
@@ -29,7 +44,8 @@
 
 .brand__lockup {
   width: 10rem;
-  height: auto;}
+  height: auto;
+}
 
 .explorer-profile {
   display: flex;
@@ -56,15 +72,16 @@
 
 .explorer-profile small {
   color: #e2bb77;
-  font-size: .625rem;
+  font-size: .6875rem;
   font-weight: 800;
-  letter-spacing: .08em;
+  letter-spacing: .06em;
 }
 
 .explorer-profile strong {
   margin-top: .125rem;
-  font-size: 1rem;
-  letter-spacing: .06em;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  letter-spacing: .03em;
 }
 
 .explorer-profile__edit {
@@ -113,15 +130,16 @@
 }
 
 .status-chip strong {
-  font-size: 1rem;
+  font-size: 1.0625rem;
+  font-weight: 700;
 }
 
 .status-chip small {
   margin-top: .125rem;
   color: #d8ac64;
-  font-size: .5625rem;
+  font-size: .625rem;
   font-weight: 700;
-  letter-spacing: .08em;
+  letter-spacing: .04em;
 }
 
 .top-navigation__actions {
@@ -158,10 +176,10 @@
 
 .utility-button small {
   color: var(--color-text-muted);
-  font-size: .5rem;
+  font-size: .625rem;
   font-style: normal;
   font-weight: 700;
-  letter-spacing: .05em;
+  letter-spacing: .03em;
 }
 
 .utility-button:hover,
@@ -180,6 +198,7 @@
   border-radius: 50%;
   color: #fff;
   font-size: .5rem;
+  font-style: normal;
   font-weight: 800;
   background: #ff4e58;
 }
@@ -188,7 +207,7 @@
   position: relative;
   z-index: var(--z-content);
   display: grid;
-  grid-template-columns: clamp(20rem, 21vw, 23.5rem) minmax(20rem, 1fr) clamp(18rem, 18vw, 20rem);
+  grid-template-columns: clamp(23.5rem, 21vw, 25rem) minmax(20rem, 1fr) clamp(18rem, 18vw, 20rem);
   align-items: end;
   gap: var(--space-4);
   min-height: 0;
@@ -201,12 +220,60 @@
 }
 
 .mission-panel {
+  position: relative;
+  overflow: hidden;
   border-color: rgba(213, 167, 97, .34);
+  background: linear-gradient(155deg, rgba(19, 31, 45, .94), rgba(5, 14, 26, .88) 46%, rgba(16, 30, 48, .86));
+}
+
+.mission-panel::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: .1875rem;
+  background: linear-gradient(90deg, #d5a761, rgba(56, 200, 255, .75), transparent 84%);
+  box-shadow: 0 0 1rem rgba(213, 167, 97, .45);
+}
+
+.mission-panel > .ui-panel__header {
+  padding-bottom: var(--space-3);
+  border-bottom: .0625rem solid rgba(213, 167, 97, .18);
+}
+
+.mission-panel .ui-panel__eyebrow {
+  margin-bottom: .1875rem;
+  color: #d5a761;
+  letter-spacing: .14em;
+}
+
+.mission-panel .ui-panel__title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+
+.mission-panel__status {
+  display: inline-flex;
+  align-items: center;
+  gap: .375rem;
+  color: var(--color-text-subtle);
+  font-size: .625rem;
+  font-weight: 700;
+}
+
+.mission-panel__status i {
+  width: .4375rem;
+  height: .4375rem;
+  border-radius: 50%;
+  background: var(--color-success);
+  box-shadow: 0 0 .625rem var(--color-success);
 }
 
 .facility-list {
   display: grid;
-  gap: var(--space-2);
+  gap: .625rem;
   margin-top: var(--space-4);
 }
 
@@ -217,13 +284,15 @@
   align-items: center;
   gap: var(--space-3);
   min-height: 4.75rem;
-  padding: .5rem .625rem;
+  padding: .625rem .75rem;
+  background: linear-gradient(105deg, rgba(16, 35, 55, .72), rgba(7, 18, 32, .66));
 }
 
 .facility-card.is-selected {
   grid-template-columns: 5.25rem minmax(0, 1fr) auto auto;
   min-height: 8rem;
   border-color: var(--facility-color);
+  background: linear-gradient(105deg, color-mix(in srgb, var(--facility-color) 18%, transparent), rgba(7, 18, 32, .9) 72%);
 }
 
 .facility-card.is-selected .facility-card__icon {
@@ -258,14 +327,16 @@
 .facility-card__name {
   overflow: hidden;
   font-size: .6875rem;
-  font-weight: 800;
+  font-weight: 700;
+  letter-spacing: .015em;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .facility-card__type {
   color: var(--color-text-muted);
-  font-size: .5625rem;
+  font-size: .625rem;
+  line-height: 1.4;
 }
 
 .facility-card__state {
@@ -273,9 +344,9 @@
   align-items: center;
   gap: .25rem;
   color: var(--facility-color);
-  font-size: .5625rem;
+  font-size: .625rem;
   font-weight: 800;
-  letter-spacing: .06em;
+  letter-spacing: .02em;
 }
 
 .facility-card__state .ui-icon {
@@ -303,10 +374,10 @@
   gap: var(--space-3);
   margin-top: var(--space-3);
   padding: .75rem;
-  border: .0625rem solid rgba(184, 119, 255, .2);
+  border: .0625rem solid rgba(184, 119, 255, .28);
   border-radius: var(--radius-md);
   color: var(--color-text-muted);
-  background: rgba(35, 17, 55, .34);
+  background: linear-gradient(100deg, rgba(54, 27, 82, .48), rgba(20, 16, 40, .5));
   width: 100%;
 }
 
@@ -319,14 +390,14 @@
 }
 
 .cosmic-status strong {
-  font-size: .6875rem;
-  letter-spacing: .05em;
+  font-size: .75rem;
+  letter-spacing: .03em;
 }
 
 .cosmic-status small {
   margin-top: .125rem;
   color: var(--color-cosmic);
-  font-size: .5625rem;
+  font-size: .625rem;
   font-weight: 700;
 }
 
@@ -347,15 +418,15 @@
 
 .mission-progress__header strong {
   color: var(--color-text);
-  font-size: .875rem;
+  font-size: .9375rem;
   font-variant-numeric: tabular-nums;
 }
 
 .mission-progress__header span {
   color: var(--color-text-muted);
-  font-size: .5625rem;
+  font-size: .625rem;
   font-weight: 700;
-  letter-spacing: .08em;
+  letter-spacing: .04em;
 }
 
 .mission-progress__track {
@@ -413,16 +484,17 @@
 
 .world-map__heading h2 {
   font-size: clamp(1.5rem, 2.2vw, 2.25rem);
-  font-weight: 500;
-  letter-spacing: .32em;
+  font-weight: 600;
+  letter-spacing: .22em;
   white-space: nowrap;
 }
 
 .world-map__heading p {
   margin-top: .375rem;
   color: var(--color-text-subtle);
-  font-size: .625rem;
-  letter-spacing: .2em;
+  font-size: .6875rem;
+  font-weight: 600;
+  letter-spacing: .12em;
 }
 
 .map-card-list {
@@ -465,7 +537,7 @@
   grid-template-columns: 3rem minmax(0, 1fr);
   align-items: center;
   gap: .625rem;
-  width: 14rem;
+  width: 15.5rem;
   min-height: 4.5rem;
   padding: .625rem .875rem;
   border: .0625rem solid color-mix(in srgb, var(--facility-color) 46%, transparent);
@@ -522,14 +594,16 @@
 
 .map-facility-card__content strong {
   overflow: hidden;
-  font-size: .75rem;
+  font-size: .6875rem;
+  font-weight: 700;
+  letter-spacing: .015em;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .map-facility-card__content small {
   color: var(--color-text-muted);
-  font-size: .5625rem;
+  font-size: .625rem;
 }
 
 .map-facility-card__content i {
@@ -537,10 +611,10 @@
   align-items: center;
   gap: .25rem;
   color: var(--facility-color);
-  font-size: .5625rem;
+  font-size: .625rem;
   font-style: normal;
   font-weight: 700;
-  letter-spacing: .05em;
+  letter-spacing: .02em;
 }
 
 .map-facility-card__content i .ui-icon {
@@ -590,6 +664,10 @@
 
 .signal-wave.is-speaking i {
   animation: eve-signal-wave .42s ease-in-out infinite alternate;
+}
+
+.signal-wave.is-speaking.is-paused i {
+  animation-play-state: paused;
 }
 
 .signal-wave.is-speaking i:nth-child(2) {
@@ -642,8 +720,8 @@
 
 .eve-panel__body p {
   color: var(--color-text-subtle);
-  font-size: .6875rem;
-  line-height: 1.65;
+  font-size: .75rem;
+  line-height: 1.7;
 }
 
 .recent-log__list {
@@ -660,8 +738,8 @@
   padding-top: var(--space-2);
   border-top: .0625rem solid rgba(116, 188, 224, .1);
   color: var(--color-text-subtle);
-  font-size: .625rem;
-  line-height: 1.45;
+  font-size: .6875rem;
+  line-height: 1.5;
   min-height: 2.75rem;
 }
 
@@ -775,6 +853,47 @@ body.is-overlay-open {
 
   .explorer-profile {
     min-width: 0;
+  }
+
+  .facility-card {
+    grid-template-columns: 2.75rem minmax(0, 1fr) auto;
+    column-gap: .625rem;
+    row-gap: .25rem;
+    padding: .5rem;
+  }
+
+  .facility-card.is-selected {
+    grid-template-columns: 4.25rem minmax(0, 1fr) auto;
+    min-height: 7rem;
+  }
+
+  .facility-card.is-selected .facility-card__icon {
+    width: 4.25rem;
+    height: 4.25rem;
+  }
+
+  .facility-card__icon {
+    grid-row: 1 / 3;
+  }
+
+  .facility-card__name {
+    font-size: .625rem;
+    letter-spacing: 0;
+  }
+
+  .facility-card__content {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .facility-card__state {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .facility-card__enter {
+    grid-column: 3;
+    grid-row: 1 / 3;
   }
 
   .map-layout {
