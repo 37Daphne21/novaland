@@ -17,7 +17,7 @@ export const facilities = [
     type: '생명 시설',
     icon: 'facility-luna',
     state: 'locked',
-    position: { x: 72, y: 24 },
+    position: { x: 72, y: 19 },
     glow: { x: 64, y: 30 },
     message: 'LUNA LIGHT GARDEN의 빛 에너지가 안정됐어요.',
     lockedMessage: 'NOVA COASTER를 먼저 복구하면 LUNA LIGHT GARDEN이 열려요.',
@@ -41,7 +41,7 @@ export const facilities = [
     type: '즐거움 시설',
     icon: 'facility-wonder',
     state: 'locked',
-    position: { x: 72, y: 43 },
+    position: { x: 72, y: 46 },
     glow: { x: 72, y: 55 },
     message: 'WONDER PARADE HALL의 퍼레이드를 준비할 수 있어요.',
     lockedMessage: 'SPARK ENERGY TOWER를 먼저 복구하면 WONDER PARADE HALL이 열려요.',
@@ -54,7 +54,7 @@ export const cosmicVoyage = {
   name: 'COSMIC VOYAGE',
   type: '마지막 경험',
   state: 'sealed',
-  position: { x: 49, y: 68 },
+  position: { x: 49, y: 71 },
   glow: { x: 50, y: 66 },
   lockedMessage: '네 개의 시설을 모두 복구하면 COSMIC VOYAGE가 개방돼요.'
 };

@@ -16,11 +16,16 @@ const languageOptions = document.querySelector('#language-options');
 const controlRoomTitle = document.querySelector('#control-room-title');
 const controlRoomType = document.querySelector('#control-room-type');
 const screens = document.querySelectorAll('[data-screen]');
+const worldMapHeading = document.querySelector('.world-map__heading');
+const worldMapTitle = document.querySelector('#world-title');
+const worldMapSubtitle = worldMapHeading?.querySelector('p');
 const initialEveMessage = eveMessage?.textContent.trim() ?? '';
+const worldMapTitleText = worldMapTitle?.textContent.trim() ?? '';
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 let toastTimer = null;
 let eveTypingTimer = null;
+let worldMapTypingTimer = null;
 let eveSpeechComplete = null;
 let activeOverlay = null;
 let previouslyFocused = null;
@@ -28,6 +33,10 @@ let selectedFacilityId = 'coaster';
 
 function getIcon(icon) {
   return `<svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-${icon}"></use></svg>`;
+}
+
+function getFacilityDisplayName(facility) {
+  return facility.state === 'sealed' ? '???' : facility.name;
 }
 
 function showToast(message) {
@@ -124,7 +133,7 @@ function renderFacilities() {
       <li>
         <button class="facility-card ui-card is-state-${facility.state}${isSelected ? ' is-selected' : ''}" type="button" data-facility="${facility.id}" aria-pressed="${isSelected}"${isDisabled ? ' aria-disabled="true"' : ''} style="--facility-color: ${facilityColor};">
           <span class="facility-card__number">${String(index + 1).padStart(2, '0')}</span>
-          <span class="facility-card__icon" aria-hidden="true">${getIcon(facility.icon)}</span>
+          <span class="facility-card__icon" aria-hidden="true"><img src="./assets/images/common/facility-${facility.id}.png" alt="" width="256" height="256"></span>
           <span class="facility-card__content">
             <strong class="facility-card__name">${facility.name}</strong>
             <span class="facility-card__description">${description}</span>
@@ -157,7 +166,7 @@ function renderMapCards() {
   }).join('');
 
   const cosmicState = facilityStates[cosmicVoyage.state];
-  const cosmicName = cosmicVoyage.state === 'sealed' ? '???' : cosmicVoyage.name;
+  const cosmicName = getFacilityDisplayName(cosmicVoyage);
   const cosmicCard = `
     <button class="map-facility-card map-facility-card--cosmic is-state-${cosmicVoyage.state}" type="button" data-facility="cosmic" data-control-room-entry aria-disabled="${cosmicVoyage.state === 'sealed'}" style="--marker-x: ${cosmicVoyage.position.x}%; --marker-y: ${cosmicVoyage.position.y}%; --facility-color: var(--color-cosmic);">
       <span class="map-facility-card__number">${getIcon(cosmicState.icon)}</span>
@@ -174,12 +183,13 @@ function renderCosmicStatus() {
   }
 
   const state = facilityStates[cosmicVoyage.state];
+  const cosmicName = getFacilityDisplayName(cosmicVoyage);
   cosmicStatus.className = `cosmic-status is-state-${cosmicVoyage.state}`;
   cosmicStatus.setAttribute('aria-disabled', String(cosmicVoyage.state === 'sealed'));
   cosmicStatus.innerHTML = `
     <span class="cosmic-status__icon" aria-hidden="true">${getIcon(state.icon)}</span>
     <span class="cosmic-status__content">
-      <strong>${cosmicVoyage.name}</strong>
+      <strong>${cosmicName}</strong>
       <small>${cosmicVoyage.state === 'sealed' ? uiCopy.cosmicCondition : cosmicVoyage.type}</small>
       <i>${getIcon(state.icon)}${state.label}</i>
     </span>
@@ -272,6 +282,46 @@ function showScreen(screenName) {
     screen.hidden = !isActive;
     screen.classList.toggle('is-active', isActive);
   });
+
+  if (screenName === 'map') playWorldMapIntro();
+}
+
+function playWorldMapIntro() {
+  if (!worldMapHeading || !worldMapTitle || !worldMapSubtitle || !worldMapTitleText) return;
+
+  window.clearInterval(worldMapTypingTimer);
+  worldMapTypingTimer = null;
+  worldMapHeading.classList.add('is-intro-ready');
+  worldMapSubtitle.classList.remove('is-visible');
+  worldMapTitle.dataset.text = worldMapTitleText;
+  worldMapTitle.setAttribute('aria-label', worldMapTitleText);
+
+  if (prefersReducedMotion) {
+    worldMapTitle.textContent = worldMapTitleText;
+    worldMapTitle.classList.remove('is-typing');
+    worldMapSubtitle.classList.add('is-visible');
+    return;
+  }
+
+  const visualTitle = document.createElement('span');
+  const characters = Array.from(worldMapTitleText);
+  let characterIndex = 0;
+
+  visualTitle.setAttribute('aria-hidden', 'true');
+  worldMapTitle.classList.add('is-typing');
+  worldMapTitle.replaceChildren(visualTitle);
+
+  worldMapTypingTimer = window.setInterval(() => {
+    visualTitle.textContent += characters[characterIndex];
+    characterIndex += 1;
+
+    if (characterIndex >= characters.length) {
+      window.clearInterval(worldMapTypingTimer);
+      worldMapTypingTimer = null;
+      worldMapTitle.classList.remove('is-typing');
+      worldMapSubtitle.classList.add('is-visible');
+    }
+  }, 90);
 }
 
 function enterControlRoom(facility) {
@@ -364,6 +414,7 @@ renderCosmicStatus();
 renderMissionProgress();
 renderRecentLogs();
 renderLanguages();
+playWorldMapIntro();
 speakEve(initialEveMessage);
 
 document.addEventListener('click', handleDocumentClick);

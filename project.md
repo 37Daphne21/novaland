@@ -882,7 +882,7 @@ Cosmic Voyage의 잠금 또는 개방 상태를 표시한다.
 
 잠긴 Mission Card의 아이콘과 상태는 시설 컬러를 사용하지 않고 동일한 회색으로 표시한다.
 
-Mission Panel의 PC 폭은 우측 Panel Group과 같은 `19rem ~ 21rem` 범위를 사용하여
+Mission Panel의 PC 폭은 `20rem ~ 22rem`, 우측 Panel Group은 `19rem ~ 21rem` 범위를 사용하여
 
 World Map의 가용 영역을 확보한다.
 
@@ -898,7 +898,7 @@ Mission Card는 선택 상태와 관계없이 동일한 높이와 Icon 크기를
 
 잠긴 시설은 `잠금 해제 조건을 완료하세요.` 안내와 잠금 상태를 표시한다.
 
-Mission List에는 별도의 시설 이미지를 사용하지 않고 시설별 SVG Icon을 사용한다.
+Mission List에는 시설별 투명 PNG Emblem을 사용하고 잠긴 시설은 동일 이미지를 회색 상태로 표시한다.
 
 Cosmic Voyage는 별도의 Compact Card로 표시하며
 
@@ -2493,6 +2493,7 @@ Roadmap은 제작 일정을,
 
 - 숫자 전용 Rajdhani 500·600 로컬 폰트와 SIL OFL 1.1 라이선스 추가
 - Mission과 EVE Panel 제목에 공통 SVG Sprite 아이콘 적용
+- Mission List의 Coaster·Luna·Spark·Wonder 시설 아이콘을 고해상도 투명 PNG Emblem으로 교체
 - Mission Panel의 금색 상단 장식선을 제거하고 공통 Blue 계열 Border로 정리
 - Mission·World Map Card·EVE·Recent Log의 타이포와 내부 여백을 시안 비율에 맞게 확대
 - Mission List 선택, EVE 안내와 World Map 시설 진입을 순차 행동 유도로 연결

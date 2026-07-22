@@ -42,9 +42,12 @@
     <path d="M12 2v20M2 12h20M5 5l14 14M19 5 5 19"></path>
     <circle cx="12" cy="12" r="2.5"></circle>
   </symbol>
-  <symbol id="icon-signal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M12 13v8M9 21h6M10 13l2-4 2 4"></path>
-    <path d="M5.6 8.6a9 9 0 0 1 12.8 0M8.5 11.5a5 5 0 0 1 7 0"></path>
+  <symbol id="icon-signal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="4" r="1" fill="currentColor" stroke="none"></circle>
+    <path d="M12 5v4.5M5.7 4.8a8.8 8.8 0 0 0 0 10.4M18.3 4.8a8.8 8.8 0 0 1 0 10.4M8.3 7.2a5.3 5.3 0 0 0 0 5.6M15.7 7.2a5.3 5.3 0 0 1 0 5.6"></path>
+    <path d="m12 9.5-3.6 11h7.2L12 9.5Z"></path>
+    <path d="M9.8 16.2h4.4M9.1 18.5h5.8"></path>
+    <circle cx="12" cy="13.3" r=".8" fill="currentColor" stroke="none"></circle>
   </symbol>
   <symbol id="icon-facility-coaster" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
     <path d="M3 19c3-8 7-9 10-2 2 4 5 4 8-2"></path>
@@ -53,14 +56,14 @@
     <circle cx="9" cy="15.5" r="1.4"></circle>
     <circle cx="17" cy="14" r="1.4"></circle>
   </symbol>
-  <symbol id="icon-facility-luna" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M20 15.5A8.5 8.5 0 0 1 8.5 4 8.5 8.5 0 1 0 20 15.5Z"></path>
+  <symbol id="icon-facility-luna" viewBox="0 0 24 24">
+    <path d="M20.5 15.4A9 9 0 0 1 8.6 3.5a9 9 0 1 0 11.9 11.9Z" fill="currentColor" stroke="none"></path>
   </symbol>
-  <symbol id="icon-facility-spark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-    <path d="m13 2-8 12h6l-1 8 9-13h-6V2Z"></path>
+  <symbol id="icon-facility-spark" viewBox="0 0 24 24">
+    <path d="m14.1 1.5-9.4 12h5.9l-1.2 9 10-13.3h-6l.7-7.7Z" fill="currentColor" stroke="none"></path>
   </symbol>
-  <symbol id="icon-facility-wonder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M4 20h16M6 20v-7h12v7M5 13l7-8 7 8"></path>
-    <path d="M12 5v-3M12 2l3 1.5L12 5M9 13v7M15 13v7M6 16h12"></path>
+  <symbol id="icon-facility-wonder" viewBox="0 0 24 24">
+    <path d="M12 2.2 2 13c1.7 0 2.5-.9 3.3-.9s1.7.9 3.4.9 2.5-.9 3.3-.9 1.6.9 3.3.9 2.5-.9 3.4-.9 1.6.9 3.3.9L12 2.2Z" fill="currentColor" stroke="none"></path>
+    <path d="M3.2 14.2h17.6v1.5h-1.4V21h-2.5v-5.3h-3.6V21h-2.6v-5.3H7.1V21H4.6v-5.3H3.2v-1.5ZM2.5 21h19v1.5h-19V21Z" fill="currentColor" stroke="none"></path>
   </symbol>
 </svg>
