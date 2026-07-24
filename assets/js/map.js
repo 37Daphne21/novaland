@@ -2,6 +2,15 @@ import { cosmicVoyage as cosmicVoyageDefinition, facilities as facilityDefinitio
 import { uiCopy } from './locales.js';
 import { getIcon } from './ui.js';
 
+const mapVisuals = {
+  base: './assets/images/map/bg-map.webp',
+  coaster: './assets/images/map/bg-map-coaster.webp',
+  luna: './assets/images/map/bg-map-luna.webp',
+  spark: './assets/images/map/bg-map-spark.webp',
+  wonder: './assets/images/map/bg-map-wonder.webp',
+  cosmic: './assets/images/map/bg-map-cosmic.webp'
+};
+
 function cloneFacility(facility) {
   return {
     ...facility,
@@ -34,6 +43,7 @@ function createRuntimeState() {
 }
 
 export function createMapController({ cancelEveSpeech, onEnterControlRoom, showToast, speakEve }) {
+  const screen = document.querySelector('.screen--map');
   const facilityList = document.querySelector('#facility-list');
   const mapCardList = document.querySelector('#map-card-list');
   const facilityDimList = document.querySelector('#facility-dim-list');
@@ -47,10 +57,14 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, showT
   const worldMapHeading = document.querySelector('.world-map__heading');
   const worldMapTitle = document.querySelector('#world-title');
   const worldMapSubtitle = worldMapHeading?.querySelector('p');
+  const backdropLayers = [...document.querySelectorAll('.screen--map .screen__backdrop-layer')];
   const worldMapTitleText = worldMapTitle?.textContent.trim() ?? '';
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const state = createRuntimeState();
   let worldMapTypingTimer = null;
+  let activeBackdropIndex = 0;
+  let currentMapVisual = 'base';
+  let mapVisualTransition = Promise.resolve();
 
   function isRestored() {
     return state.facilities.every((facility) => facility.state === 'completed');
@@ -85,6 +99,102 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, showT
       state.selectedFacilityId = null;
       clearFacilityGuide();
     }
+  }
+
+
+
+  function getProgressVisual() {
+    return isRestored()
+      ? 'cosmic'
+      : [...state.facilities].reverse().find((facility) => facility.state !== 'locked')?.id ?? 'coaster';
+  }
+
+  function initializeMapVisual(visualState = 'base') {
+    if (!screen || !mapVisuals[visualState] || backdropLayers.length < 2) {
+      return;
+    }
+
+    backdropLayers[0].style.backgroundImage = `url("${mapVisuals[visualState]}")`;
+    backdropLayers[0].style.zIndex = '1';
+    backdropLayers[0].classList.add('is-active');
+    backdropLayers[1].style.backgroundImage = '';
+    backdropLayers[1].style.zIndex = '0';
+    backdropLayers[1].classList.remove('is-active');
+    screen.dataset.mapVisual = visualState;
+    currentMapVisual = visualState;
+    activeBackdropIndex = 0;
+  }
+
+  function preloadMapVisual(visualState) {
+    return new Promise((resolve, reject) => {
+      const image = new Image();
+
+      image.addEventListener('load', resolve, { once: true });
+      image.addEventListener('error', reject, { once: true });
+      image.src = mapVisuals[visualState];
+
+      if (image.complete && image.naturalWidth > 0) {
+        resolve();
+      }
+    });
+  }
+
+  function transitionMapVisual(visualState, { immediate = false } = {}) {
+    if (!screen || !mapVisuals[visualState] || backdropLayers.length < 2 || visualState === currentMapVisual) {
+      return Promise.resolve();
+    }
+
+    mapVisualTransition = mapVisualTransition.then(async () => {
+      try {
+        await preloadMapVisual(visualState);
+      } catch {
+        return;
+      }
+
+      const currentLayer = backdropLayers[activeBackdropIndex];
+      const nextBackdropIndex = activeBackdropIndex === 0 ? 1 : 0;
+      const nextLayer = backdropLayers[nextBackdropIndex];
+
+      nextLayer.classList.remove('is-active');
+      nextLayer.style.backgroundImage = `url("${mapVisuals[visualState]}")`;
+      nextLayer.style.zIndex = '2';
+      currentLayer.style.zIndex = '1';
+      screen.dataset.mapVisual = visualState;
+
+      if (immediate || prefersReducedMotion) {
+        nextLayer.classList.add('is-active');
+        currentLayer.classList.remove('is-active');
+      } else {
+        void nextLayer.offsetWidth;
+        nextLayer.classList.add('is-active');
+
+        await new Promise((resolve) => {
+          const finish = () => {
+            nextLayer.removeEventListener('transitionend', onTransitionEnd);
+            window.clearTimeout(fallbackTimer);
+            resolve();
+          };
+          const onTransitionEnd = (event) => {
+            if (event.propertyName === 'opacity') {
+              finish();
+            }
+          };
+          const fallbackTimer = window.setTimeout(finish, 1500);
+
+          nextLayer.addEventListener('transitionend', onTransitionEnd);
+        });
+
+        currentLayer.classList.remove('is-active');
+      }
+
+      currentLayer.style.backgroundImage = '';
+      currentLayer.style.zIndex = '0';
+      nextLayer.style.zIndex = '1';
+      activeBackdropIndex = nextBackdropIndex;
+      currentMapVisual = visualState;
+    });
+
+    return mapVisualTransition;
   }
 
   function renderMissionProgress() {
@@ -273,6 +383,43 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, showT
     renderRecentLogs();
   }
 
+  function completeFacility(facilityId) {
+    const facilityIndex = state.facilities.findIndex((facility) => facility.id === facilityId);
+    const facility = state.facilities[facilityIndex];
+
+    if (!facility || facility.state === 'locked' || facility.state === 'completed') {
+      return false;
+    }
+
+    facility.state = 'completed';
+
+    const nextFacility = state.facilities[facilityIndex + 1];
+    if (nextFacility) {
+      nextFacility.state = 'available';
+      state.selectedFacilityId = nextFacility.id;
+    }
+
+    render();
+
+    speakEve(facility.completionMessage, () => {
+      transitionMapVisual(nextFacility?.id ?? 'cosmic');
+    });
+
+    return true;
+  }
+
+  function completeCosmicVoyage() {
+    if (state.cosmicVoyage.state !== 'open') {
+      return false;
+    }
+
+    speakEve(state.cosmicVoyage.completionMessage, () => {
+      transitionMapVisual('base');
+    });
+
+    return true;
+  }
+
   function selectFacility(button) {
     const facility = getFacility(button?.dataset.facility);
 
@@ -353,5 +500,25 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, showT
     return isRestored() ? uiCopy.mapRestored : defaultMessage;
   }
 
-  return { focusReturnTarget, getStartupMessage, playIntro, render, selectFacility };
+  function start(defaultMessage) {
+    const restored = isRestored();
+
+    initializeMapVisual(restored ? 'cosmic' : 'base');
+    render();
+    playIntro();
+    speakEve(getStartupMessage(defaultMessage), () => {
+      transitionMapVisual(restored ? 'base' : getProgressVisual());
+    });
+  }
+
+  return {
+    completeCosmicVoyage,
+    completeFacility,
+    focusReturnTarget,
+    playIntro,
+    render,
+    selectFacility,
+    start,
+    transitionMapVisual
+  };
 }

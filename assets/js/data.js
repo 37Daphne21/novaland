@@ -12,7 +12,8 @@ export const facilities = [
     mobileDim: { x: 25, y: 43, width: 48, height: 28, opacity: .62 },
     message: '탐험가님, NOVA COASTER에 진입할 준비가 됐어요.',
     lockedMessage: '',
-    controlRoomMessage: '열차 시스템 관제실에 연결했어요.'
+    controlRoomMessage: '열차 시스템 관제실에 연결했어요.',
+    completionMessage: 'NOVA COASTER 복구가 완료됐어요. 이제 LUNA LIGHT GARDEN의 빛을 되살릴 수 있어요.'
   },
   {
     id: 'luna',
@@ -27,7 +28,8 @@ export const facilities = [
     mobileDim: { x: 75, y: 43, width: 46, height: 27, opacity: .66 },
     message: 'LUNA LIGHT GARDEN의 빛 에너지가 안정됐어요.',
     lockedMessage: 'NOVA COASTER를 먼저 복구하면 LUNA LIGHT GARDEN이 열려요.',
-    controlRoomMessage: '정원 에너지 관제실에 연결했어요.'
+    controlRoomMessage: '정원 에너지 관제실에 연결했어요.',
+    completionMessage: 'LUNA LIGHT GARDEN의 빛이 돌아왔어요. SPARK ENERGY TOWER가 활성화됐어요.'
   },
   {
     id: 'spark',
@@ -42,7 +44,8 @@ export const facilities = [
     mobileDim: { x: 24, y: 61, width: 44, height: 29, opacity: .68 },
     message: 'SPARK ENERGY TOWER의 에너지를 확인할 수 있어요.',
     lockedMessage: 'LUNA LIGHT GARDEN을 먼저 복구하면 SPARK ENERGY TOWER가 열려요.',
-    controlRoomMessage: '에너지 타워 관제실에 연결했어요.'
+    controlRoomMessage: '에너지 타워 관제실에 연결했어요.',
+    completionMessage: 'SPARK ENERGY TOWER의 에너지가 안정됐어요. WONDER PARADE HALL로 이동할 수 있어요.'
   },
   {
     id: 'wonder',
@@ -57,7 +60,8 @@ export const facilities = [
     mobileDim: { x: 76, y: 61, width: 44, height: 29, opacity: .68 },
     message: 'WONDER PARADE HALL의 퍼레이드를 준비할 수 있어요.',
     lockedMessage: 'SPARK ENERGY TOWER를 먼저 복구하면 WONDER PARADE HALL이 열려요.',
-    controlRoomMessage: '퍼레이드 관제실에 연결했어요.'
+    controlRoomMessage: '퍼레이드 관제실에 연결했어요.',
+    completionMessage: '네 개의 시설이 모두 복구됐어요. 마지막 여정, COSMIC VOYAGE가 개방돼요.'
   }
 ];
 
@@ -74,7 +78,8 @@ export const cosmicVoyage = {
   mobileGlow: { x: 50, y: 80 },
   dim: { x: 50, y: 52, width: 34, height: 94, opacity: .72 },
   mobileDim: { x: 50, y: 58, width: 48, height: 76, opacity: .72 },
-  lockedMessage: '네 개의 시설을 모두 복구하면 COSMIC VOYAGE가 개방돼요.'
+  lockedMessage: '네 개의 시설을 모두 복구하면 COSMIC VOYAGE가 개방돼요.',
+  completionMessage: '탐험가님, 노바랜드의 모든 에너지가 다시 연결됐어요. 정말 멋진 여정이었어요!'
 };
 
 export const facilityStates = {

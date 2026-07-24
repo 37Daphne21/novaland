@@ -1,11 +1,29 @@
 .screen--map {
-  --screen-background: url("../images/map/bg-map.webp");
   display: grid;
   grid-template-rows: auto 1fr;
   gap: var(--space-4);
   overflow: hidden;
   min-height: 100svh;
   padding: var(--space-4);
+}
+
+.screen--map .screen__backdrop {
+  background: #020813;
+}
+
+.screen__backdrop-layer {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  transition: opacity 1.4s ease;
+  will-change: opacity;
+}
+
+.screen__backdrop-layer.is-active {
+  opacity: 1;
 }
 
 .explorer-profile small,
@@ -617,6 +635,7 @@
 
 .facility-dim-list {
   position: absolute;
+  display: none;
   inset: 0;
   z-index: 1;
   pointer-events: none;
@@ -1102,6 +1121,10 @@ body.is-overlay-open {
     background: #020813;
   }
 
+  .screen--map .screen__backdrop-layer {
+    display: none;
+  }
+
   .top-navigation {
     grid-template-columns: minmax(0, auto) minmax(0, auto);
     gap: var(--space-2);
@@ -1233,6 +1256,10 @@ body.is-overlay-open {
     margin-top: .25rem;
     font-size: .75rem;
     letter-spacing: .08em;
+  }
+
+  .facility-dim-list {
+    display: block;
   }
 
   .facility-dim {

@@ -107,10 +107,8 @@ function handleKeydown(event) {
   }
 }
 
-map.render();
 settings.render();
-map.playIntro();
-eve.speak(map.getStartupMessage(eve.initialMessage));
+map.start(eve.initialMessage);
 
 document.addEventListener('click', handleDocumentClick);
 document.addEventListener('keydown', handleKeydown);

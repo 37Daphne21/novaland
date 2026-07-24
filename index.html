@@ -12,8 +12,11 @@
 <body>
   <div id="app" class="app">
     <main>
-      <section class="screen screen--map is-active" data-screen="map" aria-labelledby="world-title">
-        <div class="screen__backdrop" aria-hidden="true"></div>
+      <section class="screen screen--map is-active" data-screen="map" data-map-visual="base" aria-labelledby="world-title">
+        <div class="screen__backdrop" aria-hidden="true">
+          <span class="screen__backdrop-layer is-active"></span>
+          <span class="screen__backdrop-layer"></span>
+        </div>
         <header class="top-navigation" aria-label="상단 내비게이션">
           <div class="top-navigation__identity ui-panel">
             <a class="brand" href="#" aria-label="Nova Land 홈">
