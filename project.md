@@ -268,16 +268,23 @@ Mission Card는 상태가 바뀌어도 높이와 Icon 크기가 변하지 않아
     → 정적인 선택 상태
     → EVE 시설 안내
     → 안내 종료
-    → 지도 시설 Card의 Guide Glow와 행동 유도
+    → 선택한 지도 시설 Card 활성화
+    → Guide Glow와 행동 유도
     → 지도 시설 Card 선택
     → Control Room 진입
 
 - Mission List와 지도 Card는 같은 시설 상태를 공유한다.
+- MAP 최초 진입 시 지도 시설 Card는 모두 비활성 상태다.
+- Mission List에서 선택한 시설만 EVE 안내 종료 후 지도 Card가 활성화된다.
+- 다른 Mission을 선택하면 기존 지도 Card는 다시 비활성화된다.
 - Mission List 선택만으로 Control Room에 진입하지 않는다.
 - 선택 상태는 Border와 Background로 구분한다.
-- Guide Glow는 다음 행동을 안내할 때만 나타난다.
+- Guide Glow는 아직 조명이 꺼진 현재 진행 시설을 안내할 때만 시설 전체를 감싸는 형태로 나타난다.
+- 복구 완료로 조명이 켜진 시설과 개방된 COSMIC VOYAGE에는 배경 Guide Glow를 사용하지 않는다.
 - EVE 안내와 같은 내용을 Toast로 중복 표시하지 않는다.
 - EVE Signal Wave는 음성이 끝난 순간의 움직임에서 자연스럽게 정지한다.
+- PC EVE는 오른쪽 하단 위치를 고정하고 발화 중에만 크기와 Glow를 확장해 강조한다.
+- EVE 안내가 끝나면 마지막 문장을 잠시 유지한 뒤 대기 크기로 돌아간다.
 - 전체 복구 이후에도 시설 선택과 안내 반응은 유지한다.
 
 
@@ -287,8 +294,11 @@ Mission Card는 상태가 바뀌어도 높이와 Icon 크기가 변하지 않아
 - 잠긴 시설 Marker: 잠금 Icon
 - 복구 완료: 시설 고유 컬러와 복구 완료
 - 전체 복구: 4 / 4, COSMIC VOYAGE 개방, EVE 완료 안내와 Recent Log 갱신
-- 배경 전체를 어둡게 덮지 않고 잠긴 시설 영역만 Dim 처리한다.
-- 시설이 활성화되면 해당 시설 영역을 선명하게 복원한다.
+- 최초 진입에서는 전체 복구 배경을 먼저 보여준 뒤 전체 시설이 꺼진 Dim 배경으로 전환한다.
+- 최초 EVE 안내 도중 Mission을 바로 선택해도 Dim 배경 전환은 취소되지 않는다.
+- 시설을 복구할 때마다 해당 시설의 조명이 켜진 누적 배경으로 전환한다.
+- 네 시설 복구 직후에는 COSMIC VOYAGE만 꺼진 배경을 보여준다.
+- COSMIC VOYAGE 출현과 EVE 안내가 끝나면 전체 조명이 켜진 배경으로 전환한다.
 
 개발 중 전체 복구 상태는 URL의 ?map-state=restored로 확인한다.
 
@@ -298,7 +308,7 @@ Mission Card는 상태가 바뀌어도 높이와 Icon 크기가 변하지 않아
 최근 시설 복구, Mission 완료와 시설 개방을 짧게 보여준다. 전체 기록은 Explorer Archive에서 확인한다.
 
 
-### 모바일 MAP 현재 판단 지점
+### 모바일 MAP 후순위 판단 지점
 
 모바일 전용 세로 배경과 1차 반응형 구조는 구현되어 있지만 디자인은 확정되지 않았다. 현재 구현을 완료본으로 간주하지 않는다.
 
@@ -310,7 +320,7 @@ Mission Card는 상태가 바뀌어도 높이와 Icon 크기가 변하지 않아
 4. 시설 비주얼보다 Card가 먼저 보여 지도 속 시설을 직접 선택한다는 느낌이 약하다.
 5. 작은 화면에서 Logo, 시간과 Settings가 각각 큰 박스로 나뉘어 상단이 답답하다.
 
-다음 작업에서는 코드를 미세 조정하기 전에 390px 세로 화면 기준의 모바일 와이어프레임을 먼저 확정한다.
+PC에서 공통 시스템과 NOVA COASTER의 전체 흐름을 먼저 완성한다. 이후 모바일 구현을 시작할 때는 코드를 미세 조정하기 전에 390px 세로 화면 기준의 모바일 와이어프레임을 먼저 확정한다.
 
 권장 방향:
 
@@ -481,7 +491,12 @@ Mission Guide, Countdown, Pause, Fail과 Complete는 Control Room 위의 공통 
 
 - 프로젝트 기반과 공통 UI Token
 - PC MAP 기본·전체 복구 상태
+- PC MAP 시설별 누적 조명 배경과 COSMIC VOYAGE 전환
 - 시설 선택 → EVE 안내 → 지도 행동 유도
+- Mission 선택 전 지도 Card 비활성화와 안내 종료 후 선택 시설 활성화
+- 최초 Mission 즉시 선택 시에도 Dim 배경 전환 유지
+- PC EVE 위치 고정형 발화 집중 상태와 대기 상태 전환
+- 미복구 진행 시설 전용 Guide Glow
 - 잠금·복구·COSMIC VOYAGE 개방 상태 동기화
 - Settings의 언어·시간·전체 화면 등 현재 제공 기능
 - MAP PC 1차 Refactoring
@@ -489,16 +504,16 @@ Mission Guide, Countdown, Pause, Fail과 Complete는 Control Room 위의 공통 
 
 진행 중:
 
-- 모바일 MAP UI 방향 재설계
+- Explorer Archive와 Save Data를 포함한 공통 시스템 설계
 
 다음 작업 시작점:
 
-1. 현재 모바일 화면과 참고 시안을 기준으로 390px Wireframe 확정
-2. 접힌 Mission Panel 잔여 공간 제거
-3. Recent Log를 작은 Utility 진입 방식으로 변경
-4. 시설 직접 Tap이 중심이 되도록 Marker와 HUD 재구성
-5. 세로·가로·Tablet 회귀 검수
+1. Explorer 이름과 시설 진행 상태를 위한 Save Data 구조 확정
+2. Explorer Log와 Explorer Passport 공통 Overlay 구현
+3. 설정과 Recent Log 저장·복원 연결
+4. PC NOVA COASTER와 공통 Mission Flow 완성
+5. 완성된 PC 흐름을 기준으로 390px 모바일 MAP Wireframe 확정
 
-그다음 단계는 Explorer Archive와 저장을 포함한 공통 시스템, Nova Coaster Control Room과 공통 Mission Flow 구현이다.
+모바일은 PC NOVA COASTER까지 하나의 완전한 흐름을 검증한 뒤 전용 HUD로 재설계한다. 시설 데이터와 진행 상태는 PC와 공유하고 표현 구조만 분리한다.
 
 세부 일정은 roadmap.md에서 관리한다.

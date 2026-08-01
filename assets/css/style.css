@@ -641,8 +641,9 @@
   inset: 0;
   z-index: 2;
   opacity: 0;
-  background: radial-gradient(circle at var(--glow-x) var(--glow-y), color-mix(in srgb, var(--facility-color) 36%, transparent) 0, color-mix(in srgb, var(--facility-color) 18%, transparent) 8%, transparent 24%);
-  filter: saturate(1.2);
+  background: radial-gradient(ellipse 18% 14% at var(--glow-x) var(--glow-y), color-mix(in srgb, var(--facility-color) 38%, transparent) 0, color-mix(in srgb, var(--facility-color) 22%, transparent) 34%, color-mix(in srgb, var(--facility-color) 9%, transparent) 58%, transparent 78%), radial-gradient(ellipse 27% 21% at var(--glow-x) var(--glow-y), color-mix(in srgb, var(--facility-color) 16%, transparent) 0, color-mix(in srgb, var(--facility-color) 7%, transparent) 44%, transparent 76%);
+  filter: saturate(1.25) blur(.125rem);
+  mix-blend-mode: screen;
   transition: opacity .9s ease, background var(--motion-base) ease;
   pointer-events: none;
 }
@@ -700,6 +701,10 @@
 .map-facility-card[aria-disabled="true"] {
   cursor: not-allowed;
   opacity: .68;
+}
+
+.map-facility-card.is-awaiting-guide {
+  cursor: default;
 }
 
 .map-facility-card__number {
@@ -906,6 +911,41 @@
   color: var(--color-text-subtle);
   font-size: .875rem;
   line-height: 1.65;
+}
+
+@media (min-width: 56.0625rem) {
+  .eve-panel {
+    transition: border-color .45s ease, background .45s ease, box-shadow .45s ease;
+  }
+
+  .eve-panel__body {
+    grid-template-columns: 4.5rem minmax(0, 1fr);
+    min-height: 6.5rem;
+    transition: grid-template-columns .55s var(--ease-out), min-height .55s var(--ease-out);
+  }
+
+  .eve-panel__body img {
+    width: 4.75rem;
+    height: 6.5rem;
+    transition: width .55s var(--ease-out), height .55s var(--ease-out), filter .45s ease;
+  }
+
+  .eve-panel.is-focused {
+    border-color: rgba(56, 200, 255, .72);
+    background: linear-gradient(145deg, rgba(10, 31, 49, .96), rgba(4, 14, 28, .94));
+    box-shadow: inset 0 0 2rem rgba(56, 200, 255, .12), 0 0 2.25rem rgba(56, 200, 255, .2), 0 1rem 2.5rem rgba(0, 0, 0, .34);
+  }
+
+  .eve-panel.is-focused .eve-panel__body {
+    grid-template-columns: 6.75rem minmax(0, 1fr);
+    min-height: 10rem;
+  }
+
+  .eve-panel.is-focused .eve-panel__body img {
+    width: 7rem;
+    height: 9.5rem;
+    filter: drop-shadow(0 0 1.25rem rgba(56, 200, 255, .72));
+  }
 }
 
 .recent-log .ui-panel__title {

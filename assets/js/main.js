@@ -44,7 +44,6 @@ function enterControlRoom(facility) {
 map = createMapController({
   cancelEveSpeech: eve.cancel,
   onEnterControlRoom: enterControlRoom,
-  showToast: toast.show,
   speakEve: eve.speak
 });
 

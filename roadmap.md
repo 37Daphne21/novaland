@@ -17,17 +17,75 @@
 - MAP용 공통 이미지와 Icon
 - PC MAP 기본 상태와 전체 복구 상태
 - Mission List와 지도 시설 상태 동기화
-- Mission 선택 → EVE 안내 → 지도 행동 유도
+- Mission 선택 → EVE 안내 → 선택한 지도 시설 활성화
+- 최초 Mission 즉시 선택 시에도 Dim 배경 전환 유지
+- PC EVE 위치 고정형 발화 집중 상태와 대기 상태 전환
+- 미복구 진행 시설만 감싸는 Guide Glow
 - COSMIC VOYAGE 봉인·개방 전환
+- 시설별 누적 조명 배경과 전체 복구 배경 전환
 - PC MAP 1차 Refactoring
 - 모바일 전용 MAP 배경
 - Mobile·Tablet 반응형 1차 구현
 
 ---
 
-## Now. 모바일 MAP 재설계
+## Now. 공통 시스템 완성
 
 상태: 진행 중
+
+
+### Explorer Archive
+
+- [ ] Explorer Log와 Explorer Passport 공통 Overlay
+- [ ] 두 화면을 동등한 Tab으로 전환
+- [ ] Recent Log에서 Explorer Log 진입
+- [ ] Explorer Profile에서 Passport 진입
+- [ ] 시설 완료 기록과 Stamp 갱신
+
+
+### 저장과 설정
+
+- [ ] Explorer 이름 등록·변경과 복원
+- [ ] 시설 잠금·진행·완료 상태 저장
+- [ ] Mission 진행 상태 저장
+- [ ] 언어, 시간과 사운드 설정 저장
+- [ ] Recent Log 저장
+- [ ] 처음부터 다시 시작과 저장 데이터 초기화
+- [ ] Fullscreen 상태 예외와 브라우저별 동작 검수
+
+
+### 완료 조건
+
+- 새로고침 후 사용자와 시설 상태가 정확히 복원되어야 한다.
+- 언어 변경이 모든 공통 UI에 즉시 반영되어야 한다.
+- Explorer Log와 Passport가 역할을 유지하면서 같은 Overlay 안에서 동작해야 한다.
+
+---
+
+## Next. NOVA COASTER와 공통 Mission Flow
+
+상태: 예정
+
+- [ ] Control Room 공통 Layout
+- [ ] 시설별 Theme Modifier
+- [ ] EVE와 Mission Objective
+- [ ] 시설 상태 Panel
+- [ ] Mission Guide
+- [ ] Countdown
+- [ ] Play
+- [ ] Pause
+- [ ] Fail
+- [ ] Complete
+- [ ] MAP 복귀와 상태 갱신
+- [ ] Rail Connection Puzzle
+
+완료 조건: MAP 진입부터 NOVA COASTER 복구와 기록 갱신까지 하나의 흐름으로 동작하고, 다음 시설에서 Control Room과 Overlay를 재사용할 수 있어야 한다.
+
+---
+
+## Later. 모바일 MAP 재설계
+
+상태: PC NOVA COASTER 전체 흐름 검증 후 진행
 
 현재 반응형 구현은 기능 검증용 1차 버전이다. PC 패널을 축소한 인상이 강하므로 모바일 게임형 HUD를 기준으로 시각 구조를 다시 확정한다.
 
@@ -69,60 +127,6 @@
 - 시설 Tap → 안내 → 다음 행동 흐름이 명확해야 한다.
 - 768px Tablet과 Mobile Landscape에서 화면 넘침과 Panel 충돌이 없어야 한다.
 - 키보드, Touch Target, Focus와 Reduced Motion을 다시 검수해야 한다.
-
----
-
-## Next. 공통 시스템 완성
-
-상태: 모바일 MAP 확정 후 진행
-
-
-### Explorer Archive
-
-- [ ] Explorer Log와 Explorer Passport 공통 Overlay
-- [ ] 두 화면을 동등한 Tab으로 전환
-- [ ] Recent Log에서 Explorer Log 진입
-- [ ] Explorer Profile에서 Passport 진입
-- [ ] 시설 완료 기록과 Stamp 갱신
-
-
-### 저장과 설정
-
-- [ ] Explorer 이름 등록·변경과 복원
-- [ ] 시설 잠금·진행·완료 상태 저장
-- [ ] Mission 진행 상태 저장
-- [ ] 언어, 시간과 사운드 설정 저장
-- [ ] Recent Log 저장
-- [ ] 처음부터 다시 시작과 저장 데이터 초기화
-- [ ] Fullscreen 상태 예외와 브라우저별 동작 검수
-
-
-### 완료 조건
-
-- 새로고침 후 사용자와 시설 상태가 정확히 복원되어야 한다.
-- 언어 변경이 모든 공통 UI에 즉시 반영되어야 한다.
-- Explorer Log와 Passport가 역할을 유지하면서 같은 Overlay 안에서 동작해야 한다.
-
----
-
-## Phase 1. NOVA COASTER와 공통 Mission Flow
-
-상태: 예정
-
-- [ ] Control Room 공통 Layout
-- [ ] 시설별 Theme Modifier
-- [ ] EVE와 Mission Objective
-- [ ] 시설 상태 Panel
-- [ ] Mission Guide
-- [ ] Countdown
-- [ ] Play
-- [ ] Pause
-- [ ] Fail
-- [ ] Complete
-- [ ] MAP 복귀와 상태 갱신
-- [ ] Rail Connection Puzzle
-
-완료 조건: MAP 진입부터 NOVA COASTER 복구와 기록 갱신까지 하나의 흐름으로 동작하고, 다음 시설에서 Control Room과 Overlay를 재사용할 수 있어야 한다.
 
 ---
 
@@ -223,10 +227,9 @@
 
 ## 현재 작업 순서
 
-    모바일 MAP Wireframe 확정
-    → 모바일 MAP UI 재구성
-    → 공통 시스템과 Explorer Archive
+    공통 시스템과 Explorer Archive
     → NOVA COASTER와 공통 Mission Flow
+    → 모바일 MAP Wireframe과 UI 재구성
     → 나머지 시설
     → COSMIC VOYAGE와 Ending
     → 전체 QA와 배포

@@ -16,6 +16,7 @@ export function createEveController() {
     onSpeechComplete = null;
     signalWave?.classList.add('is-paused');
     panel?.classList.remove('is-visible');
+    panel?.classList.remove('is-focused');
     panel?.setAttribute('aria-busy', 'false');
   }
 
@@ -26,6 +27,7 @@ export function createEveController() {
     panel?.setAttribute('aria-busy', 'false');
     visibilityTimer = window.setTimeout(() => {
       panel?.classList.remove('is-visible');
+      panel?.classList.remove('is-focused');
       visibilityTimer = null;
     }, 3200);
 
@@ -42,6 +44,7 @@ export function createEveController() {
     cancel();
     onSpeechComplete = onComplete;
     panel?.classList.add('is-visible');
+    panel?.classList.add('is-focused');
 
     if (prefersReducedMotion) {
       messageElement.textContent = message;

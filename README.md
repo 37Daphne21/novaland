@@ -128,9 +128,9 @@ Day, Sunset과 Night에 따라 세계의 분위기가 달라지며 한국어와 
 
 ## 제작 현황
 
-현재 PC World Map과 시설 상태 인터랙션을 구현했으며, Mobile World Map은 모바일 게임에 어울리는 전용 HUD로 재설계하고 있습니다.
+현재 PC World Map의 Mission 우선 선택 흐름, EVE 안내와 시설별 단계적 조명 변화를 구현했으며, Explorer Archive와 Save Data를 포함한 공통 시스템을 제작하고 있습니다.
 
-이후 Explorer Archive, 공통 Control Room, 시설별 Mission, COSMIC VOYAGE와 Ending을 차례로 완성할 예정입니다.
+이후 PC NOVA COASTER로 공통 Mission Flow를 완성한 뒤 Mobile World Map을 전용 HUD로 재설계하고, 나머지 시설과 COSMIC VOYAGE, Ending을 차례로 완성할 예정입니다.
 
 ---
 
