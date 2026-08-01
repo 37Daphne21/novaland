@@ -4,6 +4,7 @@ import { getIcon } from './ui.js';
 
 const mapVisuals = {
   base: './assets/images/map/bg-map.webp',
+  dim: './assets/images/map/bg-map-dim.webp',
   coaster: './assets/images/map/bg-map-coaster.webp',
   luna: './assets/images/map/bg-map-luna.webp',
   spark: './assets/images/map/bg-map-spark.webp',
@@ -17,9 +18,7 @@ function cloneFacility(facility) {
     position: { ...facility.position },
     mobilePosition: { ...facility.mobilePosition },
     glow: { ...facility.glow },
-    mobileGlow: { ...facility.mobileGlow },
-    dim: { ...facility.dim },
-    mobileDim: { ...facility.mobileDim }
+    mobileGlow: { ...facility.mobileGlow }
   };
 }
 
@@ -46,7 +45,6 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, showT
   const screen = document.querySelector('.screen--map');
   const facilityList = document.querySelector('#facility-list');
   const mapCardList = document.querySelector('#map-card-list');
-  const facilityDimList = document.querySelector('#facility-dim-list');
   const cosmicStatus = document.querySelector('#cosmic-status');
   const facilityGlow = document.querySelector('#facility-glow');
   const recentLogList = document.querySelector('#recent-log-list');
@@ -60,10 +58,13 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, showT
   const backdropLayers = [...document.querySelectorAll('.screen--map .screen__backdrop-layer')];
   const worldMapTitleText = worldMapTitle?.textContent.trim() ?? '';
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const desktopMapMedia = window.matchMedia('(min-width: 56.0625rem)');
   const state = createRuntimeState();
   let worldMapTypingTimer = null;
   let activeBackdropIndex = 0;
-  let currentMapVisual = 'base';
+  let currentMapVisual = null;
+  let requestedMapVisual = 'base';
+  let mapVisualRequestId = 0;
   let mapVisualTransition = Promise.resolve();
 
   function isRestored() {
@@ -104,13 +105,35 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, showT
 
 
   function getProgressVisual() {
-    return isRestored()
-      ? 'cosmic'
-      : [...state.facilities].reverse().find((facility) => facility.state !== 'locked')?.id ?? 'coaster';
+    if (isRestored()) {
+      return 'cosmic';
+    }
+
+    const completedFacilities = state.facilities.filter((facility) => facility.state === 'completed');
+    return completedFacilities[completedFacilities.length - 1]?.id ?? 'dim';
+  }
+
+  function clearMapVisualLayers() {
+    backdropLayers.forEach((layer) => {
+      layer.classList.remove('is-active');
+      layer.style.backgroundImage = '';
+      layer.style.zIndex = '0';
+    });
+
+    activeBackdropIndex = 0;
+    currentMapVisual = null;
   }
 
   function initializeMapVisual(visualState = 'base') {
     if (!screen || !mapVisuals[visualState] || backdropLayers.length < 2) {
+      return;
+    }
+
+    requestedMapVisual = visualState;
+    mapVisualRequestId += 1;
+
+    if (!desktopMapMedia.matches) {
+      clearMapVisualLayers();
       return;
     }
 
@@ -140,7 +163,14 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, showT
   }
 
   function transitionMapVisual(visualState, { immediate = false } = {}) {
-    if (!screen || !mapVisuals[visualState] || backdropLayers.length < 2 || visualState === currentMapVisual) {
+    if (!screen || !mapVisuals[visualState] || backdropLayers.length < 2) {
+      return Promise.resolve();
+    }
+
+    requestedMapVisual = visualState;
+    const requestId = ++mapVisualRequestId;
+
+    if (!desktopMapMedia.matches || visualState === currentMapVisual) {
       return Promise.resolve();
     }
 
@@ -148,6 +178,10 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, showT
       try {
         await preloadMapVisual(visualState);
       } catch {
+        return;
+      }
+
+      if (!desktopMapMedia.matches || requestId !== mapVisualRequestId) {
         return;
       }
 
@@ -187,6 +221,15 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, showT
         currentLayer.classList.remove('is-active');
       }
 
+      if (!desktopMapMedia.matches || requestId !== mapVisualRequestId) {
+        if (desktopMapMedia.matches) {
+          initializeMapVisual(requestedMapVisual);
+        } else {
+          clearMapVisualLayers();
+        }
+        return;
+      }
+
       currentLayer.style.backgroundImage = '';
       currentLayer.style.zIndex = '0';
       nextLayer.style.zIndex = '1';
@@ -195,6 +238,16 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, showT
     });
 
     return mapVisualTransition;
+  }
+
+  function handleMapVisualMediaChange(event) {
+    if (event.matches) {
+      initializeMapVisual(requestedMapVisual);
+      return;
+    }
+
+    mapVisualRequestId += 1;
+    clearMapVisualLayers();
   }
 
   function renderMissionProgress() {
@@ -239,34 +292,6 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, showT
         </li>
       `;
     }).join('');
-  }
-
-  function renderFacilityDims() {
-    if (!facilityDimList) {
-      return;
-    }
-
-    [...state.facilities, state.cosmicVoyage].forEach((facility) => {
-      let dim = facilityDimList.querySelector(`[data-facility-dim="${facility.id}"]`);
-
-      if (!dim) {
-        dim = document.createElement('span');
-        dim.className = 'facility-dim';
-        dim.dataset.facilityDim = facility.id;
-        dim.style.setProperty('--dim-x', `${facility.dim.x}%`);
-        dim.style.setProperty('--dim-y', `${facility.dim.y}%`);
-        dim.style.setProperty('--dim-width', `${facility.dim.width}%`);
-        dim.style.setProperty('--dim-height', `${facility.dim.height}%`);
-        dim.style.setProperty('--mobile-dim-x', `${facility.mobileDim.x}%`);
-        dim.style.setProperty('--mobile-dim-y', `${facility.mobileDim.y}%`);
-        dim.style.setProperty('--mobile-dim-width', `${facility.mobileDim.width}%`);
-        dim.style.setProperty('--mobile-dim-height', `${facility.mobileDim.height}%`);
-        dim.style.setProperty('--dim-opacity', facility.dim.opacity);
-        facilityDimList.append(dim);
-      }
-
-      dim.classList.toggle('is-dimmed', facility.state === 'locked' || facility.state === 'sealed');
-    });
   }
 
   function renderMapCards() {
@@ -375,7 +400,6 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, showT
 
   function render() {
     syncMapState();
-    renderFacilityDims();
     renderFacilities();
     renderMapCards();
     renderCosmicStatus();
@@ -401,8 +425,12 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, showT
 
     render();
 
+    if (!nextFacility) {
+      transitionMapVisual('wonder');
+    }
+
     speakEve(facility.completionMessage, () => {
-      transitionMapVisual(nextFacility?.id ?? 'cosmic');
+      transitionMapVisual(nextFacility ? facility.id : 'cosmic');
     });
 
     return true;
@@ -510,6 +538,8 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, showT
       transitionMapVisual(restored ? 'base' : getProgressVisual());
     });
   }
+
+  desktopMapMedia.addEventListener('change', handleMapVisualMediaChange);
 
   return {
     completeCosmicVoyage,
