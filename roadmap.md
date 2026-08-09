@@ -45,18 +45,24 @@
 
 ---
 
-## Now. Intro와 Explorer Passport
+## 완료. Intro와 Explorer Passport 최초 발급
 
-상태: 기획 확정·구현 대기
+상태: 완료
 
-- [ ] 최초 방문과 기존 Explorer의 진입 분기
-- [ ] 멈춘 노바랜드와 구조 신호 연결 Intro
-- [ ] EVE 등장과 Explorer 이름 등록
-- [ ] Explorer ID와 발급일 생성
-- [ ] Explorer Passport 최초 발급과 이름 각인
-- [ ] Explorer Registered Seal과 MAP 전환
-- [ ] Intro 중단·재접속·처음부터 다시 시작 상태 처리
-- [ ] Keyboard, Focus, 오류 안내와 `prefers-reduced-motion` 대응
+- [x] 최초 방문과 기존 Explorer의 진입 분기
+- [x] 멈춘 노바랜드와 구조 신호 연결 Intro
+- [x] EVE 등장과 Explorer 이름 등록
+- [x] Explorer ID와 발급일 생성
+- [x] Explorer Passport 최초 발급과 이름 각인
+- [x] Explorer Registered Seal과 MAP 전환
+- [x] Signal·Register·Passport 공통 Nova 우주 배경 적용
+- [x] Welcome 고유 타이틀 배치를 유지하고 MAP형 타이핑 노출과 관제 궤도·광축·별빛 Motion 적용
+- [x] Signal 수신기·궤도·좌표·Telemetry 비주얼 고도화
+- [x] Register EVE를 손과 허리 아래까지 보이는 홀로그램으로 교체
+- [x] Passport Route Dock 수동 MAP 연결과 발광 Artifact 제거
+- [x] Intro 중단·재접속·처음부터 다시 시작 상태 처리
+- [x] Keyboard, Focus, 오류 안내와 `prefers-reduced-motion` 대응
+- [x] 1366×768과 390×844에서 전체 Flow와 화면 Overflow 검수
 
 완료 조건: 최초 방문자가 이름을 등록하고 Passport를 발급받은 뒤 기존 MAP으로 진입하며, 재접속에서는 Intro를 반복하지 않아야 한다.
 
@@ -79,7 +85,7 @@
 ### 저장과 설정
 
 - [ ] Explorer 이름 등록·변경과 복원
-- [ ] Intro 완료와 Passport 발급 상태 저장
+- [x] Intro 완료와 Passport 발급 상태 저장
 - [ ] 시설 잠금·진행·완료 상태 저장
 - [ ] Mission 진행 상태 저장
 - [ ] 언어, 시간과 사운드 설정 저장
@@ -261,8 +267,7 @@
 
 ## 현재 작업 순서
 
-    Intro와 Explorer Passport 최초 발급
-    → Explorer Archive와 Save Data
+    Explorer Archive와 Save Data
     → NOVA COASTER와 공통 Mission Flow
     → 모바일 MAP Wireframe과 UI 재구성
     → 나머지 시설

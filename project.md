@@ -268,12 +268,13 @@ Intro의 핵심은 세계관 전체를 설명하는 것이 아니라, 사용자�
     → Explorer 이름 등록
     → Explorer Passport 발급
     → 이름 각인과 등록 Seal
+    → WORLD MAP 연결 경로 선택
     → 여권 닫힘
     → MAP 전환
 
 자동으로 진행되는 연출은 사용자의 이름 입력 대기 시간을 제외하고 약 15~20초 안에 끝낸다.
 
-장면마다 다음 Button을 반복해서 제공하지 않는다. 사용자의 핵심 입력은 신호에 응답하기와 Explorer 등록으로 제한하고, 등록 이후 여권 발급과 MAP 전환은 자동으로 이어진다.
+장면마다 다음 Button을 반복해서 제공하지 않는다. 사용자의 핵심 입력은 신호에 응답하기, Explorer 등록과 마지막 WORLD MAP 연결 선택으로 제한한다. 등록 이후 여권 발급·기록·Seal과 Route Dock 표시는 자동으로 이어지고, 사용자가 연결 경로를 선택하면 여권이 닫히며 MAP으로 전환된다.
 
 첫 시설 이름, 시설 선택 방법과 첫 Mission 안내는 Intro에서 제공하지 않는다. 해당 안내는 기존 MAP의 EVE와 Mission 선택 흐름에서 담당한다.
 
@@ -287,11 +288,17 @@ Intro의 핵심은 세계관 전체를 설명하는 것이 아니라, 사용자�
 
 사용자가 화면을 선택하면 노바랜드 배경이 약 0.8초 동안 천천히 Fade Out된다.
 
+`NOVA LAND`와 `A WORLD IN HARMONY`의 크기와 위치는 Intro 고유 구성을 유지한다. 노출 방식만 MAP의 `WORLD MAP`과 `노바랜드 전체 보기`처럼 제목을 한 글자씩 표시한 뒤 서브 문구를 Fade Up한다.
+
+정지된 풍경 위에는 원형 관제 궤도가 서로 다른 속도로 천천히 회전하고, 중앙 광축과 별빛이 미세하게 밝아졌다 어두워진다. 텍스트와 시작 안내는 움직이지 않으며 `prefers-reduced-motion`에서는 배경 Motion을 정지한다.
+
 Fade Out이 끝나면 어두운 구조 신호 연결 화면으로 전환한다.
 
 #### 2. 구조 신호 연결
 
-어두운 공간 중앙에 정체를 알 수 없는 작은 빛 형태의 구조 신호가 나타난다.
+Signal, Register와 Passport는 Intro의 풍경 화면과 분리된 동일한 Nova 계열의 어두운 우주 배경을 사용한다. 배경은 먼 관제 공간과 빛의 축을 암시하되 콘텐츠의 대비를 방해하지 않는다.
+
+어두운 공간 중앙에 정체를 알 수 없는 구조 신호 수신기가 나타난다. 수신기는 중심 빛, 회전 궤도, 스캔과 좌표·동기화 상태를 함께 표시해 단순한 원형 장식이 아니라 실제 연결 장치처럼 보이게 한다.
 
 아직 EVE의 모습과 이름은 공개하지 않는다.
 
@@ -316,6 +323,8 @@ Button:
 사용자가 신호에 응답하면 Button을 비활성화하고 구조 신호의 빛이 입자로 분해되기 시작한다.
 
 입자는 약 1초 동안 하나의 형태로 모이며 EVE가 처음 홀로그램으로 나타난다.
+
+PC에서는 EVE의 손과 허리 아래까지 보이는 중간 길이의 홀로그램을 사용하고, Mobile에서는 등록 Form을 가리지 않는 범위에서 상반신 중심으로 자연스럽게 Crop한다.
 
 EVE 안내:
 
@@ -365,7 +374,11 @@ EVE는 이 장면에서 처음으로 사용자의 이름을 부른다.
 
 #### 5. MAP 전환
 
-발급된 Passport가 닫히며 표지에 Explorer 이름이 작게 각인된다.
+등록 Seal이 완료되면 Passport를 바로 닫거나 시간만으로 MAP으로 자동 전환하지 않는다.
+
+Passport 아래에 `WORLD MAP CONNECTION` Route Dock을 표시한다. 일반적인 다음 Button이 아니라 항로 상태, 방향성과 연결 준비 상태를 보여주는 관제 인터페이스로 표현한다.
+
+사용자가 Route Dock의 연결 경로를 선택하면 Passport가 닫히며 표지에 Explorer 이름이 작게 각인된다.
 
 표지의 NOVA LAND Emblem이 짧게 빛난 뒤 Passport가 화면에서 정리되고 기존 MAP으로 전환된다.
 
@@ -377,6 +390,7 @@ Intro 종료 직전에 첫 번째 시설이나 다음 행동을 안내하는 EVE
 * 마법책이나 낡은 판타지 소품처럼 표현하지 않는다.
 * 과도한 Glitch, 통신 잡음과 공포 분위기를 사용하지 않는다.
 * 긴 텍스트 설명보다 멈춘 공간, 조명, 사운드와 Passport 발급 연출로 상황을 전달한다.
+* Signal부터 Passport까지 공유하는 우주 배경은 전경 UI보다 명도와 채도를 낮게 유지한다.
 * PC와 Mobile 모두 같은 내용과 순서를 사용하되 화면 비율에 맞게 배치와 크기를 조정한다.
 * `prefers-reduced-motion` 환경에서는 이동과 3D 회전을 줄이고 Fade와 상태 전환 중심으로 제공한다.
 
@@ -576,7 +590,7 @@ Mobile에서는 가독성을 위해 한 페이지씩 보여주며 같은 페이�
 * 네 시설 완료: COSMIC VOYAGE 페이지 자동 표시
 * COSMIC VOYAGE 완료: 최종 탑승권과 Explorer Certification 공개
 
-사용자가 일반적으로 Passport를 열 때의 MAP 진입 위치와 구체적인 Trigger UI는 현재 구현된 MAP 구조를 기준으로 별도 확정한다. Intro 구현 단계에서 새로운 MAP Button이나 Panel을 임의로 추가하지 않는다.
+사용자가 일반적으로 Passport를 열 때의 MAP 진입 위치와 구체적인 Trigger UI는 현재 구현된 MAP 구조를 기준으로 별도 확정한다. 최초 발급 Intro에서는 Passport 기록 완료 후 `WORLD MAP CONNECTION` Route Dock을 통해서만 MAP으로 진입한다.
 
 
 ### Settings
@@ -924,21 +938,23 @@ Mission 진행 중 새로고침하거나 재접속한 경우에도 Pause 상태�
 - Nova Land 세계관과 지구·공명·중심 순환 설정
 - Intro와 Explorer 이름 등록 Flow
 - Explorer Passport 구조, Stamp, 쿠폰과 페이지 이동 규칙
+- 최초 방문 Intro와 기존 Explorer 진입 분기
+- 구조 신호 응답, EVE 등장과 Explorer 이름 등록
+- Explorer Passport 최초 발급, 이름 각인과 Registered Seal
+- Intro 완료 상태 저장과 MAP 전환
 
 진행 중:
 
-- Intro와 Explorer Passport 구현 준비
+- Explorer Archive와 Save Data 구현 준비
 
 
 다음 작업 시작점:
 
-1. Intro와 Explorer 이름 등록 구현
-2. Explorer Passport 최초 발급 연출 구현
-3. Explorer Passport의 정보·Stamp·쿠폰·COSMIC 페이지 구현
-4. Explorer Log와 Explorer Passport 공통 Overlay 구현
-5. 설정과 Recent Log 저장·복원 연결
-6. PC NOVA COASTER와 공통 Mission Flow 완성
-7. 완성된 PC 흐름을 기준으로 390px 모바일 MAP Wireframe 확정
+1. Explorer Passport의 정보·Stamp·쿠폰·COSMIC 페이지 구현
+2. Explorer Log와 Explorer Passport 공통 Overlay 구현
+3. 설정과 Recent Log 저장·복원 연결
+4. PC NOVA COASTER와 공통 Mission Flow 완성
+5. 완성된 PC 흐름을 기준으로 390px 모바일 MAP Wireframe 확정
 
 모바일은 PC NOVA COASTER까지 하나의 완전한 흐름을 검증한 뒤 전용 HUD로 재설계한다. 시설 데이터와 진행 상태는 PC와 공유하고 표현 구조만 분리한다.
 

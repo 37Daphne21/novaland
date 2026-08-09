@@ -1012,6 +1012,17 @@
   font-size: .6875rem;
 }
 
+.settings-item--danger .ui-button {
+  border-color: rgba(255, 142, 157, .34);
+  color: #ffb3bd;
+  background: rgba(121, 32, 48, .12);
+}
+
+.settings-item--danger .ui-button:hover {
+  border-color: rgba(255, 142, 157, .68);
+  background: rgba(121, 32, 48, .22);
+}
+
 .segmented-control {
   display: flex;
   padding: .1875rem;

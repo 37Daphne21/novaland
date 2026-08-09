@@ -132,9 +132,9 @@ EVE의 구조 신호에 응답해 이름을 등록하고, 노바랜드의 Explor
 
 ## 제작 현황
 
-현재 PC World Map의 Mission 우선 선택 흐름, EVE 안내와 시설별 단계적 조명 변화, 화면 전환과 키보드 Focus 검수를 완료했습니다.
+현재 최초 방문 Intro, Explorer 이름 등록, Passport 최초 발급과 WORLD MAP 연결 인터페이스부터 PC World Map의 Mission 우선 선택 흐름, EVE 안내와 시설별 단계적 조명 변화까지 연결했습니다. 화면 전환, 키보드 Focus와 PC·Mobile 화면 검수도 완료했습니다.
 
-다음 단계에서 Intro와 Explorer Passport 최초 발급을 구현하고 Explorer Archive와 Save Data를 연결합니다. 이후 PC NOVA COASTER로 공통 Mission Flow를 완성한 뒤 Mobile World Map을 전용 HUD로 재설계할 예정입니다.
+다음 단계에서 Explorer Archive와 Passport의 Stamp·쿠폰 페이지, Save Data를 연결합니다. 이후 PC NOVA COASTER로 공통 Mission Flow를 완성한 뒤 Mobile World Map을 전용 HUD로 재설계할 예정입니다.
 
 ---
 

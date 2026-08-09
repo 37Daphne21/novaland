@@ -1,4 +1,5 @@
 import { createEveController } from './eve.js';
+import { createIntroController } from './intro.js';
 import { createMapController } from './map.js';
 import { createMobileMapController } from './mobile.js';
 import { createSettingsController } from './settings.js';
@@ -7,11 +8,15 @@ import { createOverlayController, createToast } from './ui.js';
 const screens = document.querySelectorAll('[data-screen]');
 const controlRoomTitle = document.querySelector('#control-room-title');
 const controlRoomType = document.querySelector('#control-room-type');
+const explorerProfileName = document.querySelector('#explorer-profile-name');
+const worldTitle = document.querySelector('#world-title');
 const toast = createToast();
 const overlay = createOverlayController();
 const eve = createEveController();
 const mobileMap = createMobileMapController();
 let map = null;
+let mapStarted = false;
+let intro = null;
 
 function showScreen(screenName) {
   screens.forEach((screen) => {
@@ -20,9 +25,25 @@ function showScreen(screenName) {
     screen.classList.toggle('is-active', isActive);
   });
 
-  if (screenName === 'map') {
+  if (screenName === 'map' && mapStarted) {
     map.render();
     map.playIntro();
+  }
+}
+
+function enterMap(explorer, { focusMap = false } = {}) {
+  if (explorerProfileName) {
+    explorerProfileName.textContent = explorer.name;
+  }
+
+  showScreen('map');
+  if (!mapStarted) {
+    map.start(eve.initialMessage);
+    mapStarted = true;
+  }
+
+  if (focusMap) {
+    window.setTimeout(() => worldTitle?.focus({ preventScroll: true }), 120);
   }
 }
 
@@ -47,6 +68,8 @@ map = createMapController({
   onEnterControlRoom: enterControlRoom,
   speakEve: eve.speak
 });
+
+intro = createIntroController({ onComplete: enterMap });
 
 const settings = createSettingsController({ showToast: toast.show });
 
@@ -88,6 +111,15 @@ function handleDocumentClick(event) {
     return;
   }
 
+  if (event.target.closest('[data-reset-progress]')) {
+    const shouldReset = window.confirm('Explorer 정보와 Intro 등록 상태를 초기화하고 처음부터 다시 시작할까요?');
+    if (shouldReset) {
+      intro.reset();
+      window.location.href = window.location.pathname;
+    }
+    return;
+  }
+
   const languageButton = event.target.closest('[data-language]');
   if (languageButton) {
     settings.selectLanguage(languageButton);
@@ -108,7 +140,7 @@ function handleKeydown(event) {
 }
 
 settings.render();
-map.start(eve.initialMessage);
+intro.start();
 
 document.addEventListener('click', handleDocumentClick);
 document.addEventListener('keydown', handleKeydown);
