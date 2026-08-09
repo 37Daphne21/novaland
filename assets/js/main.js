@@ -37,6 +37,7 @@ function enterControlRoom(facility) {
 
   window.setTimeout(() => {
     showScreen('control-room');
+    controlRoomTitle?.focus({ preventScroll: true });
     toast.show(facility.controlRoomMessage);
   }, 180);
 }

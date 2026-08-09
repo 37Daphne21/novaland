@@ -255,9 +255,13 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, speak
     const progress = currentStep / state.facilities.length * 100;
     const restored = isRestored();
     const progressLabel = restored ? uiCopy.progressComplete : uiCopy.progressActive;
+    const currentFacility = state.facilities[currentStep - 1];
+    const progressText = restored
+      ? `${currentStep} / ${state.facilities.length}, ${progressLabel}`
+      : `${currentStep} / ${state.facilities.length}, ${currentFacility.name} ${progressLabel}`;
 
     missionProgress.setAttribute('aria-valuenow', String(currentStep));
-    missionProgress.setAttribute('aria-valuetext', `${currentStep} / ${state.facilities.length}, ${progressLabel}`);
+    missionProgress.setAttribute('aria-valuetext', progressText);
     missionProgress.classList.toggle('is-completed', restored);
     missionProgressValue.textContent = `${currentStep} / ${state.facilities.length}`;
     missionProgressLabel.textContent = progressLabel;
@@ -302,7 +306,7 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, speak
       const isAwaitingGuide = !view.isDisabled && !isEntryEnabled;
 
       return `
-        <button class="map-facility-card is-state-${facility.state}${view.isSelected ? ' is-selected' : ''}${isAwaitingGuide ? ' is-awaiting-guide' : ''}" type="button" data-facility="${facility.id}" data-control-room-entry aria-pressed="${view.isSelected}"${isEntryEnabled ? '' : ' aria-disabled="true"'} style="--marker-x: ${facility.position.x}%; --marker-y: ${facility.position.y}%; --mobile-marker-x: ${facility.mobilePosition.x}%; --mobile-marker-y: ${facility.mobilePosition.y}%; --facility-color: var(--color-${facility.id});">
+        <button class="map-facility-card is-state-${facility.state}${view.isSelected ? ' is-selected' : ''}${isAwaitingGuide ? ' is-awaiting-guide' : ''}" type="button" data-facility="${facility.id}" data-control-room-entry aria-pressed="${view.isSelected}"${isEntryEnabled ? '' : ' aria-disabled="true" tabindex="-1"'} style="--marker-x: ${facility.position.x}%; --marker-y: ${facility.position.y}%; --mobile-marker-x: ${facility.mobilePosition.x}%; --mobile-marker-y: ${facility.mobilePosition.y}%; --facility-color: var(--color-${facility.id});">
           <span class="map-facility-card__number">${marker}</span>
           <span class="map-facility-card__content"><strong>${facility.name}</strong><small>${facility.type}</small><i>${getIcon(view.state.icon)}${view.state.label}</i></span>
           <span class="map-facility-card__enter" aria-hidden="true">${getIcon('arrow-right')}</span>
@@ -318,7 +322,7 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, speak
     const isCosmicSelected = state.selectedFacilityId === 'cosmic';
     const isCosmicEntryEnabled = !isCosmicSealed && state.guidedFacilityId === 'cosmic';
     const cosmicCard = `
-      <button class="map-facility-card map-facility-card--cosmic is-state-${state.cosmicVoyage.state}${isCosmicSelected ? ' is-selected' : ''}${!isCosmicSealed && !isCosmicEntryEnabled ? ' is-awaiting-guide' : ''}" type="button" data-facility="cosmic" data-control-room-entry aria-pressed="${isCosmicSelected}"${isCosmicEntryEnabled ? '' : ' aria-disabled="true"'} style="--marker-x: ${cosmicPosition.x}%; --marker-y: ${cosmicPosition.y}%; --mobile-marker-x: ${cosmicMobilePosition.x}%; --mobile-marker-y: ${cosmicMobilePosition.y}%;">
+      <button class="map-facility-card map-facility-card--cosmic is-state-${state.cosmicVoyage.state}${isCosmicSelected ? ' is-selected' : ''}${!isCosmicSealed && !isCosmicEntryEnabled ? ' is-awaiting-guide' : ''}" type="button" data-facility="cosmic" data-control-room-entry aria-pressed="${isCosmicSelected}"${isCosmicEntryEnabled ? '' : ' aria-disabled="true" tabindex="-1"'} style="--marker-x: ${cosmicPosition.x}%; --marker-y: ${cosmicPosition.y}%; --mobile-marker-x: ${cosmicMobilePosition.x}%; --mobile-marker-y: ${cosmicMobilePosition.y}%;">
         <span class="map-facility-card__number">${getIcon(cosmicState.icon)}</span>
         <span class="map-facility-card__content"><strong>${cosmicName}</strong><i>${cosmicState.label}</i></span>
       </button>
@@ -397,9 +401,13 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, speak
 
   function guideFacility(facility) {
     state.guidedFacilityId = facility.id;
-    renderMapCards();
+    const guidedCard = mapCardList?.querySelector(`[data-facility="${facility.id}"]`);
+
+    guidedCard?.removeAttribute('aria-disabled');
+    guidedCard?.removeAttribute('tabindex');
+    guidedCard?.classList.remove('is-awaiting-guide');
+    guidedCard?.classList.add('is-guided');
     renderSelection();
-    mapCardList?.querySelector(`[data-facility="${facility.id}"]`)?.classList.add('is-guided');
 
     if (facility.state === 'available') {
       updateFacilityGlow(facility);
@@ -544,7 +552,7 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, speak
 
   function focusReturnTarget() {
     const facilityId = state.selectedFacilityId ?? (isRestored() ? 'cosmic' : 'coaster');
-    document.querySelector(`[data-screen="map"] [data-facility="${facilityId}"]`)?.focus();
+    document.querySelector(`[data-screen="map"] [data-control-room-entry][data-facility="${facilityId}"]`)?.focus();
   }
 
   function getStartupMessage(defaultMessage) {

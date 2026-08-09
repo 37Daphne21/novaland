@@ -8,11 +8,13 @@
 
 ## 완료된 기반
 
-- 프로젝트 세계관과 전체 User Flow
+- 전체 User Flow와 시설 진행 순서
+- 지구·공명·중심 순환을 포함한 Nova Land 세계관
 - 시설 역할, Identity Color와 Mission 방향
+- Intro, Explorer 등록과 Passport 경험 설계
 - HTML, CSS와 JavaScript ES Module 기반
 - 공통 디자인 Token과 UI Component
-- 한국어·영어 전환
+- 한국어·영어 선택 UI
 - Settings Overlay와 전체 화면 제어
 - MAP용 공통 이미지와 Icon
 - PC MAP 기본 상태와 전체 복구 상태
@@ -29,9 +31,40 @@
 
 ---
 
-## Now. 공통 시스템 완성
+## 완료. MAP 마무리
 
-상태: 진행 중
+상태: 완료
+
+- [x] 비활성 지도 시설 Card를 키보드 Tab 순서에서 제외
+- [x] MAP에서 Control Room 진입 시 새 화면의 제목으로 Focus 이동
+- [x] Control Room에서 MAP 복귀 시 진입에 사용한 지도 시설 Card로 Focus 복원
+- [x] `1 / 4`가 완료 수가 아니라 현재 단계임을 Progress 이름과 접근성 문구에 명확히 표시
+- [x] 1366×768과 1440×900에서 기본·선택·전체 복구 상태 회귀 검수
+
+완료 조건: PC MAP의 선택 흐름, 화면 전환과 키보드 Focus가 일치하고 Console 오류와 화면 Overflow가 없어야 한다.
+
+---
+
+## Now. Intro와 Explorer Passport
+
+상태: 기획 확정·구현 대기
+
+- [ ] 최초 방문과 기존 Explorer의 진입 분기
+- [ ] 멈춘 노바랜드와 구조 신호 연결 Intro
+- [ ] EVE 등장과 Explorer 이름 등록
+- [ ] Explorer ID와 발급일 생성
+- [ ] Explorer Passport 최초 발급과 이름 각인
+- [ ] Explorer Registered Seal과 MAP 전환
+- [ ] Intro 중단·재접속·처음부터 다시 시작 상태 처리
+- [ ] Keyboard, Focus, 오류 안내와 `prefers-reduced-motion` 대응
+
+완료 조건: 최초 방문자가 이름을 등록하고 Passport를 발급받은 뒤 기존 MAP으로 진입하며, 재접속에서는 Intro를 반복하지 않아야 한다.
+
+---
+
+## Next. Explorer Archive와 Save Data
+
+상태: 예정
 
 
 ### Explorer Archive
@@ -46,6 +79,7 @@
 ### 저장과 설정
 
 - [ ] Explorer 이름 등록·변경과 복원
+- [ ] Intro 완료와 Passport 발급 상태 저장
 - [ ] 시설 잠금·진행·완료 상태 저장
 - [ ] Mission 진행 상태 저장
 - [ ] 언어, 시간과 사운드 설정 저장
@@ -62,7 +96,7 @@
 
 ---
 
-## Next. NOVA COASTER와 공통 Mission Flow
+## Then. NOVA COASTER와 공통 Mission Flow
 
 상태: 예정
 
@@ -227,7 +261,8 @@
 
 ## 현재 작업 순서
 
-    공통 시스템과 Explorer Archive
+    Intro와 Explorer Passport 최초 발급
+    → Explorer Archive와 Save Data
     → NOVA COASTER와 공통 Mission Flow
     → 모바일 MAP Wireframe과 UI 재구성
     → 나머지 시설

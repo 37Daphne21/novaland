@@ -18,13 +18,54 @@
 
 ## 프로젝트 정의
 
-Nova Land는 테마파크를 하나의 살아 있는 세계로 표현하는 인터랙티브 브랜드 경험 포트폴리오다.
+Nova Land는 지구에서는 테마파크처럼 알려져 있지만, 실제로는 Nova People이 살아가는 하나의 세계를 표현하는 인터랙티브 브랜드 경험 포트폴리오다.
 
-사용자는 Explorer가 되어 멈춘 네 시설을 순서대로 복구한다. 시설이 회복될수록 MAP의 조명과 상태, 기록이 변화하고 마지막에는 네 시설의 에너지가 연결되는 COSMIC VOYAGE가 개방된다.
+사용자는 Explorer가 되어 노바랜드를 탐험하고 시설을 복구하며, 브랜드 세계가 다시 살아나는 과정을 경험한다.
 
-일반적인 홈페이지나 점수 중심 게임이 아니라, 사용자의 행동으로 브랜드 세계가 다시 움직이는 경험을 만드는 것이 목적이다.
+일반적인 홈페이지나 점수 중심 게임이 아니라, 사용자의 행동으로 브랜드 세계가 변화하는 인터랙티브 경험을 만드는 것이 목적이다.
 
-핵심 키워드는 탐험, 회복, 변화, 연결, 몰입과 희망이다.
+핵심 키워드는 탐험, 회복, 연결, 공명, 몰입과 희망이다.
+
+---
+
+## 세계관
+
+### 세계
+
+- 노바랜드는 지구에서는 테마파크로 알려져 있지만, 실제로는 Nova People이 살아가는 하나의 세계다.
+- 지구와 노바랜드는 공명을 통해 서로 연결되어 있다.
+
+### 중심 순환
+
+- 노바랜드는 지구에 즐거움과 설렘, 위로를 전한다.
+- 지구인의 긍정적인 경험은 공명이 되어 노바랜드의 중심 에너지로 순환한다.
+- 공명의 흐름이 약해지면 네 핵심 시설과 중심 순환도 멈춘다.
+
+### Explorer
+
+- Explorer는 지구에서 EVE의 구조 신호에 응답한 방문자다.
+- 노바랜드 밖에서 온 존재이기 때문에 최초의 복구 권한을 부여받는다.
+- Explorer는 영웅이 아니라 노바랜드의 회복을 돕는 조력자다.
+
+### EVE
+
+- Nova People이 만든 중앙 관제 AI다.
+- 공명의 이상을 감지하고 지구로 구조 신호를 보낸다.
+- Explorer를 지원하지만 직접 문제를 해결하지는 않는다.
+
+### COSMIC VOYAGE
+
+- 다섯 번째 시설이 아니다.
+- 네 핵심 시설의 에너지를 다시 하나의 순환으로 연결하는 중심 관문이다.
+- 네 시설이 모두 복구되면 봉인이 해제된다.
+
+### 세계관 요약
+
+노바랜드는 지구에 즐거움과 설렘을 전하는 세계이며, 그 경험에서 태어난 공명이 다시 노바랜드의 중심 에너지로 순환한다.
+
+Explorer는 EVE의 구조 신호에 응답한 지구의 방문자로, 멈춘 세계를 다시 연결하는 조력자다.
+
+네 핵심 시설이 모두 복구되면 COSMIC VOYAGE가 다시 개방되고, 노바랜드와 지구의 연결도 회복된다.
 
 ---
 
@@ -55,17 +96,33 @@ Control Room과 Mission UI는 일반적인 게임 HUD보다 실제 시설을 점
 
 ### Nova Land
 
-놀이기구만 모인 공원이 아니라 Nova People이 살아가는 하나의 세계다. 각 시설은 이 세계의 이동, 생명, 에너지와 즐거움을 유지한다.
+놀이기구만 모인 공원이 아니라 Nova People이 살아가는 하나의 세계다.
+
+노바랜드는 지구에 즐거움과 설렘을 전하고, 그 경험에서 태어난 공명이 다시 중심 에너지로 순환하며 세계를 유지한다.
+
+각 시설은 이동, 생명, 에너지와 즐거움을 담당하는 핵심 시설이며, 네 시설의 균형이 무너지면 중심 순환도 멈춘다.
 
 
 ### Explorer
 
-시설을 점검하고 복구하는 방문자다. 이름을 등록할 수 있으며 시설 복구 기록과 Passport Stamp만 남긴다. Level이나 전투 능력치는 사용하지 않는다.
+지구에서 EVE의 구조 신호에 응답한 방문자다.
+
+노바랜드 밖에서 온 존재이기 때문에 멈춘 순환을 다시 시작할 수 있는 Explorer 권한을 부여받는다.
+
+이름을 등록할 수 있으며 시설 복구 기록과 Passport Stamp만 남긴다.
+
+Level이나 전투 능력치는 사용하지 않는다.
 
 
 ### EVE
 
-노바랜드 중앙 관제 AI다. Explorer에게 시설 상태와 다음 행동을 짧고 정확하게 안내한다. 주인공처럼 앞에 나서지 않으며, 엔딩에서만 평소보다 조금 따뜻한 감정을 표현한다.
+Nova People이 만든 노바랜드 중앙 관제 AI다.
+
+공명의 이상을 감지하고 지구로 구조 신호를 보낸다.
+
+Explorer에게 시설 상태와 다음 행동을 짧고 정확하게 안내하며, 직접 문제를 해결하기보다 복구를 지원하는 역할을 맡는다.
+
+주인공처럼 앞에 나서지 않으며 엔딩에서만 평소보다 조금 따뜻한 감정을 표현한다.
 
 ---
 
@@ -162,6 +219,7 @@ COSMIC VOYAGE는 봉인 상태에서 Gray를 사용하며 단일 대표색을 �
 
     Intro
     → Explorer Registration
+    → Explorer Passport 발급
     → MAP
     → Control Room
     → Mission Guide
@@ -176,7 +234,151 @@ COSMIC VOYAGE는 봉인 상태에서 Gray를 사용하며 단일 대표색을 �
     → Explorer Certification
     → Ending
 
+Intro는 첫 방문자가 EVE의 구조 신호에 응답하고 이름을 등록해 Explorer가 되는 최초 진입 경험이다.
+
+Explorer Invitation은 별도 화면으로 분리하지 않고 Intro의 구조 요청과 응답 과정에 포함한다.
+
+Explorer Passport 발급이 완료된 뒤 기존 MAP으로 진입한다. 첫 번째 시설 안내와 MAP 내 행동 유도는 Intro가 아니라 MAP에서 시작한다.
+
 MAP은 모든 탐험의 시작과 복귀 지점이다. 시설별 Mission은 독립적이지만 공통 Flow와 Overlay 구조를 공유한다.
+
+---
+
+## Intro와 Explorer 등록
+
+Intro는 일반적인 로고 소개나 세계관 설명 영상이 아니라, 사용자가 노바랜드의 구조 신호에 응답하고 Explorer로 등록되는 최초 진입 경험이다.
+
+사용자는 이미 Nova Land 이벤트 페이지에 진입한 상태이므로 현실의 이벤트 페이지나 테마파크 홈페이지를 다시 설명하지 않는다.
+
+Intro의 핵심은 세계관 전체를 설명하는 것이 아니라, 사용자가 입력한 이름이 Explorer Passport에 기록되며 노바랜드의 Explorer가 되는 순간을 기억에 남게 만드는 것이다.
+
+### 진입 조건
+
+* Explorer 정보가 없는 최초 방문에서만 Intro를 진행한다.
+* Explorer 정보와 Intro 완료 상태가 저장되어 있으면 새로고침이나 재접속 시 Intro를 반복하지 않고 기존 진행 상태로 복귀한다.
+* Settings의 처음부터 다시 시작을 실행한 경우 Explorer 정보와 진행 기록을 삭제하고 Intro부터 다시 시작한다.
+* 이름 변경에서는 Intro와 최초 여권 발급 연출을 반복하지 않는다.
+
+### Intro 진행 흐름
+
+    노바랜드의 정지된 풍경
+    → EVE 연결
+    → 구조 상황 안내
+    → 신호에 응답하기
+    → Explorer 이름 등록
+    → Explorer Passport 발급
+    → 이름 각인과 등록 Seal
+    → 여권 닫힘
+    → MAP 전환
+
+자동으로 진행되는 연출은 사용자의 이름 입력 대기 시간을 제외하고 약 15~20초 안에 끝낸다.
+
+장면마다 다음 Button을 반복해서 제공하지 않는다. 사용자의 핵심 입력은 신호에 응답하기와 Explorer 등록으로 제한하고, 등록 이후 여권 발급과 MAP 전환은 자동으로 이어진다.
+
+첫 시설 이름, 시설 선택 방법과 첫 Mission 안내는 Intro에서 제공하지 않는다. 해당 안내는 기존 MAP의 EVE와 Mission 선택 흐름에서 담당한다.
+
+### Intro 장면
+
+#### 1. 멈춘 노바랜드
+
+조명이 꺼지고 움직임이 멈춘 노바랜드의 전경을 짧게 보여준다.
+
+첫 화면에서는 구조 신호, EVE, 대사, 입력 UI와 Passport를 표시하지 않는다.
+
+사용자가 화면을 선택하면 노바랜드 배경이 약 0.8초 동안 천천히 Fade Out된다.
+
+Fade Out이 끝나면 어두운 구조 신호 연결 화면으로 전환한다.
+
+#### 2. 구조 신호 연결
+
+어두운 공간 중앙에 정체를 알 수 없는 작은 빛 형태의 구조 신호가 나타난다.
+
+아직 EVE의 모습과 이름은 공개하지 않는다.
+
+구조 신호는 대사가 출력되는 동안 밝기와 크기가 미세하게 변하며 맥동한다. 대사가 끝나면 약한 대기 상태로 돌아간다.
+
+안내 문구:
+
+> 지구로 보낸 구조 신호가 연결되었습니다.
+
+이어서 현재 상황을 짧게 안내한다.
+
+> 노바랜드의 중심 순환이 멈추고 있습니다.
+
+Button:
+
+> 신호에 응답하기
+
+공명, COSMIC VOYAGE, 네 시설의 상세 역할과 전체 세계관은 Intro에서 길게 설명하지 않는다.
+
+#### 3. EVE 등장과 Explorer 이름 등록
+
+사용자가 신호에 응답하면 Button을 비활성화하고 구조 신호의 빛이 입자로 분해되기 시작한다.
+
+입자는 약 1초 동안 하나의 형태로 모이며 EVE가 처음 홀로그램으로 나타난다.
+
+EVE 안내:
+
+> Explorer 연결이 확인되었습니다.
+
+이어서 이름 등록을 안내한다.
+
+> Explorer의 이름을 기록합니다.
+
+입력 항목은 Explorer 이름 하나만 제공한다.
+
+* 한글, 영문과 숫자 사용 가능
+* 단어 사이 공백 사용 가능
+* 2~12자
+* 앞뒤 공백 제거
+* 이름으로 사용할 수 없는 특수문자는 제한
+* 빈 값이나 글자 수 초과 시 입력 영역 가까이에 짧은 오류 안내 표시
+
+입력 Label과 오류 문구는 접근성 API에서 확인할 수 있어야 한다.
+
+Button:
+
+> Explorer 등록
+
+#### 4. Explorer Passport 발급
+
+Explorer 등록을 선택하면 입력한 이름이 강조되고, 이름의 시각적 흐름이 Passport의 이름 영역으로 이어진다.
+
+이름을 알아보기 어려운 입자로 완전히 분해하지 않는다.
+
+Passport는 노바랜드가 Explorer에게 건네는 첫 번째 상징 아이템처럼 화면에 나타난다.
+
+다음 정보가 순서대로 기록된다.
+
+* Explorer 이름
+* Explorer ID
+* 발급일
+* 등록 상태
+* 시설 복구 진행 0 / 4
+
+이름이 기록된 뒤 Explorer Registered Seal을 찍는다.
+
+EVE는 이 장면에서 처음으로 사용자의 이름을 부른다.
+
+> Explorer {사용자 이름}.
+> 등록이 완료되었습니다.
+
+#### 5. MAP 전환
+
+발급된 Passport가 닫히며 표지에 Explorer 이름이 작게 각인된다.
+
+표지의 NOVA LAND Emblem이 짧게 빛난 뒤 Passport가 화면에서 정리되고 기존 MAP으로 전환된다.
+
+Intro 종료 직전에 첫 번째 시설이나 다음 행동을 안내하는 EVE 대사는 사용하지 않는다.
+
+### Intro 비주얼 원칙
+
+* 실제 여권의 소장감과 노바랜드 관제 기술의 정제된 빛 표현을 결합한다.
+* 마법책이나 낡은 판타지 소품처럼 표현하지 않는다.
+* 과도한 Glitch, 통신 잡음과 공포 분위기를 사용하지 않는다.
+* 긴 텍스트 설명보다 멈춘 공간, 조명, 사운드와 Passport 발급 연출로 상황을 전달한다.
+* PC와 Mobile 모두 같은 내용과 순서를 사용하되 화면 비율에 맞게 배치와 크기를 조정한다.
+* `prefers-reduced-motion` 환경에서는 이동과 3D 회전을 줄이고 Fade와 상태 전환 중심으로 제공한다.
 
 ---
 
@@ -186,11 +388,195 @@ MAP은 모든 탐험의 시작과 복귀 지점이다. 시설별 Mission은 독�
 
 Explorer Log와 Explorer Passport는 하나의 공통 Overlay 안에서 동등한 두 Tab으로 제공한다.
 
-- Recent Log의 기록 보기: 탐험 기록 Tab으로 진입
-- Explorer Profile: 탐험가 패스포트 Tab으로 진입
-- 이름 변경 Button: 이름 변경만 수행
+* Recent Log의 기록 보기: 탐험 기록 Tab으로 진입
+* Explorer Profile: 탐험가 패스포트 Tab으로 진입
+* 이름 변경 Button: 이름 변경만 수행
 
-Explorer Log는 사건과 Mission 완료 내역을 시간순으로 보여준다. Explorer Passport는 시설별 복구 상태와 Stamp를 수집형 기록으로 보여준다. 둘의 역할은 합치지 않는다.
+Explorer Log는 사건과 Mission 완료 내역을 시간순으로 보여준다.
+
+Explorer Passport는 사용자의 이름, 시설별 복구 상태, Stamp, 쿠폰과 최종 탑승권을 수집형 기록으로 보여준다.
+
+둘의 역할은 합치지 않는다.
+
+#### Explorer Passport 역할
+
+Explorer Passport는 단순 프로필 카드가 아니라 노바랜드 안에서 Explorer를 나타내고 전체 여정을 기록하는 상징 아이템이다.
+
+최초 Explorer 등록 시 발급되며, 사용자가 입력한 이름이 Passport에 직접 기록되는 연출을 제공한다.
+
+시설을 복구할 때마다 해당 시설 Stamp와 완료 기록이 추가되고 현실 이벤트 보상인 쿠폰도 함께 활성화된다.
+
+네 시설 복구 후 COSMIC VOYAGE가 개방되면 최종 탑승권과 Explorer Certification이 추가된다.
+
+#### Passport 표지
+
+표지는 실제 여권의 소장감과 노바랜드의 미래적인 관제 기술을 결합한다.
+
+기본 구성:
+
+* NOVA LAND Emblem
+* EXPLORER PASSPORT
+* Explorer 이름 각인
+* Pearl White 계열의 얇은 Line
+* 등록 상태 또는 식별 정보
+
+기본 색상은 짙은 Navy 또는 Charcoal 계열을 사용한다.
+
+시설 복구마다 표지 전체를 크게 변경하지 않는다.
+
+* 시설 복구: 시설 컬러가 표지 가장자리에 미세하게 누적
+* 네 시설 복구: Aurora Seal 활성화
+* COSMIC VOYAGE 완료: 최종 Passport 상태 활성화
+
+스탬프와 기록이 중심이며 표지 장식 변화는 보조로 사용한다.
+
+#### Passport 페이지 구성
+
+##### 첫 번째 펼침: Explorer 정보
+
+왼쪽 페이지:
+
+* NOVA LAND 공식 문양
+* Explorer에게 보내는 짧은 안내
+* 발급일
+* 등록 상태
+
+오른쪽 페이지:
+
+* Explorer 이름
+* Explorer ID
+* Explorer Emblem
+* 시설 복구 진행 수
+* 현재 상태
+* 이름 변경 진입
+
+사진, 성별, 나이와 추가 개인정보는 사용하지 않는다.
+
+이름 변경은 Settings의 간단한 수정 UI로 진행하고 최초 발급 연출은 반복하지 않는다.
+
+##### 두 번째 펼침: NOVA / LUNA
+
+왼쪽 페이지:
+
+* NOVA COASTER
+* Movement
+* Stamp 영역
+* 완료일
+* 쿠폰 상태
+
+오른쪽 페이지:
+
+* LUNA LIGHT GARDEN
+* Life
+* Stamp 영역
+* 완료일
+* 쿠폰 상태
+
+##### 세 번째 펼침: SPARK / WONDER
+
+왼쪽 페이지:
+
+* SPARK ENERGY TOWER
+* Energy
+* Stamp 영역
+* 완료일
+* 쿠폰 상태
+
+오른쪽 페이지:
+
+* WONDER PARADE HALL
+* Joy
+* Stamp 영역
+* 완료일
+* 쿠폰 상태
+
+##### 마지막 펼침: COSMIC VOYAGE
+
+개방 전:
+
+* 이름 대신 ???
+* 봉인된 Harmony 문양
+* 네 시설 복구 조건
+* 비활성화된 최종 영역
+
+개방 후:
+
+* COSMIC VOYAGE 이름 공개
+* Harmony Seal
+* 최종 탑승권
+* Explorer Certification
+* EVE의 마지막 기록
+
+최종 탑승권은 현실 이벤트 보상이고 Explorer Certification은 세계관 안에서의 임무 완료 기록이다. 두 항목의 역할을 합치지 않는다.
+
+#### 시설 Stamp
+
+각 Stamp는 시설의 역할과 문양을 반영한다.
+
+* NOVA COASTER: Rail과 원형 궤도
+* LUNA LIGHT GARDEN: Lotus 또는 빛나는 꽃
+* SPARK ENERGY TOWER: Energy Core와 방사형 Line
+* WONDER PARADE HALL: Parade Emblem 또는 Star
+* COSMIC VOYAGE: 네 시설 컬러가 Pearl White 중심으로 연결된 Aurora Seal
+
+복구 전에는 완성 Stamp를 흐리게 미리 노출하지 않고 얇은 압인 또는 빈 Stamp 영역만 보여준다.
+
+시설 복구 시 다음 순서로 연출한다.
+
+```
+해당 Passport 페이지 자동 표시
+→ Stamp 위치 정렬
+→ Stamp가 눌림
+→ 시설 컬러 또는 잉크가 퍼짐
+→ 완료일 기록
+→ 쿠폰 상태 활성화
+```
+
+시설 복구 결과, Stamp와 쿠폰 지급을 여러 Popup으로 반복하지 않고 Passport 안에서 하나의 보상 흐름으로 연결한다.
+
+#### Passport 페이지 이동
+
+PC에서는 실제 책처럼 좌우 두 페이지를 함께 보여준다.
+
+Mobile에서는 가독성을 위해 한 페이지씩 보여주며 같은 페이지 순서와 데이터를 사용한다.
+
+페이지 이동은 종이 하단 귀퉁이 인터랙션을 우선한다.
+
+* 오른쪽 아래 접힌 귀퉁이: 다음 페이지
+* 왼쪽 아래 접힌 귀퉁이: 이전 페이지
+* 이동할 페이지가 있을 때만 해당 귀퉁이 표시
+* PC Hover 시 귀퉁이가 조금 더 들리며 Click 가능 상태 안내
+* Click 또는 Tap 시 자동 페이지 넘김
+* 종이를 직접 끌어당기는 Drag 방식은 사용하지 않음
+* Mobile의 실제 터치 영역은 보이는 귀퉁이보다 넓게 확보
+* 현재 위치를 알 수 있도록 Page Number 또는 작은 진행 표시 제공
+* 마지막 페이지에는 다음 페이지 귀퉁이를 표시하지 않음
+
+새로운 페이지나 기록이 처음 활성화되면 해당 귀퉁이를 한 번만 미세하게 움직여 다음 행동을 안내할 수 있다.
+
+페이지 넘김은 CSS 3D Transform을 사용할 수 있으나, 콘텐츠 가독성과 Mobile 성능을 우선한다.
+
+`prefers-reduced-motion`에서는 3D 회전을 줄이고 짧은 Fade 또는 Slide 전환으로 대체한다.
+
+#### Passport 효과음
+
+* 페이지 넘김: 짧은 종이 넘김음
+* Stamp: 단단하고 짧은 도장음
+* Passport 닫힘: 가벼운 책 닫힘음
+
+효과음은 Settings의 효과음 설정을 따르며, 소리가 없어도 상태 변화를 이해할 수 있어야 한다.
+
+#### Passport 자동 표시
+
+* 최초 등록: Explorer 정보 페이지 발급
+* NOVA 완료: NOVA Stamp 페이지 자동 표시
+* LUNA 완료: 같은 펼침의 LUNA 영역 강조
+* SPARK 완료: SPARK / WONDER 펼침으로 자동 이동
+* WONDER 완료: 같은 펼침의 WONDER 영역 강조
+* 네 시설 완료: COSMIC VOYAGE 페이지 자동 표시
+* COSMIC VOYAGE 완료: 최종 탑승권과 Explorer Certification 공개
+
+사용자가 일반적으로 Passport를 열 때의 MAP 진입 위치와 구체적인 Trigger UI는 현재 구현된 MAP 구조를 기준으로 별도 확정한다. Intro 구현 단계에서 새로운 MAP Button이나 Panel을 임의로 추가하지 않는다.
 
 
 ### Settings
@@ -204,8 +590,18 @@ Explorer Log는 사건과 Mission 완료 내역을 시간순으로 보여준다.
 - Day / Sunset / Night
 - 전체 화면 On / Off
 - 처음부터 다시 시작
+- 설정 초기화하기
 
-브라우저 Fullscreen API는 사용자의 직접 입력에서만 실행하고, 브라우저가 전체 화면을 해제하면 설정 상태도 동기화한다.
+브라우저 Fullscreen API는 사용자의 직접 입력에서만 실행하고,
+브라우저가 전체 화면을 해제하면 설정 상태도 동기화한다.
+
+처음부터 다시 시작은 Explorer 정보, Intro 완료 상태, Passport, 쿠폰과 전체 진행 기록을 초기화하며 환경 설정은 유지한다.
+
+초기화가 완료되면 MAP이 아니라 Intro의 Explorer 등록부터 다시 시작한다.
+
+설정 초기화하기는 언어, 시간과 사운드 설정만 기본값으로 되돌린다.
+
+두 초기화 기능은 서로 영향을 주지 않으며 모두 확인 절차를 거친다.
 
 
 ### Time
@@ -215,13 +611,34 @@ Day, Sunset과 Night는 배경, 조명, 반사와 분위기를 바꾸는 브랜�
 
 ### Save Data
 
-새로고침 후 다음 상태를 복원해야 한다.
+새로고침이나 재접속은 초기화가 아니라 기존 Explorer로 이어서 진행하는 것으로 취급한다.
+
+다음 상태를 복원해야 한다.
 
 - Explorer 이름
 - 시설 잠금·진행·완료 상태
 - Mission 진행 상태
-- 언어, 시간과 사운드 설정
+- 퍼즐 진행 상태
+- 남은 시간
+- Explorer Log
+- Explorer Passport
 - Recent Log
+- 언어, 시간과 사운드 설정
+- Intro 완료 상태
+- Explorer Passport 발급·Stamp·쿠폰 상태
+- COSMIC VOYAGE 탑승권과 Explorer Certification 상태
+
+Mission 진행 중 새로고침하면 진행 중이던 Mission 화면으로 복귀하고 일시정지 상태를 표시한다.
+
+사용자가 계속 진행을 선택하면 저장된 상태와 남은 시간부터 그대로 Mission을 이어서 진행한다.
+
+Mission Guide와 Pause는 현재 화면을 유지하며 Countdown은 처음부터 다시 시작한다.
+
+Complete 이후에는 완료 상태와 기록을 유지한다.
+
+Explorer 정보와 Intro 완료 상태가 존재하면 일반적인 새로고침과 재접속에서는 Intro를 반복하지 않는다.
+
+처음부터 다시 시작으로 Explorer 정보가 초기화된 경우에만 Intro와 Explorer Passport 최초 발급을 다시 진행한다.
 
 ---
 
@@ -407,6 +824,7 @@ Mission Guide, Countdown, Pause, Fail과 Complete는 Control Room 위의 공통 
 - Pause: Resume, Restart와 MAP 제공
 - Fail: 과도한 실패 연출 없이 재시도와 MAP 제공
 - Complete: 시설 복구 결과, Explorer Log 기록과 Passport 갱신 후 MAP 복귀
+Mission 진행 중 새로고침하거나 재접속한 경우에도 Pause 상태로 복원한다.
 
 ---
 
@@ -462,10 +880,12 @@ Mission Guide, Countdown, Pause, Fail과 Complete는 Control Room 위의 공통 
 
 ### COSMIC VOYAGE
 
-다섯 번째 시설이 아니라 Movement, Life, Energy와 Joy가 Harmony로 연결되는 마지막 체험이다.
+다섯 번째 시설이 아니라 Movement, Life, Energy와 Joy가 Harmony로 연결되는 중심 순환 시스템이다.
+
+공명의 흐름이 약해졌을 때 남아 있는 중심 에너지를 보호하기 위해 스스로 봉인되며, 네 시설이 모두 복구되어 균형이 회복되면 다시 개방된다.
 
 - 개방 조건: 네 시설 복구 완료
-- 중심 경험: 경쟁이나 퍼즐보다 Gate 개방과 세계 연결 연출
+- 중심 경험: 경쟁이나 퍼즐보다 두 세계의 연결과 중심 순환 회복
 - 컬러: Pearl White 중심광과 네 시설의 Aurora
 - 결과: Explorer Certification, Passport 최종 상태와 Ending 연결
 
@@ -501,18 +921,24 @@ Mission Guide, Countdown, Pause, Fail과 Complete는 Control Room 위의 공통 
 - Settings의 언어·시간·전체 화면 등 현재 제공 기능
 - MAP PC 1차 Refactoring
 - 모바일 전용 MAP 배경과 반응형 1차 구현
+- Nova Land 세계관과 지구·공명·중심 순환 설정
+- Intro와 Explorer 이름 등록 Flow
+- Explorer Passport 구조, Stamp, 쿠폰과 페이지 이동 규칙
 
 진행 중:
 
-- Explorer Archive와 Save Data를 포함한 공통 시스템 설계
+- Intro와 Explorer Passport 구현 준비
+
 
 다음 작업 시작점:
 
-1. Explorer 이름과 시설 진행 상태를 위한 Save Data 구조 확정
-2. Explorer Log와 Explorer Passport 공통 Overlay 구현
-3. 설정과 Recent Log 저장·복원 연결
-4. PC NOVA COASTER와 공통 Mission Flow 완성
-5. 완성된 PC 흐름을 기준으로 390px 모바일 MAP Wireframe 확정
+1. Intro와 Explorer 이름 등록 구현
+2. Explorer Passport 최초 발급 연출 구현
+3. Explorer Passport의 정보·Stamp·쿠폰·COSMIC 페이지 구현
+4. Explorer Log와 Explorer Passport 공통 Overlay 구현
+5. 설정과 Recent Log 저장·복원 연결
+6. PC NOVA COASTER와 공통 Mission Flow 완성
+7. 완성된 PC 흐름을 기준으로 390px 모바일 MAP Wireframe 확정
 
 모바일은 PC NOVA COASTER까지 하나의 완전한 흐름을 검증한 뒤 전용 HUD로 재설계한다. 시설 데이터와 진행 상태는 PC와 공유하고 표현 구조만 분리한다.
 

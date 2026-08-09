@@ -9,7 +9,7 @@ export const uiCopy = {
   cosmicPending: 'COSMIC VOYAGE는 마지막 경험 단계에서 연결돼요.',
   mapRestored: '탐험가님, 네 개의 시설 복구가 완료됐어요. COSMIC VOYAGE가 개방됐습니다.',
   restoredLog: '모든 시설 복구가 완료됐어요.',
-  progressActive: '복구 진행',
+  progressActive: '현재 복구 단계',
   progressComplete: '전체 복구 완료',
   fullscreenUnsupported: '이 브라우저에서는 전체 화면을 사용할 수 없어요.',
   fullscreenFailed: '전체 화면을 전환하지 못했어요.'
