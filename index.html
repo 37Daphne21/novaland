@@ -37,18 +37,18 @@
               <span class="signal-receiver__orbit signal-receiver__orbit--inner"></span>
               <span class="signal-receiver__scan"></span>
               <div class="intro-signal__orb"><i></i><b></b></div>
-              <div class="signal-receiver__coordinate signal-receiver__coordinate--top"><small>ORIGIN</small><strong>EARTH · 01</strong></div>
+              <div class="signal-receiver__coordinate signal-receiver__coordinate--top"><small>SOURCE</small><strong>NOVA LAND</strong></div>
               <div class="signal-receiver__coordinate signal-receiver__coordinate--bottom"><small>SYNC RATE</small><strong>98.7%</strong></div>
               <span class="signal-receiver__lock">SIGNAL LOCKED</span>
             </div>
             <div class="intro-signal__copy">
-              <span class="intro-eyebrow">UNKNOWN SIGNAL · CONNECTION 01</span>
-              <h2 id="intro-signal-title">구조 신호가<br>연결되었습니다.</h2>
-              <p>노바랜드의 중심 순환이 멈추고 있습니다.</p>
+              <span class="intro-eyebrow">EMERGENCY SIGNAL · SOURCE LOCKED</span>
+              <h2 id="intro-signal-title">구조 신호를<br>수신했습니다.</h2>
+              <p>노바랜드의 중심 순환이 멈추고 있습니다.<br>외부 응답 채널을 요청합니다.</p>
               <div class="signal-telemetry" aria-hidden="true">
-                <span><small>CHANNEL</small><strong>NL-EVE / 001</strong></span>
+                <span><small>CHANNEL</small><strong>NL-SOS / 001</strong></span>
                 <i><b></b><b></b><b></b><b></b><b></b><b></b><b></b></i>
-                <span><small>STATUS</small><strong>STABLE</strong></span>
+                <span><small>SIGNAL</small><strong>STABLE</strong></span>
               </div>
               <button class="intro-action intro-action--signal" type="button" data-intro-respond><i aria-hidden="true"><b></b></i><span><small>RESPONSE CHANNEL</small><strong>신호에 응답하기</strong></span><b aria-hidden="true">→</b></button>
             </div>
@@ -65,19 +65,19 @@
             </div>
             <div class="intro-register__content">
               <div class="intro-dialogue">
-                <span class="intro-eyebrow">EVE · CONNECTION ESTABLISHED</span>
-                <p>Explorer 연결이 확인되었습니다.<br>Explorer의 이름을 기록합니다.</p>
+                <span class="intro-eyebrow">EVE · TWO-WAY LINK ESTABLISHED</span>
+                <p data-intro-dialogue-message>응답을 확인했습니다.<br>저는 노바랜드 중앙 관제 AI, EVE입니다.</p>
               </div>
               <form class="intro-form" data-intro-form novalidate>
                 <div class="intro-form__heading"><span>EXPLORER REGISTRATION</span><strong>01 / 01</strong></div>
-                <label for="explorer-name-input">Explorer 이름</label>
+                <label for="explorer-name-input">Passport에 기록할 이름</label>
                 <div class="intro-input-wrap">
                   <input id="explorer-name-input" name="explorerName" type="text" minlength="2" maxlength="12" autocomplete="nickname" aria-describedby="explorer-name-help explorer-name-error" placeholder="이름을 입력해 주세요">
                   <span><b data-name-count>0</b> / 12</span>
                 </div>
                 <p id="explorer-name-help" class="intro-form__help">한글, 영문, 숫자와 단어 사이 공백을 사용할 수 있어요.</p>
                 <p id="explorer-name-error" class="intro-form__error" role="alert"></p>
-                <button class="intro-action intro-action--wide" type="submit">Explorer 등록<span aria-hidden="true">→</span></button>
+                <button class="intro-action intro-action--wide" type="submit">Explorer로 등록<span aria-hidden="true">→</span></button>
               </form>
             </div>
           </div>
@@ -95,22 +95,27 @@
               <div class="passport__book">
                 <div class="passport__cover passport__cover--back" aria-hidden="true"></div>
                 <div class="passport__spread">
-                  <div class="passport__page passport__page--left">
-                    <span class="passport__page-label">NOVA LAND</span>
-                    <div class="passport__watermark" aria-hidden="true">✦</div>
-                    <p>EXPLORER<br>PASSPORT</p>
-                    <small>OFFICIAL EXPLORER ARCHIVE</small>
+                  <div class="passport__page passport__page--authority" data-passport-page="authority">
+                    <span class="passport__page-label">NOVA LAND AUTHORITY</span>
+                    <div class="passport__authority-emblem" aria-hidden="true"><span>✦</span></div>
+                    <p class="passport__authority-title">RESTORATION<br>ACCESS</p>
+                    <p class="passport__authority-copy">외부 공명 응답이 확인되었습니다.<br>이 Passport는 Explorer의 제한된 복구 권한을 증명합니다.</p>
+                    <dl class="passport__authority-meta">
+                      <div><dt>DATE OF ISSUE</dt><dd data-passport-date>—</dd></div>
+                      <div><dt>ACCESS STATUS</dt><dd>AUTHORIZED</dd></div>
+                    </dl>
                   </div>
-                  <div class="passport__page passport__page--profile">
-                    <span class="passport__page-label">EXPLORER PROFILE</span>
+                  <div class="passport__page passport__page--profile" data-passport-page="identity">
+                    <span class="passport__page-label">EXPLORER IDENTITY</span>
                     <div class="passport__profile">
-                      <div class="passport__portrait" aria-hidden="true"><span></span></div>
+                      <div class="passport__portrait"><img src="./assets/images/intro/explorer-passport.webp" alt="Nova Land Explorer 기본 아바타"><span aria-hidden="true"></span></div>
                       <dl>
                         <div><dt>EXPLORER NAME</dt><dd data-passport-name>—</dd></div>
                         <div><dt>EXPLORER ID</dt><dd data-passport-id>—</dd></div>
-                        <div><dt>DATE OF ISSUE</dt><dd data-passport-date>—</dd></div>
+                        <div><dt>ORIGIN</dt><dd>EARTH</dd></div>
+                        <div><dt>ACCESS</dt><dd>RESTORATION</dd></div>
                         <div><dt>RESTORATION</dt><dd>0 / 4</dd></div>
-                        <div><dt>STATUS</dt><dd class="passport__status">REGISTERED</dd></div>
+                        <div><dt>STATUS</dt><dd class="passport__status" data-passport-status>PENDING</dd></div>
                       </dl>
                     </div>
                     <div class="passport__seal" aria-label="Explorer 등록 완료"><span>✦</span><strong>EXPLORER</strong><small>REGISTERED</small></div>

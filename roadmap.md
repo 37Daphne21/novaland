@@ -47,7 +47,7 @@
 
 ## 완료. Intro와 Explorer Passport 최초 발급
 
-상태: 완료
+상태: Passport 고도화 구현 완료, 최종 반응형 검수 필요
 
 - [x] 최초 방문과 기존 Explorer의 진입 분기
 - [x] 멈춘 노바랜드와 구조 신호 연결 Intro
@@ -57,12 +57,27 @@
 - [x] Explorer Registered Seal과 MAP 전환
 - [x] Signal·Register·Passport 공통 Nova 우주 배경 적용
 - [x] Welcome 고유 타이틀 배치를 유지하고 MAP형 타이핑 노출과 관제 궤도·광축·별빛 Motion 적용
+- [x] Welcome WORLD STATUS Failed Beacon과 Signal 연결 반응 적용
 - [x] Signal 수신기·궤도·좌표·Telemetry 비주얼 고도화
+- [x] Signal 포착 순차 연출·NL-SOS Channel·회전 추적점 적용
+- [x] Signal 중앙 수신기에서 Lock 완료 후 좌우 관제 Layout으로 전환
 - [x] Register EVE를 손과 허리 아래까지 보이는 홀로그램으로 교체
+- [x] Register EVE 하단 투사광·Scan Fragment·입자 분산과 조립 연출 적용
+- [x] EVE 조립 완료 후 안내·등록 Form 순차 노출과 Focus 이동
+- [x] Signal 수신·발신 관계와 외부 응답 요청 문구 정리
+- [x] EVE 자기소개·외부 복구 권한 안내 네 줄 유지와 MAP형 대사 타이핑 적용
+- [x] Register 이름 강조와 Passport 신원 정보로 이어지는 Identity Trace 적용
+- [x] NOVA LAND AUTHORITY 권한 페이지와 Explorer Identity 페이지 역할 분리
+- [x] 프로젝트 기본 Explorer Avatar 기반 Passport ID Portrait 제작·적용
+- [x] PENDING → 정보 기록 → Registered Seal → REGISTERED 상태 전환 적용
+- [x] Mobile 최초 발급에서 권한 페이지와 신원 페이지를 한 장씩 자동 전환
+- [x] EVE의 이름 호명과 외부 복구 권한·WORLD MAP 경로 안내 타이핑 적용
+- [x] Passport 닫힘 후 이름 각인과 Emblem 점등 시간을 확보
 - [x] Passport Route Dock 수동 MAP 연결과 발광 Artifact 제거
 - [x] Intro 중단·재접속·처음부터 다시 시작 상태 처리
 - [x] Keyboard, Focus, 오류 안내와 `prefers-reduced-motion` 대응
 - [x] 1366×768과 390×844에서 전체 Flow와 화면 Overflow 검수
+- [ ] Passport 고도화 결과를 1366×768과 390×844에서 최종 회귀 검수
 
 완료 조건: 최초 방문자가 이름을 등록하고 Passport를 발급받은 뒤 기존 MAP으로 진입하며, 재접속에서는 Intro를 반복하지 않아야 한다.
 

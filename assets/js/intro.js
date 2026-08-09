@@ -1,4 +1,5 @@
 const STORAGE_KEY = 'novaLandExplorer';
+const REGISTER_DIALOGUE_MESSAGE = '응답을 확인했습니다.\n저는 노바랜드 중앙 관제 AI, EVE입니다.\n중심 순환의 복구에는 외부 연결 권한이 필요합니다.\nExplorer Passport에 기록할 이름을 알려주세요.';
 
 function getCharacterCount(value) {
   return Array.from(value).length;
@@ -60,6 +61,8 @@ export function createIntroController({ onComplete }) {
   const welcomeTitleText = welcomeTitle?.textContent.trim() ?? '';
   const startButton = document.querySelector('[data-intro-start]');
   const respondButton = document.querySelector('[data-intro-respond]');
+  const registerDialogue = document.querySelector('.intro-dialogue');
+  const registerDialogueMessage = document.querySelector('[data-intro-dialogue-message]');
   const form = document.querySelector('[data-intro-form]');
   const nameInput = document.querySelector('#explorer-name-input');
   const nameCount = document.querySelector('[data-name-count]');
@@ -67,6 +70,7 @@ export function createIntroController({ onComplete }) {
   const status = document.querySelector('.intro-status');
   const passport = document.querySelector('[data-passport]');
   const passportMessage = document.querySelector('[data-passport-message]');
+  const passportStatus = document.querySelector('[data-passport-status]');
   const passportRoute = document.querySelector('[data-passport-route]');
   const passportEnterMap = document.querySelector('[data-passport-enter-map]');
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -75,6 +79,8 @@ export function createIntroController({ onComplete }) {
   let isTransitioning = false;
   let pendingExplorer = null;
   let welcomeTypingTimer = null;
+  let registerTypingTimer = null;
+  let passportTypingTimer = null;
 
   function delay(callback, duration) {
     const timer = window.setTimeout(() => {
@@ -89,6 +95,89 @@ export function createIntroController({ onComplete }) {
     if (status) {
       status.textContent = message;
     }
+  }
+
+  function typeRegisterDialogue(message, onComplete) {
+    if (!registerDialogue || !registerDialogueMessage || !message) {
+      onComplete?.();
+      return;
+    }
+
+    window.clearInterval(registerTypingTimer);
+    registerTypingTimer = null;
+    registerDialogue.classList.remove('is-typing');
+    registerDialogue.setAttribute('aria-busy', 'false');
+    registerDialogueMessage.setAttribute('aria-label', message.replace(/\n/g, ' '));
+    announce(message.replace(/\n/g, ' '));
+
+    if (prefersReducedMotion) {
+      registerDialogueMessage.textContent = message;
+      onComplete?.();
+      return;
+    }
+
+    const visualMessage = document.createElement('span');
+    const characters = Array.from(message);
+    let characterIndex = 0;
+
+    visualMessage.setAttribute('aria-hidden', 'true');
+    registerDialogueMessage.replaceChildren(visualMessage);
+    registerDialogue.classList.add('is-typing');
+    registerDialogue.setAttribute('aria-busy', 'true');
+
+    registerTypingTimer = window.setInterval(() => {
+      visualMessage.textContent += characters[characterIndex];
+      characterIndex += 1;
+
+      if (characterIndex >= characters.length) {
+        window.clearInterval(registerTypingTimer);
+        registerTypingTimer = null;
+        registerDialogue.classList.remove('is-typing');
+        registerDialogue.setAttribute('aria-busy', 'false');
+        registerDialogueMessage.textContent = message;
+        onComplete?.();
+      }
+    }, 34);
+  }
+
+  function typePassportMessage(message, onComplete) {
+    if (!passportMessage || !message) {
+      onComplete?.();
+      return;
+    }
+
+    window.clearInterval(passportTypingTimer);
+    passportTypingTimer = null;
+    passportMessage.parentElement?.classList.remove('is-typing');
+    passportMessage.setAttribute('aria-label', message.replace(/\n/g, ' '));
+    announce(message.replace(/\n/g, ' '));
+
+    if (prefersReducedMotion) {
+      passportMessage.textContent = message;
+      onComplete?.();
+      return;
+    }
+
+    const visualMessage = document.createElement('span');
+    const characters = Array.from(message);
+    let characterIndex = 0;
+
+    visualMessage.setAttribute('aria-hidden', 'true');
+    passportMessage.replaceChildren(visualMessage);
+    passportMessage.parentElement?.classList.add('is-typing');
+
+    passportTypingTimer = window.setInterval(() => {
+      visualMessage.textContent += characters[characterIndex];
+      characterIndex += 1;
+
+      if (characterIndex >= characters.length) {
+        window.clearInterval(passportTypingTimer);
+        passportTypingTimer = null;
+        passportMessage.parentElement?.classList.remove('is-typing');
+        passportMessage.textContent = message;
+        onComplete?.();
+      }
+    }, 34);
   }
 
   function playWelcomeIntro() {
@@ -157,8 +246,21 @@ export function createIntroController({ onComplete }) {
     if (isTransitioning) {
       return;
     }
-    announce('노바랜드 구조 신호 연결 화면');
-    showScene('signal', respondButton);
+    const signalScene = scenes.get('signal');
+    respondButton?.setAttribute('disabled', '');
+    signalScene?.classList.add('is-acquiring');
+    announce('노바랜드 구조 신호를 분석하는 중입니다.');
+    showScene('signal');
+    delay(() => {
+      signalScene?.classList.remove('is-acquiring');
+      signalScene?.classList.add('is-locked');
+      announce('노바랜드 구조 신호의 발신 위치를 확인했습니다.');
+      delay(() => {
+        respondButton?.removeAttribute('disabled');
+        announce('구조 신호를 수신했습니다. 외부 응답 채널이 요청되었습니다.');
+        respondButton?.focus({ preventScroll: true });
+      }, 900);
+    }, 2150);
   }
 
   function handleRespond() {
@@ -166,9 +268,28 @@ export function createIntroController({ onComplete }) {
       return;
     }
     respondButton.disabled = true;
-    announce('Explorer 연결을 확인하고 EVE를 구성하는 중입니다.');
-    showScene('register', nameInput);
-    delay(() => scenes.get('register')?.classList.add('is-eve-visible'), 900);
+    registerDialogue?.setAttribute('aria-hidden', 'true');
+    form?.setAttribute('inert', '');
+    announce('응답 채널을 연결하고 신호 발신자의 영상을 복원하는 중입니다.');
+    showScene('register');
+    delay(() => {
+      const registerScene = scenes.get('register');
+      registerScene?.classList.add('is-projecting');
+      delay(() => {
+        registerScene?.classList.add('is-eve-visible');
+        delay(() => {
+          registerScene?.classList.add('is-dialogue-visible');
+          registerDialogue?.removeAttribute('aria-hidden');
+          typeRegisterDialogue(REGISTER_DIALOGUE_MESSAGE, () => {
+            delay(() => {
+              registerScene?.classList.add('is-form-ready');
+              form?.removeAttribute('inert');
+              nameInput?.focus({ preventScroll: true });
+            }, 420);
+          });
+        }, 820);
+      }, 180);
+    }, 860);
   }
 
   function updateNameCount() {
@@ -194,33 +315,46 @@ export function createIntroController({ onComplete }) {
   function issuePassport(explorer) {
     pendingExplorer = explorer;
     setPassportData(explorer);
+    passport?.classList.remove('is-open', 'is-mobile-identity', 'is-writing', 'is-stamped', 'is-closing');
+    passportRoute?.classList.remove('is-visible', 'is-departing');
+    passportRoute.hidden = true;
+    passportEnterMap?.removeAttribute('disabled');
+    if (passportStatus) {
+      passportStatus.textContent = 'PENDING';
+    }
+    if (passportMessage) {
+      passportMessage.textContent = 'Explorer Passport를 발급합니다.';
+    }
     showScene('passport');
     announce('Explorer Passport를 발급합니다.');
 
-    delay(() => passport?.classList.add('is-open'), 1050);
+    delay(() => {
+      passport?.classList.add('is-open');
+      if (passportMessage) {
+        passportMessage.textContent = '외부 공명 응답과 복구 권한을 확인합니다.';
+      }
+      announce('외부 공명 응답과 복구 권한을 확인합니다.');
+    }, 1700);
+    delay(() => passport?.classList.add('is-mobile-identity'), 2600);
     delay(() => {
       passport?.classList.add('is-writing');
       if (passportMessage) {
-        passportMessage.textContent = `${explorer.name}님의 정보를 기록합니다.`;
+        passportMessage.textContent = `${explorer.name}님의 Explorer 식별 정보를 기록합니다.`;
       }
       announce(`${explorer.name}님의 Explorer 정보를 기록합니다.`);
-    }, 1900);
+    }, 2800);
     delay(() => {
       passport?.classList.add('is-stamped');
-      if (passportMessage) {
-        passportMessage.textContent = `Explorer ${explorer.name}. 등록이 완료되었습니다.`;
+      if (passportStatus) {
+        passportStatus.textContent = 'REGISTERED';
       }
-      announce(`Explorer ${explorer.name}. 등록이 완료되었습니다.`);
-    }, 3100);
-    delay(() => {
-      if (passportMessage) {
-        passportMessage.textContent = 'WORLD MAP 연결 경로가 준비되었습니다.';
-      }
-      passportRoute.hidden = false;
-      requestAnimationFrame(() => passportRoute.classList.add('is-visible'));
-      announce('WORLD MAP 연결 경로가 준비되었습니다. 연결 장치를 선택해 주세요.');
-      delay(() => passportEnterMap?.focus({ preventScroll: true }), 260);
-    }, 4500);
+      typePassportMessage(`Explorer ${explorer.name}. 외부 복구 권한이 등록되었습니다.\nWORLD MAP 연결 경로를 열었습니다.`, () => {
+        passportRoute.hidden = false;
+        requestAnimationFrame(() => passportRoute.classList.add('is-visible'));
+        announce('WORLD MAP 연결 경로가 준비되었습니다. 연결 장치를 선택해 주세요.');
+        delay(() => passportEnterMap?.focus({ preventScroll: true }), 260);
+      });
+    }, 4400);
   }
 
   function handleEnterMap() {
@@ -244,7 +378,7 @@ export function createIntroController({ onComplete }) {
       }
       pendingExplorer = null;
       onComplete(completedExplorer, { focusMap: true });
-    }, 1350);
+    }, 2050);
   }
 
   function handleSubmit(event) {
@@ -274,7 +408,9 @@ export function createIntroController({ onComplete }) {
       issuedAt: issueDate.iso
     };
     form.querySelector('button[type="submit"]')?.setAttribute('disabled', '');
-    issuePassport(explorer);
+    scenes.get('register')?.classList.add('is-name-departing');
+    announce(`${explorer.name}님의 이름을 Explorer Passport로 전송합니다.`);
+    delay(() => issuePassport(explorer), 720);
   }
 
   function start() {
