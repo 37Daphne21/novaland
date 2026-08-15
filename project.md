@@ -72,6 +72,8 @@ Explorer에게 시설 상태와 다음 행동을 짧고 정확하게 안내한�
 
 EVE 대사가 타이핑되는 모든 현재·향후 페이지는 같은 전역 Interaction Rule을 사용한다. 대사 출력 중에는 화면 어느 곳이든 한 번 Click·Touch하면 전체 문장을 즉시 표시하며, 그 첫 입력은 대사 완료에만 사용하고 대상 Button이나 Link의 원래 동작은 실행하지 않는다. 대사가 완료된 뒤의 다음 입력부터 원래 화면 동작을 실행한다.
 
+추후 EVE 대사에 실제 음성을 적용한다. 현재 EVE UI의 이퀄라이저는 장식용 반복 Animation이 아니라 실제 음성의 재생 상태와 음량 변화에 연동하며, 음성이 없거나 종료된 상태에서는 자연스럽게 대기 상태로 돌아간다. 자막은 음성 사용 여부와 관계없이 항상 제공하고, 언어별 음원 제작 방식과 대사 Skip 시 음성 처리 규칙은 음성 작업 단계에서 확정한다.
+
 ### COSMIC VOYAGE
 
 - 다섯 번째 시설이 아니다.
@@ -367,7 +369,7 @@ Button:
 
 * 여성 Explorer와 남성 Explorer 두 가지를 제공한다.
 * 최초에는 어느 항목도 선택하지 않는다.
-* 각 선택지는 실제 Radio와 공통 `ui-choice-card`를 결합하고 Card 전체를 선택 영역으로 사용한다.
+* 각 선택지는 실제 Radio와 공통 `ui-choice-card`를 결합하고 Card 전체를 선택 영역으로 사용한다. 이미지와 텍스트가 함께 필요한 선택지는 대상 종류와 무관한 `ui-choice-card--media`, `ui-choice-card__media`, `ui-choice-card__content` 구조를 공유한다.
 * 선택 상태는 Cyan 테두리, Glow와 Check로 표시한다.
 * 키보드 방향키, Focus Ring과 Screen Reader에서 동일한 선택 상태를 확인할 수 있어야 한다.
 * 이름 수정 Button으로 `01 / 02`에 돌아가도 기존 성별 선택은 유지한다.
@@ -454,11 +456,14 @@ Overlay와 Mobile Panel은 화면 이동보다 먼저 닫는다. Control Room에
 
 Explorer Log와 Explorer Passport는 하나의 공통 Overlay 안에서 동등한 두 Tab으로 제공한다.
 
-* Recent Log의 기록 보기: 탐험 기록 Tab으로 진입
-* Explorer Profile: 탐험가 패스포트 Tab으로 진입
-* 이름 변경 Button: 이름 변경만 수행
+Overlay 제목은 Explorer 이름을 Accent로 강조하며, 한국어에서는 `{이름} 님의 여정 기록`으로 표시한다.
 
-Explorer Log는 사건과 Mission 완료 내역을 시간순으로 보여준다.
+* Recent Log의 기록 보기: 탐험 기록 Tab으로 진입
+* Explorer Profile 오른쪽 Passport Button: 탐험가 패스포트 Tab으로 진입
+* Explorer Profile의 Portrait와 이름은 정보를 표시하며 Button 역할을 갖지 않음
+* Passport의 이름과 성별 항목에 있는 Edit Button: 해당 정보만 수정
+
+Explorer Log는 사건과 Mission 완료 내역을 시간순으로 보여준다. 기록 수와 관계없이 제목과 Log 시작 위치를 상단에 고정하고 새 기록을 아래로 누적하며, 사용 가능한 높이를 넘으면 Log 영역을 Scroll한다.
 
 Explorer Passport는 사용자의 이름, 시설별 복구 상태, Stamp, 쿠폰과 최종 탑승권을 수집형 기록으로 보여준다.
 
@@ -524,13 +529,14 @@ Passport의 왼쪽과 오른쪽 페이지는 `Label → Content`의 공통 내�
 * 시설 복구 진행 수
 * 현재 상태
 * 이름 변경 진입
+* 성별과 Portrait 변경 진입
 * ID Portrait는 세로로 긴 기존 비율을 유지하고 얼굴 식별이 선명한 크기로 표시
 
 실제 사용자 사진을 요청하거나 업로드하지 않는다. 성별은 여성과 남성 중 Passport Portrait를 선택하기 위한 최소 항목으로만 저장하며, 나이와 추가 개인정보는 수집하지 않는다.
 
 ID Portrait는 사용자가 제공하는 개인정보가 아니라 Nova Land가 발급하는 여성·남성 Explorer Avatar 중 하나를 사용한다. 사용자별로 달라지는 신원 정보는 이름, Explorer ID, 성별과 선택한 Portrait로 제한한다.
 
-이름 변경은 Settings의 간단한 수정 UI로 진행하고 최초 발급 연출은 반복하지 않는다.
+이름과 성별 변경은 Explorer Passport의 해당 항목에 배치한 Edit Button에서 진행하고 최초 발급 연출은 반복하지 않는다. 성별을 변경하면 연결된 Passport와 MAP Portrait를 함께 변경하며 Explorer ID, 발급일과 진행 기록은 유지한다.
 
 ##### 두 번째 펼침: NOVA / LUNA
 
@@ -667,7 +673,6 @@ Intro에서 선택한 언어는 Passport와 MAP 진입 이후에도 유지하고
 
 공통 설정 항목:
 
-- 탐험가 이름 변경
 - 한국어 / 영어
 - BGM 음량
 - 효과음
@@ -687,7 +692,7 @@ Intro에서 선택한 언어는 Passport와 MAP 진입 이후에도 유지하고
 
 두 초기화 기능은 서로 영향을 주지 않으며 모두 확인 절차를 거친다.
 
-확인이 필요한 공통 UI는 Native Dialog 기반의 Common Dialog를 사용한다. Alert는 확인 Button 하나, Confirm은 취소와 확인 Button을 제공하며, 자유형 Popup은 실제 사용처가 확정될 때 같은 기반에서 확장한다. 처음부터 다시 시작은 Browser Confirm 대신 Danger Tone의 Common Confirm을 사용하고 취소에 기본 Focus를 둔다.
+확인이 필요한 공통 UI는 Native Dialog 기반의 Common Dialog를 사용한다. 모든 Dialog는 `Header → Content → Actions` 구조를 공유하고 Content 안에 Message 또는 Form Field를 배치한다. Alert는 확인 Button 하나, Confirm은 취소와 확인 Button을 제공하며, Explorer 이름·성별 수정처럼 Form이 필요한 Popup도 같은 Native Dialog 기반을 사용한다. 처음부터 다시 시작은 Browser Confirm 대신 Danger Tone의 Common Confirm을 사용하고 취소에 기본 Focus를 둔다.
 
 
 ### Time

@@ -25,24 +25,81 @@ export function createToast(selector = '#app-toast') {
   return { show };
 }
 
+export function createModalController(dialog, { onClose } = {}) {
+  let returnTarget = null;
+
+  function close(returnValue = '') {
+    if (dialog?.open) {
+      dialog.close(returnValue);
+    }
+  }
+
+  function open({ focusTarget = null, opener = document.activeElement } = {}) {
+    if (!dialog || dialog.open) {
+      return;
+    }
+
+    returnTarget = opener instanceof HTMLElement ? opener : null;
+    document.body.classList.add('is-dialog-open');
+    dialog.showModal();
+    if (focusTarget) {
+      window.requestAnimationFrame(() => focusTarget.focus());
+    }
+  }
+
+  function handleCancel(event) {
+    event.preventDefault();
+    close('cancel');
+  }
+
+  function handleBackdropClick(event) {
+    if (event.target !== dialog) {
+      return;
+    }
+
+    const rect = dialog.getBoundingClientRect();
+    const isInside = event.clientX >= rect.left && event.clientX <= rect.right && event.clientY >= rect.top && event.clientY <= rect.bottom;
+    if (!isInside) {
+      close('cancel');
+    }
+  }
+
+  function handleClose() {
+    document.body.classList.remove('is-dialog-open');
+    onClose?.(dialog.returnValue);
+    returnTarget?.focus({ preventScroll: true });
+    returnTarget = null;
+  }
+
+  dialog?.addEventListener('cancel', handleCancel);
+  dialog?.addEventListener('click', handleBackdropClick);
+  dialog?.addEventListener('close', handleClose);
+
+  return { close, isOpen: () => Boolean(dialog?.open), open };
+}
+
 export function createDialogController(selector = '#app-dialog') {
   const dialog = document.querySelector(selector);
   const eyebrow = dialog?.querySelector('[data-dialog-eyebrow]');
   const title = dialog?.querySelector('[data-dialog-title]');
-  const message = dialog?.querySelector('[data-dialog-message]');
+  const description = dialog?.querySelector('[data-dialog-description]');
   const cancelButton = dialog?.querySelector('[data-dialog-cancel]');
   const confirmButton = dialog?.querySelector('[data-dialog-confirm]');
   let resolveRequest = null;
+  const modal = createModalController(dialog, {
+    onClose: (returnValue) => {
+      const resolve = resolveRequest;
+      resolveRequest = null;
+      resolve?.(returnValue === 'confirm');
+    }
+  });
 
   function finish(result) {
-    if (!dialog?.open) {
-      return;
-    }
-    dialog.close(result ? 'confirm' : 'cancel');
+    modal.close(result ? 'confirm' : 'cancel');
   }
 
-  function open({ type = 'alert', tone = 'default', eyebrowText = '', titleText = '', messageText = '', cancelText = '', confirmText = '' } = {}) {
-    if (!dialog || !title || !message || !cancelButton || !confirmButton) {
+  function open({ type = 'alert', tone = 'default', eyebrowText = '', titleText = '', descriptionText = '', cancelText = '', confirmText = '' } = {}) {
+    if (!dialog || !title || !description || !cancelButton || !confirmButton) {
       return Promise.resolve(false);
     }
 
@@ -53,7 +110,7 @@ export function createDialogController(selector = '#app-dialog') {
       eyebrow.textContent = eyebrowText;
     }
     title.textContent = titleText;
-    message.textContent = messageText;
+    description.textContent = descriptionText;
     cancelButton.hidden = !isConfirm;
     cancelButton.textContent = cancelText;
     confirmButton.textContent = confirmText;
@@ -62,47 +119,73 @@ export function createDialogController(selector = '#app-dialog') {
     const result = new Promise((resolve) => {
       resolveRequest = resolve;
     });
-    document.body.classList.add('is-dialog-open');
-    dialog.showModal();
-    window.requestAnimationFrame(() => (isConfirm ? cancelButton : confirmButton).focus());
+    modal.open({ focusTarget: isConfirm ? cancelButton : confirmButton });
     return result;
-  }
-
-  function handleClose() {
-    document.body.classList.remove('is-dialog-open');
-    const resolve = resolveRequest;
-    resolveRequest = null;
-    resolve?.(dialog.returnValue === 'confirm');
-  }
-
-  function handleCancel(event) {
-    event.preventDefault();
-    finish(false);
-  }
-
-  function handleBackdropClick(event) {
-    if (event.target !== dialog) {
-      return;
-    }
-    const rect = dialog.getBoundingClientRect();
-    const isInside = event.clientX >= rect.left && event.clientX <= rect.right && event.clientY >= rect.top && event.clientY <= rect.bottom;
-    if (!isInside) {
-      finish(false);
-    }
   }
 
   cancelButton?.addEventListener('click', () => finish(false));
   confirmButton?.addEventListener('click', () => finish(true));
-  dialog?.addEventListener('cancel', handleCancel);
-  dialog?.addEventListener('click', handleBackdropClick);
-  dialog?.addEventListener('close', handleClose);
 
   return {
     alert: (options) => open({ ...options, type: 'alert' }),
     cancel: () => finish(false),
     confirm: (options) => open({ ...options, type: 'confirm' }),
-    isOpen: () => Boolean(dialog?.open)
+    isOpen: modal.isOpen
   };
+}
+
+export function createTabsController(root, { onChange } = {}) {
+  const tabs = root ? [...root.querySelectorAll('[role="tab"][data-tab]')] : [];
+  const panels = root ? [...root.querySelectorAll('[role="tabpanel"][data-tab-panel]')] : [];
+
+  function select(tabName, { focus = false, notify = false } = {}) {
+    const selectedTab = tabs.find((tab) => tab.dataset.tab === tabName) || tabs[0];
+    if (!selectedTab) {
+      return;
+    }
+
+    tabs.forEach((tab) => {
+      const isSelected = tab === selectedTab;
+      tab.setAttribute('aria-selected', String(isSelected));
+      tab.tabIndex = isSelected ? 0 : -1;
+    });
+    panels.forEach((panel) => {
+      panel.hidden = panel.dataset.tabPanel !== selectedTab.dataset.tab;
+    });
+
+    if (focus) {
+      selectedTab.focus({ preventScroll: true });
+    }
+    if (notify) {
+      onChange?.(selectedTab.dataset.tab);
+    }
+  }
+
+  function handleKeydown(event) {
+    const currentIndex = tabs.indexOf(event.currentTarget);
+    let nextIndex = currentIndex;
+    if (event.key === 'ArrowRight') {
+      nextIndex = (currentIndex + 1) % tabs.length;
+    } else if (event.key === 'ArrowLeft') {
+      nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+    } else if (event.key === 'Home') {
+      nextIndex = 0;
+    } else if (event.key === 'End') {
+      nextIndex = tabs.length - 1;
+    } else {
+      return;
+    }
+
+    event.preventDefault();
+    select(tabs[nextIndex].dataset.tab, { focus: true, notify: true });
+  }
+
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => select(tab.dataset.tab, { notify: true }));
+    tab.addEventListener('keydown', handleKeydown);
+  });
+
+  return { select };
 }
 
 export function createOverlayController({ onRequestClose } = {}) {

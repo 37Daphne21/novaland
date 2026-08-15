@@ -76,27 +76,29 @@
                 <div class="intro-form__heading"><span>EXPLORER REGISTRATION</span><strong data-registration-step>01 / 02</strong></div>
                 <div class="intro-form__body" data-registration-body>
                   <div class="intro-form__step intro-form__step--name" data-register-step="name">
-                    <label for="explorer-name-input" data-i18n="intro.register.nameLabel">Passport에 기록할 이름</label>
-                    <div class="intro-input-wrap">
-                      <input id="explorer-name-input" name="explorerName" type="text" minlength="2" maxlength="12" autocomplete="nickname" aria-describedby="explorer-name-help explorer-name-error" data-i18n-placeholder="intro.register.namePlaceholder" placeholder="이름을 입력해 주세요">
-                      <span><b data-name-count>0</b> / 12</span>
+                    <div class="ui-field intro-form__field">
+                      <label for="explorer-name-input" data-i18n="intro.register.nameLabel">Passport에 기록할 이름</label>
+                      <div class="ui-input-wrap ui-input-wrap--large">
+                        <input id="explorer-name-input" class="ui-input" name="explorerName" type="text" minlength="2" maxlength="12" autocomplete="nickname" aria-describedby="explorer-name-help explorer-name-error" data-i18n-placeholder="intro.register.namePlaceholder" placeholder="이름을 입력해 주세요">
+                        <span class="ui-input-wrap__meta"><b data-name-count>0</b> / 12</span>
+                      </div>
+                      <p id="explorer-name-help" class="ui-field-help intro-form__help" data-i18n="intro.register.nameHelp">한글, 영문, 숫자와 단어 사이 공백을 사용할 수 있어요.</p>
+                      <p id="explorer-name-error" class="ui-field-error intro-form__error" role="alert"></p>
                     </div>
-                    <p id="explorer-name-help" class="intro-form__help" data-i18n="intro.register.nameHelp">한글, 영문, 숫자와 단어 사이 공백을 사용할 수 있어요.</p>
-                    <p id="explorer-name-error" class="intro-form__error" role="alert"></p>
                     <button class="intro-action intro-action--wide" type="submit"><span data-i18n="intro.register.next">다음 단계</span><span aria-hidden="true">→</span></button>
                   </div>
                   <div class="intro-form__step intro-form__step--identity" data-register-step="identity" hidden>
-                    <fieldset class="intro-avatar-select" aria-describedby="explorer-gender-help explorer-gender-error">
+                    <fieldset class="intro-identity-select" aria-describedby="explorer-gender-help explorer-gender-error">
                       <legend data-i18n="intro.register.identityLegend">Passport에 등록할 Explorer를 선택해 주세요.</legend>
-                      <p id="explorer-gender-help" class="intro-avatar-select__help" data-i18n="intro.register.identityHelp">선택한 성별과 이미지가 Passport에 함께 기록돼요.</p>
-                      <div class="intro-avatar-options ui-choice-group">
-                        <label class="ui-choice-card intro-avatar-option">
+                      <p id="explorer-gender-help" class="intro-identity-select__help" data-i18n="intro.register.identityHelp">선택한 성별과 이미지가 Passport에 함께 기록돼요.</p>
+                      <div class="ui-choice-group ui-choice-group--columns">
+                        <label class="ui-choice-card ui-choice-card--media">
                           <input class="ui-choice-card__control" type="radio" name="explorerGender" value="female">
-                          <span class="ui-choice-card__body intro-avatar-option__card"><span class="intro-avatar-option__portrait"><img src="./assets/images/common/explorer-female.webp" alt=""></span><span class="intro-avatar-option__label"><strong data-i18n="intro.register.female">여성 Explorer</strong><small>FEMALE</small></span><i class="ui-choice-card__indicator" aria-hidden="true">✓</i></span>
+                          <span class="ui-choice-card__body"><span class="ui-choice-card__media"><img src="./assets/images/common/explorer-female.webp" alt=""></span><span class="ui-choice-card__content"><strong data-i18n="intro.register.female">여성 Explorer</strong><small>FEMALE</small></span><i class="ui-choice-card__indicator" aria-hidden="true">✓</i></span>
                         </label>
-                        <label class="ui-choice-card intro-avatar-option">
+                        <label class="ui-choice-card ui-choice-card--media">
                           <input class="ui-choice-card__control" type="radio" name="explorerGender" value="male">
-                          <span class="ui-choice-card__body intro-avatar-option__card"><span class="intro-avatar-option__portrait"><img src="./assets/images/common/explorer-male.webp" alt=""></span><span class="intro-avatar-option__label"><strong data-i18n="intro.register.male">남성 Explorer</strong><small>MALE</small></span><i class="ui-choice-card__indicator" aria-hidden="true">✓</i></span>
+                          <span class="ui-choice-card__body"><span class="ui-choice-card__media"><img src="./assets/images/common/explorer-male.webp" alt=""></span><span class="ui-choice-card__content"><strong data-i18n="intro.register.male">남성 Explorer</strong><small>MALE</small></span><i class="ui-choice-card__indicator" aria-hidden="true">✓</i></span>
                         </label>
                       </div>
                     </fieldset>
@@ -125,10 +127,10 @@
                   <div class="passport__page-content passport__page-content--profile">
                     <div class="passport__portrait"><img src="./assets/images/common/explorer-female.webp" alt="여성 Nova Land Explorer 프로필 이미지" data-passport-portrait><span aria-hidden="true"></span></div>
                     <dl>
-                      <div><dt>EXPLORER NAME</dt><dd data-passport-name>—</dd></div>
+                      <div><dt>EXPLORER NAME</dt><dd><span data-passport-name>—</span><button class="ui-button ui-button--icon passport__field-edit" type="button" data-passport-edit="name" data-i18n-aria-label="profile.editName" aria-label="Explorer 이름 수정" hidden><svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-edit"></use></svg></button></dd></div>
                       <div><dt>EXPLORER ID</dt><dd data-passport-id>—</dd></div>
                       <div><dt>ORIGIN</dt><dd>EARTH</dd></div>
-                      <div><dt>GENDER</dt><dd data-passport-gender>—</dd></div>
+                      <div><dt>GENDER</dt><dd><span data-passport-gender>—</span><button class="ui-button ui-button--icon passport__field-edit" type="button" data-passport-edit="gender" data-i18n-aria-label="profile.editGender" aria-label="Explorer 성별 수정" hidden><svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-edit"></use></svg></button></dd></div>
                       <div><dt>RESTORATION</dt><dd>0 / 4</dd></div>
                       <div><dt>STATUS</dt><dd class="passport__status" data-passport-status>PENDING</dd></div>
                     </dl>
@@ -181,15 +183,19 @@
         </div>
         <header class="top-navigation" data-i18n-aria-label="map.topNavigation" aria-label="상단 내비게이션">
           <div class="top-navigation__identity ui-panel">
-            <a class="brand" href="#" data-i18n-aria-label="map.home" aria-label="Nova Land 홈">
-              <img class="brand__lockup" src="./assets/images/common/logo-lockup.svg" alt="NOVA LAND">
-            </a>
-            <div class="explorer-profile">
-              <img class="explorer-profile__image" src="./assets/images/common/explorer-female.webp" alt="여성 Nova Land Explorer 프로필 이미지">
-              <span><small>EXPLORER</small><strong id="explorer-profile-name">ING</strong></span>
-              <button class="explorer-profile__edit" type="button" data-i18n-toast="map.profileEditPending" data-toast="Explorer 정보 수정은 공통 시스템 단계에서 연결돼요." data-i18n-aria-label="map.profileEdit" aria-label="Explorer 정보 수정">
-                <svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-edit"></use></svg>
-              </button>
+            <div class="top-navigation__identity-item">
+              <a class="brand" href="#" data-i18n-aria-label="map.home" aria-label="Nova Land 홈">
+                <img class="brand__lockup" src="./assets/images/common/logo-lockup.svg" alt="NOVA LAND">
+              </a>
+            </div>
+            <div class="top-navigation__identity-item">
+              <div class="explorer-profile">
+                <img class="explorer-profile__image" src="./assets/images/common/explorer-female.webp" alt="여성 Nova Land Explorer 프로필 이미지">
+                <span><small>EXPLORER</small><strong id="explorer-profile-name">ING</strong></span>
+                <button class="ui-button ui-button--icon explorer-profile__edit" type="button" data-overlay-open="explorer-archive-overlay" data-archive-tab="passport" data-i18n-aria-label="archive.openPassport" aria-label="Explorer Passport 열기">
+                  <svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-passport"></use></svg>
+                </button>
+              </div>
             </div>
           </div>
           <div class="top-navigation__right">
@@ -232,7 +238,7 @@
               <header class="ui-panel__header">
                 <h2 id="recent-log-title" class="ui-panel__title" data-i18n="map.recentLog">최근 기록</h2>
                 <div class="recent-log__actions">
-                  <button class="ui-button ui-button--text" type="button" data-i18n-toast="map.logPending" data-toast="탐험 기록은 공통 시스템 단계에서 연결돼요."><span data-i18n="map.viewLog">기록 보기</span><svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-arrow-right"></use></svg></button>
+                  <button class="ui-button ui-button--text" type="button" data-overlay-open="explorer-archive-overlay" data-archive-tab="log"><span data-i18n="map.viewLog">기록 보기</span><svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-arrow-right"></use></svg></button>
                   <button class="mobile-panel-toggle" type="button" data-mobile-panel-toggle="recent-log" aria-controls="recent-log-list" aria-expanded="false" data-i18n-aria-label="map.recentLogExpand" aria-label="최근 기록 펼치기"><svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-arrow-right"></use></svg></button>
                 </div>
               </header>
@@ -252,6 +258,28 @@
         </div>
       </section>
     </main>
+    <section id="explorer-archive-overlay" class="ui-overlay explorer-archive-overlay" aria-labelledby="explorer-archive-title" aria-modal="true" role="dialog" hidden>
+      <button class="ui-overlay__backdrop" type="button" data-overlay-close data-i18n-aria-label="archive.close" aria-label="Explorer Archive 닫기"></button>
+      <div class="ui-overlay__dialog ui-panel explorer-archive" tabindex="-1">
+        <header class="ui-panel__header explorer-archive__header">
+          <div><span class="ui-panel__eyebrow">EXPLORER ARCHIVE</span><h2 id="explorer-archive-title" class="explorer-archive__title" data-archive-title>Explorer Archive</h2></div>
+          <button class="ui-button ui-button--icon ui-button--small" type="button" data-overlay-close data-i18n-aria-label="archive.close" aria-label="Explorer Archive 닫기"><svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-close"></use></svg></button>
+        </header>
+        <div class="ui-tabs explorer-archive__tabs" role="tablist" data-i18n-aria-label="archive.tabs" aria-label="Explorer Archive 메뉴">
+          <button id="archive-log-tab" type="button" role="tab" data-tab="log" aria-controls="archive-log-panel" aria-selected="true"><strong data-i18n="archive.logTab">EXPLORER LOG</strong></button>
+          <button id="archive-passport-tab" type="button" role="tab" data-tab="passport" aria-controls="archive-passport-panel" aria-selected="false" tabindex="-1"><strong data-i18n="archive.passportTab">EXPLORER PASSPORT</strong></button>
+        </div>
+        <div class="explorer-archive__body">
+          <section id="archive-log-panel" class="explorer-archive__panel explorer-archive__panel--log" role="tabpanel" data-tab-panel="log" aria-labelledby="archive-log-tab">
+            <div class="archive-log__heading"><span data-i18n="archive.logEyebrow">JOURNEY RECORD</span><h3 data-i18n="archive.logTitle">탐험 기록</h3><p data-i18n="archive.logDescription">Explorer 등록과 노바랜드에서 확인된 사건을 시간순으로 기록합니다.</p></div>
+            <ol class="archive-log__list" data-archive-log-list></ol>
+          </section>
+          <section id="archive-passport-panel" class="explorer-archive__panel explorer-archive__panel--passport" role="tabpanel" data-tab-panel="passport" aria-labelledby="archive-passport-tab" hidden>
+            <div class="explorer-archive__passport" data-archive-passport></div>
+          </section>
+        </div>
+      </div>
+    </section>
     <section id="settings-overlay" class="ui-overlay" aria-labelledby="settings-title" aria-modal="true" role="dialog" hidden>
       <button class="ui-overlay__backdrop" type="button" data-overlay-close data-i18n-aria-label="common.closeSettings" aria-label="설정 닫기"></button>
       <div class="ui-overlay__dialog ui-panel" tabindex="-1">
@@ -267,17 +295,47 @@
         </div>
       </div>
     </section>
-    <dialog id="app-dialog" class="ui-dialog" aria-labelledby="app-dialog-title" aria-describedby="app-dialog-message">
+    <dialog id="app-dialog" class="ui-dialog" aria-labelledby="app-dialog-title" aria-describedby="app-dialog-description">
       <div class="ui-dialog__panel ui-panel">
-        <span class="ui-dialog__signal" aria-hidden="true"><b>!</b></span>
-        <span class="ui-dialog__eyebrow" data-dialog-eyebrow></span>
-        <h2 id="app-dialog-title" class="ui-dialog__title" data-dialog-title></h2>
-        <p id="app-dialog-message" class="ui-dialog__message" data-dialog-message></p>
-        <div class="ui-dialog__actions">
+        <header class="ui-dialog__header">
+          <span class="ui-dialog__signal" aria-hidden="true"><b>!</b></span>
+          <span class="ui-dialog__eyebrow" data-dialog-eyebrow></span>
+          <h2 id="app-dialog-title" class="ui-dialog__title" data-dialog-title></h2>
+        </header>
+        <div class="ui-dialog__content">
+          <p id="app-dialog-description" class="ui-dialog__description" data-dialog-description></p>
+        </div>
+        <footer class="ui-dialog__actions">
           <button class="ui-button ui-dialog__cancel" type="button" data-dialog-cancel></button>
           <button class="ui-button ui-button--primary" type="button" data-dialog-confirm></button>
-        </div>
+        </footer>
       </div>
+    </dialog>
+    <dialog id="explorer-profile-dialog" class="ui-dialog profile-editor" aria-labelledby="profile-editor-title" aria-describedby="profile-editor-description">
+      <form class="ui-dialog__panel ui-panel profile-editor__panel" data-profile-editor-form novalidate>
+        <header class="ui-dialog__header">
+          <span class="ui-dialog__eyebrow">EXPLORER IDENTITY</span>
+          <h2 id="profile-editor-title" class="ui-dialog__title" data-profile-editor-title>Explorer 정보 수정</h2>
+        </header>
+        <div class="ui-dialog__content">
+          <p id="profile-editor-description" class="ui-dialog__description" data-profile-editor-description></p>
+          <div class="ui-field" data-profile-editor-field="name">
+            <label for="profile-editor-name" data-i18n="profile.nameLabel">Explorer 이름</label>
+            <div class="ui-input-wrap"><input id="profile-editor-name" class="ui-input" type="text" maxlength="12" autocomplete="off" aria-describedby="profile-editor-description profile-editor-name-error"><span class="ui-input-wrap__meta"><b data-profile-editor-count>0</b> / 12</span></div>
+            <p id="profile-editor-name-error" class="ui-field-error" data-profile-editor-error role="alert"></p>
+          </div>
+          <fieldset class="ui-field" data-profile-editor-field="gender" aria-labelledby="profile-editor-title" aria-describedby="profile-editor-description" hidden>
+            <div class="ui-choice-group ui-choice-group--columns">
+              <label class="ui-choice-card ui-choice-card--media"><input class="ui-choice-card__control" type="radio" name="profileGender" value="female"><span class="ui-choice-card__body"><span class="ui-choice-card__media"><img src="./assets/images/common/explorer-female.webp" alt=""></span><span class="ui-choice-card__content"><strong data-i18n="intro.register.female">여성 Explorer</strong><small>FEMALE</small></span><i class="ui-choice-card__indicator" aria-hidden="true">✓</i></span></label>
+              <label class="ui-choice-card ui-choice-card--media"><input class="ui-choice-card__control" type="radio" name="profileGender" value="male"><span class="ui-choice-card__body"><span class="ui-choice-card__media"><img src="./assets/images/common/explorer-male.webp" alt=""></span><span class="ui-choice-card__content"><strong data-i18n="intro.register.male">남성 Explorer</strong><small>MALE</small></span><i class="ui-choice-card__indicator" aria-hidden="true">✓</i></span></label>
+            </div>
+          </fieldset>
+        </div>
+        <footer class="ui-dialog__actions">
+          <button class="ui-button ui-dialog__cancel" type="button" data-profile-editor-cancel data-i18n="common.cancel">취소</button>
+          <button class="ui-button ui-button--primary" type="submit" data-i18n="common.save">저장</button>
+        </footer>
+      </form>
     </dialog>
     <div id="app-toast" class="ui-toast" role="status" aria-live="polite" aria-atomic="true"></div>
   </div>

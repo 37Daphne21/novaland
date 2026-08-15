@@ -1,35 +1,9 @@
-import { explorerProfiles, getExplorerProfile } from './data.js';
+import { explorerProfiles } from './data.js';
+import { clearExplorer, getExplorerNameCharacterCount, readExplorer, saveExplorer, validateExplorerName } from './explorer.js';
 import { t } from './locales.js';
+import { renderPassportData } from './passport.js';
 
-const STORAGE_KEY = 'novaLandExplorer';
 const INTRO_STATE_KEY = 'novaLandIntroState';
-
-function getCharacterCount(value) {
-  return Array.from(value).length;
-}
-
-function normalizeName(value) {
-  return value.trim().replace(/\s+/g, ' ');
-}
-
-function validateName(value) {
-  const name = normalizeName(value);
-  const characterCount = getCharacterCount(name);
-
-  if (!name) {
-    return { error: t('intro.validation.required'), name };
-  }
-
-  if (characterCount < 2 || characterCount > 12) {
-    return { error: t('intro.validation.length'), name };
-  }
-
-  if (!/^[가-힣A-Za-z0-9]+(?: [가-힣A-Za-z0-9]+)*$/u.test(name)) {
-    return { error: t('intro.validation.characters'), name };
-  }
-
-  return { error: '', name };
-}
 
 function createExplorerId() {
   const date = new Date();
@@ -44,18 +18,6 @@ function createIssueDate() {
   const date = new Date();
   const display = new Intl.DateTimeFormat('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(date).replace(/\s/g, '');
   return { display, iso: date.toISOString() };
-}
-
-function readSavedExplorer() {
-  try {
-    const value = JSON.parse(window.localStorage.getItem(STORAGE_KEY));
-    if (!value?.introCompleted || !value?.name || !value?.id) {
-      return null;
-    }
-    return { ...value, gender: explorerProfiles[value.gender] ? value.gender : 'female' };
-  } catch {
-    return null;
-  }
 }
 
 function readSavedIntroState() {
@@ -91,12 +53,11 @@ export function createIntroController({ onComplete, onRouteChange }) {
   const nameCount = document.querySelector('[data-name-count]');
   const nameError = document.querySelector('#explorer-name-error');
   const registerSubmitButton = document.querySelector('[data-register-submit]');
-  const genderFieldset = document.querySelector('.intro-avatar-select');
+  const genderFieldset = document.querySelector('.intro-identity-select');
   const genderInputs = Array.from(document.querySelectorAll('input[name="explorerGender"]'));
   const genderError = document.querySelector('#explorer-gender-error');
   const status = document.querySelector('.intro-status');
   const passport = document.querySelector('[data-passport]');
-  const passportPortrait = document.querySelector('[data-passport-portrait]');
   const passportMessage = document.querySelector('[data-passport-message]');
   const passportStatus = document.querySelector('[data-passport-status]');
   const passportRoute = document.querySelector('[data-passport-route]');
@@ -457,7 +418,7 @@ export function createIntroController({ onComplete, onRouteChange }) {
 
   function updateNameCount() {
     if (nameCount && nameInput) {
-      nameCount.textContent = String(getCharacterCount(nameInput.value));
+      nameCount.textContent = String(getExplorerNameCharacterCount(nameInput.value));
     }
     if (nameInput?.getAttribute('aria-invalid') === 'true') {
       nameInput.removeAttribute('aria-invalid');
@@ -560,7 +521,7 @@ export function createIntroController({ onComplete, onRouteChange }) {
       return;
     }
 
-    const result = validateName(nameInput.value);
+    const result = validateExplorerName(nameInput.value);
     if (result.error) {
       nameInput.value = result.name;
       updateNameCount();
@@ -608,17 +569,7 @@ export function createIntroController({ onComplete, onRouteChange }) {
   }
 
   function setPassportData(explorer) {
-    const gender = getExplorerProfile(explorer.gender);
-    document.querySelectorAll('[data-passport-name]').forEach((element) => { element.textContent = explorer.name; });
-    document.querySelectorAll('[data-passport-id]').forEach((element) => { element.textContent = explorer.id; });
-    document.querySelectorAll('[data-passport-date]').forEach((element) => { element.textContent = explorer.issueDate; });
-    document.querySelectorAll('[data-passport-gender]').forEach((element) => { element.textContent = gender.label; });
-    document.querySelectorAll('[data-passport-cover-name]').forEach((element) => { element.textContent = explorer.name; });
-    document.querySelectorAll('[data-passport-serial]').forEach((element) => { element.textContent = `${explorer.id} · INITIAL ISSUE`; });
-    if (passportPortrait) {
-      passportPortrait.src = gender.image;
-      passportPortrait.alt = gender.alt;
-    }
+    renderPassportData(document, explorer);
   }
 
   function issuePassport(explorer) {
@@ -672,11 +623,7 @@ export function createIntroController({ onComplete, onRouteChange }) {
     delay(() => passport?.classList.add('is-closing'), 220);
     delay(() => {
       const completedExplorer = { ...pendingExplorer, introCompleted: true };
-      try {
-        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(completedExplorer));
-      } catch {
-        // 저장이 제한된 환경에서도 현재 진입 흐름은 이어간다.
-      }
+      saveExplorer(completedExplorer);
       clearIntroState();
       pendingExplorer = null;
       onComplete(completedExplorer, { focusMap: true });
@@ -770,14 +717,14 @@ export function createIntroController({ onComplete, onRouteChange }) {
   function restoreIntroState(savedState) {
     const route = createRoute(savedState.scene, savedState.step);
     const savedName = typeof savedState.name === 'string' ? savedState.name : '';
-    const nameResult = validateName(savedName);
+    const nameResult = validateExplorerName(savedName);
     const savedGender = explorerProfiles[savedState.gender] ? savedState.gender : '';
 
     if (nameInput) {
       nameInput.value = savedName;
     }
     if (nameCount) {
-      nameCount.textContent = String(getCharacterCount(savedName));
+      nameCount.textContent = String(getExplorerNameCharacterCount(savedName));
     }
     validatedName = nameResult.error ? '' : nameResult.name;
     genderInputs.forEach((input) => {
@@ -879,7 +826,7 @@ export function createIntroController({ onComplete, onRouteChange }) {
     }
 
     if (nameInput?.getAttribute('aria-invalid') === 'true' && nameError) {
-      nameError.textContent = validateName(nameInput.value).error;
+      nameError.textContent = validateExplorerName(nameInput.value).error;
     }
     if (genderFieldset?.getAttribute('aria-invalid') === 'true' && genderError) {
       genderError.textContent = t('intro.validation.identity');
@@ -936,7 +883,7 @@ export function createIntroController({ onComplete, onRouteChange }) {
 
   function start() {
     const forceIntro = new URLSearchParams(window.location.search).get('intro') === '1';
-    const savedExplorer = readSavedExplorer();
+    const savedExplorer = readExplorer();
     if (savedExplorer && !forceIntro) {
       clearIntroState();
       screen.hidden = true;
@@ -958,7 +905,7 @@ export function createIntroController({ onComplete, onRouteChange }) {
   }
 
   function reset() {
-    window.localStorage.removeItem(STORAGE_KEY);
+    clearExplorer();
     clearIntroState();
   }
 

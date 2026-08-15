@@ -853,11 +853,6 @@
   outline-offset: .25rem;
 }
 
-.intro-input-wrap input:focus-visible {
-  outline: .125rem solid #9eeaff;
-  outline-offset: .375rem;
-}
-
 .intro-action:disabled {
   opacity: .45;
   cursor: wait;
@@ -1188,28 +1183,28 @@
   transition: opacity .3s ease, transform .38s var(--ease-out);
 }
 
-.intro-form__step--identity.is-step-entering .intro-avatar-select legend,
-.intro-form__step--identity.is-step-entering .intro-avatar-select__help,
-.intro-form__step--identity.is-step-entering .intro-avatar-option,
+.intro-form__step--identity.is-step-entering .intro-identity-select legend,
+.intro-form__step--identity.is-step-entering .intro-identity-select__help,
+.intro-form__step--identity.is-step-entering .ui-choice-card,
 .intro-form__step--identity.is-step-entering .intro-form__actions {
   opacity: 0;
   transform: translateY(.55rem);
 }
 
-.intro-form__step--identity.is-step-entering.is-step-active .intro-avatar-select legend,
-.intro-form__step--identity.is-step-entering.is-step-active .intro-avatar-select__help,
-.intro-form__step--identity.is-step-entering.is-step-active .intro-avatar-option,
+.intro-form__step--identity.is-step-entering.is-step-active .intro-identity-select legend,
+.intro-form__step--identity.is-step-entering.is-step-active .intro-identity-select__help,
+.intro-form__step--identity.is-step-entering.is-step-active .ui-choice-card,
 .intro-form__step--identity.is-step-entering.is-step-active .intro-form__actions {
   opacity: 1;
   transform: translateY(0);
   transition: opacity .3s ease, transform .38s var(--ease-out);
 }
 
-.intro-form__step--identity.is-step-entering.is-step-active .intro-avatar-option:nth-child(1) {
+.intro-form__step--identity.is-step-entering.is-step-active .ui-choice-card:nth-child(1) {
   transition-delay: .05s;
 }
 
-.intro-form__step--identity.is-step-entering.is-step-active .intro-avatar-option:nth-child(2) {
+.intro-form__step--identity.is-step-entering.is-step-active .ui-choice-card:nth-child(2) {
   transition-delay: .1s;
 }
 
@@ -1217,53 +1212,15 @@
   transition-delay: .14s;
 }
 
-.intro-form__step--name > label {
+.intro-form__field {
+  gap: 0;
+}
+
+.intro-form__field > label {
   margin-bottom: var(--space-5);
   color: #e8f8ff;
   font-size: .875rem;
   font-weight: 700;
-}
-
-.intro-input-wrap {
-  position: relative;
-}
-
-.intro-input-wrap input {
-  width: 100%;
-  height: 4.25rem;
-  padding: 0 4.75rem 0 var(--space-6);
-  border: .0625rem solid rgba(106, 204, 238, .34);
-  border-radius: .45rem;
-  color: #fff;
-  font-size: 1rem;
-  background: rgba(2, 10, 21, .76);
-  transition: border-color var(--motion-base) ease, box-shadow var(--motion-base) ease;
-}
-
-.intro-input-wrap input:focus {
-  border-color: #68dcfa;
-  box-shadow: inset 0 0 1.4rem rgba(45, 190, 235, .09), 0 0 1.4rem rgba(45, 190, 235, .11);
-}
-
-.intro-input-wrap input[aria-invalid="true"] {
-  border-color: #ff8e9d;
-}
-
-.intro-input-wrap > span {
-  position: absolute;
-  right: var(--space-5);
-  top: 50%;
-  color: var(--color-text-muted);
-  font-family: var(--font-numeric);
-  font-size: .875rem;
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
-  transform: translateY(-50%);
-}
-
-.intro-input-wrap b {
-  color: #8fe7ff;
-  font-weight: inherit;
 }
 
 .intro-form__help,
@@ -1291,85 +1248,28 @@
   margin-top: 1rem;
 }
 
-.intro-avatar-select {
+.intro-identity-select {
   min-width: 0;
   margin: 0;
   padding: 0;
   border: 0;
 }
 
-.intro-avatar-select legend {
+.intro-identity-select legend {
   color: #e8f8ff;
   font-size: .875rem;
   font-weight: 700;
 }
 
-.intro-avatar-select__help {
+.intro-identity-select__help {
   margin-top: .45rem;
   color: var(--color-text-muted);
   font-size: .75rem;
   line-height: 1.5;
 }
 
-.intro-avatar-options {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-5);
+.intro-identity-select .ui-choice-group--columns {
   margin-top: 1rem;
-  padding: .25rem;
-}
-
-.intro-avatar-option {
-  min-width: 0;
-}
-
-.intro-avatar-option__card {
-  display: grid;
-  grid-template-columns: 6rem minmax(0, 1fr);
-  align-items: center;
-  gap: .85rem;
-  padding: .55rem .8rem .55rem .55rem;
-  border-radius: .65rem;
-}
-
-.intro-avatar-option__portrait {
-  aspect-ratio: 1;
-  overflow: hidden;
-  border: .0625rem solid rgba(117, 218, 247, .22);
-  border-radius: .45rem;
-  background: radial-gradient(circle at 50% 30%, rgba(51, 150, 188, .2), transparent 54%), linear-gradient(155deg, #0a2335, #030b14 72%);
-}
-
-.intro-avatar-option__portrait img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.intro-avatar-option__label {
-  display: grid;
-  gap: .35rem;
-  min-width: 0;
-}
-
-.intro-avatar-option__label strong {
-  color: rgba(235, 249, 255, .88);
-  font-size: .8rem;
-}
-
-.intro-avatar-option__label small {
-  color: var(--color-text-muted);
-  font-family: var(--font-display);
-  font-size: .5rem;
-  letter-spacing: .14em;
-}
-
-.intro-avatar-option__card > .ui-choice-card__indicator {
-  position: absolute;
-  right: .65rem;
-  top: .65rem;
-  width: 1.15rem;
-  height: 1.15rem;
-  font-size: .65rem;
 }
 
 .intro-form__error--gender {
@@ -1415,15 +1315,15 @@
 
 .intro-scene--register.is-registration-departing .intro-dialogue,
 .intro-scene--register.is-registration-departing .intro-form__heading,
-.intro-scene--register.is-registration-departing .intro-avatar-select legend,
-.intro-scene--register.is-registration-departing .intro-avatar-select__help,
+.intro-scene--register.is-registration-departing .intro-identity-select legend,
+.intro-scene--register.is-registration-departing .intro-identity-select__help,
 .intro-scene--register.is-registration-departing .intro-form__error,
 .intro-scene--register.is-registration-departing .intro-form__actions {
   opacity: .18;
   transition: opacity .35s ease;
 }
 
-.intro-scene--register.is-registration-departing .intro-avatar-option input:checked + .intro-avatar-option__card::after {
+.intro-scene--register.is-registration-departing .ui-choice-card input:checked + .ui-choice-card__body::after {
   content: "";
   position: absolute;
   left: 50%;
@@ -1438,7 +1338,7 @@
   pointer-events: none;
 }
 
-.intro-scene--register.is-registration-departing .intro-avatar-option input:checked + .intro-avatar-option__card {
+.intro-scene--register.is-registration-departing .ui-choice-card input:checked + .ui-choice-card__body {
   z-index: 2;
   border-color: #86e8ff;
   box-shadow: inset 0 0 1.6rem rgba(66, 207, 244, .2), 0 0 1.7rem rgba(66, 207, 244, .22);
@@ -1725,6 +1625,10 @@
 }
 
 .passport__page-content--profile dd {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .35rem;
   margin-top: .25rem;
   padding-bottom: .25rem;
   border-bottom: .0625rem solid rgba(36, 68, 83, .18);
@@ -1734,6 +1638,35 @@
   letter-spacing: .04em;
   opacity: 0;
   transform: translateY(.25rem);
+}
+
+.passport__field-edit {
+  z-index: 2;
+  flex: 0 0 auto;
+  width: 1.5rem;
+  min-height: 1.5rem;
+  border-color: rgba(31, 96, 112, .3);
+  border-radius: 50%;
+  color: #17687a;
+  background: rgba(23, 104, 122, .06);
+}
+
+.passport__field-edit:hover,
+.passport__field-edit:focus-visible {
+  border-color: rgba(14, 101, 122, .72);
+  background: rgba(23, 104, 122, .12);
+  box-shadow: 0 0 .6rem rgba(14, 101, 122, .18);
+  transform: none;
+}
+
+.passport__field-edit:focus-visible {
+  outline: .125rem solid #17687a;
+  outline-offset: .125rem;
+}
+
+.passport__field-edit .ui-icon {
+  width: .75rem;
+  height: .75rem;
 }
 
 .passport.is-writing .passport__page-content--profile dd {
@@ -2471,49 +2404,17 @@
     margin-bottom: 1rem;
   }
 
-  .intro-input-wrap input {
-    height: 3.5rem;
-    font-size: 1rem;
-  }
-
   .intro-form__help,
   .intro-form__error {
     font-size: .68rem;
   }
 
-  .intro-avatar-select legend {
+  .intro-identity-select legend {
     font-size: .8rem;
   }
 
-  .intro-avatar-select__help {
+  .intro-identity-select__help {
     font-size: .68rem;
-  }
-
-  .intro-avatar-option__card {
-    grid-template-columns: 1fr;
-    justify-items: center;
-    gap: .45rem;
-    padding: .45rem;
-  }
-
-  .intro-avatar-option__portrait {
-    width: 100%;
-    height: 6.5rem;
-    aspect-ratio: auto;
-  }
-
-  .intro-avatar-option__label {
-    justify-items: center;
-    gap: .2rem;
-  }
-
-  .intro-avatar-option__label strong {
-    font-size: .72rem;
-  }
-
-  .intro-avatar-option__card > i {
-    right: .45rem;
-    top: .45rem;
   }
 
   .intro-form__back {
@@ -2694,7 +2595,7 @@
     margin-bottom: .75rem;
   }
 
-  .intro-input-wrap input {
+  .intro-form__field .ui-input {
     height: 3.2rem;
   }
 

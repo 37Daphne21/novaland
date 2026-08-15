@@ -48,6 +48,7 @@
   --color-primary-soft: rgba(56, 200, 255, .16);
   --color-success: #38e6bd;
   --color-warning: #ffc868;
+  --color-danger: #ff9aaa;
   --color-coaster: #8c72ff;
   --color-luna: #51e7cc;
   --color-spark: #ffb84a;
@@ -135,6 +136,10 @@
 .ui-back-button .ui-icon {
   width: 1.65rem;
   height: 1.65rem;
+}
+
+.is-overlay-open .ui-back-button {
+  visibility: hidden;
 }
 
 .ui-panel {
@@ -313,6 +318,50 @@
   background: rgba(56, 230, 189, .08);
 }
 
+.ui-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+  padding: var(--space-1);
+  border: .0625rem solid var(--color-line);
+  border-radius: var(--radius-md);
+  background: rgba(3, 12, 23, .58);
+}
+
+.ui-tabs [role="tab"] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: .75rem 1rem;
+  border: .0625rem solid transparent;
+  border-radius: calc(var(--radius-md) - .2rem);
+  color: var(--color-text-muted);
+  transition: border-color var(--motion-fast) ease, color var(--motion-fast) ease, background var(--motion-fast) ease, box-shadow var(--motion-fast) ease;
+}
+
+.ui-tabs [role="tab"] strong {
+  font-family: var(--font-display);
+  font-size: .75rem;
+  letter-spacing: .08em;
+}
+
+.ui-tabs [role="tab"]:hover {
+  color: var(--color-text);
+  background: rgba(36, 132, 172, .08);
+}
+
+.ui-tabs [role="tab"]:focus-visible {
+  outline: .125rem solid var(--color-primary);
+  outline-offset: .125rem;
+}
+
+.ui-tabs [role="tab"][aria-selected="true"] {
+  border-color: var(--color-line-strong);
+  color: var(--color-text);
+  background: linear-gradient(135deg, rgba(35, 164, 221, .18), rgba(31, 86, 130, .16));
+  box-shadow: inset 0 0 1.25rem rgba(56, 200, 255, .06), 0 0 1rem rgba(56, 200, 255, .08);
+}
+
 .ui-choice-group {
   display: grid;
   gap: var(--space-4);
@@ -377,6 +426,154 @@
 .ui-choice-card__control:disabled + .ui-choice-card__body {
   opacity: .48;
   cursor: not-allowed;
+}
+
+.ui-choice-group--columns {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-5);
+  padding: .25rem;
+}
+
+.ui-choice-card--media {
+  min-width: 0;
+}
+
+.ui-choice-card--media .ui-choice-card__body {
+  display: grid;
+  grid-template-columns: 6rem minmax(0, 1fr);
+  align-items: center;
+  gap: .85rem;
+  padding: .55rem .8rem .55rem .55rem;
+  border-radius: .65rem;
+}
+
+.ui-choice-card__media {
+  aspect-ratio: 1;
+  overflow: hidden;
+  border: .0625rem solid rgba(117, 218, 247, .22);
+  border-radius: .45rem;
+  background: radial-gradient(circle at 50% 30%, rgba(51, 150, 188, .2), transparent 54%), linear-gradient(155deg, #0a2335, #030b14 72%);
+}
+
+.ui-choice-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ui-choice-card__content {
+  display: grid;
+  gap: .35rem;
+  min-width: 0;
+}
+
+.ui-choice-card__content strong {
+  color: rgba(235, 249, 255, .88);
+  font-size: .8rem;
+}
+
+.ui-choice-card__content small {
+  color: var(--color-text-muted);
+  font-family: var(--font-display);
+  font-size: .5rem;
+  letter-spacing: .14em;
+}
+
+.ui-choice-card--media .ui-choice-card__body > .ui-choice-card__indicator {
+  position: absolute;
+  right: .65rem;
+  top: .65rem;
+  width: 1.15rem;
+  height: 1.15rem;
+  font-size: .65rem;
+}
+
+.ui-field {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.ui-field > label {
+  color: var(--color-text-subtle);
+  font-size: .8125rem;
+  font-weight: 700;
+}
+
+.ui-input-wrap {
+  position: relative;
+}
+
+.ui-input {
+  width: 100%;
+  padding: 1rem 4rem 1rem 1.125rem;
+  border: .0625rem solid var(--color-line);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  background: rgba(2, 10, 21, .76);
+  transition: border-color var(--motion-fast) ease, box-shadow var(--motion-fast) ease;
+}
+
+.ui-input-wrap--large .ui-input {
+  height: 4.25rem;
+  padding: 0 4.75rem 0 var(--space-6);
+  border-color: rgba(106, 204, 238, .34);
+  border-radius: .45rem;
+  font-size: 1rem;
+}
+
+.ui-input:hover {
+  border-color: var(--color-line-strong);
+}
+
+.ui-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 .1875rem rgba(56, 200, 255, .14), inset 0 0 1.5rem rgba(56, 200, 255, .05);
+  outline: 0;
+}
+
+.ui-input:focus-visible {
+  outline: .125rem solid #9eeaff;
+  outline-offset: .375rem;
+}
+
+.ui-input[aria-invalid="true"] {
+  border-color: var(--color-danger);
+}
+
+.ui-input-wrap__meta {
+  position: absolute;
+  right: 1.125rem;
+  top: 50%;
+  color: var(--color-text-muted);
+  font-family: var(--font-numeric);
+  font-size: .6875rem;
+  transform: translateY(-50%);
+}
+
+.ui-input-wrap__meta b {
+  color: var(--color-primary);
+  font-weight: inherit;
+}
+
+.ui-input-wrap--large .ui-input-wrap__meta {
+  right: var(--space-5);
+  font-size: .875rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.ui-field-help,
+.ui-field-error {
+  color: var(--color-text-muted);
+  font-size: .75rem;
+  line-height: 1.6;
+}
+
+.ui-field-error {
+  color: var(--color-danger);
 }
 
 .ui-switch {
@@ -534,6 +731,11 @@
   opacity: .7;
 }
 
+.ui-dialog__header,
+.ui-dialog__content {
+  min-width: 0;
+}
+
 .ui-dialog__signal {
   position: relative;
   display: grid;
@@ -581,8 +783,13 @@
   letter-spacing: .02em;
 }
 
-.ui-dialog__message {
-  margin-top: var(--space-3);
+.ui-dialog__content {
+  display: grid;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.ui-dialog__description {
   color: var(--color-text-muted);
   font-size: .8125rem;
   line-height: 1.7;
@@ -611,9 +818,47 @@
   background: rgba(17, 42, 65, .62);
 }
 
+body.is-overlay-open,
+body.is-dialog-open {
+  overflow: hidden;
+}
+
 @keyframes ui-dialog-enter {
   from { opacity: 0; transform: translateY(.75rem) scale(.97); }
   to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (max-width: 40rem) {
+  .ui-input-wrap--large .ui-input {
+    height: 3.5rem;
+  }
+
+  .ui-choice-card--media .ui-choice-card__body {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: .45rem;
+    padding: .45rem;
+  }
+
+  .ui-choice-card--media .ui-choice-card__media {
+    width: 100%;
+    height: 6.5rem;
+    aspect-ratio: auto;
+  }
+
+  .ui-choice-card--media .ui-choice-card__content {
+    justify-items: center;
+    gap: .2rem;
+  }
+
+  .ui-choice-card--media .ui-choice-card__content strong {
+    font-size: .72rem;
+  }
+
+  .ui-choice-card--media .ui-choice-card__body > .ui-choice-card__indicator {
+    right: .45rem;
+    top: .45rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

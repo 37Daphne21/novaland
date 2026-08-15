@@ -53,21 +53,21 @@
 
 ## Next. Explorer Archive와 Save Data
 
-상태: 예정
+상태: 진행 중
 
 
 ### Explorer Archive
 
-- [ ] Explorer Log와 Explorer Passport 공통 Overlay
-- [ ] 두 화면을 동등한 Tab으로 전환
-- [ ] Recent Log에서 Explorer Log 진입
-- [ ] Explorer Profile에서 Passport 진입
+- [x] Explorer Log와 Explorer Passport 공통 Overlay
+- [x] 두 화면을 동등한 Tab으로 전환
+- [x] Recent Log에서 Explorer Log 진입
+- [x] Explorer Profile에서 Passport 진입
 - [ ] 시설 완료 기록과 Stamp 갱신
 
 
 ### 저장과 설정
 
-- [ ] Explorer 이름·성별·Passport 이미지 변경
+- [x] Explorer 이름·성별·Passport 이미지 변경
 - [x] Intro 완료와 Explorer 신원·Passport 발급 상태 복원
 - [ ] 시설 잠금·진행·완료 상태 저장
 - [ ] Mission 진행 상태 저장
@@ -242,6 +242,7 @@
 - [ ] 이미지 용량과 Format
 - [ ] Preload와 Lazy Loading
 - [ ] Animation 성능
+- [ ] EVE 언어별 음성 적용과 이퀄라이저 재생 연동
 - [ ] BGM과 효과음 정책
 - [ ] Chrome, Edge, Safari와 Mobile Browser
 - [ ] 저장 데이터 초기화와 오류 복구

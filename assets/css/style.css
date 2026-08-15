@@ -96,8 +96,20 @@
   justify-self: start;
   min-width: 0;
   min-height: var(--size-top-navigation);
-  padding: .625rem .875rem;
+  padding: .625rem 1rem;
   border-color: rgba(213, 167, 97, .3);
+}
+
+.top-navigation__identity-item {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.top-navigation__identity-item ~ .top-navigation__identity-item {
+  margin-left: var(--space-6);
+  padding-left: var(--space-6);
+  border-left: .0625rem solid var(--color-line);
 }
 
 .top-navigation__right {
@@ -111,8 +123,6 @@
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  padding-right: var(--space-6);
-  border-right: .0625rem solid var(--color-line);
 }
 
 .brand__lockup {
@@ -125,7 +135,6 @@
   align-items: center;
   gap: var(--space-3);
   min-width: 12rem;
-  padding: 0 var(--space-6);
 }
 
 .explorer-profile__image {
@@ -158,24 +167,27 @@
 }
 
 .explorer-profile__edit {
-  display: grid;
-  place-items: center;
-  width: 1.75rem;
-  height: 1.75rem;
-  border: .0625rem solid var(--color-line);
+  width: 2.5rem;
+  min-height: 2.5rem;
+  border-color: var(--color-line-strong);
   border-radius: 50%;
-  color: var(--color-text-muted);
+  color: var(--color-primary);
+  background: rgba(21, 84, 116, .18);
+  box-shadow: inset 0 0 1rem rgba(56, 200, 255, .05);
 }
 
 .explorer-profile__edit:hover,
 .explorer-profile__edit:focus-visible {
   border-color: var(--color-line-strong);
   color: var(--color-primary);
+  background: rgba(35, 132, 172, .24);
+  box-shadow: 0 0 1rem rgba(56, 200, 255, .18), inset 0 0 1rem rgba(56, 200, 255, .08);
+  transform: translateY(-.0625rem);
 }
 
 .explorer-profile__edit .ui-icon {
-  width: .875rem;
-  height: .875rem;
+  width: 1.125rem;
+  height: 1.125rem;
 }
 
 .top-navigation__status {
@@ -1003,6 +1015,200 @@
   font-variant-numeric: tabular-nums;
 }
 
+.explorer-archive {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  gap: var(--space-5);
+  width: min(72rem, 100%);
+  height: min(48rem, calc(100svh - 2rem));
+  padding: clamp(1.25rem, 2.5vw, 2rem);
+  overflow: hidden;
+  border-color: rgba(97, 211, 246, .34);
+  background: radial-gradient(circle at 50% 18%, rgba(29, 115, 158, .12), transparent 36%), linear-gradient(145deg, rgba(7, 22, 39, .96), rgba(2, 10, 20, .96));
+}
+
+.explorer-archive__header {
+  padding-bottom: var(--space-4);
+  border-bottom: .0625rem solid var(--color-line);
+}
+
+.explorer-archive__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 2.2vw, 1.75rem);
+  font-weight: 500;
+  letter-spacing: .05em;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.explorer-archive__name {
+  color: var(--color-primary);
+  font: inherit;
+  font-weight: 600;
+  text-shadow: 0 0 1rem rgba(56, 200, 255, .38);
+  background: linear-gradient(transparent 68%, rgba(56, 200, 255, .2) 68%, rgba(56, 200, 255, .2) 92%, transparent 92%);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+.explorer-archive__tabs {
+  justify-self: center;
+  width: min(40rem, 100%);
+}
+
+.explorer-archive__body,
+.explorer-archive__panel,
+.explorer-archive__passport {
+  min-width: 0;
+  min-height: 0;
+}
+
+.explorer-archive__body {
+  overflow: hidden;
+}
+
+.explorer-archive__panel {
+  height: 100%;
+}
+
+.explorer-archive__panel--log {
+  display: grid;
+  grid-template-columns: minmax(14rem, .72fr) minmax(0, 1.28fr);
+  align-items: start;
+  gap: clamp(2rem, 5vw, 5rem);
+  width: min(58rem, 100%);
+  margin: 0 auto;
+  padding: var(--space-4) var(--space-6) var(--space-4) 0;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+
+.archive-log__heading > span {
+  color: var(--color-primary);
+  font-family: var(--font-display);
+  font-size: .625rem;
+  font-weight: 700;
+  letter-spacing: .16em;
+}
+
+.archive-log__heading h3 {
+  margin-top: var(--space-3);
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-weight: 500;
+  letter-spacing: .06em;
+}
+
+.archive-log__heading p {
+  margin-top: var(--space-4);
+  color: var(--color-text-muted);
+  font-size: .8125rem;
+  line-height: 1.8;
+}
+
+.archive-log__list {
+  display: grid;
+  align-content: start;
+}
+
+.profile-editor {
+  width: min(31rem, calc(100% - 2rem));
+}
+
+.profile-editor__panel {
+  text-align: left;
+}
+
+.archive-log__item {
+  display: grid;
+  grid-template-columns: 1.25rem 3.25rem minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) 0;
+  border-top: .0625rem solid rgba(116, 188, 224, .13);
+}
+
+.archive-log__item:last-child {
+  border-bottom: .0625rem solid rgba(116, 188, 224, .13);
+}
+
+.archive-log__marker {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 1rem;
+  aspect-ratio: 1;
+  border: .0625rem solid rgba(98, 220, 255, .48);
+  border-radius: 50%;
+}
+
+.archive-log__marker::before {
+  content: "";
+  position: absolute;
+  top: 100%;
+  width: .0625rem;
+  height: calc(var(--space-8) + .5rem);
+  background: linear-gradient(rgba(98, 220, 255, .28), transparent);
+}
+
+.archive-log__item:last-child .archive-log__marker::before {
+  display: none;
+}
+
+.archive-log__marker i {
+  width: .3rem;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--color-primary);
+  box-shadow: 0 0 .65rem rgba(56, 200, 255, .72);
+}
+
+.archive-log__item time {
+  color: var(--color-primary);
+  font-family: var(--font-numeric);
+  font-size: .75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.archive-log__item > span:last-child {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.archive-log__item small {
+  color: var(--color-text-muted);
+  font-family: var(--font-display);
+  font-size: .5rem;
+  letter-spacing: .12em;
+}
+
+.archive-log__item strong {
+  color: var(--color-text-subtle);
+  font-size: .8125rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.explorer-archive__panel--passport,
+.explorer-archive__passport {
+  display: grid;
+  place-items: center;
+}
+
+.explorer-archive__passport .passport {
+  width: 100%;
+  height: 100%;
+}
+
+.explorer-archive__passport .passport__book {
+  width: min(51rem, 74vw, calc((100svh - 13rem) * 1.62));
+}
+
+.explorer-archive__passport .passport.is-archive .passport__book {
+  transform: none;
+}
+
 .settings-list {
   display: grid;
   gap: var(--space-4);
@@ -1072,11 +1278,6 @@
   color: var(--color-text);
   background: var(--color-primary-soft);
   box-shadow: 0 0 .75rem rgba(56, 200, 255, .16);
-}
-
-body.is-overlay-open,
-body.is-dialog-open {
-  overflow: hidden;
 }
 
 .screen--control-room {
@@ -1202,8 +1403,9 @@ body.is-dialog-open {
     padding: 0;
   }
 
-  .brand {
-    padding-right: var(--space-3);
+  .top-navigation__identity-item ~ .top-navigation__identity-item {
+    margin-left: var(--space-3);
+    padding-left: var(--space-3);
   }
 
   .brand__lockup {
@@ -1212,7 +1414,6 @@ body.is-dialog-open {
 
   .explorer-profile {
     min-width: 0;
-    padding: 0 0 0 var(--space-3);
   }
 
   .explorer-profile__image {
@@ -1220,9 +1421,13 @@ body.is-dialog-open {
     height: 2.5rem;
   }
 
-  .explorer-profile > span,
-  .explorer-profile__edit {
+  .explorer-profile > span {
     display: none;
+  }
+
+  .explorer-profile__edit {
+    width: 2.25rem;
+    min-height: 2.25rem;
   }
 
   .top-navigation__right {
@@ -1650,6 +1855,43 @@ body.is-dialog-open {
     flex-direction: column;
     gap: var(--space-3);
   }
+
+  .explorer-archive-overlay {
+    align-items: center;
+    padding: 0;
+  }
+
+  .explorer-archive {
+    height: 100svh;
+    max-height: none;
+    padding: max(var(--space-4), env(safe-area-inset-top)) var(--space-4) max(var(--space-4), env(safe-area-inset-bottom));
+    overflow: hidden;
+    border-radius: 0;
+  }
+
+  .explorer-archive__header {
+    padding-bottom: var(--space-3);
+  }
+
+  .explorer-archive__tabs {
+    width: 100%;
+  }
+
+  .explorer-archive__panel--log {
+    grid-template-columns: 1fr;
+    align-content: start;
+    gap: var(--space-5);
+    width: 100%;
+    padding: var(--space-2) var(--space-3) var(--space-2) 0;
+  }
+
+  .archive-log__heading p {
+    margin-top: var(--space-3);
+  }
+
+  .explorer-archive__passport .passport__book {
+    width: min(21rem, calc(100vw - 2rem));
+  }
 }
 
 @media (max-width: 40rem) {
@@ -1657,7 +1899,8 @@ body.is-dialog-open {
     width: 5.25rem;
   }
 
-  .explorer-profile {
+  .top-navigation__identity-item ~ .top-navigation__identity-item {
+    margin-left: var(--space-2);
     padding-left: var(--space-2);
   }
 

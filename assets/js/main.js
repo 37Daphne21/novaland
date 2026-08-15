@@ -1,3 +1,4 @@
+import { createArchiveController } from './archive.js';
 import { createEveController } from './eve.js';
 import { cosmicVoyage, facilities, getExplorerProfile, getFacilityText } from './data.js';
 import { createIntroController } from './intro.js';
@@ -5,6 +6,7 @@ import { initializeLanguage, t } from './locales.js';
 import { createMapController } from './map.js';
 import { createMobileMapController } from './mobile.js';
 import { createNavigationController } from './navigation.js';
+import { createProfileEditor } from './profile-editor.js';
 import { createSettingsController } from './settings.js';
 import { createDialogController, createOverlayController, createToast } from './ui.js';
 
@@ -21,12 +23,34 @@ const toast = createToast();
 const dialog = createDialogController();
 let navigation = null;
 const overlay = createOverlayController({ onRequestClose: () => navigation?.back() });
+const archive = createArchiveController({
+  onTabChange: (archiveTab) => navigation?.replace({ ...navigation.current(), archiveTab }, { applyRoute: false })
+});
+const profileEditor = createProfileEditor({ onSave: updateExplorer });
 const eve = createEveController();
 const mobileMap = createMobileMapController();
 let map = null;
 let mapStarted = false;
 let intro = null;
 let currentExplorer = null;
+
+function renderExplorerProfile(explorer) {
+  const profile = getExplorerProfile(explorer.gender);
+  if (explorerProfileName) {
+    explorerProfileName.textContent = explorer.name;
+  }
+  if (explorerProfileImage) {
+    explorerProfileImage.src = profile.image;
+    explorerProfileImage.alt = profile.alt;
+  }
+}
+
+function updateExplorer(explorer) {
+  currentExplorer = explorer;
+  archive.setExplorer(explorer);
+  renderExplorerProfile(explorer);
+  toast.show(t('profile.saved'));
+}
 
 function showScreen(screenName) {
   screens.forEach((screen) => {
@@ -43,14 +67,8 @@ function showScreen(screenName) {
 
 function enterMap(explorer, { focusMap = false } = {}) {
   currentExplorer = explorer;
-  const profile = getExplorerProfile(explorer.gender);
-  if (explorerProfileName) {
-    explorerProfileName.textContent = explorer.name;
-  }
-  if (explorerProfileImage) {
-    explorerProfileImage.src = profile.image;
-    explorerProfileImage.alt = profile.alt;
-  }
+  archive.setExplorer(explorer);
+  renderExplorerProfile(explorer);
 
   showScreen('map');
   if (!mapStarted) {
@@ -151,7 +169,11 @@ function applyNavigationRoute(route, { previousRoute, source } = {}) {
   }
 
   if (route.overlay) {
-    settings.setScope(route.settingsScope);
+    if (route.overlay === 'settings-overlay') {
+      settings.setScope(route.settingsScope);
+    } else if (route.overlay === 'explorer-archive-overlay') {
+      archive.open(route.archiveTab, currentExplorer);
+    }
     overlay.open(document.querySelector(`#${route.overlay}`));
   }
 }
@@ -161,6 +183,12 @@ navigation = createNavigationController({ button: appBackButton, onNavigate: app
 const settings = createSettingsController({ showToast: toast.show });
 
 async function handleDocumentClick(event) {
+  const passportEditButton = event.target.closest('[data-passport-edit]');
+  if (passportEditButton) {
+    profileEditor.open(passportEditButton.dataset.passportEdit, currentExplorer, passportEditButton);
+    return;
+  }
+
   if (event.target.closest('[data-register-back]')) {
     navigation.back();
     return;
@@ -203,7 +231,13 @@ async function handleDocumentClick(event) {
   if (overlayOpenButton) {
     const settingsScope = overlayOpenButton.dataset.settingsScope || 'full';
     settings.setScope(settingsScope);
-    navigation.push({ ...navigation.current(), overlay: overlayOpenButton.dataset.overlayOpen, settingsScope });
+    const archiveTab = overlayOpenButton.dataset.archiveTab;
+    navigation.push({
+      ...navigation.current(),
+      overlay: overlayOpenButton.dataset.overlayOpen,
+      ...(overlayOpenButton.dataset.overlayOpen === 'settings-overlay' ? { settingsScope } : {}),
+      ...(archiveTab ? { archiveTab } : {})
+    });
     return;
   }
 
@@ -226,7 +260,7 @@ async function handleDocumentClick(event) {
       tone: 'danger',
       eyebrowText: t('common.resetDialogEyebrow'),
       titleText: t('common.resetDialogTitle'),
-      messageText: t('common.resetDialogMessage'),
+      descriptionText: t('common.resetDialogDescription'),
       cancelText: t('common.cancel'),
       confirmText: t('common.resetDialogConfirm')
     });
@@ -247,6 +281,8 @@ async function handleDocumentClick(event) {
 
 function handleLanguageChange() {
   settings.render();
+  archive.refreshLanguage();
+  profileEditor.refreshLanguage();
   navigation.refresh();
   mobileMap.refreshLanguage();
   intro.refreshLanguage();
@@ -271,6 +307,9 @@ function handleKeydown(event) {
       event.preventDefault();
       dialog.cancel();
     }
+    return;
+  }
+  if (profileEditor.isOpen()) {
     return;
   }
   if (overlay.handleKeydown(event)) {
