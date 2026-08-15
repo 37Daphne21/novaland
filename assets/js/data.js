@@ -110,25 +110,3 @@ export function getFacilityState(state) {
   const metadata = facilityStates[state];
   return { ...metadata, label: t(metadata.labelKey) };
 }
-
-export const recentLogs = [
-  {
-    time: '09:40',
-    datetime: '09:40',
-    messageKey: 'log.coaster'
-  },
-  {
-    time: '09:15',
-    datetime: '09:15',
-    messageKey: 'log.registered'
-  },
-  {
-    time: '08:50',
-    datetime: '08:50',
-    messageKey: 'log.started'
-  }
-];
-
-export function getRecentLogs() {
-  return recentLogs.map((log) => ({ ...log, message: t(log.messageKey) }));
-}

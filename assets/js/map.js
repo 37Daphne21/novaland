@@ -1,5 +1,6 @@
-import { cosmicVoyage as cosmicVoyageDefinition, facilities as facilityDefinitions, getFacilityState, getFacilityText, getRecentLogs } from './data.js';
+import { cosmicVoyage as cosmicVoyageDefinition, facilities as facilityDefinitions, getFacilityState, getFacilityText } from './data.js';
 import { uiCopy } from './locales.js';
+import { getProgressLogs, readProgress, recordFacilityCompletion } from './progress.js';
 import { getIcon } from './ui.js';
 
 const mapVisuals = {
@@ -22,22 +23,16 @@ function cloneFacility(facility) {
   };
 }
 
-function createRuntimeState() {
-  const facilities = facilityDefinitions.map(cloneFacility);
+function createRuntimeState(progress = null) {
+  const facilities = facilityDefinitions.map((facility) => ({
+    ...cloneFacility(facility),
+    state: progress?.facilities[facility.id]?.status ?? facility.state
+  }));
   const cosmicVoyage = {
     ...cloneFacility(cosmicVoyageDefinition),
     openPosition: { ...cosmicVoyageDefinition.openPosition },
     openMobilePosition: { ...cosmicVoyageDefinition.openMobilePosition }
   };
-  const isRestoredPreview = ['localhost', '127.0.0.1'].includes(window.location.hostname)
-    && new URLSearchParams(window.location.search).get('map-state') === 'restored';
-
-  if (isRestoredPreview) {
-    facilities.forEach((facility) => {
-      facility.state = 'completed';
-    });
-  }
-
   return { cosmicVoyage, facilities, guidedFacilityId: null, selectedFacilityId: null };
 }
 
@@ -59,7 +54,8 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, speak
   const worldMapTitleText = worldMapTitle?.textContent.trim() ?? '';
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const desktopMapMedia = window.matchMedia('(min-width: 56.0625rem)');
-  const state = createRuntimeState();
+  let progress = null;
+  let state = createRuntimeState();
   let worldMapTypingTimer = null;
   let activeBackdropIndex = 0;
   let currentMapVisual = null;
@@ -360,10 +356,7 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, speak
       return;
     }
 
-    const recentLogs = getRecentLogs();
-    const visibleLogs = isRestored()
-      ? [{ time: '09:45', datetime: '09:45', message: uiCopy.restoredLog }, ...recentLogs].slice(0, 3)
-      : recentLogs;
+    const visibleLogs = progress ? getProgressLogs(progress, 3) : [];
 
     recentLogList.innerHTML = visibleLogs.map((log) => `
       <li class="recent-log__item">
@@ -434,12 +427,9 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, speak
       return false;
     }
 
-    facility.state = 'completed';
-
+    progress = recordFacilityCompletion(progress, facility);
+    state = createRuntimeState(progress);
     const nextFacility = state.facilities[facilityIndex + 1];
-    if (nextFacility) {
-      nextFacility.state = 'available';
-    }
 
     state.selectedFacilityId = null;
     state.guidedFacilityId = null;
@@ -560,7 +550,9 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, speak
     return isRestored() ? () => uiCopy.mapRestored : defaultMessage;
   }
 
-  function start(defaultMessage) {
+  function start(defaultMessage, explorer) {
+    progress = readProgress(explorer);
+    state = createRuntimeState(progress);
     const restored = isRestored();
 
     initializeMapVisual(restored ? 'cosmic' : 'base');

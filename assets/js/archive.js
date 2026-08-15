@@ -1,6 +1,6 @@
-import { getRecentLogs } from './data.js';
 import { t } from './locales.js';
 import { renderPassportData } from './passport.js';
+import { getProgressLogs, readProgress } from './progress.js';
 import { createTabsController } from './ui.js';
 
 export function createArchiveController({ onTabChange } = {}) {
@@ -31,7 +31,8 @@ export function createArchiveController({ onTabChange } = {}) {
     if (!logList) {
       return;
     }
-    const items = getRecentLogs().map((log, index) => {
+    const logs = explorer ? getProgressLogs(readProgress(explorer)) : [];
+    const items = logs.map((log, index) => {
       const item = document.createElement('li');
       const marker = document.createElement('span');
       const time = document.createElement('time');

@@ -7,6 +7,7 @@ import { createMapController } from './map.js';
 import { createMobileMapController } from './mobile.js';
 import { createNavigationController } from './navigation.js';
 import { createProfileEditor } from './profile-editor.js';
+import { clearProgress } from './progress.js';
 import { createSettingsController } from './settings.js';
 import { createDialogController, createOverlayController, createToast } from './ui.js';
 
@@ -72,7 +73,7 @@ function enterMap(explorer, { focusMap = false } = {}) {
 
   showScreen('map');
   if (!mapStarted) {
-    map.start(eve.initialMessage);
+    map.start(eve.initialMessage, explorer);
     mapStarted = true;
   }
 
@@ -265,6 +266,7 @@ async function handleDocumentClick(event) {
       confirmText: t('common.resetDialogConfirm')
     });
     if (shouldReset) {
+      clearProgress();
       intro.reset();
       window.location.href = window.location.pathname;
     }

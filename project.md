@@ -704,6 +704,12 @@ Day, Sunset과 Night는 배경, 조명, 반사와 분위기를 바꾸는 브랜�
 
 새로고침이나 재접속은 초기화가 아니라 기존 Explorer로 이어서 진행하는 것으로 취급한다.
 
+Explorer 신원과 Intro 완료 상태는 `novaLandExplorer`, 시설 이후의 진행 기록은 Version을 가진 `novaLandProgress`로 분리해 저장한다. 진행 기록은 Explorer ID에 연결하며 다른 Explorer의 데이터이거나 지원하지 않는 Version이면 현재 Explorer의 초기 상태로 다시 생성한다.
+
+`novaLandProgress`는 시설별 잠금·진행·완료와 완료 시각, Mission 단계·Checkpoint·시도 횟수, 번역 Key 기반 Log Event, 획득한 시설 Stamp 기록을 관리한다. 화면에 표시된 번역 문장이나 이미지 자체는 저장하지 않고 렌더링 시 현재 언어와 시설 Data를 사용한다.
+
+개발 확인용 `?map-state=restored`는 저장 데이터를 변경하지 않는 Preview로만 동작한다. 처음부터 다시 시작은 Explorer와 진행 기록을 함께 삭제하고 환경 설정은 유지한다.
+
 다음 상태를 복원해야 한다.
 
 - Explorer 이름, 성별과 Passport 이미지

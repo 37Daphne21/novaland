@@ -62,20 +62,22 @@
 - [x] 두 화면을 동등한 Tab으로 전환
 - [x] Recent Log에서 Explorer Log 진입
 - [x] Explorer Profile에서 Passport 진입
-- [ ] 시설 완료 기록과 Stamp 갱신
+- [x] 시설 완료 기록과 Stamp Save Data 연결
+- [ ] 시설별 Stamp 페이지와 완료 연출 갱신
 
 
 ### 저장과 설정
 
 - [x] Explorer 이름·성별·Passport 이미지 변경
 - [x] Intro 완료와 Explorer 신원·Passport 발급 상태 복원
-- [ ] 시설 잠금·진행·완료 상태 저장
-- [ ] Mission 진행 상태 저장
+- [x] 시설 잠금·진행·완료 상태 저장
+- [x] Mission 진행 상태 저장 구조와 공통 API
+- [ ] 실제 Mission Flow의 Checkpoint·Pause 복원 연결
 - [x] 언어 선택 저장과 Intro·MAP 정적·동적 UI 즉시 반영
 - [x] Common Dialog와 처음부터 다시 시작 Confirm 적용
 - [ ] 시간과 사운드 설정 저장
-- [ ] Recent Log 저장
-- [ ] 처음부터 다시 시작과 저장 데이터 초기화
+- [x] Recent Log와 Explorer Log 공통 기록 저장
+- [x] 처음부터 다시 시작과 저장 데이터 초기화
 - [ ] Fullscreen 상태 예외와 브라우저별 동작 검수
 
 

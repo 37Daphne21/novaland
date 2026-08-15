@@ -155,7 +155,9 @@ const translations = {
     'facility.state.open': '개방',
     'log.coaster': 'NOVA COASTER 연결 신호를 확인했어요.',
     'log.registered': '탐험가 등록이 완료됐어요.',
-    'log.started': 'Nova Land 시스템이 시작됐어요.'
+    'log.started': 'Nova Land 시스템이 시작됐어요.',
+    'log.facilityCompleted': '{facility} 복구가 완료됐어요.',
+    'log.facilityUnlocked': '{facility} 시설이 개방됐어요.'
   },
   en: {
     'common.settings': 'Settings',
@@ -310,7 +312,9 @@ const translations = {
     'facility.state.open': 'Open',
     'log.coaster': 'NOVA COASTER link signal confirmed.',
     'log.registered': 'Explorer registration completed.',
-    'log.started': 'Nova Land system started.'
+    'log.started': 'Nova Land system started.',
+    'log.facilityCompleted': '{facility} restoration completed.',
+    'log.facilityUnlocked': '{facility} is now open.'
   }
 };
 
