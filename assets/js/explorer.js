@@ -28,6 +28,61 @@ export function validateExplorerName(value) {
   return { error: '', name };
 }
 
+export function createExplorerNameField({ input, count, error, onInput } = {}) {
+  function updateCount() {
+    if (count && input) {
+      count.textContent = String(getExplorerNameCharacterCount(input.value));
+    }
+  }
+
+  function clearError() {
+    input?.removeAttribute('aria-invalid');
+    if (error) {
+      error.textContent = '';
+    }
+  }
+
+  function setValue(value, { clearValidation = true } = {}) {
+    if (input) {
+      input.value = value ?? '';
+    }
+    updateCount();
+    if (clearValidation) {
+      clearError();
+    }
+  }
+
+  function validate({ focus = true } = {}) {
+    const result = validateExplorerName(input?.value ?? '');
+    setValue(result.name, { clearValidation: !result.error });
+    if (result.error) {
+      input?.setAttribute('aria-invalid', 'true');
+      if (error) {
+        error.textContent = result.error;
+      }
+      if (focus) {
+        input?.focus();
+      }
+    }
+    return result;
+  }
+
+  function refreshError() {
+    if (input?.getAttribute('aria-invalid') === 'true' && error) {
+      error.textContent = validateExplorerName(input.value).error;
+    }
+  }
+
+  input?.addEventListener('input', () => {
+    clearError();
+    updateCount();
+    onInput?.(input.value);
+  });
+
+  updateCount();
+  return { clearError, refreshError, setValue, validate };
+}
+
 export function readExplorer() {
   try {
     const value = JSON.parse(window.localStorage.getItem(STORAGE_KEY));

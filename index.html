@@ -18,7 +18,7 @@
     <main>
       <section class="screen screen--intro is-active" data-screen="intro" aria-labelledby="intro-title">
         <h1 id="intro-title" class="intro-sr-title" data-i18n="intro.title">Nova Land Explorer 등록</h1>
-        <button class="intro-settings-button" type="button" data-overlay-open="settings-overlay" data-settings-scope="language" data-i18n-aria-label="intro.openSettings" aria-label="Intro 설정 열기" hidden><svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-sliders"></use></svg></button>
+        <button class="intro-settings-button" type="button" data-overlay-open="settings-overlay" data-settings-scope="language" data-i18n-aria-label="intro.openSettings" aria-label="Intro 설정 열기" hidden><svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-settings"></use></svg></button>
         <div class="intro-status" role="status" aria-live="polite" aria-atomic="true"></div>
         <section class="intro-scene intro-scene--welcome is-active" data-intro-scene="welcome" aria-labelledby="intro-welcome-title">
           <div class="intro-welcome__shade" aria-hidden="true"></div>
@@ -193,7 +193,7 @@
                 <img class="explorer-profile__image" src="./assets/images/common/explorer-female.webp" alt="여성 Nova Land Explorer 프로필 이미지">
                 <span><small>EXPLORER</small><strong id="explorer-profile-name">ING</strong></span>
                 <button class="ui-button ui-button--icon explorer-profile__edit" type="button" data-overlay-open="explorer-archive-overlay" data-archive-tab="passport" data-i18n-aria-label="archive.openPassport" aria-label="Explorer Passport 열기">
-                  <svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-passport"></use></svg>
+                  <svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-edit"></use></svg>
                 </button>
               </div>
             </div>
@@ -204,7 +204,7 @@
               <div class="status-chip"><svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-weather"></use></svg><span><strong>24°C</strong><small data-i18n="map.clear">맑음</small></span></div>
             </div>
             <nav class="top-navigation__actions ui-panel" data-i18n-aria-label="map.userMenu" aria-label="사용자 메뉴">
-              <button class="utility-button" type="button" data-overlay-open="settings-overlay" data-settings-scope="full" data-i18n-aria-label="map.openSettings" aria-label="설정 열기"><span><svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-sliders"></use></svg></span><small data-i18n="common.settings">설정</small></button>
+              <button class="utility-button" type="button" data-overlay-open="settings-overlay" data-settings-scope="full" data-i18n-aria-label="map.openSettings" aria-label="설정 열기"><span><svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-settings"></use></svg></span><small data-i18n="common.settings">설정</small></button>
             </nav>
           </div>
         </header>
@@ -288,7 +288,7 @@
           <button class="ui-button ui-button--icon ui-button--small" type="button" data-overlay-close data-i18n-aria-label="common.closeSettings" aria-label="설정 닫기"><svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-close"></use></svg></button>
         </header>
         <div class="settings-list">
-          <div class="settings-item" data-settings-item="language"><span><strong data-i18n="common.language">언어</strong><small data-i18n="common.languageHelp">화면에 표시할 언어를 선택해요.</small></span><div id="language-options" class="segmented-control" data-i18n-aria-label="common.languageSelect" aria-label="언어 선택"></div></div>
+          <div class="settings-item" data-settings-item="language"><span><strong data-i18n="common.language">언어</strong><small data-i18n="common.languageHelp">화면에 표시할 언어를 선택해요.</small></span><div id="language-options" class="ui-segmented-control" data-i18n-aria-label="common.languageSelect" aria-label="언어 선택"></div></div>
           <div class="settings-item" data-settings-item="fullscreen"><span><strong data-i18n="common.fullscreen">전체 화면</strong><small data-i18n="common.fullscreenHelp">브라우저 UI를 숨기고 화면을 넓게 사용해요.</small></span><button id="fullscreen-toggle" class="ui-switch" type="button" role="switch" data-i18n-aria-label="common.fullscreen" aria-label="전체 화면" aria-checked="false" data-fullscreen-toggle><span class="ui-switch__track" aria-hidden="true"><i></i></span><b>OFF</b></button></div>
           <div class="settings-item" data-settings-item="sound"><span><strong data-i18n="common.sound">사운드</strong><small data-i18n="common.soundHelp">효과음은 공통 시스템 단계에서 연결돼요.</small></span><span class="ui-badge" data-i18n="common.comingSoon">준비 중</span></div>
           <div class="settings-item settings-item--danger" data-settings-item="reset"><span><strong data-i18n="common.restart">처음부터 다시 시작</strong><small data-i18n="common.restartHelp">Explorer 정보와 Intro 등록 상태를 초기화해요.</small></span><button class="ui-button" type="button" data-reset-progress data-i18n="common.reset">초기화</button></div>

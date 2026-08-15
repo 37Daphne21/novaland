@@ -126,7 +126,7 @@
 }
 
 .brand__lockup {
-  width: 10rem;
+  width: 8.625rem;
   height: auto;
 }
 
@@ -169,11 +169,11 @@
 .explorer-profile__edit {
   width: 2.5rem;
   min-height: 2.5rem;
-  border-color: var(--color-line-strong);
+  border-color: var(--color-line);
   border-radius: 50%;
-  color: var(--color-primary);
-  background: rgba(21, 84, 116, .18);
-  box-shadow: inset 0 0 1rem rgba(56, 200, 255, .05);
+  color: var(--color-text-muted);
+  background: rgba(7, 18, 31, .42);
+  box-shadow: inset 0 0 1rem rgba(178, 208, 224, .03);
 }
 
 .explorer-profile__edit:hover,
@@ -186,8 +186,8 @@
 }
 
 .explorer-profile__edit .ui-icon {
-  width: 1.125rem;
-  height: 1.125rem;
+  width: 1.25rem;
+  height: 1.25rem;
 }
 
 .top-navigation__status {
@@ -228,6 +228,7 @@
   font-size: .75rem;
   font-weight: 700;
   letter-spacing: .04em;
+  text-align: center;
 }
 
 .top-navigation__actions {
@@ -1257,29 +1258,6 @@
   background: rgba(121, 32, 48, .22);
 }
 
-.segmented-control {
-  display: flex;
-  padding: .1875rem;
-  border: .0625rem solid var(--color-line);
-  border-radius: var(--radius-pill);
-  background: rgba(4, 12, 22, .64);
-}
-
-.segmented-control button {
-  min-width: 3rem;
-  padding: .375rem .625rem;
-  border-radius: var(--radius-pill);
-  color: var(--color-text-muted);
-  font-size: .6875rem;
-  font-weight: 700;
-}
-
-.segmented-control button.is-selected {
-  color: var(--color-text);
-  background: var(--color-primary-soft);
-  box-shadow: 0 0 .75rem rgba(56, 200, 255, .16);
-}
-
 .screen--control-room {
   display: grid;
   place-items: center;
@@ -1409,7 +1387,7 @@
   }
 
   .brand__lockup {
-    width: 6rem;
+    width: 5.1875rem;
   }
 
   .explorer-profile {
@@ -1833,19 +1811,6 @@
     border-radius: var(--radius-md);
   }
 
-  .ui-overlay {
-    align-items: end;
-    padding: var(--space-2);
-  }
-
-  .ui-overlay__dialog {
-    width: 100%;
-    max-height: calc(100svh - 1rem);
-    padding: var(--space-5);
-    overflow-y: auto;
-    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-  }
-
   .settings-list {
     margin-top: var(--space-5);
   }
@@ -1896,7 +1861,7 @@
 
 @media (max-width: 40rem) {
   .brand__lockup {
-    width: 5.25rem;
+    width: 4.5rem;
   }
 
   .top-navigation__identity-item ~ .top-navigation__identity-item {

@@ -1,7 +1,8 @@
 import { explorerProfiles } from './data.js';
-import { clearExplorer, getExplorerNameCharacterCount, readExplorer, saveExplorer, validateExplorerName } from './explorer.js';
+import { clearExplorer, createExplorerNameField, readExplorer, saveExplorer, validateExplorerName } from './explorer.js';
 import { t } from './locales.js';
 import { renderPassportData } from './passport.js';
+import { createChoiceGroupController } from './ui.js';
 
 const INTRO_STATE_KEY = 'novaLandIntroState';
 
@@ -74,6 +75,18 @@ export function createIntroController({ onComplete, onRouteChange }) {
   let passportTypingState = null;
   let validatedName = '';
   let isRegistrationTransitioning = false;
+  const nameField = createExplorerNameField({
+    input: nameInput,
+    count: nameCount,
+    error: nameError,
+    onInput: () => {
+      if (currentScene === scenes.get('register')) {
+        const step = registrationIdentityStep?.hidden === false ? 'identity' : 'name';
+        saveIntroState(createRoute('register', step));
+      }
+    }
+  });
+  const genderChoice = createChoiceGroupController(genderFieldset, { onChange: handleGenderChange });
 
   function delay(callback, duration) {
     const timer = window.setTimeout(() => {
@@ -416,22 +429,6 @@ export function createIntroController({ onComplete, onRouteChange }) {
     }, 860);
   }
 
-  function updateNameCount() {
-    if (nameCount && nameInput) {
-      nameCount.textContent = String(getExplorerNameCharacterCount(nameInput.value));
-    }
-    if (nameInput?.getAttribute('aria-invalid') === 'true') {
-      nameInput.removeAttribute('aria-invalid');
-      if (nameError) {
-        nameError.textContent = '';
-      }
-    }
-    if (currentScene === scenes.get('register')) {
-      const step = registrationIdentityStep?.hidden === false ? 'identity' : 'name';
-      saveIntroState(createRoute('register', step));
-    }
-  }
-
   function handleNameKeydown(event) {
     if (event.key !== 'Enter' || registrationIdentityStep?.hidden === false) {
       return;
@@ -442,8 +439,7 @@ export function createIntroController({ onComplete, onRouteChange }) {
 
   function focusRegistrationStep(showIdentity) {
     if (showIdentity) {
-      const selectedGender = genderInputs.find((input) => input.checked);
-      (selectedGender || genderInputs[0])?.focus({ preventScroll: true });
+      genderChoice.focusSelected();
       return;
     }
     nameInput?.focus({ preventScroll: true });
@@ -521,20 +517,12 @@ export function createIntroController({ onComplete, onRouteChange }) {
       return;
     }
 
-    const result = validateExplorerName(nameInput.value);
+    const result = nameField.validate();
     if (result.error) {
-      nameInput.value = result.name;
-      updateNameCount();
-      nameInput.setAttribute('aria-invalid', 'true');
-      if (nameError) {
-        nameError.textContent = result.error;
-      }
-      nameInput.focus();
       return;
     }
 
     validatedName = result.name;
-    nameInput.value = result.name;
     showRegistrationStep('identity');
     recordRoute('register', 'identity');
     announce(t('intro.status.nameConfirmed', { name: validatedName }));
@@ -551,21 +539,6 @@ export function createIntroController({ onComplete, onRouteChange }) {
     registerSubmitButton?.removeAttribute('disabled');
     saveIntroState(createRoute('register', 'identity'));
     announce(t('intro.status.identitySelected', { gender: t(`intro.gender.${event.currentTarget.value}`) }));
-  }
-
-  function handleGenderKeydown(event) {
-    const direction = ['ArrowRight', 'ArrowDown'].includes(event.key) ? 1 : ['ArrowLeft', 'ArrowUp'].includes(event.key) ? -1 : 0;
-    if (!direction) {
-      return;
-    }
-
-    event.preventDefault();
-    const currentIndex = genderInputs.indexOf(event.currentTarget);
-    const nextIndex = (currentIndex + direction + genderInputs.length) % genderInputs.length;
-    const nextInput = genderInputs[nextIndex];
-    nextInput.checked = true;
-    nextInput.focus({ preventScroll: true });
-    nextInput.dispatchEvent(new Event('change', { bubbles: true }));
   }
 
   function setPassportData(explorer) {
@@ -640,7 +613,7 @@ export function createIntroController({ onComplete, onRouteChange }) {
       return;
     }
 
-    const selectedGender = genderInputs.find((input) => input.checked)?.value;
+    const selectedGender = genderChoice.getValue();
     if (!explorerProfiles[selectedGender]) {
       genderFieldset?.setAttribute('aria-invalid', 'true');
       if (genderError) {
@@ -720,16 +693,9 @@ export function createIntroController({ onComplete, onRouteChange }) {
     const nameResult = validateExplorerName(savedName);
     const savedGender = explorerProfiles[savedState.gender] ? savedState.gender : '';
 
-    if (nameInput) {
-      nameInput.value = savedName;
-    }
-    if (nameCount) {
-      nameCount.textContent = String(getExplorerNameCharacterCount(savedName));
-    }
+    nameField.setValue(savedName);
     validatedName = nameResult.error ? '' : nameResult.name;
-    genderInputs.forEach((input) => {
-      input.checked = input.value === savedGender;
-    });
+    genderChoice.setValue(savedGender);
 
     let sceneName = route.scene;
     let step = route.step === 'identity' ? 'identity' : 'name';
@@ -825,9 +791,7 @@ export function createIntroController({ onComplete, onRouteChange }) {
       registerDialogueMessage.setAttribute('aria-label', registerDialogueText.replace(/\n/g, ' '));
     }
 
-    if (nameInput?.getAttribute('aria-invalid') === 'true' && nameError) {
-      nameError.textContent = validateExplorerName(nameInput.value).error;
-    }
+    nameField.refreshError();
     if (genderFieldset?.getAttribute('aria-invalid') === 'true' && genderError) {
       genderError.textContent = t('intro.validation.identity');
     }
@@ -913,12 +877,7 @@ export function createIntroController({ onComplete, onRouteChange }) {
   respondButton?.addEventListener('click', handleRespond);
   document.addEventListener('click', handleGlobalDialogueReveal, true);
   passportEnterMap?.addEventListener('click', handleEnterMap);
-  nameInput?.addEventListener('input', updateNameCount);
   nameInput?.addEventListener('keydown', handleNameKeydown);
-  genderInputs.forEach((input) => {
-    input.addEventListener('change', handleGenderChange);
-    input.addEventListener('keydown', handleGenderKeydown);
-  });
   form?.addEventListener('submit', handleSubmit);
 
   return { navigate, refreshLanguage, reset, start };

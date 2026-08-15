@@ -1,7 +1,7 @@
 import { explorerProfiles } from './data.js';
-import { getExplorerNameCharacterCount, saveExplorer, validateExplorerName } from './explorer.js';
+import { createExplorerNameField, saveExplorer } from './explorer.js';
 import { t } from './locales.js';
-import { createModalController } from './ui.js';
+import { createChoiceGroupController, createModalController } from './ui.js';
 
 export function createProfileEditor({ onSave } = {}) {
   const dialog = document.querySelector('#explorer-profile-dialog');
@@ -12,17 +12,13 @@ export function createProfileEditor({ onSave } = {}) {
   const nameInput = dialog?.querySelector('#profile-editor-name');
   const nameCount = dialog?.querySelector('[data-profile-editor-count]');
   const nameError = dialog?.querySelector('[data-profile-editor-error]');
-  const genderInputs = dialog ? [...dialog.querySelectorAll('input[name="profileGender"]')] : [];
+  const genderField = dialog?.querySelector('[data-profile-editor-field="gender"]');
   const cancelButton = dialog?.querySelector('[data-profile-editor-cancel]');
   const modal = createModalController(dialog);
   let currentExplorer = null;
   let currentField = 'name';
-
-  function updateNameCount() {
-    if (nameCount && nameInput) {
-      nameCount.textContent = String(getExplorerNameCharacterCount(nameInput.value));
-    }
-  }
+  const nameField = createExplorerNameField({ input: nameInput, count: nameCount, error: nameError });
+  const genderChoice = createChoiceGroupController(genderField);
 
   function setField(fieldName) {
     currentField = fieldName === 'gender' ? 'gender' : 'name';
@@ -42,19 +38,12 @@ export function createProfileEditor({ onSave } = {}) {
 
     currentExplorer = explorer;
     setField(fieldName);
-    if (nameInput) {
-      nameInput.value = explorer.name;
-      nameInput.removeAttribute('aria-invalid');
-    }
-    if (nameError) {
-      nameError.textContent = '';
-    }
-    updateNameCount();
-    genderInputs.forEach((input) => { input.checked = input.value === explorer.gender; });
+    nameField.setValue(explorer.name);
+    genderChoice.setValue(explorer.gender);
     modal.open({ opener });
     window.requestAnimationFrame(() => {
       if (currentField === 'gender') {
-        (genderInputs.find((input) => input.checked) || genderInputs[0])?.focus();
+        genderChoice.focusSelected({ preventScroll: false });
       } else {
         nameInput?.focus();
         nameInput?.select();
@@ -70,20 +59,13 @@ export function createProfileEditor({ onSave } = {}) {
 
     let updatedExplorer = currentExplorer;
     if (currentField === 'name') {
-      const result = validateExplorerName(nameInput?.value ?? '');
+      const result = nameField.validate();
       if (result.error) {
-        if (nameInput) {
-          nameInput.setAttribute('aria-invalid', 'true');
-        }
-        if (nameError) {
-          nameError.textContent = result.error;
-        }
-        nameInput?.focus();
         return;
       }
       updatedExplorer = { ...currentExplorer, name: result.name };
     } else {
-      const selectedGender = genderInputs.find((input) => input.checked)?.value;
+      const selectedGender = genderChoice.getValue();
       if (!explorerProfiles[selectedGender]) {
         return;
       }
@@ -102,13 +84,6 @@ export function createProfileEditor({ onSave } = {}) {
     }
   }
 
-  nameInput?.addEventListener('input', () => {
-    nameInput.removeAttribute('aria-invalid');
-    if (nameError) {
-      nameError.textContent = '';
-    }
-    updateNameCount();
-  });
   cancelButton?.addEventListener('click', () => modal.close('cancel'));
   form?.addEventListener('submit', handleSubmit);
 

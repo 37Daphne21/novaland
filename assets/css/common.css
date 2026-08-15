@@ -213,7 +213,7 @@
 
 .ui-button:focus-visible,
 .ui-card:focus-visible,
-.segmented-control button:focus-visible,
+.ui-segmented-control button:focus-visible,
 .brand:focus-visible {
   outline: .125rem solid var(--color-primary);
   outline-offset: .1875rem;
@@ -576,6 +576,29 @@
   color: var(--color-danger);
 }
 
+.ui-segmented-control {
+  display: flex;
+  padding: .1875rem;
+  border: .0625rem solid var(--color-line);
+  border-radius: var(--radius-pill);
+  background: rgba(4, 12, 22, .64);
+}
+
+.ui-segmented-control button {
+  min-width: 3rem;
+  padding: .375rem .625rem;
+  border-radius: var(--radius-pill);
+  color: var(--color-text-muted);
+  font-size: .6875rem;
+  font-weight: 700;
+}
+
+.ui-segmented-control button.is-selected {
+  color: var(--color-text);
+  background: var(--color-primary-soft);
+  box-shadow: 0 0 .75rem rgba(56, 200, 255, .16);
+}
+
 .ui-switch {
   display: inline-flex;
   align-items: center;
@@ -731,8 +754,7 @@
   opacity: .7;
 }
 
-.ui-dialog__header,
-.ui-dialog__content {
+.ui-dialog__header {
   min-width: 0;
 }
 
@@ -787,6 +809,7 @@
   display: grid;
   gap: var(--space-4);
   margin-top: var(--space-4);
+  min-width: 0;
 }
 
 .ui-dialog__description {
@@ -829,6 +852,19 @@ body.is-dialog-open {
 }
 
 @media (max-width: 40rem) {
+  .ui-overlay {
+    align-items: end;
+    padding: var(--space-2);
+  }
+
+  .ui-overlay__dialog {
+    width: 100%;
+    max-height: calc(100svh - 1rem);
+    padding: var(--space-5);
+    overflow-y: auto;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+
   .ui-input-wrap--large .ui-input {
     height: 3.5rem;
   }

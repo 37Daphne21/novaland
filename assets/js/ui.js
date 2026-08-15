@@ -188,6 +188,45 @@ export function createTabsController(root, { onChange } = {}) {
   return { select };
 }
 
+export function createChoiceGroupController(root, { onChange } = {}) {
+  const controls = root ? [...root.querySelectorAll('input[type="radio"]')] : [];
+
+  function getValue() {
+    return controls.find((control) => control.checked)?.value ?? '';
+  }
+
+  function setValue(value) {
+    controls.forEach((control) => {
+      control.checked = control.value === value;
+    });
+  }
+
+  function focusSelected({ preventScroll = true } = {}) {
+    (controls.find((control) => control.checked) || controls[0])?.focus({ preventScroll });
+  }
+
+  function handleKeydown(event) {
+    const direction = ['ArrowRight', 'ArrowDown'].includes(event.key) ? 1 : ['ArrowLeft', 'ArrowUp'].includes(event.key) ? -1 : 0;
+    if (!direction || controls.length < 2) {
+      return;
+    }
+
+    event.preventDefault();
+    const currentIndex = controls.indexOf(event.currentTarget);
+    const nextControl = controls[(currentIndex + direction + controls.length) % controls.length];
+    setValue(nextControl.value);
+    nextControl.focus({ preventScroll: true });
+    nextControl.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+
+  controls.forEach((control) => {
+    control.addEventListener('change', (event) => onChange?.(event));
+    control.addEventListener('keydown', handleKeydown);
+  });
+
+  return { focusSelected, getValue, setValue };
+}
+
 export function createOverlayController({ onRequestClose } = {}) {
   let activeOverlay = null;
   let previouslyFocused = null;

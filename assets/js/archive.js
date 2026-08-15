@@ -31,13 +31,33 @@ export function createArchiveController({ onTabChange } = {}) {
     if (!logList) {
       return;
     }
-    logList.innerHTML = getRecentLogs().map((log, index) => `
-      <li class="archive-log__item">
-        <span class="archive-log__marker" aria-hidden="true"><i></i></span>
-        <time datetime="${log.datetime}">${log.time}</time>
-        <span><small>${t('archive.logEntry', { number: String(index + 1).padStart(2, '0') })}</small><strong>${log.message}</strong></span>
-      </li>
-    `).join('');
+    const items = getRecentLogs().map((log, index) => {
+      const item = document.createElement('li');
+      const marker = document.createElement('span');
+      const time = document.createElement('time');
+      const content = document.createElement('span');
+      const label = document.createElement('small');
+      const message = document.createElement('strong');
+
+      item.className = 'archive-log__item';
+      marker.className = 'archive-log__marker';
+      marker.setAttribute('aria-hidden', 'true');
+      marker.append(document.createElement('i'));
+      time.dateTime = log.datetime;
+      time.textContent = log.time;
+      label.textContent = t('archive.logEntry', { number: String(index + 1).padStart(2, '0') });
+      message.textContent = log.message;
+      content.append(label, message);
+      item.append(marker, time, content);
+      return item;
+    });
+    logList.replaceChildren(...items);
+  }
+
+  function refreshPassport() {
+    if (explorer && passport?.classList.contains('is-archive')) {
+      renderPassportData(passport, explorer);
+    }
   }
 
   function preparePassport() {
@@ -76,17 +96,13 @@ export function createArchiveController({ onTabChange } = {}) {
   function refreshLanguage() {
     renderTitle();
     renderLogs();
-    if (explorer && passport?.classList.contains('is-archive')) {
-      renderPassportData(passport, explorer);
-    }
+    refreshPassport();
   }
 
   function setExplorer(explorerData) {
     explorer = explorerData;
     renderTitle();
-    if (passport?.classList.contains('is-archive')) {
-      renderPassportData(passport, explorer);
-    }
+    refreshPassport();
   }
 
   return { open, refreshLanguage, setExplorer };

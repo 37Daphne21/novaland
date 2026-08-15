@@ -1223,24 +1223,15 @@
   font-weight: 700;
 }
 
-.intro-form__help,
-.intro-form__error {
-  min-height: 1.25rem;
-  font-size: .75rem;
+.intro-form__help {
+  margin-top: var(--space-5);
   line-height: 1.5;
 }
 
-.intro-form__help {
-  margin-top: var(--space-5);
-}
-
 .intro-form__error {
+  min-height: 1.25rem;
   margin-top: .15rem;
-  color: #ff9aaa;
-}
-
-.intro-form__help {
-  color: var(--color-text-muted);
+  line-height: 1.5;
 }
 
 .intro-action--wide {
