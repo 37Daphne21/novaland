@@ -1026,6 +1026,10 @@
   border-top: .0625rem solid var(--color-line);
 }
 
+.settings-item:last-child {
+  padding-bottom: 0;
+}
+
 .settings-item strong {
   font-size: .875rem;
 }
@@ -1070,7 +1074,8 @@
   box-shadow: 0 0 .75rem rgba(56, 200, 255, .16);
 }
 
-body.is-overlay-open {
+body.is-overlay-open,
+body.is-dialog-open {
   overflow: hidden;
 }
 

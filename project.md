@@ -687,6 +687,8 @@ Intro에서 선택한 언어는 Passport와 MAP 진입 이후에도 유지하고
 
 두 초기화 기능은 서로 영향을 주지 않으며 모두 확인 절차를 거친다.
 
+확인이 필요한 공통 UI는 Native Dialog 기반의 Common Dialog를 사용한다. Alert는 확인 Button 하나, Confirm은 취소와 확인 Button을 제공하며, 자유형 Popup은 실제 사용처가 확정될 때 같은 기반에서 확장한다. 처음부터 다시 시작은 Browser Confirm 대신 Danger Tone의 Common Confirm을 사용하고 취소에 기본 Focus를 둔다.
+
 
 ### Time
 

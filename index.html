@@ -267,6 +267,18 @@
         </div>
       </div>
     </section>
+    <dialog id="app-dialog" class="ui-dialog" aria-labelledby="app-dialog-title" aria-describedby="app-dialog-message">
+      <div class="ui-dialog__panel ui-panel">
+        <span class="ui-dialog__signal" aria-hidden="true"><b>!</b></span>
+        <span class="ui-dialog__eyebrow" data-dialog-eyebrow></span>
+        <h2 id="app-dialog-title" class="ui-dialog__title" data-dialog-title></h2>
+        <p id="app-dialog-message" class="ui-dialog__message" data-dialog-message></p>
+        <div class="ui-dialog__actions">
+          <button class="ui-button ui-dialog__cancel" type="button" data-dialog-cancel></button>
+          <button class="ui-button ui-button--primary" type="button" data-dialog-confirm></button>
+        </div>
+      </div>
+    </dialog>
     <div id="app-toast" class="ui-toast" role="status" aria-live="polite" aria-atomic="true"></div>
   </div>
   <script type="module" src="./assets/js/main.js"></script>

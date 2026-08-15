@@ -6,7 +6,7 @@ import { createMapController } from './map.js';
 import { createMobileMapController } from './mobile.js';
 import { createNavigationController } from './navigation.js';
 import { createSettingsController } from './settings.js';
-import { createOverlayController, createToast } from './ui.js';
+import { createDialogController, createOverlayController, createToast } from './ui.js';
 
 initializeLanguage();
 
@@ -18,6 +18,7 @@ const explorerProfileImage = document.querySelector('.explorer-profile__image');
 const appBackButton = document.querySelector('[data-app-back]');
 const worldTitle = document.querySelector('#world-title');
 const toast = createToast();
+const dialog = createDialogController();
 let navigation = null;
 const overlay = createOverlayController({ onRequestClose: () => navigation?.back() });
 const eve = createEveController();
@@ -159,7 +160,7 @@ navigation = createNavigationController({ button: appBackButton, onNavigate: app
 
 const settings = createSettingsController({ showToast: toast.show });
 
-function handleDocumentClick(event) {
+async function handleDocumentClick(event) {
   if (event.target.closest('[data-register-back]')) {
     navigation.back();
     return;
@@ -221,7 +222,14 @@ function handleDocumentClick(event) {
   }
 
   if (event.target.closest('[data-reset-progress]')) {
-    const shouldReset = window.confirm(t('common.resetConfirm'));
+    const shouldReset = await dialog.confirm({
+      tone: 'danger',
+      eyebrowText: t('common.resetDialogEyebrow'),
+      titleText: t('common.resetDialogTitle'),
+      messageText: t('common.resetDialogMessage'),
+      cancelText: t('common.cancel'),
+      confirmText: t('common.resetDialogConfirm')
+    });
     if (shouldReset) {
       intro.reset();
       window.location.href = window.location.pathname;
@@ -258,6 +266,13 @@ function handleLanguageChange() {
 }
 
 function handleKeydown(event) {
+  if (dialog.isOpen()) {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      dialog.cancel();
+    }
+    return;
+  }
   if (overlay.handleKeydown(event)) {
     return;
   }
