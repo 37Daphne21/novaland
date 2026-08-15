@@ -48,12 +48,17 @@ Nova Land는 지구에서는 테마파크처럼 알려져 있지만, 실제로�
 - 노바랜드 밖에서 온 존재이기 때문에 최초의 복구 권한을 부여받는다.
 - Explorer는 영웅이 아니라 노바랜드의 회복을 돕는 조력자다.
 - Explorer Passport는 제한된 복구 권한과 시설 복구 기록을 보관하는 접근 증표다.
+- Level, 전투 능력치와 성장 수치는 사용하지 않는다.
 
 ### EVE
 
 - Nova People이 만든 중앙 관제 AI다.
 - 공명의 이상을 감지하고 지구로 구조 신호를 보낸다.
 - Explorer를 지원하지만 직접 문제를 해결하지는 않는다.
+
+Explorer에게 시설 상태와 다음 행동을 짧고 정확하게 안내한다. 주인공처럼 앞에 나서지 않으며 Ending에서만 평소보다 조금 따뜻한 감정을 표현한다.
+
+EVE 대사가 타이핑되는 모든 현재·향후 페이지는 같은 전역 Interaction Rule을 사용한다. 대사 출력 중에는 화면 어느 곳이든 한 번 Click·Touch하면 전체 문장을 즉시 표시하며, 그 첫 입력은 대사 완료에만 사용하고 대상 Button이나 Link의 원래 동작은 실행하지 않는다. 대사가 완료된 뒤의 다음 입력부터 원래 화면 동작을 실행한다.
 
 ### COSMIC VOYAGE
 
@@ -91,40 +96,6 @@ Explorer는 영웅이나 성장형 캐릭터가 아니라 노바랜드의 회복
 ### 게임보다 관제 경험을 유지한다
 
 Control Room과 Mission UI는 일반적인 게임 HUD보다 실제 시설을 점검하고 복구하는 관제 인터페이스처럼 느껴져야 한다. HP, EXP, Coin, Combo, Damage와 Rank는 사용하지 않는다.
-
----
-
-## 세계관과 인물
-
-### Nova Land
-
-놀이기구만 모인 공원이 아니라 Nova People이 살아가는 하나의 세계다.
-
-노바랜드는 지구에 즐거움과 설렘을 전하고, 그 경험에서 태어난 공명이 다시 중심 에너지로 순환하며 세계를 유지한다.
-
-각 시설은 이동, 생명, 에너지와 즐거움을 담당하는 핵심 시설이며, 네 시설의 균형이 무너지면 중심 순환도 멈춘다.
-
-
-### Explorer
-
-지구에서 EVE의 구조 신호에 응답한 방문자다.
-
-노바랜드 밖에서 온 존재이기 때문에 멈춘 순환을 다시 시작할 수 있는 Explorer 권한을 부여받는다.
-
-이름을 등록할 수 있으며 시설 복구 기록과 Passport Stamp만 남긴다.
-
-Level이나 전투 능력치는 사용하지 않는다.
-
-
-### EVE
-
-Nova People이 만든 노바랜드 중앙 관제 AI다.
-
-공명의 이상을 감지하고 지구로 구조 신호를 보낸다.
-
-Explorer에게 시설 상태와 다음 행동을 짧고 정확하게 안내하며, 직접 문제를 해결하기보다 복구를 지원하는 역할을 맡는다.
-
-주인공처럼 앞에 나서지 않으며 엔딩에서만 평소보다 조금 따뜻한 감정을 표현한다.
 
 ---
 
@@ -213,6 +184,7 @@ COSMIC VOYAGE는 봉인 상태에서 Gray를 사용하며 단일 대표색을 �
 - 패널, 카드, 버튼, 텍스트, 테두리, Glow와 Progress는 HTML/CSS로 구현한다.
 - 아이콘은 기존 SVG Sprite를 우선 사용한다.
 - 공통 컴포넌트에 시설별 Modifier를 더해 확장한다.
+- 입력 요소는 텍스트와 경계 사이에 1.5rem 이상의 내부 여백을 확보하고, Focus Ring은 본체에서 .375rem 떨어뜨린다. Focus Ring 바깥쪽과 Label·도움말 사이에도 최소 .75rem의 시각적 여백을 남겨 서로 붙어 보이지 않도록 한다.
 - 완성 PNG 시안은 구현 원본이 아니라 비주얼 참고 자료다.
 
 ---
@@ -270,15 +242,16 @@ Intro의 핵심은 세계관 전체를 설명하는 것이 아니라, 사용자�
     → EVE 식별과 양방향 연결
     → Explorer 권한 안내
     → Explorer 이름 등록
+    → Explorer 성별과 Passport 이미지 선택
     → Explorer Passport 발급
     → 이름 각인과 등록 Seal
     → WORLD MAP 연결 경로 선택
     → 여권 닫힘
     → MAP 전환
 
-자동으로 진행되는 연출은 사용자의 이름 입력 대기 시간을 제외하고 약 15~20초 안에 끝낸다.
+자동으로 진행되는 연출은 사용자의 이름과 Explorer 이미지 선택 대기 시간을 제외하고 약 15~20초 안에 끝낸다.
 
-장면마다 다음 Button을 반복해서 제공하지 않는다. 사용자의 핵심 입력은 신호에 응답하기, Explorer 등록과 마지막 WORLD MAP 연결 선택으로 제한한다. 등록 이후 여권 발급·기록·Seal과 Route Dock 표시는 자동으로 이어지고, 사용자가 연결 경로를 선택하면 여권이 닫히며 MAP으로 전환된다.
+장면마다 다음 Button을 반복해서 제공하지 않는다. 사용자의 핵심 입력은 신호에 응답하기, Explorer 이름·성별·이미지 등록과 마지막 WORLD MAP 연결 선택으로 제한한다. 등록 이후 여권 발급·기록·Seal과 Route Dock 표시는 자동으로 이어지고, 사용자가 연결 경로를 선택하면 여권이 닫히며 MAP으로 전환된다.
 
 첫 시설 이름, 시설 선택 방법과 첫 Mission 안내는 Intro에서 제공하지 않는다. 해당 안내는 기존 MAP의 EVE와 Mission 선택 흐름에서 담당한다.
 
@@ -294,7 +267,7 @@ Intro의 핵심은 세계관 전체를 설명하는 것이 아니라, 사용자�
 
 `NOVA LAND`와 `A WORLD IN HARMONY`의 크기와 위치는 Intro 고유 구성을 유지한다. 노출 방식만 MAP의 `WORLD MAP`과 `노바랜드 전체 보기`처럼 제목을 한 글자씩 표시한 뒤 서브 문구를 Fade Up한다.
 
-정지된 풍경 위에는 원형 관제 궤도가 서로 다른 속도로 천천히 회전하고, 중앙 광축과 별빛이 미세하게 밝아졌다 어두워진다. 텍스트와 시작 안내는 움직이지 않으며 `prefers-reduced-motion`에서는 배경 Motion을 정지한다.
+정지된 풍경 위에는 원형 관제 궤도가 서로 다른 속도로 천천히 회전하고, 중앙 광축과 별빛이 미세하게 밝아졌다 어두워진다. 시작 문구 아래에는 스크롤로 오해할 수 있는 화살표 대신 중심점에서 원형 파동이 퍼지는 Touch Beacon을 표시한다. 텍스트는 위치를 이동하지 않으며 `prefers-reduced-motion`에서는 배경 Motion과 Touch Beacon 파동을 정지한다.
 
 왼쪽 아래 `WORLD STATUS`는 노바랜드 전체 시스템과 지구 연결 상태를 표시한다. 상태 Sensor는 Cyan 탐색광이 끊어진 궤도를 따라 연결을 시도하다 Amber Core에서 실패하는 `Failed Beacon`으로 표현한다. 화면을 선택하면 Fade Out 동안 Core와 궤도가 Cyan으로 한 번 연결되며 다음 Signal 화면을 예고한다.
 
@@ -329,7 +302,7 @@ Button:
 
 공명, COSMIC VOYAGE, 네 시설의 상세 역할과 전체 세계관은 Intro에서 길게 설명하지 않는다.
 
-#### 3. EVE 등장과 Explorer 이름 등록
+#### 3. EVE 등장과 Explorer 신원 등록
 
 사용자가 신호에 응답하면 Button을 비활성화하고 구조 신호의 빛이 입자로 분해되기 시작한다.
 
@@ -337,11 +310,11 @@ Button:
 
 홀로그램은 하단 투사 장치 점등, 투사광 확장, EVE 조립 순서로 등장한다. 허벅지 아래로 갈수록 형상이 투명해지고 Scan Fragment와 빛 입자가 흩어지도록 표현해 이미지가 수평으로 잘려 보이지 않게 한다. 조립이 끝난 뒤에도 하단 입자와 투사광은 약하게 움직이며 연결 중인 상태를 유지한다.
 
-EVE 조립이 완료된 뒤 안내 대화와 이름 등록 Form을 차례로 표시한다. Form이 완전히 표시되기 전에는 조작할 수 없으며, 표시가 끝난 뒤 Explorer 이름 입력 항목으로 Focus를 이동한다.
+EVE 조립이 완료된 뒤 안내 대화와 2단계 Explorer 등록 Form을 차례로 표시한다. Form이 완전히 표시되기 전에는 조작할 수 없으며, 표시가 끝난 뒤 Explorer 이름 입력 항목으로 Focus를 이동한다.
 
 PC에서는 EVE의 손과 허리 아래까지 보이는 중간 길이의 홀로그램을 사용하고, Mobile에서는 등록 Form을 가리지 않는 범위에서 상반신 중심으로 자연스럽게 Crop한다.
 
-EVE의 안내는 MAP의 EVE 대사처럼 한 글자씩 출력한다. 자기소개, 외부 연결 권한과 이름 요청까지 네 줄을 하나의 연속 대사로 출력하고 앞선 문장을 교체하지 않는다. 네 줄이 모두 출력되기 전에는 이름 등록 Form을 열지 않는다. `prefers-reduced-motion`에서는 타이핑을 생략하고 완성된 문장을 표시한다.
+EVE의 안내는 MAP의 EVE 대사처럼 한 글자씩 출력한다. 자기소개, 외부 연결 권한과 이름 요청까지 네 줄을 하나의 연속 대사로 출력하고 앞선 문장을 교체하지 않는다. 네 줄이 모두 출력되기 전에는 이름 등록 Form을 열지 않으며, 출력 중 입력은 전역 EVE Interaction Rule을 따른다. `prefers-reduced-motion`에서는 타이핑을 생략하고 완성된 문장을 표시한다.
 
 첫 안내에서 신호 발신자의 정체를 공개한다.
 
@@ -353,7 +326,7 @@ EVE의 안내는 MAP의 EVE 대사처럼 한 글자씩 출력한다. 자기소�
 > 중심 순환의 복구에는 외부 연결 권한이 필요합니다.
 > Explorer Passport에 기록할 이름을 알려주세요.
 
-입력 항목은 Explorer 이름 하나만 제공한다.
+`01 / 02`에서는 Explorer 이름 하나만 입력한다.
 
 * 한글, 영문과 숫자 사용 가능
 * 단어 사이 공백 사용 가능
@@ -370,11 +343,28 @@ EVE의 안내는 MAP의 EVE 대사처럼 한 글자씩 출력한다. 자기소�
 
 Button:
 
+> 다음 단계
+
+이름 검증이 완료되면 `02 / 02`에서 Passport에 등록할 성별과 Explorer 이미지를 선택한다.
+
+`01 / 02`에서 `02 / 02`로 전환할 때 기존 단계가 짧게 Fade·Slide Out되고 Form 높이가 다음 콘텐츠에 맞춰 변한 뒤 제목, 안내와 선택 Card가 순차적으로 Fade·Slide In된다. 반대 방향도 같은 흐름을 유지하며, 전환이 끝난 뒤 다음 단계의 첫 조작 항목으로 Focus를 이동한다. `prefers-reduced-motion`에서는 이 이동 연출을 생략하고 상태와 Focus만 즉시 변경한다.
+
+* 여성 Explorer와 남성 Explorer 두 가지를 제공한다.
+* 최초에는 어느 항목도 선택하지 않는다.
+* 각 선택지는 실제 Radio와 공통 `ui-choice-card`를 결합하고 Card 전체를 선택 영역으로 사용한다.
+* 선택 상태는 Cyan 테두리, Glow와 Check로 표시한다.
+* 키보드 방향키, Focus Ring과 Screen Reader에서 동일한 선택 상태를 확인할 수 있어야 한다.
+* 이름 수정 Button으로 `01 / 02`에 돌아가도 기존 성별 선택은 유지한다.
+* 여성·남성 Explorer는 한국인 얼굴과 실제 인체 비율을 사용하고 눈높이, 머리 크기, 어깨와 상체 Crop을 동일하게 맞춘다.
+* 두 Portrait는 `assets/images/common`의 공통 자산을 사용하며 Intro 선택 Card, Passport와 MAP Explorer Profile이 같은 성별 이미지를 공유한다.
+
+최종 Button:
+
 > Explorer로 등록
 
 #### 4. Explorer Passport 발급
 
-Explorer 등록을 선택하면 입력한 이름이 강조되고, 이름의 시각적 흐름이 Passport의 이름 영역으로 이어진다.
+Explorer 등록을 선택하면 선택한 이미지 Card가 강조되고, 신원 정보의 시각적 흐름이 Passport의 이름과 Portrait 영역으로 이어진다.
 
 이름을 알아보기 어려운 입자로 완전히 분해하지 않는다.
 
@@ -384,6 +374,7 @@ Passport는 노바랜드가 Explorer에게 건네는 첫 번째 상징 아이템
 
 * Explorer 이름
 * Explorer ID
+* 선택한 성별과 Explorer Portrait
 * 출신 위치 Earth
 * 복구 접근 권한
 * 시설 복구 진행 0 / 4
@@ -421,6 +412,25 @@ Intro 종료 직전에 첫 번째 시설이나 다음 행동을 안내하는 EVE
 ---
 
 ## 공통 시스템
+
+### Navigation과 뒤로가기
+
+Welcome과 MAP 기본 화면은 각 Flow의 Root로 사용하며 공용 뒤로가기 Button을 표시하지 않는다. 그 외 Intro 장면, 등록 단계, Passport, Overlay, Mobile Panel과 Control Room에서는 화면 왼쪽 위에 공용 `ui-back-button`을 표시한다.
+
+공용 Button은 꼬리가 있는 왼쪽 화살표 Icon만 시각적으로 표시하고 실제 조작 영역은 최소 44×44px로 확보한다. `aria-label`은 현재 상태에 맞춰 이전 목적지를 설명하며 Mobile에서는 Safe Area를 반영한다.
+
+화면 Button, 키보드와 Mobile Browser의 뒤로가기는 별도 로직으로 분리하지 않고 같은 History 상태를 사용한다.
+
+    Overlay 또는 Mobile Panel 닫기
+    → Intro 세부 단계 복귀
+    → Passport에서 Explorer 선택 복귀
+    → Control Room에서 MAP 복귀
+    → Welcome 또는 MAP Root의 Browser 기본 동작
+
+Intro에서는 `Welcome → Signal → Register 01 / 02 → Register 02 / 02 → Passport` 순서로 History를 기록한다. 역방향 이동 시 실행 중인 장면 Timer와 Transition을 정리하고 이름과 성별 선택값을 유지한다. Passport에서 돌아오면 `02 / 02` 선택 상태를 복원하고, Browser Forward로 Passport에 재진입하면 완료된 발급 상태를 복원한다.
+
+Overlay와 Mobile Panel은 화면 이동보다 먼저 닫는다. Control Room에서 MAP으로 돌아오면 진입했던 시설 Card로 Focus를 복원한다. Intro 발급이 완료된 뒤에는 저장된 Explorer가 완료된 Intro History로 다시 진입하지 않도록 건너뛴다.
+
 
 ### Explorer Archive
 
@@ -481,18 +491,18 @@ Explorer Passport는 단순 프로필 카드가 아니라 노바랜드 안에서
 
 오른쪽 페이지:
 
-* 프로젝트 기본 Explorer Avatar ID Portrait
+* 사용자가 선택한 여성 또는 남성 Explorer Avatar ID Portrait
 * Explorer 이름
 * Explorer ID
+* 성별
 * 출신 위치 Earth
-* 복구 접근 권한
 * 시설 복구 진행 수
 * 현재 상태
 * 이름 변경 진입
 
-실제 사용자 사진을 요청하거나 업로드하지 않는다. 성별, 나이와 추가 개인정보도 수집하지 않는다.
+실제 사용자 사진을 요청하거나 업로드하지 않는다. 성별은 여성과 남성 중 Passport Portrait를 선택하기 위한 최소 항목으로만 저장하며, 나이와 추가 개인정보는 수집하지 않는다.
 
-ID Portrait는 사용자가 제공하는 개인정보가 아니라 Nova Land가 발급하는 프로젝트 기본 Explorer Avatar를 사용한다. 사용자별로 달라지는 정보는 이름과 Explorer ID로 제한한다.
+ID Portrait는 사용자가 제공하는 개인정보가 아니라 Nova Land가 발급하는 여성·남성 Explorer Avatar 중 하나를 사용한다. 사용자별로 달라지는 신원 정보는 이름, Explorer ID, 성별과 선택한 Portrait로 제한한다.
 
 이름 변경은 Settings의 간단한 수정 UI로 진행하고 최초 발급 연출은 반복하지 않는다.
 
@@ -659,7 +669,7 @@ Day, Sunset과 Night는 배경, 조명, 반사와 분위기를 바꾸는 브랜�
 
 다음 상태를 복원해야 한다.
 
-- Explorer 이름
+- Explorer 이름, 성별과 Passport 이미지
 - 시설 잠금·진행·완료 상태
 - Mission 진행 상태
 - 퍼즐 진행 상태
@@ -946,46 +956,3 @@ Mission 진행 중 새로고침하거나 재접속한 경우에도 Pause 상태�
 - 사용자가 직접 손본 스타일은 요청 범위를 벗어나 임의로 되돌리지 않는다.
 - 디자인 방향이 합의되지 않은 요소는 구현 전에 먼저 논의한다.
 - Commit은 사용자가 직접 한다.
-
----
-
-## 현재 상태와 다음 진입점
-
-완료:
-
-- 프로젝트 기반과 공통 UI Token
-- PC MAP 기본·전체 복구 상태
-- PC MAP 시설별 누적 조명 배경과 COSMIC VOYAGE 전환
-- 시설 선택 → EVE 안내 → 지도 행동 유도
-- Mission 선택 전 지도 Card 비활성화와 안내 종료 후 선택 시설 활성화
-- 최초 Mission 즉시 선택 시에도 Dim 배경 전환 유지
-- PC EVE 위치 고정형 발화 집중 상태와 대기 상태 전환
-- 미복구 진행 시설 전용 Guide Glow
-- 잠금·복구·COSMIC VOYAGE 개방 상태 동기화
-- Settings의 언어·시간·전체 화면 등 현재 제공 기능
-- MAP PC 1차 Refactoring
-- 모바일 전용 MAP 배경과 반응형 1차 구현
-- Nova Land 세계관과 지구·공명·중심 순환 설정
-- Intro와 Explorer 이름 등록 Flow
-- Explorer Passport 구조, Stamp, 쿠폰과 페이지 이동 규칙
-- 최초 방문 Intro와 기존 Explorer 진입 분기
-- 구조 신호 응답, EVE 등장과 Explorer 이름 등록
-- Explorer Passport 최초 발급, 이름 각인과 Registered Seal
-- Intro 완료 상태 저장과 MAP 전환
-
-진행 중:
-
-- Explorer Archive와 Save Data 구현 준비
-
-
-다음 작업 시작점:
-
-1. Explorer Passport의 정보·Stamp·쿠폰·COSMIC 페이지 구현
-2. Explorer Log와 Explorer Passport 공통 Overlay 구현
-3. 설정과 Recent Log 저장·복원 연결
-4. PC NOVA COASTER와 공통 Mission Flow 완성
-5. 완성된 PC 흐름을 기준으로 390px 모바일 MAP Wireframe 확정
-
-모바일은 PC NOVA COASTER까지 하나의 완전한 흐름을 검증한 뒤 전용 HUD로 재설계한다. 시설 데이터와 진행 상태는 PC와 공유하고 표현 구조만 분리한다.
-
-세부 일정은 roadmap.md에서 관리한다.

@@ -1,3 +1,20 @@
+export const explorerProfiles = {
+  female: {
+    label: 'FEMALE',
+    alt: '여성 Nova Land Explorer 프로필 이미지',
+    image: './assets/images/common/explorer-female.webp'
+  },
+  male: {
+    label: 'MALE',
+    alt: '남성 Nova Land Explorer 프로필 이미지',
+    image: './assets/images/common/explorer-male.webp'
+  }
+};
+
+export function getExplorerProfile(gender) {
+  return explorerProfiles[gender] || explorerProfiles.female;
+}
+
 export const facilities = [
   {
     id: 'coaster',

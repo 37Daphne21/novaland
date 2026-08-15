@@ -1,7 +1,9 @@
 import { createEveController } from './eve.js';
+import { cosmicVoyage, facilities, getExplorerProfile } from './data.js';
 import { createIntroController } from './intro.js';
 import { createMapController } from './map.js';
 import { createMobileMapController } from './mobile.js';
+import { createNavigationController } from './navigation.js';
 import { createSettingsController } from './settings.js';
 import { createOverlayController, createToast } from './ui.js';
 
@@ -9,14 +11,18 @@ const screens = document.querySelectorAll('[data-screen]');
 const controlRoomTitle = document.querySelector('#control-room-title');
 const controlRoomType = document.querySelector('#control-room-type');
 const explorerProfileName = document.querySelector('#explorer-profile-name');
+const explorerProfileImage = document.querySelector('.explorer-profile__image');
+const appBackButton = document.querySelector('[data-app-back]');
 const worldTitle = document.querySelector('#world-title');
 const toast = createToast();
-const overlay = createOverlayController();
+let navigation = null;
+const overlay = createOverlayController({ onRequestClose: () => navigation?.back() });
 const eve = createEveController();
 const mobileMap = createMobileMapController();
 let map = null;
 let mapStarted = false;
 let intro = null;
+let currentExplorer = null;
 
 function showScreen(screenName) {
   screens.forEach((screen) => {
@@ -32,8 +38,14 @@ function showScreen(screenName) {
 }
 
 function enterMap(explorer, { focusMap = false } = {}) {
+  currentExplorer = explorer;
+  const profile = getExplorerProfile(explorer.gender);
   if (explorerProfileName) {
     explorerProfileName.textContent = explorer.name;
+  }
+  if (explorerProfileImage) {
+    explorerProfileImage.src = profile.image;
+    explorerProfileImage.alt = profile.alt;
   }
 
   showScreen('map');
@@ -42,12 +54,18 @@ function enterMap(explorer, { focusMap = false } = {}) {
     mapStarted = true;
   }
 
+  navigation?.replace({ screen: 'map' }, { applyRoute: false });
+
   if (focusMap) {
     window.setTimeout(() => worldTitle?.focus({ preventScroll: true }), 120);
   }
 }
 
-function enterControlRoom(facility) {
+function getFacility(facilityId) {
+  return [...facilities, cosmicVoyage].find((facility) => facility.id === facilityId) ?? null;
+}
+
+function showControlRoom(facility, { announce = false } = {}) {
   if (controlRoomTitle) {
     controlRoomTitle.textContent = facility.name;
   }
@@ -56,10 +74,17 @@ function enterControlRoom(facility) {
     controlRoomType.textContent = facility.type;
   }
 
-  window.setTimeout(() => {
-    showScreen('control-room');
-    controlRoomTitle?.focus({ preventScroll: true });
+  showScreen('control-room');
+  controlRoomTitle?.focus({ preventScroll: true });
+  if (announce) {
     toast.show(facility.controlRoomMessage);
+  }
+}
+
+function enterControlRoom(facility) {
+  window.setTimeout(() => {
+    showControlRoom(facility, { announce: true });
+    navigation?.push({ screen: 'control-room', facilityId: facility.id }, { applyRoute: false });
   }, 180);
 }
 
@@ -69,15 +94,75 @@ map = createMapController({
   speakEve: eve.speak
 });
 
-intro = createIntroController({ onComplete: enterMap });
+intro = createIntroController({
+  onComplete: enterMap,
+  onRouteChange: (route, { replace = false } = {}) => {
+    if (replace) {
+      navigation?.replace(route, { applyRoute: false });
+      return;
+    }
+    navigation?.push(route, { applyRoute: false });
+  }
+});
+
+function applyNavigationRoute(route, { previousRoute, source } = {}) {
+  if (!route) {
+    return;
+  }
+
+  if (route.screen === 'intro' && currentExplorer?.introCompleted) {
+    navigation?.back();
+    return;
+  }
+
+  overlay.close();
+  mobileMap.reset();
+
+  if (route.screen === 'intro') {
+    showScreen('intro');
+    intro.navigate(route);
+    return;
+  }
+
+  if (route.screen === 'control-room') {
+    const facility = getFacility(route.facilityId);
+    if (facility) {
+      showControlRoom(facility);
+    }
+  } else {
+    showScreen('map');
+    if (route.panel) {
+      mobileMap.open(route.panel);
+    } else if (previousRoute?.panel) {
+      document.querySelector(`[data-mobile-panel-toggle="${previousRoute.panel}"]`)?.focus({ preventScroll: true });
+    } else if (source === 'popstate' && previousRoute?.screen === 'control-room') {
+      map.focusReturnTarget();
+    }
+  }
+
+  if (route.overlay) {
+    overlay.open(document.querySelector(`#${route.overlay}`));
+  }
+}
+
+navigation = createNavigationController({ button: appBackButton, onNavigate: applyNavigationRoute });
 
 const settings = createSettingsController({ showToast: toast.show });
 
 function handleDocumentClick(event) {
+  if (event.target.closest('[data-register-back]')) {
+    navigation.back();
+    return;
+  }
+
   const facilityButton = event.target.closest('[data-facility]');
   if (facilityButton) {
     if (facilityButton.closest('.mission-panel')) {
-      mobileMap.collapseMission();
+      if (navigation.current()?.panel) {
+        navigation.back();
+      } else {
+        mobileMap.collapseMission();
+      }
     }
     map.selectFacility(facilityButton);
     return;
@@ -85,7 +170,15 @@ function handleDocumentClick(event) {
 
   const mobilePanelToggle = event.target.closest('[data-mobile-panel-toggle]');
   if (mobilePanelToggle) {
-    mobileMap.toggle(mobilePanelToggle);
+    const panelName = mobilePanelToggle.dataset.mobilePanelToggle;
+    const currentRoute = navigation.current();
+    if (currentRoute?.panel === panelName) {
+      navigation.back();
+    } else if (currentRoute?.panel) {
+      navigation.replace({ ...currentRoute, panel: panelName });
+    } else {
+      navigation.push({ ...currentRoute, panel: panelName });
+    }
     return;
   }
 
@@ -97,12 +190,16 @@ function handleDocumentClick(event) {
 
   const overlayOpenButton = event.target.closest('[data-overlay-open]');
   if (overlayOpenButton) {
-    overlay.open(document.querySelector(`#${overlayOpenButton.dataset.overlayOpen}`));
+    navigation.push({ ...navigation.current(), overlay: overlayOpenButton.dataset.overlayOpen });
     return;
   }
 
   if (event.target.closest('[data-overlay-close]')) {
-    overlay.close();
+    if (navigation.current()?.overlay) {
+      navigation.back();
+    } else {
+      overlay.close();
+    }
     return;
   }
 
@@ -126,17 +223,18 @@ function handleDocumentClick(event) {
     return;
   }
 
-  const screenBackButton = event.target.closest('[data-screen-back]');
-  if (screenBackButton) {
-    showScreen(screenBackButton.dataset.screenBack);
-    map.focusReturnTarget();
-  }
 }
 
 function handleKeydown(event) {
-  if (!overlay.handleKeydown(event)) {
-    mobileMap.handleKeydown(event);
+  if (overlay.handleKeydown(event)) {
+    return;
   }
+  if (event.key === 'Escape' && navigation.current()?.panel) {
+    event.preventDefault();
+    navigation.back();
+    return;
+  }
+  mobileMap.handleKeydown(event);
 }
 
 settings.render();

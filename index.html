@@ -12,6 +12,9 @@
 </head>
 <body>
   <div id="app" class="app">
+    <button class="ui-back-button" type="button" data-app-back hidden>
+      <svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-arrow-left"></use></svg>
+    </button>
     <main>
       <section class="screen screen--intro is-active" data-screen="intro" aria-labelledby="intro-title">
         <h1 id="intro-title" class="intro-sr-title">Nova Land Explorer 등록</h1>
@@ -64,20 +67,42 @@
               <i class="intro-eve__base"></i>
             </div>
             <div class="intro-register__content">
-              <div class="intro-dialogue">
+              <button class="intro-dialogue" type="button" data-eve-skip="register" disabled>
                 <span class="intro-eyebrow">EVE · TWO-WAY LINK ESTABLISHED</span>
-                <p data-intro-dialogue-message>응답을 확인했습니다.<br>저는 노바랜드 중앙 관제 AI, EVE입니다.</p>
-              </div>
+                <span data-intro-dialogue-message>응답을 확인했습니다.<br>저는 노바랜드 중앙 관제 AI, EVE입니다.</span>
+              </button>
               <form class="intro-form" data-intro-form novalidate>
-                <div class="intro-form__heading"><span>EXPLORER REGISTRATION</span><strong>01 / 01</strong></div>
-                <label for="explorer-name-input">Passport에 기록할 이름</label>
-                <div class="intro-input-wrap">
-                  <input id="explorer-name-input" name="explorerName" type="text" minlength="2" maxlength="12" autocomplete="nickname" aria-describedby="explorer-name-help explorer-name-error" placeholder="이름을 입력해 주세요">
-                  <span><b data-name-count>0</b> / 12</span>
+                <div class="intro-form__heading"><span>EXPLORER REGISTRATION</span><strong data-registration-step>01 / 02</strong></div>
+                <div class="intro-form__body" data-registration-body>
+                  <div class="intro-form__step intro-form__step--name" data-register-step="name">
+                    <label for="explorer-name-input">Passport에 기록할 이름</label>
+                    <div class="intro-input-wrap">
+                      <input id="explorer-name-input" name="explorerName" type="text" minlength="2" maxlength="12" autocomplete="nickname" aria-describedby="explorer-name-help explorer-name-error" placeholder="이름을 입력해 주세요">
+                      <span><b data-name-count>0</b> / 12</span>
+                    </div>
+                    <p id="explorer-name-help" class="intro-form__help">한글, 영문, 숫자와 단어 사이 공백을 사용할 수 있어요.</p>
+                    <p id="explorer-name-error" class="intro-form__error" role="alert"></p>
+                    <button class="intro-action intro-action--wide" type="submit">다음 단계<span aria-hidden="true">→</span></button>
+                  </div>
+                  <div class="intro-form__step intro-form__step--identity" data-register-step="identity" hidden>
+                    <fieldset class="intro-avatar-select" aria-describedby="explorer-gender-help explorer-gender-error">
+                      <legend>Passport에 등록할 Explorer를 선택해 주세요.</legend>
+                      <p id="explorer-gender-help" class="intro-avatar-select__help">선택한 성별과 이미지가 Passport에 함께 기록돼요.</p>
+                      <div class="intro-avatar-options ui-choice-group">
+                        <label class="ui-choice-card intro-avatar-option">
+                          <input class="ui-choice-card__control" type="radio" name="explorerGender" value="female">
+                          <span class="ui-choice-card__body intro-avatar-option__card"><span class="intro-avatar-option__portrait"><img src="./assets/images/common/explorer-female.webp" alt=""></span><span class="intro-avatar-option__label"><strong>여성 Explorer</strong><small>FEMALE</small></span><i class="ui-choice-card__indicator" aria-hidden="true">✓</i></span>
+                        </label>
+                        <label class="ui-choice-card intro-avatar-option">
+                          <input class="ui-choice-card__control" type="radio" name="explorerGender" value="male">
+                          <span class="ui-choice-card__body intro-avatar-option__card"><span class="intro-avatar-option__portrait"><img src="./assets/images/common/explorer-male.webp" alt=""></span><span class="intro-avatar-option__label"><strong>남성 Explorer</strong><small>MALE</small></span><i class="ui-choice-card__indicator" aria-hidden="true">✓</i></span>
+                        </label>
+                      </div>
+                    </fieldset>
+                    <p id="explorer-gender-error" class="intro-form__error intro-form__error--gender" role="alert"></p>
+                    <div class="intro-form__actions"><button class="intro-form__back" type="button" data-register-back>이름 수정</button><button class="intro-action intro-action--wide" type="submit" data-register-submit disabled>Explorer로 등록<span aria-hidden="true">→</span></button></div>
+                  </div>
                 </div>
-                <p id="explorer-name-help" class="intro-form__help">한글, 영문, 숫자와 단어 사이 공백을 사용할 수 있어요.</p>
-                <p id="explorer-name-error" class="intro-form__error" role="alert"></p>
-                <button class="intro-action intro-action--wide" type="submit">Explorer로 등록<span aria-hidden="true">→</span></button>
               </form>
             </div>
           </div>
@@ -108,12 +133,12 @@
                   <div class="passport__page passport__page--profile" data-passport-page="identity">
                     <span class="passport__page-label">EXPLORER IDENTITY</span>
                     <div class="passport__profile">
-                      <div class="passport__portrait"><img src="./assets/images/intro/explorer-passport.webp" alt="Nova Land Explorer 기본 아바타"><span aria-hidden="true"></span></div>
+                      <div class="passport__portrait"><img src="./assets/images/common/explorer-female.webp" alt="여성 Nova Land Explorer 프로필 이미지" data-passport-portrait><span aria-hidden="true"></span></div>
                       <dl>
                         <div><dt>EXPLORER NAME</dt><dd data-passport-name>—</dd></div>
                         <div><dt>EXPLORER ID</dt><dd data-passport-id>—</dd></div>
                         <div><dt>ORIGIN</dt><dd>EARTH</dd></div>
-                        <div><dt>ACCESS</dt><dd>RESTORATION</dd></div>
+                        <div><dt>GENDER</dt><dd data-passport-gender>—</dd></div>
                         <div><dt>RESTORATION</dt><dd>0 / 4</dd></div>
                         <div><dt>STATUS</dt><dd class="passport__status" data-passport-status>PENDING</dd></div>
                       </dl>
@@ -132,7 +157,7 @@
                 </div>
               </div>
             </div>
-            <div class="passport-message" aria-live="polite"><span>EVE</span><p data-passport-message>Explorer Passport를 발급합니다.</p></div>
+            <button class="passport-message" type="button" data-eve-skip="passport" aria-live="polite" disabled><span>EVE</span><span data-passport-message>Explorer Passport를 발급합니다.</span></button>
             <div class="passport-route" data-passport-route hidden>
               <span class="passport-route__line" aria-hidden="true"></span>
               <button class="passport-route__control" type="button" data-passport-enter-map>
@@ -157,7 +182,7 @@
               <img class="brand__lockup" src="./assets/images/common/logo-lockup.svg" alt="NOVA LAND">
             </a>
             <div class="explorer-profile">
-              <img class="explorer-profile__image" src="./assets/images/common/explorer.webp" alt="탐험가 프로필">
+              <img class="explorer-profile__image" src="./assets/images/common/explorer-female.webp" alt="여성 Nova Land Explorer 프로필 이미지">
               <span><small>EXPLORER</small><strong id="explorer-profile-name">ING</strong></span>
               <button class="explorer-profile__edit" type="button" data-toast="Explorer 정보 수정은 공통 시스템 단계에서 연결돼요." aria-label="Explorer 정보 수정">
                 <svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-edit"></use></svg>
@@ -198,7 +223,7 @@
                 <div class="ui-panel__heading"><svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-signal"></use></svg><h2 id="eve-title" class="ui-panel__title">EVE</h2></div>
                 <span id="eve-signal-wave" class="signal-wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
               </header>
-              <div class="eve-panel__body"><img src="./assets/images/common/eve.webp" alt="EVE 홀로그램"><p id="eve-message">노바랜드의 시설 운영이 중단됐어요. 먼저 미션 목록에서 점검할 시설을 선택해 주세요.</p></div>
+              <button class="eve-panel__body" type="button" data-eve-skip="map" disabled><img src="./assets/images/common/eve.webp" alt="EVE 홀로그램"><span id="eve-message">노바랜드의 시설 운영이 중단됐어요. 먼저 미션 목록에서 점검할 시설을 선택해 주세요.</span></button>
             </aside>
             <section class="recent-log ui-panel" aria-labelledby="recent-log-title">
               <header class="ui-panel__header">
@@ -215,10 +240,6 @@
       </section>
       <section class="screen screen--control-room" data-screen="control-room" aria-labelledby="control-room-title" hidden>
         <div class="control-room-shell">
-          <button class="ui-button ui-button--primary" type="button" data-screen-back="map">
-            <svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-map"></use></svg>
-            MAP
-          </button>
           <div class="control-room-shell__content ui-panel">
             <span class="ui-badge ui-badge--active">관제실 연결 완료</span>
             <p id="control-room-type">이동 시설</p>

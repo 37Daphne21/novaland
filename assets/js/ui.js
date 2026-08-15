@@ -25,7 +25,7 @@ export function createToast(selector = '#app-toast') {
   return { show };
 }
 
-export function createOverlayController() {
+export function createOverlayController({ onRequestClose } = {}) {
   let activeOverlay = null;
   let previouslyFocused = null;
 
@@ -52,6 +52,17 @@ export function createOverlayController() {
     previouslyFocused?.focus();
   }
 
+  function requestClose() {
+    if (!activeOverlay) {
+      return;
+    }
+    if (onRequestClose) {
+      onRequestClose();
+      return;
+    }
+    close();
+  }
+
   function handleKeydown(event) {
     if (!activeOverlay) {
       return false;
@@ -59,7 +70,7 @@ export function createOverlayController() {
 
     if (event.key === 'Escape') {
       event.preventDefault();
-      close();
+      requestClose();
       return true;
     }
 

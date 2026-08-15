@@ -40,21 +40,12 @@ export function createMobileMapController() {
     syncLayoutState();
   }
 
-  function toggle(button) {
-    if (!mediaQuery.matches) {
+  function open(panelName) {
+    if (!mediaQuery.matches || !panels[panelName]) {
       return;
     }
-
-    const panelName = button?.dataset.mobilePanelToggle;
-    const panel = panels[panelName];
-
-    if (!panel) {
-      return;
-    }
-
-    const willOpen = !panel.classList.contains('is-mobile-open');
     closePanels(panelName);
-    setPanelState(panelName, willOpen);
+    setPanelState(panelName, true);
     syncLayoutState();
   }
 
@@ -93,5 +84,5 @@ export function createMobileMapController() {
   mediaQuery.addEventListener('change', reset);
   reset();
 
-  return { collapseMission, handleKeydown, toggle };
+  return { collapseMission, handleKeydown, open, reset };
 }

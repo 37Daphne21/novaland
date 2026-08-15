@@ -17,7 +17,7 @@ Nova Land는 단순한 홈페이지나 점수 중심의 게임이 아닙니다.
 핵심 경험은 다음과 같습니다.
 
 - 하나의 World Map에서 이어지는 탐험
-- Explorer 이름 등록과 Passport 발급
+- Explorer 이름·성별·이미지 등록과 Passport 발급
 - 시설 선택과 EVE의 안내
 - 시설마다 다른 복구 Mission
 - 행동에 반응해 변화하는 세계
@@ -78,7 +78,7 @@ Movement, Life, Energy와 Joy가 하나로 연결되어 완성되는 Nova Land�
 
 ### Intro & Explorer Passport
 
-EVE의 구조 신호에 응답해 이름을 등록하고, 기본 Explorer Avatar와 제한된 복구 권한이 기록된 Passport를 발급받습니다. 권한 확인, 신원 기록과 Registered Seal이 순서대로 이어진 뒤 사용자가 WORLD MAP 연결 경로를 선택합니다.
+EVE의 구조 신호에 응답해 이름을 입력하고 여성·남성 Explorer 이미지 중 하나를 선택합니다. 이름, 성별, 선택한 Portrait와 제한된 복구 권한이 Passport에 기록되며 같은 Portrait가 World Map Profile에도 이어집니다. Registered Seal이 완료된 뒤 사용자가 WORLD MAP 연결 경로를 선택하고, 이전 단계로 돌아가도 입력한 정보는 유지됩니다.
 
 
 ### World Map
@@ -88,12 +88,12 @@ EVE의 구조 신호에 응답해 이름을 등록하고, 기본 Explorer Avatar
 
 ### Control Room
 
-시설의 상태와 Mission 목표를 확인하고 복구를 시작하는 관제 공간입니다.
+시설의 상태와 Mission 목표를 확인하고 복구를 시작하는 관제 공간입니다. World Map으로 돌아오면 선택했던 시설에서 탐험을 이어갑니다.
 
 
 ### EVE
 
-시설 상태와 다음 행동을 차분하고 정확하게 안내하는 노바랜드의 중앙 관제 AI입니다.
+시설 상태와 다음 행동을 차분하고 정확하게 안내하는 노바랜드의 중앙 관제 AI입니다. 대사가 출력되는 동안 화면 어디든 한 번 누르면 전체 문장을 바로 확인할 수 있습니다.
 
 
 ### Explorer Archive
@@ -132,7 +132,7 @@ EVE의 구조 신호에 응답해 이름을 등록하고, 기본 Explorer Avatar
 
 ## 제작 현황
 
-현재 최초 방문 Intro, Explorer 이름 등록, Passport 최초 발급과 WORLD MAP 연결 인터페이스부터 PC World Map의 Mission 우선 선택 흐름, EVE 안내와 시설별 단계적 조명 변화까지 연결했습니다. 화면 전환, 키보드 Focus와 PC·Mobile 화면 검수도 완료했습니다.
+현재 최초 방문 Intro, Explorer 이름·성별·이미지 등록, Passport 최초 발급과 WORLD MAP 연결 인터페이스부터 PC World Map의 Mission 우선 선택 흐름, EVE 안내와 시설별 단계적 조명 변화까지 연결했습니다. Intro는 PC·Mobile 반응형과 키보드 흐름까지 검수했으며, Mobile World Map은 기능 검증용 1차 버전입니다.
 
 다음 단계에서 Explorer Archive와 Passport의 Stamp·쿠폰 페이지, Save Data를 연결합니다. 이후 PC NOVA COASTER로 공통 Mission Flow를 완성한 뒤 Mobile World Map을 전용 HUD로 재설계할 예정입니다.
 

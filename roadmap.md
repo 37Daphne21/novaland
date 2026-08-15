@@ -8,26 +8,12 @@
 
 ## 완료된 기반
 
-- 전체 User Flow와 시설 진행 순서
-- 지구·공명·중심 순환을 포함한 Nova Land 세계관
-- 시설 역할, Identity Color와 Mission 방향
-- Intro, Explorer 등록과 Passport 경험 설계
-- HTML, CSS와 JavaScript ES Module 기반
-- 공통 디자인 Token과 UI Component
-- 한국어·영어 선택 UI
-- Settings Overlay와 전체 화면 제어
-- MAP용 공통 이미지와 Icon
-- PC MAP 기본 상태와 전체 복구 상태
-- Mission List와 지도 시설 상태 동기화
-- Mission 선택 → EVE 안내 → 선택한 지도 시설 활성화
-- 최초 Mission 즉시 선택 시에도 Dim 배경 전환 유지
-- PC EVE 위치 고정형 발화 집중 상태와 대기 상태 전환
-- 미복구 진행 시설만 감싸는 Guide Glow
-- COSMIC VOYAGE 봉인·개방 전환
-- 시설별 누적 조명 배경과 전체 복구 배경 전환
-- PC MAP 1차 Refactoring
-- 모바일 전용 MAP 배경
-- Mobile·Tablet 반응형 1차 구현
+- Nova Land 세계관, 전체 User Flow와 시설 진행 순서
+- HTML, CSS와 JavaScript ES Module 기반 공통 구조
+- 디자인 Token, UI Component, SVG Sprite와 공통 이미지
+- 한국어·영어 선택, Settings Overlay와 Fullscreen 제어
+- PC MAP 상태·Mission 선택·EVE 안내·시설 조명 변화 연결
+- Mobile·Tablet 기능 검증용 반응형 1차 구현
 
 ---
 
@@ -47,39 +33,20 @@
 
 ## 완료. Intro와 Explorer Passport 최초 발급
 
-상태: Passport 고도화 구현 완료, 최종 반응형 검수 필요
+상태: 완료
 
 - [x] 최초 방문과 기존 Explorer의 진입 분기
-- [x] 멈춘 노바랜드와 구조 신호 연결 Intro
-- [x] EVE 등장과 Explorer 이름 등록
-- [x] Explorer ID와 발급일 생성
-- [x] Explorer Passport 최초 발급과 이름 각인
-- [x] Explorer Registered Seal과 MAP 전환
-- [x] Signal·Register·Passport 공통 Nova 우주 배경 적용
-- [x] Welcome 고유 타이틀 배치를 유지하고 MAP형 타이핑 노출과 관제 궤도·광축·별빛 Motion 적용
-- [x] Welcome WORLD STATUS Failed Beacon과 Signal 연결 반응 적용
-- [x] Signal 수신기·궤도·좌표·Telemetry 비주얼 고도화
-- [x] Signal 포착 순차 연출·NL-SOS Channel·회전 추적점 적용
-- [x] Signal 중앙 수신기에서 Lock 완료 후 좌우 관제 Layout으로 전환
-- [x] Register EVE를 손과 허리 아래까지 보이는 홀로그램으로 교체
-- [x] Register EVE 하단 투사광·Scan Fragment·입자 분산과 조립 연출 적용
-- [x] EVE 조립 완료 후 안내·등록 Form 순차 노출과 Focus 이동
-- [x] Signal 수신·발신 관계와 외부 응답 요청 문구 정리
-- [x] EVE 자기소개·외부 복구 권한 안내 네 줄 유지와 MAP형 대사 타이핑 적용
-- [x] Register 이름 강조와 Passport 신원 정보로 이어지는 Identity Trace 적용
-- [x] NOVA LAND AUTHORITY 권한 페이지와 Explorer Identity 페이지 역할 분리
-- [x] 프로젝트 기본 Explorer Avatar 기반 Passport ID Portrait 제작·적용
-- [x] PENDING → 정보 기록 → Registered Seal → REGISTERED 상태 전환 적용
-- [x] Mobile 최초 발급에서 권한 페이지와 신원 페이지를 한 장씩 자동 전환
-- [x] EVE의 이름 호명과 외부 복구 권한·WORLD MAP 경로 안내 타이핑 적용
-- [x] Passport 닫힘 후 이름 각인과 Emblem 점등 시간을 확보
-- [x] Passport Route Dock 수동 MAP 연결과 발광 Artifact 제거
-- [x] Intro 중단·재접속·처음부터 다시 시작 상태 처리
+- [x] Welcome → Signal → 2단계 Explorer 등록 → Passport → MAP 연결 Flow
+- [x] 이름·성별·공용 Portrait 등록과 Passport·MAP Profile 동기화
+- [x] EVE 등장·대사 타이핑과 화면 전체 Click·Touch 즉시 노출
+- [x] Passport 권한·신원 기록, Registered Seal과 수동 MAP 연결
+- [x] 공용 Radio Choice Card와 등록 단계 Transition
+- [x] 공용 뒤로가기와 Browser History 기반 Intro·Overlay·Panel·Control Room 복귀
+- [x] Intro Timer 정리, 입력 유지, MAP Focus 복원과 완료 상태 저장
 - [x] Keyboard, Focus, 오류 안내와 `prefers-reduced-motion` 대응
-- [x] 1366×768과 390×844에서 전체 Flow와 화면 Overflow 검수
-- [ ] Passport 고도화 결과를 1366×768과 390×844에서 최종 회귀 검수
+- [x] 1366×768과 390×844 전체 Flow·Overflow 회귀 검수
 
-완료 조건: 최초 방문자가 이름을 등록하고 Passport를 발급받은 뒤 기존 MAP으로 진입하며, 재접속에서는 Intro를 반복하지 않아야 한다.
+완료 조건: 최초 방문자가 이름과 성별·이미지를 등록하고 Passport를 발급받은 뒤 기존 MAP으로 진입하며, 재접속에서는 Intro를 반복하지 않아야 한다.
 
 ---
 
@@ -99,8 +66,8 @@
 
 ### 저장과 설정
 
-- [ ] Explorer 이름 등록·변경과 복원
-- [x] Intro 완료와 Passport 발급 상태 저장
+- [ ] Explorer 이름·성별·Passport 이미지 변경
+- [x] Intro 완료와 Explorer 신원·Passport 발급 상태 복원
 - [ ] 시설 잠금·진행·완료 상태 저장
 - [ ] Mission 진행 상태 저장
 - [ ] 언어, 시간과 사운드 설정 저장

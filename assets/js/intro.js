@@ -1,3 +1,5 @@
+import { explorerProfiles, getExplorerProfile } from './data.js';
+
 const STORAGE_KEY = 'novaLandExplorer';
 const REGISTER_DIALOGUE_MESSAGE = '응답을 확인했습니다.\n저는 노바랜드 중앙 관제 AI, EVE입니다.\n중심 순환의 복구에는 외부 연결 권한이 필요합니다.\nExplorer Passport에 기록할 이름을 알려주세요.';
 
@@ -46,13 +48,16 @@ function createIssueDate() {
 function readSavedExplorer() {
   try {
     const value = JSON.parse(window.localStorage.getItem(STORAGE_KEY));
-    return value?.introCompleted && value?.name && value?.id ? value : null;
+    if (!value?.introCompleted || !value?.name || !value?.id) {
+      return null;
+    }
+    return { ...value, gender: explorerProfiles[value.gender] ? value.gender : 'female' };
   } catch {
     return null;
   }
 }
 
-export function createIntroController({ onComplete }) {
+export function createIntroController({ onComplete, onRouteChange }) {
   const screen = document.querySelector('[data-screen="intro"]');
   const scenes = new Map(Array.from(document.querySelectorAll('[data-intro-scene]')).map((scene) => [scene.dataset.introScene, scene]));
   const welcomeBrand = document.querySelector('.intro-welcome__brand');
@@ -64,11 +69,20 @@ export function createIntroController({ onComplete }) {
   const registerDialogue = document.querySelector('.intro-dialogue');
   const registerDialogueMessage = document.querySelector('[data-intro-dialogue-message]');
   const form = document.querySelector('[data-intro-form]');
+  const registrationBody = document.querySelector('[data-registration-body]');
+  const registrationStep = document.querySelector('[data-registration-step]');
+  const registrationNameStep = document.querySelector('[data-register-step="name"]');
+  const registrationIdentityStep = document.querySelector('[data-register-step="identity"]');
   const nameInput = document.querySelector('#explorer-name-input');
   const nameCount = document.querySelector('[data-name-count]');
   const nameError = document.querySelector('#explorer-name-error');
+  const registerSubmitButton = document.querySelector('[data-register-submit]');
+  const genderFieldset = document.querySelector('.intro-avatar-select');
+  const genderInputs = Array.from(document.querySelectorAll('input[name="explorerGender"]'));
+  const genderError = document.querySelector('#explorer-gender-error');
   const status = document.querySelector('.intro-status');
   const passport = document.querySelector('[data-passport]');
+  const passportPortrait = document.querySelector('[data-passport-portrait]');
   const passportMessage = document.querySelector('[data-passport-message]');
   const passportStatus = document.querySelector('[data-passport-status]');
   const passportRoute = document.querySelector('[data-passport-route]');
@@ -81,6 +95,10 @@ export function createIntroController({ onComplete }) {
   let welcomeTypingTimer = null;
   let registerTypingTimer = null;
   let passportTypingTimer = null;
+  let registerTypingState = null;
+  let passportTypingState = null;
+  let validatedName = '';
+  let isRegistrationTransitioning = false;
 
   function delay(callback, duration) {
     const timer = window.setTimeout(() => {
@@ -97,6 +115,57 @@ export function createIntroController({ onComplete }) {
     }
   }
 
+  function createRoute(scene, step = null) {
+    return { screen: 'intro', scene, ...(step ? { step } : {}) };
+  }
+
+  function recordRoute(scene, step = null, options = {}) {
+    onRouteChange?.(createRoute(scene, step), options);
+  }
+
+  function cancelPendingEffects() {
+    timers.forEach((timer) => window.clearTimeout(timer));
+    timers.clear();
+    window.clearInterval(welcomeTypingTimer);
+    window.clearInterval(registerTypingTimer);
+    window.clearInterval(passportTypingTimer);
+    welcomeTypingTimer = null;
+    registerTypingTimer = null;
+    passportTypingTimer = null;
+    registerTypingState = null;
+    passportTypingState = null;
+    registerDialogue?.setAttribute('disabled', '');
+    passportMessage?.parentElement?.setAttribute('disabled', '');
+    registerDialogue?.classList.remove('is-typing');
+    registerDialogue?.setAttribute('aria-busy', 'false');
+    passportMessage?.parentElement?.classList.remove('is-typing');
+    isTransitioning = false;
+    isRegistrationTransitioning = false;
+    scenes.forEach((scene) => scene.classList.remove('is-leaving'));
+    form?.classList.remove('is-step-transitioning', 'is-step-reverse');
+    registrationNameStep?.classList.remove('is-step-leaving', 'is-step-entering', 'is-step-active');
+    registrationIdentityStep?.classList.remove('is-step-leaving', 'is-step-entering', 'is-step-active');
+    if (registrationBody) {
+      registrationBody.style.height = '';
+    }
+  }
+
+  function finishRegisterDialogue() {
+    if (!registerTypingState || !registerDialogue || !registerDialogueMessage) {
+      return;
+    }
+
+    const { message, onComplete } = registerTypingState;
+    registerTypingState = null;
+    window.clearInterval(registerTypingTimer);
+    registerTypingTimer = null;
+    registerDialogue.classList.remove('is-typing');
+    registerDialogue.setAttribute('aria-busy', 'false');
+    registerDialogue.setAttribute('disabled', '');
+    registerDialogueMessage.textContent = message;
+    onComplete?.();
+  }
+
   function typeRegisterDialogue(message, onComplete) {
     if (!registerDialogue || !registerDialogueMessage || !message) {
       onComplete?.();
@@ -109,10 +178,11 @@ export function createIntroController({ onComplete }) {
     registerDialogue.setAttribute('aria-busy', 'false');
     registerDialogueMessage.setAttribute('aria-label', message.replace(/\n/g, ' '));
     announce(message.replace(/\n/g, ' '));
+    registerTypingState = { message, onComplete };
+    registerDialogue.removeAttribute('disabled');
 
     if (prefersReducedMotion) {
-      registerDialogueMessage.textContent = message;
-      onComplete?.();
+      finishRegisterDialogue();
       return;
     }
 
@@ -130,14 +200,38 @@ export function createIntroController({ onComplete }) {
       characterIndex += 1;
 
       if (characterIndex >= characters.length) {
-        window.clearInterval(registerTypingTimer);
-        registerTypingTimer = null;
-        registerDialogue.classList.remove('is-typing');
-        registerDialogue.setAttribute('aria-busy', 'false');
-        registerDialogueMessage.textContent = message;
-        onComplete?.();
+        finishRegisterDialogue();
       }
     }, 34);
+  }
+
+  function finishPassportMessage() {
+    if (!passportTypingState || !passportMessage) {
+      return;
+    }
+
+    const { message, onComplete } = passportTypingState;
+    passportTypingState = null;
+    window.clearInterval(passportTypingTimer);
+    passportTypingTimer = null;
+    passportMessage.parentElement?.classList.remove('is-typing');
+    passportMessage.parentElement?.setAttribute('disabled', '');
+    passportMessage.textContent = message;
+    onComplete?.();
+  }
+
+  function handleGlobalDialogueReveal(event) {
+    if (!registerTypingState && !passportTypingState) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+    if (registerTypingState) {
+      finishRegisterDialogue();
+      return;
+    }
+    finishPassportMessage();
   }
 
   function typePassportMessage(message, onComplete) {
@@ -151,10 +245,11 @@ export function createIntroController({ onComplete }) {
     passportMessage.parentElement?.classList.remove('is-typing');
     passportMessage.setAttribute('aria-label', message.replace(/\n/g, ' '));
     announce(message.replace(/\n/g, ' '));
+    passportTypingState = { message, onComplete };
+    passportMessage.parentElement?.removeAttribute('disabled');
 
     if (prefersReducedMotion) {
-      passportMessage.textContent = message;
-      onComplete?.();
+      finishPassportMessage();
       return;
     }
 
@@ -171,11 +266,7 @@ export function createIntroController({ onComplete }) {
       characterIndex += 1;
 
       if (characterIndex >= characters.length) {
-        window.clearInterval(passportTypingTimer);
-        passportTypingTimer = null;
-        passportMessage.parentElement?.classList.remove('is-typing');
-        passportMessage.textContent = message;
-        onComplete?.();
+        finishPassportMessage();
       }
     }, 34);
   }
@@ -251,6 +342,7 @@ export function createIntroController({ onComplete }) {
     signalScene?.classList.add('is-acquiring');
     announce('노바랜드 구조 신호를 분석하는 중입니다.');
     showScene('signal');
+    recordRoute('signal');
     delay(() => {
       signalScene?.classList.remove('is-acquiring');
       signalScene?.classList.add('is-locked');
@@ -272,6 +364,7 @@ export function createIntroController({ onComplete }) {
     form?.setAttribute('inert', '');
     announce('응답 채널을 연결하고 신호 발신자의 영상을 복원하는 중입니다.');
     showScene('register');
+    recordRoute('register', 'name');
     delay(() => {
       const registerScene = scenes.get('register');
       registerScene?.classList.add('is-projecting');
@@ -304,12 +397,152 @@ export function createIntroController({ onComplete }) {
     }
   }
 
+  function handleNameKeydown(event) {
+    if (event.key !== 'Enter' || registrationIdentityStep?.hidden === false) {
+      return;
+    }
+    event.preventDefault();
+    advanceNameStep();
+  }
+
+  function focusRegistrationStep(showIdentity) {
+    if (showIdentity) {
+      const selectedGender = genderInputs.find((input) => input.checked);
+      (selectedGender || genderInputs[0])?.focus({ preventScroll: true });
+      return;
+    }
+    nameInput?.focus({ preventScroll: true });
+  }
+
+  function updateRegistrationStep(showIdentity) {
+    if (registrationStep) {
+      registrationStep.textContent = showIdentity ? '02 / 02' : '01 / 02';
+    }
+    if (form) {
+      form.dataset.currentRegistrationStep = showIdentity ? 'identity' : 'name';
+    }
+  }
+
+  function setRegistrationStepImmediate(step) {
+    const showIdentity = step === 'identity';
+    if (!registrationNameStep || !registrationIdentityStep) {
+      return;
+    }
+
+    registrationNameStep.hidden = showIdentity;
+    registrationIdentityStep.hidden = !showIdentity;
+    updateRegistrationStep(showIdentity);
+  }
+
+  function showRegistrationStep(step) {
+    const showIdentity = step === 'identity';
+    if (!registrationNameStep || !registrationIdentityStep || isRegistrationTransitioning) {
+      return;
+    }
+
+    const currentStep = showIdentity ? registrationNameStep : registrationIdentityStep;
+    const nextStep = showIdentity ? registrationIdentityStep : registrationNameStep;
+    if (currentStep.hidden) {
+      focusRegistrationStep(showIdentity);
+      return;
+    }
+
+    if (prefersReducedMotion || !registrationBody || !form) {
+      currentStep.hidden = true;
+      nextStep.hidden = false;
+      updateRegistrationStep(showIdentity);
+      focusRegistrationStep(showIdentity);
+      return;
+    }
+
+    isRegistrationTransitioning = true;
+    form.classList.add('is-step-transitioning');
+    form.classList.toggle('is-step-reverse', !showIdentity);
+    registrationBody.style.height = `${currentStep.offsetHeight}px`;
+    currentStep.classList.add('is-step-leaving');
+
+    delay(() => {
+      currentStep.hidden = true;
+      currentStep.classList.remove('is-step-leaving');
+      nextStep.hidden = false;
+      nextStep.classList.add('is-step-entering');
+      updateRegistrationStep(showIdentity);
+      registrationBody.style.height = `${nextStep.offsetHeight}px`;
+
+      requestAnimationFrame(() => nextStep.classList.add('is-step-active'));
+      delay(() => {
+        nextStep.classList.remove('is-step-entering', 'is-step-active');
+        registrationBody.style.height = '';
+        form.classList.remove('is-step-transitioning', 'is-step-reverse');
+        isRegistrationTransitioning = false;
+        focusRegistrationStep(showIdentity);
+      }, 380);
+    }, 180);
+  }
+
+  function advanceNameStep() {
+    if (!nameInput || isTransitioning) {
+      return;
+    }
+
+    const result = validateName(nameInput.value);
+    if (result.error) {
+      nameInput.value = result.name;
+      updateNameCount();
+      nameInput.setAttribute('aria-invalid', 'true');
+      if (nameError) {
+        nameError.textContent = result.error;
+      }
+      nameInput.focus();
+      return;
+    }
+
+    validatedName = result.name;
+    nameInput.value = result.name;
+    showRegistrationStep('identity');
+    recordRoute('register', 'identity');
+    announce(`${validatedName}님의 이름을 확인했습니다. Passport에 등록할 Explorer 성별과 이미지를 선택해 주세요.`);
+  }
+
+  function handleGenderChange(event) {
+    if (!explorerProfiles[event.currentTarget.value]) {
+      return;
+    }
+    genderFieldset?.removeAttribute('aria-invalid');
+    if (genderError) {
+      genderError.textContent = '';
+    }
+    registerSubmitButton?.removeAttribute('disabled');
+    announce(`${event.currentTarget.value === 'female' ? '여성' : '남성'} Explorer 이미지가 선택되었습니다.`);
+  }
+
+  function handleGenderKeydown(event) {
+    const direction = ['ArrowRight', 'ArrowDown'].includes(event.key) ? 1 : ['ArrowLeft', 'ArrowUp'].includes(event.key) ? -1 : 0;
+    if (!direction) {
+      return;
+    }
+
+    event.preventDefault();
+    const currentIndex = genderInputs.indexOf(event.currentTarget);
+    const nextIndex = (currentIndex + direction + genderInputs.length) % genderInputs.length;
+    const nextInput = genderInputs[nextIndex];
+    nextInput.checked = true;
+    nextInput.focus({ preventScroll: true });
+    nextInput.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+
   function setPassportData(explorer) {
+    const gender = getExplorerProfile(explorer.gender);
     document.querySelectorAll('[data-passport-name]').forEach((element) => { element.textContent = explorer.name; });
     document.querySelectorAll('[data-passport-id]').forEach((element) => { element.textContent = explorer.id; });
     document.querySelectorAll('[data-passport-date]').forEach((element) => { element.textContent = explorer.issueDate; });
+    document.querySelectorAll('[data-passport-gender]').forEach((element) => { element.textContent = gender.label; });
     document.querySelectorAll('[data-passport-cover-name]').forEach((element) => { element.textContent = explorer.name; });
     document.querySelectorAll('[data-passport-serial]').forEach((element) => { element.textContent = `${explorer.id} · INITIAL ISSUE`; });
+    if (passportPortrait) {
+      passportPortrait.src = gender.image;
+      passportPortrait.alt = gender.alt;
+    }
   }
 
   function issuePassport(explorer) {
@@ -326,6 +559,7 @@ export function createIntroController({ onComplete }) {
       passportMessage.textContent = 'Explorer Passport를 발급합니다.';
     }
     showScene('passport');
+    recordRoute('passport');
     announce('Explorer Passport를 발급합니다.');
 
     delay(() => {
@@ -383,34 +617,123 @@ export function createIntroController({ onComplete }) {
 
   function handleSubmit(event) {
     event.preventDefault();
-    if (!nameInput || isTransitioning) {
+    if (registrationIdentityStep?.hidden !== false) {
+      advanceNameStep();
+      return;
+    }
+    if (!validatedName || isTransitioning || isRegistrationTransitioning) {
       return;
     }
 
-    const result = validateName(nameInput.value);
-    if (result.error) {
-      nameInput.setAttribute('aria-invalid', 'true');
-      nameInput.value = result.name;
-      updateNameCount();
-      if (nameError) {
-        nameError.textContent = result.error;
+    const selectedGender = genderInputs.find((input) => input.checked)?.value;
+    if (!explorerProfiles[selectedGender]) {
+      genderFieldset?.setAttribute('aria-invalid', 'true');
+      if (genderError) {
+        genderError.textContent = 'Passport에 등록할 Explorer를 선택해 주세요.';
       }
-      nameInput.focus();
+      genderInputs[0]?.focus();
       return;
     }
 
-    nameInput.value = result.name;
     const issueDate = createIssueDate();
     const explorer = {
-      name: result.name,
+      name: validatedName,
+      gender: selectedGender,
       id: createExplorerId(),
       issueDate: issueDate.display,
       issuedAt: issueDate.iso
     };
-    form.querySelector('button[type="submit"]')?.setAttribute('disabled', '');
-    scenes.get('register')?.classList.add('is-name-departing');
-    announce(`${explorer.name}님의 이름을 Explorer Passport로 전송합니다.`);
+    registerSubmitButton?.setAttribute('disabled', '');
+    scenes.get('register')?.classList.add('is-registration-departing');
+    announce(`${explorer.name}님의 이름과 Explorer 이미지를 Passport로 전송합니다.`);
     delay(() => issuePassport(explorer), 720);
+  }
+
+  function prepareSignalScene() {
+    const signalScene = scenes.get('signal');
+    signalScene?.classList.remove('is-acquiring');
+    signalScene?.classList.add('is-locked');
+    respondButton?.removeAttribute('disabled');
+    announce('구조 신호를 수신했습니다. 외부 응답 채널이 요청되었습니다.');
+  }
+
+  function prepareRegisterScene(step) {
+    const registerScene = scenes.get('register');
+    registerScene?.classList.remove('is-registration-departing');
+    registerScene?.classList.add('is-projecting', 'is-eve-visible', 'is-dialogue-visible', 'is-form-ready');
+    registerDialogue?.classList.remove('is-typing');
+    registerDialogue?.removeAttribute('aria-hidden');
+    registerDialogue?.setAttribute('aria-busy', 'false');
+    if (registerDialogueMessage) {
+      registerDialogueMessage.textContent = REGISTER_DIALOGUE_MESSAGE;
+      registerDialogueMessage.setAttribute('aria-label', REGISTER_DIALOGUE_MESSAGE.replace(/\n/g, ' '));
+    }
+    form?.removeAttribute('inert');
+    setRegistrationStepImmediate(step);
+    if (genderInputs.some((input) => input.checked)) {
+      registerSubmitButton?.removeAttribute('disabled');
+    }
+    announce(step === 'identity'
+      ? `${validatedName || nameInput?.value || 'Explorer'}님의 이름을 확인했습니다. Passport에 등록할 Explorer 성별과 이미지를 선택해 주세요.`
+      : 'Explorer Passport에 기록할 이름을 알려주세요.');
+  }
+
+  function preparePassportScene() {
+    if (pendingExplorer) {
+      setPassportData(pendingExplorer);
+    }
+    scenes.get('register')?.classList.remove('is-registration-departing');
+    passport?.classList.remove('is-closing');
+    passport?.classList.add('is-open', 'is-mobile-identity', 'is-writing', 'is-stamped');
+    passportRoute.hidden = false;
+    passportRoute?.classList.remove('is-departing');
+    passportRoute?.classList.add('is-visible');
+    passportEnterMap?.removeAttribute('disabled');
+    if (passportStatus) {
+      passportStatus.textContent = 'REGISTERED';
+    }
+    if (passportMessage && pendingExplorer) {
+      passportMessage.textContent = `Explorer ${pendingExplorer.name}. 외부 복구 권한이 등록되었습니다.\nWORLD MAP 연결 경로를 열었습니다.`;
+    }
+    announce('WORLD MAP 연결 경로가 준비되었습니다. 연결 장치를 선택해 주세요.');
+  }
+
+  function navigate(route) {
+    if (route?.screen !== 'intro' || !scenes.has(route.scene)) {
+      return;
+    }
+
+    cancelPendingEffects();
+    if (route.scene === 'register' && currentScene === scenes.get('register')) {
+      scenes.get('register')?.classList.remove('is-registration-departing');
+      if (genderInputs.some((input) => input.checked)) {
+        registerSubmitButton?.removeAttribute('disabled');
+      }
+      showRegistrationStep(route.step === 'identity' ? 'identity' : 'name');
+      announce(route.step === 'identity'
+        ? 'Passport에 등록할 Explorer를 선택해 주세요.'
+        : 'Explorer 이름 입력 단계로 돌아왔습니다.');
+      return;
+    }
+
+    let focusTarget = startButton;
+    if (route.scene === 'welcome') {
+      playWelcomeIntro();
+      announce('멈춘 노바랜드. 화면을 눌러 시작해 주세요.');
+    } else if (route.scene === 'signal') {
+      prepareSignalScene();
+      focusTarget = respondButton;
+    } else if (route.scene === 'register') {
+      prepareRegisterScene(route.step === 'identity' ? 'identity' : 'name');
+      focusTarget = route.step === 'identity'
+        ? genderInputs.find((input) => input.checked) || genderInputs[0]
+        : nameInput;
+    } else if (route.scene === 'passport') {
+      preparePassportScene();
+      focusTarget = passportEnterMap;
+    }
+
+    showScene(route.scene, focusTarget);
   }
 
   function start() {
@@ -427,6 +750,7 @@ export function createIntroController({ onComplete }) {
     screen.classList.add('is-active');
     playWelcomeIntro();
     announce('멈춘 노바랜드. 화면을 눌러 시작해 주세요.');
+    recordRoute('welcome', null, { replace: true });
   }
 
   function reset() {
@@ -435,9 +759,15 @@ export function createIntroController({ onComplete }) {
 
   startButton?.addEventListener('click', handleStart);
   respondButton?.addEventListener('click', handleRespond);
+  document.addEventListener('click', handleGlobalDialogueReveal, true);
   passportEnterMap?.addEventListener('click', handleEnterMap);
   nameInput?.addEventListener('input', updateNameCount);
+  nameInput?.addEventListener('keydown', handleNameKeydown);
+  genderInputs.forEach((input) => {
+    input.addEventListener('change', handleGenderChange);
+    input.addEventListener('keydown', handleGenderKeydown);
+  });
   form?.addEventListener('submit', handleSubmit);
 
-  return { reset, start };
+  return { navigate, reset, start };
 }

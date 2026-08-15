@@ -895,8 +895,24 @@
   grid-template-columns: 6.75rem 1fr;
   align-items: center;
   gap: var(--space-3);
+  width: 100%;
   min-height: 10rem;
   margin-top: var(--space-3);
+  padding: 0;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  background: transparent;
+}
+
+.eve-panel.is-typing .eve-panel__body {
+  cursor: pointer;
+}
+
+.eve-panel__body:focus-visible {
+  outline: .125rem solid #9eeaff;
+  outline-offset: .25rem;
 }
 
 .eve-panel__body img {
@@ -907,7 +923,7 @@
   filter: drop-shadow(0 0 .8rem rgba(56, 200, 255, .48));
 }
 
-.eve-panel__body p {
+.eve-panel__body #eve-message {
   color: var(--color-text-subtle);
   font-size: .875rem;
   line-height: 1.65;
@@ -1523,7 +1539,7 @@ body.is-overlay-open {
     height: 6rem;
   }
 
-  .eve-panel__body p {
+  .eve-panel__body #eve-message {
     font-size: .8125rem;
     line-height: 1.55;
   }
