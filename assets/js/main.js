@@ -1,11 +1,14 @@
 import { createEveController } from './eve.js';
-import { cosmicVoyage, facilities, getExplorerProfile } from './data.js';
+import { cosmicVoyage, facilities, getExplorerProfile, getFacilityText } from './data.js';
 import { createIntroController } from './intro.js';
+import { initializeLanguage, t } from './locales.js';
 import { createMapController } from './map.js';
 import { createMobileMapController } from './mobile.js';
 import { createNavigationController } from './navigation.js';
 import { createSettingsController } from './settings.js';
 import { createOverlayController, createToast } from './ui.js';
+
+initializeLanguage();
 
 const screens = document.querySelectorAll('[data-screen]');
 const controlRoomTitle = document.querySelector('#control-room-title');
@@ -71,13 +74,13 @@ function showControlRoom(facility, { announce = false } = {}) {
   }
 
   if (controlRoomType) {
-    controlRoomType.textContent = facility.type;
+    controlRoomType.textContent = getFacilityText(facility, 'type');
   }
 
   showScreen('control-room');
   controlRoomTitle?.focus({ preventScroll: true });
   if (announce) {
-    toast.show(facility.controlRoomMessage);
+    toast.show(getFacilityText(facility, 'controlRoomMessage'));
   }
 }
 
@@ -119,18 +122,24 @@ function applyNavigationRoute(route, { previousRoute, source } = {}) {
   mobileMap.reset();
 
   if (route.screen === 'intro') {
-    showScreen('intro');
-    intro.navigate(route);
-    return;
-  }
-
-  if (route.screen === 'control-room') {
+    if (previousRoute?.screen !== 'intro') {
+      showScreen('intro');
+    }
+    const introStateChanged = previousRoute?.screen !== 'intro'
+      || previousRoute.scene !== route.scene
+      || previousRoute.step !== route.step;
+    if (introStateChanged) {
+      intro.navigate(route);
+    }
+  } else if (route.screen === 'control-room') {
     const facility = getFacility(route.facilityId);
     if (facility) {
       showControlRoom(facility);
     }
   } else {
-    showScreen('map');
+    if (previousRoute?.screen !== 'map') {
+      showScreen('map');
+    }
     if (route.panel) {
       mobileMap.open(route.panel);
     } else if (previousRoute?.panel) {
@@ -141,6 +150,7 @@ function applyNavigationRoute(route, { previousRoute, source } = {}) {
   }
 
   if (route.overlay) {
+    settings.setScope(route.settingsScope);
     overlay.open(document.querySelector(`#${route.overlay}`));
   }
 }
@@ -190,7 +200,9 @@ function handleDocumentClick(event) {
 
   const overlayOpenButton = event.target.closest('[data-overlay-open]');
   if (overlayOpenButton) {
-    navigation.push({ ...navigation.current(), overlay: overlayOpenButton.dataset.overlayOpen });
+    const settingsScope = overlayOpenButton.dataset.settingsScope || 'full';
+    settings.setScope(settingsScope);
+    navigation.push({ ...navigation.current(), overlay: overlayOpenButton.dataset.overlayOpen, settingsScope });
     return;
   }
 
@@ -209,7 +221,7 @@ function handleDocumentClick(event) {
   }
 
   if (event.target.closest('[data-reset-progress]')) {
-    const shouldReset = window.confirm('Explorer 정보와 Intro 등록 상태를 초기화하고 처음부터 다시 시작할까요?');
+    const shouldReset = window.confirm(t('common.resetConfirm'));
     if (shouldReset) {
       intro.reset();
       window.location.href = window.location.pathname;
@@ -223,6 +235,26 @@ function handleDocumentClick(event) {
     return;
   }
 
+}
+
+function handleLanguageChange() {
+  settings.render();
+  navigation.refresh();
+  mobileMap.refreshLanguage();
+  intro.refreshLanguage();
+  eve.refreshLanguage();
+  if (currentExplorer && explorerProfileImage) {
+    explorerProfileImage.alt = getExplorerProfile(currentExplorer.gender).alt;
+  }
+  if (mapStarted) {
+    map.render();
+  }
+  if (navigation.current()?.screen === 'control-room') {
+    const facility = getFacility(navigation.current().facilityId);
+    if (facility) {
+      showControlRoom(facility);
+    }
+  }
 }
 
 function handleKeydown(event) {
@@ -243,3 +275,4 @@ intro.start();
 document.addEventListener('click', handleDocumentClick);
 document.addEventListener('keydown', handleKeydown);
 document.addEventListener('fullscreenchange', settings.syncFullscreenToggle);
+window.addEventListener('novaland:languagechange', handleLanguageChange);

@@ -103,7 +103,7 @@ EVE의 구조 신호에 응답해 이름을 입력하고 여성·남성 Explorer
 
 ### Environment & Settings
 
-현재 시간·날씨 표시와 전체 화면 설정을 제공하며, 언어·시간과 사운드 설정은 공통 시스템 구현 단계에서 연결합니다.
+Intro의 구조 신호 화면부터 오른쪽 위 설정 아이콘에서 한국어와 영어를 선택할 수 있고, 선택한 언어는 Intro부터 World Map까지 즉시 반영되어 재접속 후에도 유지됩니다. World Map 설정에서는 현재 시간·날씨 표시와 전체 화면 기능도 함께 제공합니다. 시간대와 사운드 설정은 공통 시스템 구현 단계에서 연결합니다.
 
 ---
 
@@ -132,7 +132,7 @@ EVE의 구조 신호에 응답해 이름을 입력하고 여성·남성 Explorer
 
 ## 제작 현황
 
-현재 최초 방문 Intro, Explorer 이름·성별·이미지 등록, Passport 최초 발급과 WORLD MAP 연결 인터페이스부터 PC World Map의 Mission 우선 선택 흐름, EVE 안내와 시설별 단계적 조명 변화까지 연결했습니다. Intro는 PC·Mobile 반응형과 키보드 흐름까지 검수했으며, Mobile World Map은 기능 검증용 1차 버전입니다.
+현재 최초 방문 Intro, Explorer 이름·성별·이미지 등록, Passport 최초 발급과 WORLD MAP 연결 인터페이스부터 PC World Map의 Mission 우선 선택 흐름, EVE 안내와 시설별 단계적 조명 변화까지 연결했습니다. 한국어·영어 설정은 Intro와 World Map의 정적 문구, 동적 EVE 대사와 접근성 라벨에 즉시 반영되고 선택값이 저장됩니다. Intro는 PC·Mobile 반응형과 키보드 흐름까지 검수했으며, Mobile World Map은 기능 검증용 1차 버전입니다.
 
 다음 단계에서 Explorer Archive와 Passport의 Stamp·쿠폰 페이지, Save Data를 연결합니다. 이후 PC NOVA COASTER로 공통 Mission Flow를 완성한 뒤 Mobile World Map을 전용 HUD로 재설계할 예정입니다.
 

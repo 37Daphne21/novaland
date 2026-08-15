@@ -1,3 +1,5 @@
+import { t } from './locales.js';
+
 const HISTORY_STATE_KEY = 'novaLandRoute';
 
 function createHistoryState(route) {
@@ -6,28 +8,28 @@ function createHistoryState(route) {
 
 function getBackLabel(route) {
   if (route?.overlay) {
-    return '열린 창 닫기';
+    return t('navigation.closeOverlay');
   }
   if (route?.panel) {
-    return '열린 패널 닫기';
+    return t('navigation.closePanel');
   }
   if (route?.screen === 'control-room') {
-    return 'WORLD MAP으로 돌아가기';
+    return t('navigation.toMap');
   }
   if (route?.screen !== 'intro') {
     return '';
   }
   if (route.scene === 'passport') {
-    return 'Explorer 선택으로 돌아가기';
+    return t('navigation.toIdentity');
   }
   if (route.scene === 'register' && route.step === 'identity') {
-    return '이름 입력으로 돌아가기';
+    return t('navigation.toName');
   }
   if (route.scene === 'register') {
-    return '구조 신호로 돌아가기';
+    return t('navigation.toSignal');
   }
   if (route.scene === 'signal') {
-    return 'Welcome으로 돌아가기';
+    return t('navigation.toWelcome');
   }
   return '';
 }
@@ -92,5 +94,5 @@ export function createNavigationController({ button, onNavigate }) {
   button?.addEventListener('click', back);
   window.addEventListener('popstate', handlePopState);
 
-  return { back, current: () => currentRoute, push, replace };
+  return { back, current: () => currentRoute, push, refresh: () => updateButton(currentRoute), replace };
 }

@@ -1,7 +1,7 @@
 import { explorerProfiles, getExplorerProfile } from './data.js';
+import { t } from './locales.js';
 
 const STORAGE_KEY = 'novaLandExplorer';
-const REGISTER_DIALOGUE_MESSAGE = '응답을 확인했습니다.\n저는 노바랜드 중앙 관제 AI, EVE입니다.\n중심 순환의 복구에는 외부 연결 권한이 필요합니다.\nExplorer Passport에 기록할 이름을 알려주세요.';
 
 function getCharacterCount(value) {
   return Array.from(value).length;
@@ -16,15 +16,15 @@ function validateName(value) {
   const characterCount = getCharacterCount(name);
 
   if (!name) {
-    return { error: 'Explorer 이름을 입력해 주세요.', name };
+    return { error: t('intro.validation.required'), name };
   }
 
   if (characterCount < 2 || characterCount > 12) {
-    return { error: 'Explorer 이름은 2~12자로 입력해 주세요.', name };
+    return { error: t('intro.validation.length'), name };
   }
 
   if (!/^[가-힣A-Za-z0-9]+(?: [가-힣A-Za-z0-9]+)*$/u.test(name)) {
-    return { error: '한글, 영문, 숫자와 단어 사이 공백만 사용할 수 있어요.', name };
+    return { error: t('intro.validation.characters'), name };
   }
 
   return { error: '', name };
@@ -60,6 +60,7 @@ function readSavedExplorer() {
 export function createIntroController({ onComplete, onRouteChange }) {
   const screen = document.querySelector('[data-screen="intro"]');
   const scenes = new Map(Array.from(document.querySelectorAll('[data-intro-scene]')).map((scene) => [scene.dataset.introScene, scene]));
+  const settingsButton = document.querySelector('.intro-settings-button');
   const welcomeBrand = document.querySelector('.intro-welcome__brand');
   const welcomeTitle = welcomeBrand?.querySelector('span');
   const welcomeSubtitle = welcomeBrand?.querySelector('strong');
@@ -328,6 +329,9 @@ export function createIntroController({ onComplete, onRouteChange }) {
       nextScene.hidden = false;
       requestAnimationFrame(() => nextScene.classList.add('is-active'));
       currentScene = nextScene;
+      if (settingsButton) {
+        settingsButton.hidden = name === 'welcome';
+      }
       isTransitioning = false;
       delay(() => focusTarget?.focus({ preventScroll: true }), 160);
     }, 800);
@@ -340,16 +344,16 @@ export function createIntroController({ onComplete, onRouteChange }) {
     const signalScene = scenes.get('signal');
     respondButton?.setAttribute('disabled', '');
     signalScene?.classList.add('is-acquiring');
-    announce('노바랜드 구조 신호를 분석하는 중입니다.');
+    announce(t('intro.status.analyzing'));
     showScene('signal');
     recordRoute('signal');
     delay(() => {
       signalScene?.classList.remove('is-acquiring');
       signalScene?.classList.add('is-locked');
-      announce('노바랜드 구조 신호의 발신 위치를 확인했습니다.');
+      announce(t('intro.status.located'));
       delay(() => {
         respondButton?.removeAttribute('disabled');
-        announce('구조 신호를 수신했습니다. 외부 응답 채널이 요청되었습니다.');
+        announce(t('intro.status.received'));
         respondButton?.focus({ preventScroll: true });
       }, 900);
     }, 2150);
@@ -362,7 +366,7 @@ export function createIntroController({ onComplete, onRouteChange }) {
     respondButton.disabled = true;
     registerDialogue?.setAttribute('aria-hidden', 'true');
     form?.setAttribute('inert', '');
-    announce('응답 채널을 연결하고 신호 발신자의 영상을 복원하는 중입니다.');
+    announce(t('intro.status.connecting'));
     showScene('register');
     recordRoute('register', 'name');
     delay(() => {
@@ -373,7 +377,7 @@ export function createIntroController({ onComplete, onRouteChange }) {
         delay(() => {
           registerScene?.classList.add('is-dialogue-visible');
           registerDialogue?.removeAttribute('aria-hidden');
-          typeRegisterDialogue(REGISTER_DIALOGUE_MESSAGE, () => {
+          typeRegisterDialogue(t('intro.register.dialogue'), () => {
             delay(() => {
               registerScene?.classList.add('is-form-ready');
               form?.removeAttribute('inert');
@@ -436,6 +440,7 @@ export function createIntroController({ onComplete, onRouteChange }) {
 
   function showRegistrationStep(step) {
     const showIdentity = step === 'identity';
+    const transitionDuration = showIdentity ? 380 : 450;
     if (!registrationNameStep || !registrationIdentityStep || isRegistrationTransitioning) {
       return;
     }
@@ -476,7 +481,7 @@ export function createIntroController({ onComplete, onRouteChange }) {
         form.classList.remove('is-step-transitioning', 'is-step-reverse');
         isRegistrationTransitioning = false;
         focusRegistrationStep(showIdentity);
-      }, 380);
+      }, transitionDuration);
     }, 180);
   }
 
@@ -501,7 +506,7 @@ export function createIntroController({ onComplete, onRouteChange }) {
     nameInput.value = result.name;
     showRegistrationStep('identity');
     recordRoute('register', 'identity');
-    announce(`${validatedName}님의 이름을 확인했습니다. Passport에 등록할 Explorer 성별과 이미지를 선택해 주세요.`);
+    announce(t('intro.status.nameConfirmed', { name: validatedName }));
   }
 
   function handleGenderChange(event) {
@@ -513,7 +518,7 @@ export function createIntroController({ onComplete, onRouteChange }) {
       genderError.textContent = '';
     }
     registerSubmitButton?.removeAttribute('disabled');
-    announce(`${event.currentTarget.value === 'female' ? '여성' : '남성'} Explorer 이미지가 선택되었습니다.`);
+    announce(t('intro.status.identitySelected', { gender: t(`intro.gender.${event.currentTarget.value}`) }));
   }
 
   function handleGenderKeydown(event) {
@@ -556,36 +561,36 @@ export function createIntroController({ onComplete, onRouteChange }) {
       passportStatus.textContent = 'PENDING';
     }
     if (passportMessage) {
-      passportMessage.textContent = 'Explorer Passport를 발급합니다.';
+      passportMessage.textContent = t('intro.passport.issue');
     }
     showScene('passport');
     recordRoute('passport');
-    announce('Explorer Passport를 발급합니다.');
+    announce(t('intro.passport.issue'));
 
     delay(() => {
       passport?.classList.add('is-open');
       if (passportMessage) {
-        passportMessage.textContent = '외부 공명 응답과 복구 권한을 확인합니다.';
+        passportMessage.textContent = t('intro.passport.verify');
       }
-      announce('외부 공명 응답과 복구 권한을 확인합니다.');
+      announce(t('intro.passport.verify'));
     }, 1700);
     delay(() => passport?.classList.add('is-mobile-identity'), 2600);
     delay(() => {
       passport?.classList.add('is-writing');
       if (passportMessage) {
-        passportMessage.textContent = `${explorer.name}님의 Explorer 식별 정보를 기록합니다.`;
+        passportMessage.textContent = t('intro.passport.record', { name: explorer.name });
       }
-      announce(`${explorer.name}님의 Explorer 정보를 기록합니다.`);
+      announce(t('intro.passport.recordAnnounce', { name: explorer.name }));
     }, 2800);
     delay(() => {
       passport?.classList.add('is-stamped');
       if (passportStatus) {
         passportStatus.textContent = 'REGISTERED';
       }
-      typePassportMessage(`Explorer ${explorer.name}. 외부 복구 권한이 등록되었습니다.\nWORLD MAP 연결 경로를 열었습니다.`, () => {
+      typePassportMessage(t('intro.passport.complete', { name: explorer.name }), () => {
         passportRoute.hidden = false;
         requestAnimationFrame(() => passportRoute.classList.add('is-visible'));
-        announce('WORLD MAP 연결 경로가 준비되었습니다. 연결 장치를 선택해 주세요.');
+        announce(t('intro.passport.ready'));
         delay(() => passportEnterMap?.focus({ preventScroll: true }), 260);
       });
     }, 4400);
@@ -599,9 +604,9 @@ export function createIntroController({ onComplete, onRouteChange }) {
     passportEnterMap.disabled = true;
     passportRoute?.classList.add('is-departing');
     if (passportMessage) {
-      passportMessage.textContent = 'Passport를 닫고 WORLD MAP으로 이동합니다.';
+      passportMessage.textContent = t('intro.passport.entering');
     }
-    announce('Passport를 닫고 WORLD MAP으로 이동합니다.');
+    announce(t('intro.passport.entering'));
     delay(() => passport?.classList.add('is-closing'), 220);
     delay(() => {
       const completedExplorer = { ...pendingExplorer, introCompleted: true };
@@ -629,7 +634,7 @@ export function createIntroController({ onComplete, onRouteChange }) {
     if (!explorerProfiles[selectedGender]) {
       genderFieldset?.setAttribute('aria-invalid', 'true');
       if (genderError) {
-        genderError.textContent = 'Passport에 등록할 Explorer를 선택해 주세요.';
+        genderError.textContent = t('intro.validation.identity');
       }
       genderInputs[0]?.focus();
       return;
@@ -645,7 +650,7 @@ export function createIntroController({ onComplete, onRouteChange }) {
     };
     registerSubmitButton?.setAttribute('disabled', '');
     scenes.get('register')?.classList.add('is-registration-departing');
-    announce(`${explorer.name}님의 이름과 Explorer 이미지를 Passport로 전송합니다.`);
+    announce(t('intro.status.sending', { name: explorer.name }));
     delay(() => issuePassport(explorer), 720);
   }
 
@@ -654,7 +659,7 @@ export function createIntroController({ onComplete, onRouteChange }) {
     signalScene?.classList.remove('is-acquiring');
     signalScene?.classList.add('is-locked');
     respondButton?.removeAttribute('disabled');
-    announce('구조 신호를 수신했습니다. 외부 응답 채널이 요청되었습니다.');
+    announce(t('intro.status.received'));
   }
 
   function prepareRegisterScene(step) {
@@ -665,8 +670,9 @@ export function createIntroController({ onComplete, onRouteChange }) {
     registerDialogue?.removeAttribute('aria-hidden');
     registerDialogue?.setAttribute('aria-busy', 'false');
     if (registerDialogueMessage) {
-      registerDialogueMessage.textContent = REGISTER_DIALOGUE_MESSAGE;
-      registerDialogueMessage.setAttribute('aria-label', REGISTER_DIALOGUE_MESSAGE.replace(/\n/g, ' '));
+      const registerDialogueText = t('intro.register.dialogue');
+      registerDialogueMessage.textContent = registerDialogueText;
+      registerDialogueMessage.setAttribute('aria-label', registerDialogueText.replace(/\n/g, ' '));
     }
     form?.removeAttribute('inert');
     setRegistrationStepImmediate(step);
@@ -674,8 +680,8 @@ export function createIntroController({ onComplete, onRouteChange }) {
       registerSubmitButton?.removeAttribute('disabled');
     }
     announce(step === 'identity'
-      ? `${validatedName || nameInput?.value || 'Explorer'}님의 이름을 확인했습니다. Passport에 등록할 Explorer 성별과 이미지를 선택해 주세요.`
-      : 'Explorer Passport에 기록할 이름을 알려주세요.');
+      ? t('intro.status.nameConfirmed', { name: validatedName || nameInput?.value || 'Explorer' })
+      : t('intro.status.askName'));
   }
 
   function preparePassportScene() {
@@ -693,9 +699,9 @@ export function createIntroController({ onComplete, onRouteChange }) {
       passportStatus.textContent = 'REGISTERED';
     }
     if (passportMessage && pendingExplorer) {
-      passportMessage.textContent = `Explorer ${pendingExplorer.name}. 외부 복구 권한이 등록되었습니다.\nWORLD MAP 연결 경로를 열었습니다.`;
+      passportMessage.textContent = t('intro.passport.complete', { name: pendingExplorer.name });
     }
-    announce('WORLD MAP 연결 경로가 준비되었습니다. 연결 장치를 선택해 주세요.');
+    announce(t('intro.passport.ready'));
   }
 
   function navigate(route) {
@@ -711,15 +717,15 @@ export function createIntroController({ onComplete, onRouteChange }) {
       }
       showRegistrationStep(route.step === 'identity' ? 'identity' : 'name');
       announce(route.step === 'identity'
-        ? 'Passport에 등록할 Explorer를 선택해 주세요.'
-        : 'Explorer 이름 입력 단계로 돌아왔습니다.');
+        ? t('intro.status.chooseIdentity')
+        : t('intro.status.returnName'));
       return;
     }
 
     let focusTarget = startButton;
     if (route.scene === 'welcome') {
       playWelcomeIntro();
-      announce('멈춘 노바랜드. 화면을 눌러 시작해 주세요.');
+      announce(t('intro.status.welcome'));
     } else if (route.scene === 'signal') {
       prepareSignalScene();
       focusTarget = respondButton;
@@ -736,6 +742,57 @@ export function createIntroController({ onComplete, onRouteChange }) {
     showScene(route.scene, focusTarget);
   }
 
+  function refreshLanguage() {
+    const registerDialogueText = t('intro.register.dialogue');
+    if (registerDialogueMessage && !registerTypingState) {
+      registerDialogueMessage.textContent = registerDialogueText;
+      registerDialogueMessage.setAttribute('aria-label', registerDialogueText.replace(/\n/g, ' '));
+    }
+
+    if (nameInput?.getAttribute('aria-invalid') === 'true' && nameError) {
+      nameError.textContent = validateName(nameInput.value).error;
+    }
+    if (genderFieldset?.getAttribute('aria-invalid') === 'true' && genderError) {
+      genderError.textContent = t('intro.validation.identity');
+    }
+    if (pendingExplorer) {
+      setPassportData(pendingExplorer);
+    }
+
+    const sceneName = currentScene?.dataset.introScene;
+    if (sceneName === 'welcome') {
+      announce(t('intro.status.welcome'));
+      return;
+    }
+    if (sceneName === 'signal') {
+      announce(t('intro.status.received'));
+      return;
+    }
+    if (sceneName === 'register') {
+      announce(registrationIdentityStep?.hidden === false
+        ? t('intro.status.nameConfirmed', { name: validatedName || nameInput?.value || 'Explorer' })
+        : t('intro.status.askName'));
+      return;
+    }
+    if (sceneName !== 'passport' || !passportMessage || !pendingExplorer) {
+      return;
+    }
+
+    if (passport?.classList.contains('is-stamped')) {
+      passportMessage.textContent = t('intro.passport.complete', { name: pendingExplorer.name });
+      announce(t('intro.passport.ready'));
+    } else if (passport?.classList.contains('is-writing')) {
+      passportMessage.textContent = t('intro.passport.record', { name: pendingExplorer.name });
+      announce(t('intro.passport.recordAnnounce', { name: pendingExplorer.name }));
+    } else if (passport?.classList.contains('is-open')) {
+      passportMessage.textContent = t('intro.passport.verify');
+      announce(t('intro.passport.verify'));
+    } else {
+      passportMessage.textContent = t('intro.passport.issue');
+      announce(t('intro.passport.issue'));
+    }
+  }
+
   function start() {
     const forceIntro = new URLSearchParams(window.location.search).get('intro') === '1';
     const savedExplorer = readSavedExplorer();
@@ -749,7 +806,7 @@ export function createIntroController({ onComplete, onRouteChange }) {
     screen.hidden = false;
     screen.classList.add('is-active');
     playWelcomeIntro();
-    announce('멈춘 노바랜드. 화면을 눌러 시작해 주세요.');
+    announce(t('intro.status.welcome'));
     recordRoute('welcome', null, { replace: true });
   }
 
@@ -769,5 +826,5 @@ export function createIntroController({ onComplete, onRouteChange }) {
   });
   form?.addEventListener('submit', handleSubmit);
 
-  return { navigate, reset, start };
+  return { navigate, refreshLanguage, reset, start };
 }

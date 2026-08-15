@@ -1,4 +1,4 @@
-import { cosmicVoyage as cosmicVoyageDefinition, facilities as facilityDefinitions, facilityStates, recentLogs } from './data.js';
+import { cosmicVoyage as cosmicVoyageDefinition, facilities as facilityDefinitions, getFacilityState, getFacilityText, getRecentLogs } from './data.js';
 import { uiCopy } from './locales.js';
 import { getIcon } from './ui.js';
 
@@ -81,7 +81,7 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, speak
     return {
       isDisabled: facility.state === 'locked',
       isSelected: facility.id === state.selectedFacilityId,
-      state: facilityStates[facility.state]
+      state: getFacilityState(facility.state)
     };
   }
 
@@ -276,7 +276,7 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, speak
     facilityList.innerHTML = state.facilities.map((facility, index) => {
       const view = getFacilityView(facility);
       const facilityColor = view.isDisabled ? 'var(--color-locked)' : `var(--color-${facility.id})`;
-      const description = view.isDisabled ? uiCopy.lockedCondition : facility.type;
+      const description = view.isDisabled ? uiCopy.lockedCondition : getFacilityText(facility, 'type');
 
       return `
         <li>
@@ -308,13 +308,13 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, speak
       return `
         <button class="map-facility-card is-state-${facility.state}${view.isSelected ? ' is-selected' : ''}${isAwaitingGuide ? ' is-awaiting-guide' : ''}" type="button" data-facility="${facility.id}" data-control-room-entry aria-pressed="${view.isSelected}"${isEntryEnabled ? '' : ' aria-disabled="true" tabindex="-1"'} style="--marker-x: ${facility.position.x}%; --marker-y: ${facility.position.y}%; --mobile-marker-x: ${facility.mobilePosition.x}%; --mobile-marker-y: ${facility.mobilePosition.y}%; --facility-color: var(--color-${facility.id});">
           <span class="map-facility-card__number">${marker}</span>
-          <span class="map-facility-card__content"><strong>${facility.name}</strong><small>${facility.type}</small><i>${getIcon(view.state.icon)}${view.state.label}</i></span>
+          <span class="map-facility-card__content"><strong>${facility.name}</strong><small>${getFacilityText(facility, 'type')}</small><i>${getIcon(view.state.icon)}${view.state.label}</i></span>
           <span class="map-facility-card__enter" aria-hidden="true">${getIcon('arrow-right')}</span>
         </button>
       `;
     }).join('');
 
-    const cosmicState = facilityStates[state.cosmicVoyage.state];
+    const cosmicState = getFacilityState(state.cosmicVoyage.state);
     const isCosmicSealed = state.cosmicVoyage.state === 'sealed';
     const cosmicName = isCosmicSealed ? '???' : state.cosmicVoyage.name;
     const cosmicPosition = isCosmicSealed ? state.cosmicVoyage.position : state.cosmicVoyage.openPosition;
@@ -336,7 +336,7 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, speak
       return;
     }
 
-    const cosmicState = facilityStates[state.cosmicVoyage.state];
+    const cosmicState = getFacilityState(state.cosmicVoyage.state);
     const isCosmicSealed = state.cosmicVoyage.state === 'sealed';
     const cosmicName = isCosmicSealed ? '???' : state.cosmicVoyage.name;
 
@@ -349,7 +349,7 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, speak
       <span class="cosmic-status__icon" aria-hidden="true">${getIcon(cosmicState.icon)}</span>
       <span class="cosmic-status__content">
         <strong>${cosmicName}</strong>
-        <small>${isCosmicSealed ? uiCopy.cosmicCondition : state.cosmicVoyage.type}</small>
+        <small>${isCosmicSealed ? uiCopy.cosmicCondition : getFacilityText(state.cosmicVoyage, 'type')}</small>
         <i>${getIcon(cosmicState.icon)}${cosmicState.label}</i>
       </span>
     `;
@@ -360,6 +360,7 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, speak
       return;
     }
 
+    const recentLogs = getRecentLogs();
     const visibleLogs = isRestored()
       ? [{ time: '09:45', datetime: '09:45', message: uiCopy.restoredLog }, ...recentLogs].slice(0, 3)
       : recentLogs;
@@ -450,7 +451,7 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, speak
       transitionMapVisual('wonder');
     }
 
-    speakEve(facility.completionMessage, () => {
+    speakEve(() => getFacilityText(facility, 'completionMessage'), () => {
       transitionMapVisual(nextFacility ? facility.id : 'cosmic');
       if (!nextFacility) {
         state.selectedFacilityId = 'cosmic';
@@ -466,7 +467,7 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, speak
       return false;
     }
 
-    speakEve(state.cosmicVoyage.completionMessage, () => {
+    speakEve(() => getFacilityText(state.cosmicVoyage, 'completionMessage'), () => {
       transitionMapVisual('base');
     });
 
@@ -486,7 +487,7 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, speak
     }
 
     if (facility.state === 'locked' || facility.state === 'sealed') {
-      speakEve(facility.lockedMessage);
+      speakEve(() => getFacilityText(facility, 'lockedMessage'));
       return;
     }
 
@@ -507,7 +508,7 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, speak
       transitionMapVisual(progressVisual);
     }
 
-    speakEve(facility.message, () => guideFacility(facility));
+    speakEve(() => getFacilityText(facility, 'message'), () => guideFacility(facility));
   }
 
   function playIntro() {
@@ -556,7 +557,7 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, speak
   }
 
   function getStartupMessage(defaultMessage) {
-    return isRestored() ? uiCopy.mapRestored : defaultMessage;
+    return isRestored() ? () => uiCopy.mapRestored : defaultMessage;
   }
 
   function start(defaultMessage) {

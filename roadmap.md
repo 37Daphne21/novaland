@@ -43,6 +43,7 @@
 - [x] 공용 Radio Choice Card와 등록 단계 Transition
 - [x] 공용 뒤로가기와 Browser History 기반 Intro·Overlay·Panel·Control Room 복귀
 - [x] Intro Timer 정리, 입력 유지, MAP Focus 복원과 완료 상태 저장
+- [x] Intro 언어 전용 Settings와 한국어·영어 즉시 전환·저장
 - [x] Keyboard, Focus, 오류 안내와 `prefers-reduced-motion` 대응
 - [x] 1366×768과 390×844 전체 Flow·Overflow 회귀 검수
 
@@ -70,7 +71,8 @@
 - [x] Intro 완료와 Explorer 신원·Passport 발급 상태 복원
 - [ ] 시설 잠금·진행·완료 상태 저장
 - [ ] Mission 진행 상태 저장
-- [ ] 언어, 시간과 사운드 설정 저장
+- [x] 언어 선택 저장과 Intro·MAP 정적·동적 UI 즉시 반영
+- [ ] 시간과 사운드 설정 저장
 - [ ] Recent Log 저장
 - [ ] 처음부터 다시 시작과 저장 데이터 초기화
 - [ ] Fullscreen 상태 예외와 브라우저별 동작 검수

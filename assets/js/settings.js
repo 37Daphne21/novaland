@@ -1,7 +1,8 @@
-import { languages, uiCopy } from './locales.js';
+import { getLanguage, languages, setLanguage, t, uiCopy } from './locales.js';
 
 export function createSettingsController({ showToast }) {
   const languageOptions = document.querySelector('#language-options');
+  const settingsOverlay = document.querySelector('#settings-overlay');
   const fullscreenToggle = document.querySelector('#fullscreen-toggle');
   const fullscreenToggleLabel = fullscreenToggle?.querySelector('b');
 
@@ -11,7 +12,7 @@ export function createSettingsController({ showToast }) {
     }
 
     languageOptions.innerHTML = languages.map((language) => `
-      <button class="${language.default ? 'is-selected' : ''}" type="button" data-language="${language.code}" aria-pressed="${language.default}">${language.label}</button>
+      <button class="${language.code === getLanguage() ? 'is-selected' : ''}" type="button" data-language="${language.code}" aria-pressed="${language.code === getLanguage()}">${language.label}</button>
     `).join('');
   }
 
@@ -20,14 +21,14 @@ export function createSettingsController({ showToast }) {
       return;
     }
 
-    languageOptions.querySelectorAll('button').forEach((option) => {
-      const isSelected = option === button;
-      option.classList.toggle('is-selected', isSelected);
-      option.setAttribute('aria-pressed', String(isSelected));
-    });
+    if (setLanguage(button.dataset.language)) {
+      renderLanguages();
+      showToast(t(`common.languageFeedback.${button.dataset.language}`));
+    }
+  }
 
-    const language = languages.find(({ code }) => code === button.dataset.language);
-    showToast(language?.feedback);
+  function setScope(scope = 'full') {
+    settingsOverlay?.classList.toggle('is-language-only', scope === 'language');
   }
 
   function syncFullscreenToggle() {
@@ -62,5 +63,5 @@ export function createSettingsController({ showToast }) {
     syncFullscreenToggle();
   }
 
-  return { render, selectLanguage, syncFullscreenToggle, toggleFullscreen };
+  return { render, selectLanguage, setScope, syncFullscreenToggle, toggleFullscreen };
 }

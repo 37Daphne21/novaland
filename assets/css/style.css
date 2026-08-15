@@ -250,8 +250,8 @@
 }
 
 .utility-button .ui-icon {
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 1.65rem;
+  height: 1.65rem;
 }
 
 .utility-button small {
@@ -1009,6 +1009,14 @@
   margin-top: var(--space-6);
 }
 
+#settings-overlay.is-language-only .ui-overlay__dialog {
+  width: min(26rem, 100%);
+}
+
+#settings-overlay.is-language-only .settings-item:not([data-settings-item="language"]) {
+  display: none;
+}
+
 .settings-item {
   display: flex;
   align-items: center;
@@ -1251,8 +1259,8 @@ body.is-overlay-open {
   }
 
   .utility-button .ui-icon {
-    width: 1.375rem;
-    height: 1.375rem;
+    width: 1.65rem;
+    height: 1.65rem;
   }
 
   .utility-button small {

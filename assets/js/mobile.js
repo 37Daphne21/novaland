@@ -1,3 +1,5 @@
+import { t } from './locales.js';
+
 const MOBILE_MEDIA_QUERY = '(max-width: 56rem)';
 
 export function createMobileMapController() {
@@ -18,7 +20,10 @@ export function createMobileMapController() {
 
     panel.classList.toggle('is-mobile-open', isOpen);
     toggle.setAttribute('aria-expanded', String(isOpen));
-    toggle.setAttribute('aria-label', `${panelName === 'mission-panel' ? '미션 목록' : '최근 기록'} ${isOpen ? '접기' : '펼치기'}`);
+    const labelKey = panelName === 'mission-panel'
+      ? `map.missionList${isOpen ? 'Collapse' : 'Expand'}`
+      : `map.recentLog${isOpen ? 'Collapse' : 'Expand'}`;
+    toggle.setAttribute('aria-label', t(labelKey));
   }
 
   function syncLayoutState() {
@@ -81,8 +86,14 @@ export function createMobileMapController() {
     closePanels();
   }
 
+  function refreshLanguage() {
+    Object.entries(panels).forEach(([panelName, panel]) => {
+      setPanelState(panelName, panel?.classList.contains('is-mobile-open') ?? false);
+    });
+  }
+
   mediaQuery.addEventListener('change', reset);
   reset();
 
-  return { collapseMission, handleKeydown, open, reset };
+  return { collapseMission, handleKeydown, open, refreshLanguage, reset };
 }

@@ -119,6 +119,8 @@ Control Room과 Mission UI는 일반적인 게임 HUD보다 실제 시설을 점
 
 기본 언어는 한국어이며 설정에서 영어로 즉시 전환할 수 있어야 한다.
 
+선택한 언어는 공통 언어 상태로 관리하고 저장한다. Intro, Passport, MAP, Control Room의 정적 문구와 동적 EVE 대사, 오류 안내, 상태 메시지와 접근성 라벨은 화면을 다시 열지 않아도 즉시 같은 언어로 갱신한다.
+
 다음 고유명사와 고정 라벨은 영어를 유지한다.
 
 - NOVA LAND
@@ -160,6 +162,7 @@ Control Room과 Mission UI는 일반적인 게임 HUD보다 실제 시설을 점
 - 한글 본문과 UI: Pretendard Variable
 - 영문 타이틀과 시설명: Orbitron
 - 시간, 온도, 시설 번호와 진행 수치: Rajdhani 500·600
+- Input의 글자 수처럼 입력값과 함께 변하는 보조 숫자는 `facility-card__number`를 기준으로 `--font-numeric`과 `tabular-nums`를 사용한다.
 - 일반 UI 본문은 13px 이상을 기본으로 한다.
 - 어떤 상황에서도 10px 이하 글자는 사용하지 않는다.
 
@@ -415,7 +418,7 @@ Intro 종료 직전에 첫 번째 시설이나 다음 행동을 안내하는 EVE
 
 ### Navigation과 뒤로가기
 
-Welcome과 MAP 기본 화면은 각 Flow의 Root로 사용하며 공용 뒤로가기 Button을 표시하지 않는다. 그 외 Intro 장면, 등록 단계, Passport, Overlay, Mobile Panel과 Control Room에서는 화면 왼쪽 위에 공용 `ui-back-button`을 표시한다.
+Welcome과 MAP 기본 화면은 각 Flow의 Root로 사용하며 공용 뒤로가기 Button을 표시하지 않는다. 그 외 Intro 장면, 등록 단계, Passport, Overlay, Mobile Panel과 Control Room에서는 화면 왼쪽 위에 공용 `ui-back-button`을 표시한다. 버튼은 외곽선과 배경 없이 화살표 Icon만 노출하고, 44px 터치 영역과 Focus Ring은 유지한다.
 
 공용 Button은 꼬리가 있는 왼쪽 화살표 Icon만 시각적으로 표시하고 실제 조작 영역은 최소 44×44px로 확보한다. `aria-label`은 현재 상태에 맞춰 이전 목적지를 설명하며 Mobile에서는 Safe Area를 반영한다.
 
@@ -634,6 +637,10 @@ Mobile에서는 가독성을 위해 한 페이지씩 보여주며 같은 페이�
 
 
 ### Settings
+
+Intro의 Welcome에는 Settings Button을 표시하지 않는다. Signal부터 오른쪽 위에 외곽선과 배경이 없는 가로 Sliders 형태의 Settings Icon Button을 표시한다. Settings와 Back Icon은 같은 `1.65rem` 크기로 통일한다. Intro에서 연 Settings는 한국어와 영어 선택만 제공하며, MAP에서 연 Settings는 현재 구현된 전체 설정 항목을 제공한다.
+
+Intro에서 선택한 언어는 Passport와 MAP 진입 이후에도 유지하고, 새로고침과 재접속에서도 복원한다.
 
 공통 설정 항목:
 

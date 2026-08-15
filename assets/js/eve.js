@@ -1,14 +1,22 @@
+import { t } from './locales.js';
+
 export function createEveController() {
   const panel = document.querySelector('.eve-panel');
   const messageElement = document.querySelector('#eve-message');
   const speechControl = panel?.querySelector('[data-eve-skip="map"]');
   const signalWave = document.querySelector('#eve-signal-wave');
-  const initialMessage = messageElement?.textContent.trim() ?? '';
+  const initialMessage = () => t('map.initialEve');
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let typingTimer = null;
   let visibilityTimer = null;
   let onSpeechComplete = null;
   let activeMessage = '';
+  let activeMessageSource = null;
+  let lastMessageSource = initialMessage;
+
+  function resolveMessage(messageSource) {
+    return typeof messageSource === 'function' ? messageSource() : messageSource;
+  }
 
   function cancel() {
     window.clearInterval(typingTimer);
@@ -17,6 +25,7 @@ export function createEveController() {
     visibilityTimer = null;
     onSpeechComplete = null;
     activeMessage = '';
+    activeMessageSource = null;
     speechControl?.setAttribute('disabled', '');
     signalWave?.classList.add('is-paused');
     panel?.classList.remove('is-visible');
@@ -44,6 +53,7 @@ export function createEveController() {
     const onComplete = onSpeechComplete;
     onSpeechComplete = null;
     activeMessage = '';
+    activeMessageSource = null;
     onComplete?.();
   }
 
@@ -64,13 +74,16 @@ export function createEveController() {
     reveal();
   }
 
-  function speak(message, onComplete = null) {
+  function speak(messageSource, onComplete = null) {
+    const message = resolveMessage(messageSource);
     if (!messageElement || !message) {
       return;
     }
 
     cancel();
     activeMessage = message;
+    activeMessageSource = messageSource;
+    lastMessageSource = messageSource;
     onSpeechComplete = onComplete;
     panel?.classList.add('is-visible');
     panel?.classList.add('is-focused');
@@ -101,7 +114,21 @@ export function createEveController() {
     }, 34);
   }
 
+  function refreshLanguage() {
+    if (!messageElement || !lastMessageSource) {
+      return;
+    }
+
+    if (typingTimer && activeMessageSource) {
+      activeMessage = resolveMessage(activeMessageSource);
+      finish({ reveal: true });
+      return;
+    }
+
+    messageElement.textContent = resolveMessage(lastMessageSource);
+  }
+
   document.addEventListener('click', handleGlobalReveal, true);
 
-  return { cancel, initialMessage, speak };
+  return { cancel, initialMessage, refreshLanguage, speak };
 }
