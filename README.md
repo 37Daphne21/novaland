@@ -34,6 +34,12 @@ Nova Land는 단순한 홈페이지나 점수 중심의 게임이 아닙니다.
 
 Explorer는 영웅이 아니라 노바랜드가 다시 움직일 수 있도록 돕는 방문자입니다. 이 프로젝트의 진짜 주인공은 변화하는 Nova Land입니다.
 
+### NOVA COMPASS
+
+Nova Land의 Symbol은 별과 나침반을 결합한 `NOVA COMPASS`입니다. 중앙의 빛은 중심 순환을, 네 방향으로 뻗은 별은 네 핵심 시설과 Explorer의 복구 경로를, 원형 궤도는 지구와 노바랜드 사이를 오가는 공명을 의미합니다. Gold는 설렘과 기억의 온기를, Cyan은 EVE와 관제 기술을 나타냅니다.
+
+NOVA COMPASS는 정해진 목적지를 가리키기보다 멈춘 세계에서 새로운 연결과 길을 만들어가는 Explorer의 여정을 상징하며, Logo, Passport Emblem과 시설별 Stamp가 이 형태를 공유합니다.
+
 ---
 
 ## 시설

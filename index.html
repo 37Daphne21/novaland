@@ -120,45 +120,47 @@
               <div class="passport__glow" aria-hidden="true"></div>
               <div class="passport__book">
                 <div class="passport__cover passport__cover--back" aria-hidden="true"></div>
-                <div class="passport__spread">
-                  <div class="passport__page passport__page--authority" data-passport-page="authority">
-                    <span class="passport__page-label">NOVA LAND AUTHORITY</span>
-                    <div class="passport__authority-emblem" aria-hidden="true"><span>✦</span></div>
-                    <p class="passport__authority-title">RESTORATION<br>ACCESS</p>
-                    <p class="passport__authority-copy" data-i18n-html="intro.passport.authority">외부 공명 응답이 확인되었습니다.<br>이 Passport는 Explorer의 제한된 복구 권한을 증명합니다.</p>
-                    <dl class="passport__authority-meta">
-                      <div><dt>DATE OF ISSUE</dt><dd data-passport-date>—</dd></div>
-                      <div><dt>ACCESS STATUS</dt><dd>AUTHORIZED</dd></div>
+                <div class="passport__page passport__page--profile" data-passport-page="identity">
+                  <header class="passport__page-header"><span class="passport__page-label">EXPLORER IDENTITY</span></header>
+                  <div class="passport__page-content passport__page-content--profile">
+                    <div class="passport__portrait"><img src="./assets/images/common/explorer-female.webp" alt="여성 Nova Land Explorer 프로필 이미지" data-passport-portrait><span aria-hidden="true"></span></div>
+                    <dl>
+                      <div><dt>EXPLORER NAME</dt><dd data-passport-name>—</dd></div>
+                      <div><dt>EXPLORER ID</dt><dd data-passport-id>—</dd></div>
+                      <div><dt>ORIGIN</dt><dd>EARTH</dd></div>
+                      <div><dt>GENDER</dt><dd data-passport-gender>—</dd></div>
+                      <div><dt>RESTORATION</dt><dd>0 / 4</dd></div>
+                      <div><dt>STATUS</dt><dd class="passport__status" data-passport-status>PENDING</dd></div>
                     </dl>
+                    <div class="passport__seal" data-i18n-aria-label="intro.passport.seal" aria-label="Explorer 등록 완료"><img src="./assets/images/common/stamp-explorer-registered.svg" alt=""></div>
                   </div>
-                  <div class="passport__page passport__page--profile" data-passport-page="identity">
-                    <span class="passport__page-label">EXPLORER IDENTITY</span>
-                    <div class="passport__profile">
-                      <div class="passport__portrait"><img src="./assets/images/common/explorer-female.webp" alt="여성 Nova Land Explorer 프로필 이미지" data-passport-portrait><span aria-hidden="true"></span></div>
-                      <dl>
-                        <div><dt>EXPLORER NAME</dt><dd data-passport-name>—</dd></div>
-                        <div><dt>EXPLORER ID</dt><dd data-passport-id>—</dd></div>
-                        <div><dt>ORIGIN</dt><dd>EARTH</dd></div>
-                        <div><dt>GENDER</dt><dd data-passport-gender>—</dd></div>
-                        <div><dt>RESTORATION</dt><dd>0 / 4</dd></div>
-                        <div><dt>STATUS</dt><dd class="passport__status" data-passport-status>PENDING</dd></div>
+                  <footer class="passport__page-footer"><p class="passport__serial" data-passport-serial>NL · INITIAL ISSUE</p></footer>
+                </div>
+                <div class="passport__leaf">
+                  <div class="passport__page passport__page--authority passport__leaf-back" data-passport-page="authority">
+                    <header class="passport__page-header"><span class="passport__page-label">NOVA LAND AUTHORITY</span></header>
+                    <div class="passport__page-content passport__page-content--authority">
+                      <div class="passport__authority-emblem" aria-hidden="true"><img src="./assets/images/common/passport-authority-emblem.svg" alt=""></div>
+                      <p class="passport__authority-title">RESTORATION<br>ACCESS</p>
+                      <p class="passport__authority-copy" data-i18n-html="intro.passport.authority">외부 공명 응답이 확인되었습니다.<br>이 Passport는 Explorer의 제한된 복구 권한을 증명합니다.</p>
+                      <dl class="passport__authority-meta">
+                        <div><dt>DATE OF ISSUE</dt><dd data-passport-date>—</dd></div>
+                        <div><dt>ACCESS STATUS</dt><dd>AUTHORIZED</dd></div>
                       </dl>
                     </div>
-                    <div class="passport__seal" data-i18n-aria-label="intro.passport.seal" aria-label="Explorer 등록 완료"><span>✦</span><strong>EXPLORER</strong><small>REGISTERED</small></div>
-                    <p class="passport__serial" data-passport-serial>NL · INITIAL ISSUE</p>
                   </div>
-                </div>
-                <div class="passport__cover passport__cover--front">
-                  <span class="passport__corner passport__corner--one"></span><span class="passport__corner passport__corner--two"></span><span class="passport__corner passport__corner--three"></span><span class="passport__corner passport__corner--four"></span>
-                  <small>THE REPUBLIC OF</small>
-                  <strong>EXPLORER<br>PASSPORT</strong>
-                  <div class="passport__emblem" aria-hidden="true"><span>✦</span></div>
-                  <p>NOVA LAND</p>
-                  <b data-passport-cover-name>EXPLORER</b>
+                  <div class="passport__cover passport__cover--front passport__leaf-front">
+                    <span class="passport__corner passport__corner--one"></span><span class="passport__corner passport__corner--two"></span><span class="passport__corner passport__corner--three"></span><span class="passport__corner passport__corner--four"></span>
+                    <small>THE REPUBLIC OF</small>
+                    <strong>EXPLORER<br>PASSPORT</strong>
+                    <div class="passport__emblem" aria-hidden="true"><img src="./assets/images/common/passport-cover-emblem.svg" alt=""></div>
+                    <p>NOVA LAND</p>
+                    <b data-passport-cover-name>EXPLORER</b>
+                  </div>
                 </div>
               </div>
             </div>
-            <button class="passport-message" type="button" data-eve-skip="passport" aria-live="polite" disabled><span>EVE</span><span data-passport-message data-i18n="intro.passport.issue">Explorer Passport를 발급합니다.</span></button>
+            <button class="passport-message" type="button" data-eve-skip="passport" disabled><span>EVE</span><span data-passport-message data-i18n="intro.passport.issue">Explorer Passport 발급 중...</span></button>
             <div class="passport-route" data-passport-route hidden>
               <span class="passport-route__line" aria-hidden="true"></span>
               <button class="passport-route__control" type="button" data-passport-enter-map>

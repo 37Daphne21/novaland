@@ -2,6 +2,7 @@ import { explorerProfiles, getExplorerProfile } from './data.js';
 import { t } from './locales.js';
 
 const STORAGE_KEY = 'novaLandExplorer';
+const INTRO_STATE_KEY = 'novaLandIntroState';
 
 function getCharacterCount(value) {
   return Array.from(value).length;
@@ -52,6 +53,18 @@ function readSavedExplorer() {
       return null;
     }
     return { ...value, gender: explorerProfiles[value.gender] ? value.gender : 'female' };
+  } catch {
+    return null;
+  }
+}
+
+function readSavedIntroState() {
+  try {
+    const value = JSON.parse(window.sessionStorage.getItem(INTRO_STATE_KEY));
+    if (!value?.scene || !['welcome', 'signal', 'register', 'passport'].includes(value.scene)) {
+      return null;
+    }
+    return value;
   } catch {
     return null;
   }
@@ -120,8 +133,39 @@ export function createIntroController({ onComplete, onRouteChange }) {
     return { screen: 'intro', scene, ...(step ? { step } : {}) };
   }
 
+  function saveIntroState(route) {
+    if (route?.screen !== 'intro') {
+      return;
+    }
+
+    const selectedGender = genderInputs.find((input) => input.checked)?.value;
+    const state = {
+      scene: route.scene,
+      ...(route.step ? { step: route.step } : {}),
+      name: nameInput?.value ?? '',
+      ...(explorerProfiles[selectedGender] ? { gender: selectedGender } : {}),
+      ...(route.scene === 'passport' && pendingExplorer ? { explorer: pendingExplorer } : {})
+    };
+
+    try {
+      window.sessionStorage.setItem(INTRO_STATE_KEY, JSON.stringify(state));
+    } catch {
+      // 임시 저장이 제한된 환경에서는 현재 Intro 흐름만 유지한다.
+    }
+  }
+
+  function clearIntroState() {
+    try {
+      window.sessionStorage.removeItem(INTRO_STATE_KEY);
+    } catch {
+      // 저장소 접근이 제한되어도 화면 초기화는 계속한다.
+    }
+  }
+
   function recordRoute(scene, step = null, options = {}) {
-    onRouteChange?.(createRoute(scene, step), options);
+    const route = createRoute(scene, step);
+    saveIntroState(route);
+    onRouteChange?.(route, options);
   }
 
   function cancelPendingEffects() {
@@ -235,18 +279,20 @@ export function createIntroController({ onComplete, onRouteChange }) {
     finishPassportMessage();
   }
 
-  function typePassportMessage(message, onComplete) {
+  function typePassportMessage(message, onComplete, options = {}) {
     if (!passportMessage || !message) {
       onComplete?.();
       return;
     }
 
+    const previousMessage = options.append ? passportMessage.textContent.trim() : '';
+    const completeMessage = previousMessage ? `${previousMessage}\n${message}` : message;
     window.clearInterval(passportTypingTimer);
     passportTypingTimer = null;
     passportMessage.parentElement?.classList.remove('is-typing');
-    passportMessage.setAttribute('aria-label', message.replace(/\n/g, ' '));
+    passportMessage.setAttribute('aria-label', completeMessage.replace(/\n/g, ' '));
     announce(message.replace(/\n/g, ' '));
-    passportTypingState = { message, onComplete };
+    passportTypingState = { message: completeMessage, onComplete };
     passportMessage.parentElement?.removeAttribute('disabled');
 
     if (prefersReducedMotion) {
@@ -256,9 +302,11 @@ export function createIntroController({ onComplete, onRouteChange }) {
 
     const visualMessage = document.createElement('span');
     const characters = Array.from(message);
+    const interval = options.interval || 34;
     let characterIndex = 0;
 
     visualMessage.setAttribute('aria-hidden', 'true');
+    visualMessage.textContent = previousMessage ? `${previousMessage}\n` : '';
     passportMessage.replaceChildren(visualMessage);
     passportMessage.parentElement?.classList.add('is-typing');
 
@@ -269,7 +317,7 @@ export function createIntroController({ onComplete, onRouteChange }) {
       if (characterIndex >= characters.length) {
         finishPassportMessage();
       }
-    }, 34);
+    }, interval);
   }
 
   function playWelcomeIntro() {
@@ -337,6 +385,24 @@ export function createIntroController({ onComplete, onRouteChange }) {
     }, 800);
   }
 
+  function showSceneImmediate(name) {
+    const nextScene = scenes.get(name);
+    if (!nextScene) {
+      return;
+    }
+
+    scenes.forEach((scene) => {
+      const isActive = scene === nextScene;
+      scene.hidden = !isActive;
+      scene.classList.toggle('is-active', isActive);
+      scene.classList.remove('is-leaving');
+    });
+    currentScene = nextScene;
+    if (settingsButton) {
+      settingsButton.hidden = name === 'welcome';
+    }
+  }
+
   function handleStart() {
     if (isTransitioning) {
       return;
@@ -398,6 +464,10 @@ export function createIntroController({ onComplete, onRouteChange }) {
       if (nameError) {
         nameError.textContent = '';
       }
+    }
+    if (currentScene === scenes.get('register')) {
+      const step = registrationIdentityStep?.hidden === false ? 'identity' : 'name';
+      saveIntroState(createRoute('register', step));
     }
   }
 
@@ -518,6 +588,7 @@ export function createIntroController({ onComplete, onRouteChange }) {
       genderError.textContent = '';
     }
     registerSubmitButton?.removeAttribute('disabled');
+    saveIntroState(createRoute('register', 'identity'));
     announce(t('intro.status.identitySelected', { gender: t(`intro.gender.${event.currentTarget.value}`) }));
   }
 
@@ -560,27 +631,18 @@ export function createIntroController({ onComplete, onRouteChange }) {
     if (passportStatus) {
       passportStatus.textContent = 'PENDING';
     }
-    if (passportMessage) {
-      passportMessage.textContent = t('intro.passport.issue');
-    }
     showScene('passport');
     recordRoute('passport');
-    announce(t('intro.passport.issue'));
+    typePassportMessage(t('intro.passport.issue'), null, { interval: 20 });
 
     delay(() => {
       passport?.classList.add('is-open');
-      if (passportMessage) {
-        passportMessage.textContent = t('intro.passport.verify');
-      }
-      announce(t('intro.passport.verify'));
+      typePassportMessage(t('intro.passport.verify'), null, { append: true, interval: 20 });
     }, 1700);
     delay(() => passport?.classList.add('is-mobile-identity'), 2600);
     delay(() => {
       passport?.classList.add('is-writing');
-      if (passportMessage) {
-        passportMessage.textContent = t('intro.passport.record', { name: explorer.name });
-      }
-      announce(t('intro.passport.recordAnnounce', { name: explorer.name }));
+      typePassportMessage(t('intro.passport.record', { name: explorer.name }), null, { append: true, interval: 20 });
     }, 2800);
     delay(() => {
       passport?.classList.add('is-stamped');
@@ -615,6 +677,7 @@ export function createIntroController({ onComplete, onRouteChange }) {
       } catch {
         // 저장이 제한된 환경에서도 현재 진입 흐름은 이어간다.
       }
+      clearIntroState();
       pendingExplorer = null;
       onComplete(completedExplorer, { focusMap: true });
     }, 2050);
@@ -704,6 +767,70 @@ export function createIntroController({ onComplete, onRouteChange }) {
     announce(t('intro.passport.ready'));
   }
 
+  function restoreIntroState(savedState) {
+    const route = createRoute(savedState.scene, savedState.step);
+    const savedName = typeof savedState.name === 'string' ? savedState.name : '';
+    const nameResult = validateName(savedName);
+    const savedGender = explorerProfiles[savedState.gender] ? savedState.gender : '';
+
+    if (nameInput) {
+      nameInput.value = savedName;
+    }
+    if (nameCount) {
+      nameCount.textContent = String(getCharacterCount(savedName));
+    }
+    validatedName = nameResult.error ? '' : nameResult.name;
+    genderInputs.forEach((input) => {
+      input.checked = input.value === savedGender;
+    });
+
+    let sceneName = route.scene;
+    let step = route.step === 'identity' ? 'identity' : 'name';
+    let focusTarget = startButton;
+
+    if (sceneName === 'signal') {
+      prepareSignalScene();
+      focusTarget = respondButton;
+    } else if (sceneName === 'register') {
+      if (step === 'identity' && !validatedName) {
+        step = 'name';
+      }
+      prepareRegisterScene(step);
+      focusTarget = step === 'identity'
+        ? genderInputs.find((input) => input.checked) || genderInputs[0]
+        : nameInput;
+    } else if (sceneName === 'passport') {
+      const explorer = savedState.explorer;
+      if (!explorer?.name || !explorer?.id || !explorerProfiles[explorer.gender]) {
+        sceneName = 'register';
+        step = validatedName ? 'identity' : 'name';
+        prepareRegisterScene(step);
+        focusTarget = step === 'identity'
+          ? genderInputs.find((input) => input.checked) || genderInputs[0]
+          : nameInput;
+      } else {
+        pendingExplorer = explorer;
+        validatedName = explorer.name;
+        if (nameInput) {
+          nameInput.value = explorer.name;
+        }
+        genderInputs.forEach((input) => {
+          input.checked = input.value === explorer.gender;
+        });
+        preparePassportScene();
+        focusTarget = passportEnterMap;
+      }
+    } else {
+      sceneName = 'welcome';
+      playWelcomeIntro();
+      announce(t('intro.status.welcome'));
+    }
+
+    showSceneImmediate(sceneName);
+    recordRoute(sceneName, sceneName === 'register' ? step : null, { replace: true });
+    delay(() => focusTarget?.focus({ preventScroll: true }), 160);
+  }
+
   function navigate(route) {
     if (route?.screen !== 'intro' || !scenes.has(route.scene)) {
       return;
@@ -719,6 +846,7 @@ export function createIntroController({ onComplete, onRouteChange }) {
       announce(route.step === 'identity'
         ? t('intro.status.chooseIdentity')
         : t('intro.status.returnName'));
+      saveIntroState(route);
       return;
     }
 
@@ -740,6 +868,7 @@ export function createIntroController({ onComplete, onRouteChange }) {
     }
 
     showScene(route.scene, focusTarget);
+    saveIntroState(route);
   }
 
   function refreshLanguage() {
@@ -778,25 +907,38 @@ export function createIntroController({ onComplete, onRouteChange }) {
       return;
     }
 
+    window.clearInterval(passportTypingTimer);
+    passportTypingTimer = null;
+    passportTypingState = null;
+    passportMessage.parentElement?.classList.remove('is-typing');
+    passportMessage.parentElement?.setAttribute('disabled', '');
+
+    let message = t('intro.passport.issue');
+    let announcement = message;
     if (passport?.classList.contains('is-stamped')) {
-      passportMessage.textContent = t('intro.passport.complete', { name: pendingExplorer.name });
-      announce(t('intro.passport.ready'));
+      message = t('intro.passport.complete', { name: pendingExplorer.name });
+      announcement = t('intro.passport.ready');
     } else if (passport?.classList.contains('is-writing')) {
-      passportMessage.textContent = t('intro.passport.record', { name: pendingExplorer.name });
-      announce(t('intro.passport.recordAnnounce', { name: pendingExplorer.name }));
+      message = [
+        t('intro.passport.issue'),
+        t('intro.passport.verify'),
+        t('intro.passport.record', { name: pendingExplorer.name })
+      ].join('\n');
+      announcement = t('intro.passport.record', { name: pendingExplorer.name });
     } else if (passport?.classList.contains('is-open')) {
-      passportMessage.textContent = t('intro.passport.verify');
-      announce(t('intro.passport.verify'));
-    } else {
-      passportMessage.textContent = t('intro.passport.issue');
-      announce(t('intro.passport.issue'));
+      message = [t('intro.passport.issue'), t('intro.passport.verify')].join('\n');
+      announcement = t('intro.passport.verify');
     }
+    passportMessage.textContent = message;
+    passportMessage.setAttribute('aria-label', message.replace(/\n/g, ' '));
+    announce(announcement);
   }
 
   function start() {
     const forceIntro = new URLSearchParams(window.location.search).get('intro') === '1';
     const savedExplorer = readSavedExplorer();
     if (savedExplorer && !forceIntro) {
+      clearIntroState();
       screen.hidden = true;
       screen.classList.remove('is-active');
       onComplete(savedExplorer, { focusMap: false });
@@ -805,6 +947,11 @@ export function createIntroController({ onComplete, onRouteChange }) {
 
     screen.hidden = false;
     screen.classList.add('is-active');
+    const savedIntroState = readSavedIntroState();
+    if (savedIntroState && !savedExplorer) {
+      restoreIntroState(savedIntroState);
+      return;
+    }
     playWelcomeIntro();
     announce(t('intro.status.welcome'));
     recordRoute('welcome', null, { replace: true });
@@ -812,6 +959,7 @@ export function createIntroController({ onComplete, onRouteChange }) {
 
   function reset() {
     window.localStorage.removeItem(STORAGE_KEY);
+    clearIntroState();
   }
 
   startButton?.addEventListener('click', handleStart);
