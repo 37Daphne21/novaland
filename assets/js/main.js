@@ -21,6 +21,7 @@ const controlRoomType = document.querySelector('#control-room-type');
 const controlRoomStatus = document.querySelector('[data-control-room-status]');
 const controlRoomObjective = document.querySelector('[data-control-room-objective]');
 const controlRoomStart = document.querySelector('[data-mission-open]');
+const controlRoomMapButton = document.querySelector('[data-control-room-map]');
 const explorerProfileName = document.querySelector('#explorer-profile-name');
 const explorerProfileImage = document.querySelector('.explorer-profile__image');
 const appBackButton = document.querySelector('[data-app-back]');
@@ -63,6 +64,8 @@ function updateExplorer(explorer) {
 function showScreen(screenName) {
   if (screenName !== 'control-room') {
     controlRoomEve.cancel();
+  } else if (appBackButton) {
+    appBackButton.hidden = true;
   }
   screens.forEach((screen) => {
     const isActive = screen.dataset.screen === screenName;
@@ -225,6 +228,7 @@ function applyNavigationRoute(route, { previousRoute, source } = {}) {
 }
 
 navigation = createNavigationController({ button: appBackButton, onNavigate: applyNavigationRoute });
+controlRoomMapButton?.addEventListener('click', () => navigation?.back());
 
 const settings = createSettingsController({ showToast: toast.show });
 

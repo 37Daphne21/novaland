@@ -26,6 +26,10 @@
   <symbol id="icon-arrow-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
     <path d="M21 12H3M11 4l-8 8 8 8"></path>
   </symbol>
+  <symbol id="icon-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="m3 11 9-8 9 8"></path>
+    <path d="M5 10v10h14V10M9 20v-6h6v6"></path>
+  </symbol>
   <symbol id="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
     <path d="m6 6 12 12M18 6 6 18"></path>
   </symbol>
@@ -43,5 +47,16 @@
     <path d="m12 9.5-3.6 11h7.2L12 9.5Z"></path>
     <path d="M9.8 16.2h4.4M9.1 18.5h5.8"></path>
     <circle cx="12" cy="13.3" r=".8" fill="currentColor" stroke="none"></circle>
+  </symbol>
+  <symbol id="icon-rail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="m8 3-4 18M16 3l4 18M7 7h10M6 11h12M5 15h14M4 19h16"></path>
+  </symbol>
+  <symbol id="icon-scan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="3"></circle>
+    <path d="M4 9V5a1 1 0 0 1 1-1h4M15 4h4a1 1 0 0 1 1 1v4M20 15v4a1 1 0 0 1-1 1h-4M9 20H5a1 1 0 0 1-1-1v-4"></path>
+  </symbol>
+  <symbol id="icon-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 3 5 6v5c0 4.8 2.8 8.1 7 10 4.2-1.9 7-5.2 7-10V6Z"></path>
+    <path d="m9 12 2 2 4-4"></path>
   </symbol>
 </svg>

@@ -143,6 +143,7 @@
 }
 
 .ui-panel {
+  --ui-panel-padding: var(--space-5);
   border: .0625rem solid var(--color-line);
   border-radius: var(--radius-lg);
   background: linear-gradient(145deg, rgba(11, 27, 45, .86), var(--color-surface));
@@ -150,11 +151,17 @@
   backdrop-filter: blur(1rem);
 }
 
+.ui-panel--content {
+  padding: var(--ui-panel-padding);
+}
+
 .ui-panel__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
+  padding-bottom: var(--ui-panel-header-padding, var(--space-3));
+  border-bottom: .0625rem solid var(--ui-panel-header-divider, rgba(140, 114, 255, .18));
 }
 
 .ui-panel__heading {
@@ -183,9 +190,99 @@
 
 .ui-panel__title {
   color: var(--color-text);
-  font-size: .9375rem;
+  font-size: 1rem;
   font-weight: 700;
+  line-height: 1.2;
   letter-spacing: .08em;
+}
+
+.ui-panel__subtitle {
+  color: var(--color-text);
+  font-size: .875rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.ui-panel__description {
+  color: var(--color-text-subtle);
+  font-size: .8125rem;
+  line-height: 1.65;
+}
+
+.ui-lined-list {
+  --ui-lined-list-divider: rgba(140, 114, 255, .14);
+  display: grid;
+}
+
+.ui-lined-list__item {
+  padding: var(--space-2) 0;
+  border-bottom: .0625rem solid var(--ui-lined-list-divider);
+}
+
+.ui-lined-list__item:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.ui-card-list {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.ui-info-list {
+  --ui-info-primary-size: .8125rem;
+  --ui-info-secondary-size: .6875rem;
+}
+
+.ui-info-list__item {
+  display: grid;
+  grid-template-columns: 1.75rem minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.ui-info-list__icon {
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  aspect-ratio: 1;
+  border: .0625rem solid rgba(185, 172, 255, .54);
+  border-radius: 50%;
+  color: #c4b8ff;
+  background: radial-gradient(circle, rgba(140, 114, 255, .18), rgba(8, 13, 34, .36) 68%);
+  box-shadow: inset 0 0 1rem rgba(140, 114, 255, .12), 0 0 .8rem rgba(140, 114, 255, .12);
+}
+
+.ui-info-list__icon--plain {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+
+.ui-info-list__icon .ui-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.ui-info-list__content {
+  display: grid;
+  gap: .125rem;
+  min-width: 0;
+}
+
+.ui-info-list__title,
+.ui-info-list__value {
+  color: var(--color-text);
+  font-size: var(--ui-info-primary-size);
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.ui-info-list__label,
+.ui-info-list__description {
+  color: var(--color-text-muted);
+  font-size: var(--ui-info-secondary-size);
+  line-height: 1.5;
 }
 
 .ui-button {

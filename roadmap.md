@@ -94,6 +94,9 @@
 상태: PC 전체 기능 Flow 연결 완료, 화면별 Visual Development 진행 중
 
 - [x] Control Room 공통 Layout 재설계
+- [x] NOVA COASTER PC 관제실 Production Background 적용
+- [x] NOVA COASTER 관제실 2560×1080 Production Background 확정
+- [x] NOVA COASTER Gate·관제 Console·Mission Start Visual Development
 - [x] 시설별 Theme Modifier
 - [x] EVE와 Mission Objective
 - [x] 시설 상태 Panel
