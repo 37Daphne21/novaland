@@ -13,6 +13,9 @@ export function createMissionController({ getExplorer, onComplete, onExit, onRec
   const status = dialog?.querySelector('[data-mission-status]');
   const startButton = dialog?.querySelector('[data-mission-start]');
   const pauseButton = dialog?.querySelector('[data-mission-pause]');
+  const countdownPanel = dialog?.querySelector('[data-mission-phase="countdown"]');
+  const countdownElement = dialog?.querySelector('[data-mission-countdown]');
+  const countdownMessage = dialog?.querySelector('[data-mission-countdown-message]');
   const repairRoot = dialog?.querySelector('[data-coaster-repair]');
   const testingStatus = dialog?.querySelector('[data-testing-status]');
   const testingItems = new Map(TEST_STEPS.map((step) => [step, dialog?.querySelector(`[data-test-step="${step}"]`)]));
@@ -23,6 +26,7 @@ export function createMissionController({ getExplorer, onComplete, onExit, onRec
   let remaining = MISSION_DURATION;
   let timerId = null;
   let countdownId = null;
+  let countdownCompletionId = null;
   let stageTransitionId = null;
   let repair = null;
   let testingTimerIds = [];
@@ -56,7 +60,9 @@ export function createMissionController({ getExplorer, onComplete, onExit, onRec
 
   function stopCountdown() {
     window.clearInterval(countdownId);
+    window.clearTimeout(countdownCompletionId);
     countdownId = null;
+    countdownCompletionId = null;
   }
 
   function stopStageTransition() {
@@ -104,31 +110,52 @@ export function createMissionController({ getExplorer, onComplete, onExit, onRec
     }, 1000);
   }
 
+  function renderCountdown(nextStep, nextValue) {
+    if (!countdownPanel || !countdownElement) {
+      return;
+    }
+    countdownPanel.classList.remove('is-changing');
+    countdownPanel.setAttribute('data-countdown-step', nextStep);
+    countdownElement.textContent = nextValue;
+    void countdownPanel.offsetWidth;
+    countdownPanel.classList.add('is-changing');
+  }
+
   function beginCountdown() {
     stopCountdown();
     stopStageTransition();
     setPhase('countdown');
     save({ attempts: (progress.missions[facility.id].attempts ?? 0) + 1 });
     let count = 3;
-    const countElement = dialog?.querySelector('[data-mission-countdown]');
-    if (countElement) {
-      countElement.textContent = count;
+    countdownPanel?.classList.remove('is-online');
+    renderCountdown(String(count), count);
+    if (countdownMessage) {
+      countdownMessage.textContent = t('mission.countdown');
     }
     countdownId = window.setInterval(() => {
       count -= 1;
       if (count <= 0) {
         window.clearInterval(countdownId);
-        remaining = MISSION_DURATION;
-        resumeMode = 'playing';
-        repair.reset();
-        renderTimer();
-        setPhase('playing');
-        startTimer();
-        repair.focus();
-      } else if (countElement) {
-        countElement.textContent = count;
+        countdownId = null;
+        countdownPanel?.classList.add('is-online');
+        renderCountdown('ready', 'ONLINE');
+        if (countdownMessage) {
+          countdownMessage.textContent = t('mission.countdownReady');
+        }
+        countdownCompletionId = window.setTimeout(() => {
+          countdownCompletionId = null;
+          remaining = MISSION_DURATION;
+          resumeMode = 'playing';
+          repair.reset();
+          renderTimer();
+          setPhase('playing');
+          startTimer();
+          repair.focus();
+        }, 650);
+      } else {
+        renderCountdown(String(count), count);
       }
-    }, 650);
+    }, 800);
   }
 
   function pause() {
@@ -240,6 +267,7 @@ export function createMissionController({ getExplorer, onComplete, onExit, onRec
     stopStageTransition();
     stopTesting();
     facility = nextFacility;
+    dialog.dataset.facility = facility.id;
     progress = readProgress(getExplorer?.());
     const savedMission = progress.missions[facility.id];
     if (progress.facilities[facility.id]?.status === 'completed') {

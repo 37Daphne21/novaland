@@ -1507,6 +1507,9 @@
 
 .mission-dialog::backdrop { background: rgba(1, 4, 12, .86); backdrop-filter: blur(.8rem); }
 .mission-flow { display: grid; grid-template-rows: auto minmax(0, 1fr); height: min(45rem, calc(100svh - 2rem)); padding: var(--space-6); border-color: rgba(159, 140, 255, .5); background: radial-gradient(circle at 50% 0, rgba(140, 114, 255, .14), transparent 38%), linear-gradient(145deg, rgba(11, 17, 39, .98), rgba(3, 9, 21, .98)); }
+.mission-dialog:is([data-phase="countdown"], [data-phase="playing"]) { width: 100%; height: 100%; max-height: none; margin: 0; }
+.mission-dialog:is([data-phase="countdown"], [data-phase="playing"])::backdrop { background: #02040d; backdrop-filter: none; }
+.mission-dialog:is([data-phase="countdown"], [data-phase="playing"]) .mission-flow { height: 100svh; border: 0; border-radius: 0; }
 .mission-flow__header { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); padding-bottom: var(--space-5); border-bottom: .0625rem solid var(--color-line); }
 .mission-flow__header h2 { font-family: var(--font-display); font-size: 1.35rem; letter-spacing: .1em; }
 .mission-flow__meta { display: flex; align-items: center; gap: var(--space-4); color: var(--color-text-muted); font-family: var(--font-numeric); }
@@ -1527,9 +1530,34 @@
 .mission-guide__content li > span { display: grid; gap: .15rem; }
 .mission-guide__content li strong { color: var(--color-text); font-size: .85rem; }
 .mission-guide__content li small { color: var(--color-text-muted); line-height: 1.5; }
-.mission-countdown { display: grid; place-content: center; justify-items: center; color: #a693ff; font-family: var(--font-display); letter-spacing: .16em; }
-.mission-countdown strong { font-size: clamp(6rem, 14vw, 11rem); text-shadow: 0 0 3rem rgba(140, 114, 255, .8); }
-.mission-countdown p { color: var(--color-text-muted); font-family: var(--font-body); letter-spacing: 0; }
+.mission-dialog[data-phase="countdown"] .mission-flow { position: relative; display: block; padding: 0; background: #02040d; overflow: hidden; }
+.mission-dialog[data-phase="countdown"] .mission-flow::before,
+.mission-dialog[data-phase="countdown"] .mission-flow::after { position: absolute; inset: 0; content: ""; pointer-events: none; }
+.mission-dialog[data-phase="countdown"] .mission-flow::before { background: url("../images/control-room/bg-control-room-coaster-final.webp") center / cover no-repeat; filter: brightness(.48) saturate(.82); transform: scale(1.025); }
+.mission-dialog[data-phase="countdown"] .mission-flow::after { background: radial-gradient(circle at 50% 50%, rgba(21, 17, 63, .16) 0 16%, rgba(2, 4, 13, .42) 48%, rgba(1, 3, 10, .88) 100%), linear-gradient(180deg, rgba(2, 4, 13, .38), rgba(2, 4, 13, .18) 46%, rgba(2, 4, 13, .7)); box-shadow: inset 0 0 10rem rgba(0, 2, 10, .88); }
+.mission-dialog[data-phase="countdown"] .mission-flow__header { display: none; }
+.mission-countdown { position: relative; z-index: 1; display: grid; place-items: center; height: 100%; overflow: hidden; color: #b9acff; font-family: var(--font-display); text-align: center; letter-spacing: .16em; }
+.mission-countdown::before { position: absolute; width: min(58rem, 74vw); aspect-ratio: 1; border: .0625rem solid rgba(159, 140, 255, .12); border-radius: 50%; background: repeating-radial-gradient(circle, transparent 0 12%, rgba(140, 114, 255, .08) 12.2% 12.5%, transparent 12.7% 20%); content: ""; animation: mission-countdown-radar 9s linear infinite; }
+.mission-countdown__content { position: relative; display: grid; justify-items: center; width: min(42rem, calc(100% - 2rem)); padding: clamp(2rem, 5vw, 4rem); border-block: .0625rem solid rgba(159, 140, 255, .28); background: radial-gradient(circle, rgba(12, 20, 48, .8), rgba(3, 8, 22, .22) 68%, transparent); }
+.mission-countdown__eyebrow { color: #c8c0ff; font-size: clamp(.75rem, 1.1vw, 1rem); text-shadow: 0 0 1rem rgba(140, 114, 255, .65); }
+.mission-countdown__display { position: relative; display: grid; place-items: center; width: clamp(13rem, 22vw, 18rem); aspect-ratio: 1; margin: clamp(1.5rem, 4vh, 2.5rem) 0; border: .0625rem solid rgba(159, 140, 255, .38); border-radius: 50%; background: radial-gradient(circle, rgba(140, 114, 255, .2), rgba(9, 14, 38, .56) 44%, transparent 68%); box-shadow: 0 0 4rem rgba(83, 65, 188, .2), inset 0 0 2.5rem rgba(140, 114, 255, .12); }
+.mission-countdown__display::before,
+.mission-countdown__display::after,
+.mission-countdown__orbit { position: absolute; border-radius: 50%; content: ""; }
+.mission-countdown__display::before { inset: 10%; border: .12rem solid rgba(185, 172, 255, .58); border-inline-color: transparent; animation: mission-countdown-spin 2.4s linear infinite; }
+.mission-countdown__display::after { inset: 22%; border: .0625rem dashed rgba(203, 194, 255, .5); animation: mission-countdown-spin 4s linear infinite reverse; }
+.mission-countdown__orbit { inset: -7%; border: .0625rem solid rgba(159, 140, 255, .16); box-shadow: 0 0 2rem rgba(140, 114, 255, .16); }
+.mission-countdown strong { position: relative; color: #f4f1ff; font-family: var(--font-numeric); font-size: clamp(5rem, 11vw, 8.5rem); line-height: 1; letter-spacing: 0; text-shadow: 0 0 1rem #8c72ff, 0 0 3.5rem rgba(140, 114, 255, .9); }
+.mission-countdown.is-changing strong { animation: mission-countdown-number .8s ease both; }
+.mission-countdown.is-online strong { color: #bff8ff; font-family: var(--font-display); font-size: clamp(1.8rem, 4vw, 3.2rem); letter-spacing: .08em; text-shadow: 0 0 1rem #52e2ff, 0 0 3.5rem rgba(82, 226, 255, .72); }
+.mission-countdown p { color: #d2d4e1; font-family: var(--font-body); font-size: clamp(.9rem, 1.25vw, 1.1rem); letter-spacing: 0; }
+.mission-countdown__sequence { display: grid; grid-template-columns: repeat(3, 4.5rem); gap: .4rem; margin-top: var(--space-5); }
+.mission-countdown__sequence i { height: .22rem; border: .0625rem solid rgba(159, 140, 255, .3); background: rgba(140, 114, 255, .08); }
+.mission-countdown[data-countdown-step="3"] .mission-countdown__sequence i:nth-child(-n+1),
+.mission-countdown[data-countdown-step="2"] .mission-countdown__sequence i:nth-child(-n+2),
+.mission-countdown[data-countdown-step="1"] .mission-countdown__sequence i,
+.mission-countdown[data-countdown-step="ready"] .mission-countdown__sequence i { border-color: rgba(185, 172, 255, .82); background: linear-gradient(90deg, #725bf2, #b9acff); box-shadow: 0 0 .75rem rgba(140, 114, 255, .7); }
+.mission-countdown[data-countdown-step="ready"] .mission-countdown__sequence i { border-color: rgba(82, 226, 255, .82); background: linear-gradient(90deg, #159ece, #52e2ff); box-shadow: 0 0 .75rem rgba(82, 226, 255, .72); }
 .mission-play { position: relative; display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(20rem, .75fr); gap: var(--space-5); padding: var(--space-5) 0 0; overflow: hidden; }
 .rail-repair__network, .rail-repair__workspace { min-width: 0; padding: var(--space-5); border: .0625rem solid rgba(159, 140, 255, .28); border-radius: var(--radius-lg); background: rgba(3, 8, 20, .66); }
 .rail-repair__network > header, .rail-repair__workspace > header { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-4); }
@@ -1586,6 +1614,9 @@
 .mission-flow.is-repair-error .rail-repair__workspace { animation: mission-repair-error .35s ease; }
 
 @keyframes rail-fault-pulse { 50% { box-shadow: 0 0 1.8rem rgba(255, 92, 132, .9); } }
+@keyframes mission-countdown-radar { to { transform: rotate(360deg); } }
+@keyframes mission-countdown-spin { to { transform: rotate(360deg); } }
+@keyframes mission-countdown-number { 0% { opacity: 0; transform: scale(.72); } 42% { opacity: 1; transform: scale(1.08); } 100% { opacity: 1; transform: scale(1); } }
 @keyframes mission-train-test { 0% { transform: translateX(0); } 70%, 100% { transform: translateX(calc(min(34rem, 80vw) - 5rem)); } }
 @keyframes mission-repair-error { 25%, 75% { transform: translateX(-.35rem); } 50% { transform: translateX(.35rem); } }
 .mission-result { display: grid; place-content: center; justify-items: center; padding: var(--space-8); text-align: center; }
@@ -1631,7 +1662,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .rail-repair__faults li.is-current, .mission-testing__train i, .mission-flow.is-repair-error .rail-repair__workspace { animation: none; }
+  .mission-countdown::before, .mission-countdown__display::before, .mission-countdown__display::after, .mission-countdown strong, .rail-repair__faults li.is-current, .mission-testing__train i, .mission-flow.is-repair-error .rail-repair__workspace { animation: none; }
 }
 
 @media (min-width: 75rem) and (min-height: 62.5rem) {

@@ -100,8 +100,11 @@
 - [x] 시설별 Theme Modifier
 - [x] EVE와 Mission Objective
 - [x] 시설 상태 Panel
-- [x] Mission Guide 재설계
-- [x] Countdown
+- [x] Mission Guide 기본 구조와 기능 Flow
+- [x] Countdown 기본 기능 Flow
+- [x] NOVA COASTER Full-screen Countdown Visual Development
+- [ ] NOVA COASTER Full-screen Play HUD Visual Development
+- [ ] 실제 Play Asset 기반 Mission Guide Visual Development
 - [x] 세 고장 구간을 표시하는 Rail Network Play 화면
 - [x] 복구 단계 1: Rail 조각 선택
 - [x] 복구 단계 2: Rail 조각 선택과 회전

@@ -904,12 +904,14 @@ Mission Objective는 긴 Checklist가 아니라 현재 해야 할 일을 설명�
     → Explorer Archive
     → MAP
 
-Mission Guide, Countdown, Pause, Fail과 Complete는 Control Room 위의 공통 Overlay로 제공하며 별도 페이지로 만들지 않는다.
+Mission Guide, Countdown, Play, Pause, Fail과 Complete는 Control Room 위의 공통 Mission Layer로 제공하며 별도 페이지로 만들지 않는다. `dialog`와 공통 Mission Flow는 유지하되 화면 단계에 따라 표현 범위를 구분한다. Mission Guide는 Control Room이 뒤에 남는 큰 Overlay Panel로, Countdown과 Play는 화면 전체를 사용하는 Full-screen Layer로 제공한다. Pause, Fail과 Complete는 Full-screen Play 위의 집중형 Panel로 표시한다.
 
 
 ### Mission Guide
 
 목표를 반복하는 설명 화면이 아니라 30초 이내에 조작을 이해시키는 튜토리얼이다.
+
+Mission Guide의 최종 Visual Development는 Play UI와 실제 조작 방식이 확정된 뒤 진행한다. Guide의 Rail 조각, 선택 상태, 회전과 연결 예시는 실제 Play 화면과 동일한 Asset과 상태 표현을 사용한다.
 
 - 시설과 문제 상황
 - Mission 목표
@@ -922,7 +924,9 @@ Mission Guide, Countdown, Pause, Fail과 Complete는 Control Room 위의 공통 
 
 ### Countdown
 
-시설 시스템이 활성화되는 짧은 연출이다. Nova는 Rail, Luna는 Light, Spark는 Energy, Wonder는 Stage 준비를 중심으로 표현한다.
+시설 시스템이 활성화되는 짧은 Full-screen 연출이다. 진입한 Control Room의 전용 배경을 화면 전체에 은은하게 유지하고, 배경 위 UI는 어둡게 정리해 중앙 Countdown과 활성화 Motion에 시선이 모이게 한다. 별도의 작은 Popup이나 공통 무배경 화면으로 분리하지 않는다.
+
+시설마다 공통 Countdown 구조와 Timing은 유지하되 배경, Theme Color와 활성화 Motion을 다르게 적용한다. Nova는 Rail Network 점등, Luna는 Light 확산, Spark는 Energy 충전, Wonder는 Stage 준비를 중심으로 표현한다. 숫자 `3 → 2 → 1` 이후 각 시설의 시스템 활성화가 완료되면 같은 Full-screen Layer에서 Play HUD로 자연스럽게 전환한다.
 
 
 ### Play

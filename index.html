@@ -300,7 +300,14 @@
           <div class="mission-guide__signal" aria-hidden="true"><span></span><i></i><i></i></div>
           <div class="mission-guide__content"><span class="ui-panel__eyebrow">RESTORATION GUIDE</span><h3 data-i18n="mission.guideTitle">세 곳의 고장 구간을 복구하세요.</h3><p data-i18n="mission.guideDescription">정상 Rail Network는 유지됩니다. 표시된 고장 구간만 단계적으로 연결한 뒤 코스터 안전 점검을 진행합니다.</p><ol><li><b>01</b><span><strong data-i18n="mission.guideStep1Title">조각 선택</strong><small data-i18n="mission.guideStep1">알맞은 Rail 조각을 선택합니다.</small></span></li><li><b>02</b><span><strong data-i18n="mission.guideStep2Title">선택과 회전</strong><small data-i18n="mission.guideStep2">조각을 선택하고 연결 방향을 맞춥니다.</small></span></li><li><b>03</b><span><strong data-i18n="mission.guideStep3Title">조합과 순서</strong><small data-i18n="mission.guideStep3">두 조각을 올바른 순서와 방향으로 연결합니다.</small></span></li></ol><button class="ui-button ui-button--primary" type="button" data-mission-start data-i18n="mission.begin">복구 시작</button></div>
         </section>
-        <section class="mission-phase mission-countdown" data-mission-phase="countdown" hidden><span>SYSTEM LINK</span><strong data-mission-countdown>3</strong><p data-i18n="mission.countdown">Rail Network를 활성화합니다.</p></section>
+        <section class="mission-phase mission-countdown" data-mission-phase="countdown" data-countdown-step="3" role="status" aria-live="polite" aria-atomic="true" hidden>
+          <div class="mission-countdown__content">
+            <span class="mission-countdown__eyebrow" data-i18n="mission.countdownEyebrow">레일 시스템 활성화</span>
+            <div class="mission-countdown__display"><span class="mission-countdown__orbit" aria-hidden="true"></span><strong data-mission-countdown>3</strong></div>
+            <p data-mission-countdown-message data-i18n="mission.countdown">Rail Network를 활성화합니다.</p>
+            <div class="mission-countdown__sequence" aria-hidden="true"><i></i><i></i><i></i></div>
+          </div>
+        </section>
         <section class="mission-phase mission-play rail-repair" data-mission-phase="playing" hidden>
           <section class="rail-repair__network" aria-labelledby="rail-network-title">
             <header><div><span class="ui-panel__eyebrow">RAIL NETWORK</span><h3 id="rail-network-title" data-i18n="mission.networkTitle">전체 연결 경로</h3></div><strong data-repair-connection>9 / 12</strong></header>
