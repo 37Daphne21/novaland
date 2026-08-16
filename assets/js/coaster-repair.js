@@ -205,7 +205,7 @@ export function createCoasterRepair(root, { onChange, onStageComplete } = {}) {
       stageLabel.textContent = t('mission.repairStage', { current: state.stage + 1, total: STAGES.length });
     }
     if (connection) {
-      connection.textContent = `${12 + completedCount} / 15`;
+      connection.textContent = `${9 + completedCount} / 12`;
     }
     if (title) {
       title.textContent = t(stage.title);

@@ -43,7 +43,7 @@ export function createNavigationController({ button, onNavigate }) {
     }
 
     const label = getBackLabel(route);
-    button.hidden = !label;
+    button.hidden = !label || route?.screen === 'control-room';
     if (label) {
       button.setAttribute('aria-label', label);
       button.title = label;

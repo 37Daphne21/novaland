@@ -74,7 +74,7 @@ Explorer에게 시설 상태와 다음 행동을 짧고 정확하게 안내한�
 
 EVE 대사가 타이핑되는 모든 현재·향후 페이지는 같은 전역 Interaction Rule을 사용한다. 대사 출력 중에는 화면 어느 곳이든 한 번 Click·Touch하면 전체 문장을 즉시 표시하며, 그 첫 입력은 대사 완료에만 사용하고 대상 Button이나 Link의 원래 동작은 실행하지 않는다. 대사가 완료된 뒤의 다음 입력부터 원래 화면 동작을 실행한다.
 
-MAP과 Control Room의 EVE는 같은 `.eve-panel` HTML 구조, 공통 CSS와 공통 Controller를 사용한다. 화면별 차이는 Wrapper 배치와 Modifier로만 처리하며 Control Room은 `.eve-panel--control`에서 확대·축소와 자동 숨김을 사용하지 않는다. 대사, 번역 Key와 접근성 연결을 제외한 내부 구조를 화면별로 다시 만들지 않는다.
+MAP과 Control Room의 EVE는 같은 `.eve-panel` HTML 구조, 공통 CSS와 공통 Controller를 사용한다. 화면별 차이는 Wrapper 배치와 Modifier로만 처리하며 Control Room은 `.eve-panel--control`에서 확대·축소와 자동 숨김을 사용하지 않는다. Control Room의 EVE 홀로그램, Signal Wave, Border와 Glow는 현재 시설의 Theme Color를 따른다. 대사, 번역 Key와 접근성 연결을 제외한 내부 구조를 화면별로 다시 만들지 않는다.
 
 추후 EVE 대사에 실제 음성을 적용한다. 현재 EVE UI의 이퀄라이저는 장식용 반복 Animation이 아니라 실제 음성의 재생 상태와 음량 변화에 연동하며, 음성이 없거나 종료된 상태에서는 자연스럽게 대기 상태로 돌아간다. 자막은 음성 사용 여부와 관계없이 항상 제공하고, 언어별 음원 제작 방식과 대사 Skip 시 음성 처리 규칙은 음성 작업 단계에서 확정한다.
 
@@ -858,6 +858,14 @@ PC에서 공통 시스템과 NOVA COASTER의 전체 흐름을 먼저 완성한�
 
 Control Room은 시설 상태를 확인하고 Mission을 시작하는 관제 공간이다. 시설마다 분위기와 비주얼은 다르지만 정보 계층, 공통 컴포넌트와 사용 흐름은 유지한다.
 
+NOVA COASTER는 열차와 우주 도시, Rail Network가 한 장면으로 연결된 전용 Production Background를 사용한다. 시설 공간에 고정된 Gate 표지와 장식용 관제 Console은 배경에 포함하고, EVE·Mission Objective·시설 상태와 실제 조작은 공통 컴포넌트로 배치한다. MISSION START는 공통 Button 구조와 시설별 투명 Frame 이미지를 결합한다. 다른 시설도 같은 정보 구조를 유지하되 시설별 전용 배경, Button Frame과 Theme Modifier만 교체한다.
+
+NOVA COASTER Production Background는 2560×1080의 Ultrawide 구도를 사용한다. 왼쪽은 기계 벽으로 막지 않고 어두운 Smoked Glass 전망창 너머로 도시가 은은하게 보이게 하며, 중앙의 LAUNCH GATE·열차·하단 Rail Console은 넓은 화면에서도 잘리지 않게 유지한다.
+
+한국어 Control Room에서는 `NOVA COASTER`, `EVE`, `MISSION START`와 시설 고유명사를 제외한 상태·목표·설명 Label을 한국어로 표시한다. Mission Objective의 반복 번호는 사용하지 않고 탐색·레일 연결·안전 점검 Icon으로 역할을 구분하며, Train Status도 레일·안전·출발 상태별 Icon을 함께 제공한다.
+
+MAP과 Control Room의 정보 Panel은 `.ui-panel`, `.ui-panel--content`, `.ui-panel__header`, `.ui-panel__heading`, `.ui-panel__eyebrow`, `.ui-panel__title`, `.ui-panel__description`을 공통으로 사용한다. `.ui-panel`은 외형, `.ui-panel--content`는 공통 Content Padding을 담당하고 화면별 차이는 부모 범위의 배치·Theme와 필요한 CSS Variable로만 처리한다. Header Divider는 공통값을 사용하며 EVE처럼 기존 디자인에서 Divider가 없는 Panel만 부모 범위에서 제거한다. `미션 목표`와 `열차 상태`처럼 같은 위계의 Panel명은 모두 `.ui-panel__title`을 사용하고, 미션명은 Panel 내부 Content Heading으로 분리한다. Mission Objective Icon은 원형 선택 장식을 유지하고 Train Status Icon은 외곽 장식 없이 Icon만 표시한다.
+
 공통 구성:
 
 - 시설명과 설명
@@ -942,7 +950,7 @@ Mission 진행 중 새로고침하거나 재접속한 경우에도 Pause 상태�
 - 난이도: 복구 단계마다 선택 → 선택과 회전 → 조합과 연결 순서로 판단 요소를 하나씩 추가
 - 복구 결과: Rail 점등, 열차 운행과 이동 재개
 
-NOVA COASTER Mission은 하나의 정상 Rail Network 안에 세 곳의 단절 구간이 표시되는 방식으로 진행한다. 전체 경로를 다시 맞추거나 빈칸을 이동하는 Sliding Puzzle을 사용하지 않는다. 시작 연결 상태는 12/15이며 각 구간 복구 후 13/15, 14/15, 15/15로 갱신한다.
+NOVA COASTER Mission은 하나의 정상 Rail Network 안에 세 곳의 단절 구간이 표시되는 방식으로 진행한다. 전체 경로를 다시 맞추거나 빈칸을 이동하는 Sliding Puzzle을 사용하지 않는다. 시작 연결 상태는 9/12이며 각 구간 복구 후 10/12, 11/12, 12/12로 갱신한다.
 
 복구 단계는 별도 Button 없이 현재 구간의 검증이 완료되면 자동으로 상승한다. 화면 표기는 Explorer Level이나 시설 진행도와 혼동되지 않도록 `REPAIR 01 / 03`과 `복구 단계 01 / 03`을 사용한다.
 
