@@ -30,14 +30,19 @@ export function createMissionController({ getExplorer, onComplete, onExit, onRec
   let stageTransitionId = null;
   let repair = null;
   let testingTimerIds = [];
+  let isPreviewMode = false;
   const modal = createModalController(dialog, { onClose: () => {
     stopTimer();
     stopCountdown();
     stopStageTransition();
     stopTesting();
+    isPreviewMode = false;
   } });
 
   function save(updates) {
+    if (isPreviewMode) {
+      return;
+    }
     progress = updateMissionProgress(progress, facility.id, updates);
   }
 
@@ -179,7 +184,9 @@ export function createMissionController({ getExplorer, onComplete, onExit, onRec
     stopTimer();
     stopTesting();
     setPhase('completed', { saveState: false });
-    onComplete?.(facility);
+    if (!isPreviewMode) {
+      onComplete?.(facility);
+    }
     dialog?.querySelector('[data-mission-record]')?.focus();
   }
 
@@ -261,16 +268,17 @@ export function createMissionController({ getExplorer, onComplete, onExit, onRec
     }, 1050);
   }
 
-  function open(nextFacility, opener) {
+  function open(nextFacility, opener, { previewPhase = '' } = {}) {
     stopTimer();
     stopCountdown();
     stopStageTransition();
     stopTesting();
     facility = nextFacility;
+    isPreviewMode = ['guide', 'countdown'].includes(previewPhase);
     dialog.dataset.facility = facility.id;
     progress = readProgress(getExplorer?.());
     const savedMission = progress.missions[facility.id];
-    if (progress.facilities[facility.id]?.status === 'completed') {
+    if (!isPreviewMode && progress.facilities[facility.id]?.status === 'completed') {
       setPhase('completed', { saveState: false });
       modal.open({ focusTarget: dialog.querySelector('[data-mission-record]'), opener });
       return;
@@ -284,6 +292,18 @@ export function createMissionController({ getExplorer, onComplete, onExit, onRec
       },
       onStageComplete: handleStageComplete
     });
+    if (isPreviewMode) {
+      remaining = MISSION_DURATION;
+      resumeMode = 'playing';
+      repair.reset();
+      renderTimer();
+      setPhase('guide', { saveState: false });
+      modal.open({ focusTarget: startButton, opener });
+      if (previewPhase === 'countdown') {
+        window.setTimeout(beginCountdown, 0);
+      }
+      return;
+    }
     repair.reset(savedMission.checkpoint);
     renderTimer();
     const resumable = ['playing', 'paused', 'testing'].includes(savedMission.phase) && savedMission.checkpoint;
@@ -300,6 +320,13 @@ export function createMissionController({ getExplorer, onComplete, onExit, onRec
   pauseButton?.addEventListener('click', pause);
   dialog?.querySelector('[data-mission-resume]')?.addEventListener('click', resume);
   dialog?.querySelectorAll('[data-mission-restart]').forEach((button) => button.addEventListener('click', restart));
+  dialog?.querySelector('[data-mission-control-room]')?.addEventListener('click', () => {
+    stopTimer();
+    stopCountdown();
+    stopStageTransition();
+    stopTesting();
+    modal.close('control-room');
+  });
   dialog?.querySelectorAll('[data-mission-exit]').forEach((button) => button.addEventListener('click', () => {
     stopTimer();
     stopCountdown();

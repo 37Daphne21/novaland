@@ -128,6 +128,13 @@ export function isRestoredPreview() {
     && new URLSearchParams(window.location.search).get('map-state') === 'restored';
 }
 
+export function isMissionPreview() {
+  const hostname = window.location.hostname;
+  const previewPhase = new URLSearchParams(window.location.search).get('mission-preview');
+  return (hostname === 'localhost' || hostname.startsWith('127.'))
+    && ['guide', 'countdown'].includes(previewPhase);
+}
+
 function createRestoredPreview(progress) {
   const restored = cloneProgress(progress);
   const restoredAt = new Date().toISOString();
@@ -148,6 +155,9 @@ export function saveProgress(progress) {
   normalized.updatedAt = new Date().toISOString();
   if (isRestoredPreview()) {
     return createRestoredPreview(normalized);
+  }
+  if (isMissionPreview()) {
+    return normalized;
   }
   try {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(normalized));

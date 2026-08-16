@@ -1,6 +1,7 @@
 import { createArchiveController } from './archive.js';
 import { createEveController } from './eve.js';
 import { cosmicVoyage, facilities, getExplorerProfile, getFacilityText } from './data.js';
+import { readExplorer } from './explorer.js';
 import { createIntroController } from './intro.js';
 import { initializeLanguage, t } from './locales.js';
 import { createMapController } from './map.js';
@@ -8,11 +9,15 @@ import { createMobileMapController } from './mobile.js';
 import { createMissionController } from './mission.js';
 import { createNavigationController } from './navigation.js';
 import { createProfileEditor } from './profile-editor.js';
-import { clearProgress, readProgress } from './progress.js';
+import { clearProgress, isMissionPreview, readProgress } from './progress.js';
 import { createSettingsController } from './settings.js';
 import { createDialogController, createOverlayController, createToast } from './ui.js';
 
 initializeLanguage();
+
+const missionPreviewPhase = new URLSearchParams(window.location.search).get('mission-preview');
+const shouldPreviewMission = isMissionPreview();
+const previewExplorer = { name: 'TEST EXPLORER', gender: 'female', id: 'NL-TEST-0000', introCompleted: true };
 
 const screens = document.querySelectorAll('[data-screen]');
 const controlRoomScreen = document.querySelector('[data-screen="control-room"]');
@@ -100,15 +105,17 @@ function enterMap(explorer, { focusMap = false } = {}) {
 
   navigation?.replace({ screen: 'map' }, { applyRoute: false });
 
-  const progress = readProgress(explorer);
-  const resumableMissionId = Object.keys(progress.missions).find((facilityId) => progress.facilities[facilityId]?.status === 'available'
-    && ['playing', 'testing', 'paused'].includes(progress.missions[facilityId].phase));
-  const resumableFacility = getFacility(resumableMissionId);
-  if (resumableFacility) {
-    showControlRoom(resumableFacility);
-    navigation?.replace({ screen: 'control-room', facilityId: resumableFacility.id }, { applyRoute: false });
-    window.setTimeout(() => mission.open(resumableFacility, controlRoomTitle), 120);
-    return;
+  if (!shouldPreviewMission) {
+    const progress = readProgress(explorer);
+    const resumableMissionId = Object.keys(progress.missions).find((facilityId) => progress.facilities[facilityId]?.status === 'available'
+      && ['playing', 'testing', 'paused'].includes(progress.missions[facilityId].phase));
+    const resumableFacility = getFacility(resumableMissionId);
+    if (resumableFacility) {
+      showControlRoom(resumableFacility);
+      navigation?.replace({ screen: 'control-room', facilityId: resumableFacility.id }, { applyRoute: false });
+      window.setTimeout(() => mission.open(resumableFacility, controlRoomTitle), 120);
+      return;
+    }
   }
 
   if (focusMap) {
@@ -420,7 +427,16 @@ function handleKeydown(event) {
 }
 
 settings.render();
-intro.start();
+if (shouldPreviewMission) {
+  const explorer = readExplorer() ?? previewExplorer;
+  const facility = getFacility('coaster');
+  enterMap(explorer);
+  showControlRoom(facility);
+  navigation?.replace({ screen: 'control-room', facilityId: facility.id }, { applyRoute: false });
+  window.setTimeout(() => mission.open(facility, controlRoomTitle, { previewPhase: missionPreviewPhase }), 120);
+} else {
+  intro.start();
+}
 
 document.addEventListener('click', handleDocumentClick);
 document.addEventListener('keydown', handleKeydown);

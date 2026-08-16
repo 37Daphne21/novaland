@@ -936,7 +936,7 @@ Mission Guide의 최종 Visual Development는 Play UI와 실제 조작 방식이
 
 ### Pause / Fail / Complete
 
-- Pause: Resume, Restart와 MAP 제공
+- Pause: 현재 Checkpoint를 유지한 채 Resume, Restart, Control Room과 MAP 복귀 제공
 - Fail: 과도한 실패 연출 없이 재시도와 MAP 제공
 - Complete: 시설 복구 결과, Explorer Log 기록과 Passport 갱신 후 MAP 복귀
 Mission 진행 중 새로고침하거나 재접속한 경우에도 Pause 상태로 복원한다.
