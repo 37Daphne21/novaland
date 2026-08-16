@@ -111,6 +111,7 @@
 - [x] Pause
 - [x] Fail
 - [x] Complete
+- [x] 복구 완료 시설의 Control Room 상태 보호와 Mission 재시작 차단
 - [x] MAP 복귀와 상태 갱신
 - [x] 현재 복구 단계와 구간 상태 Checkpoint 저장
 - [x] Pause 복원 기반

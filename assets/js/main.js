@@ -18,8 +18,16 @@ const screens = document.querySelectorAll('[data-screen]');
 const controlRoomScreen = document.querySelector('[data-screen="control-room"]');
 const controlRoomTitle = document.querySelector('#control-room-title');
 const controlRoomType = document.querySelector('#control-room-type');
+const controlRoomAlert = document.querySelector('[data-control-room-alert]');
 const controlRoomStatus = document.querySelector('[data-control-room-status]');
+const controlRoomObjectiveEyebrow = document.querySelector('[data-control-room-objective-eyebrow]');
+const controlRoomObjectiveTitle = document.querySelector('[data-control-room-objective-title]');
 const controlRoomObjective = document.querySelector('[data-control-room-objective]');
+const controlRoomService = document.querySelector('[data-control-room-service]');
+const controlRoomRail = document.querySelector('[data-control-room-rail]');
+const controlRoomCheckItem = document.querySelector('[data-control-room-check-item]');
+const controlRoomCheck = document.querySelector('[data-control-room-check]');
+const controlRoomDeparture = document.querySelector('[data-control-room-departure]');
 const controlRoomStart = document.querySelector('[data-mission-open]');
 const controlRoomMapButton = document.querySelector('[data-control-room-map]');
 const explorerProfileName = document.querySelector('#explorer-profile-name');
@@ -93,7 +101,8 @@ function enterMap(explorer, { focusMap = false } = {}) {
   navigation?.replace({ screen: 'map' }, { applyRoute: false });
 
   const progress = readProgress(explorer);
-  const resumableMissionId = Object.keys(progress.missions).find((facilityId) => ['playing', 'testing', 'paused'].includes(progress.missions[facilityId].phase));
+  const resumableMissionId = Object.keys(progress.missions).find((facilityId) => progress.facilities[facilityId]?.status === 'available'
+    && ['playing', 'testing', 'paused'].includes(progress.missions[facilityId].phase));
   const resumableFacility = getFacility(resumableMissionId);
   if (resumableFacility) {
     showControlRoom(resumableFacility);
@@ -112,9 +121,12 @@ function getFacility(facilityId) {
 }
 
 function showControlRoom(facility, { announce = false } = {}) {
+  const progress = readProgress(currentExplorer);
+  const isCompleted = progress.facilities[facility.id]?.status === 'completed';
   currentControlFacility = facility;
   if (controlRoomScreen) {
     controlRoomScreen.dataset.facility = facility.id;
+    controlRoomScreen.classList.toggle('is-state-completed', isCompleted);
   }
   if (controlRoomTitle) {
     controlRoomTitle.textContent = facility.name;
@@ -124,15 +136,37 @@ function showControlRoom(facility, { announce = false } = {}) {
     controlRoomType.textContent = getFacilityText(facility, 'type');
   }
   const isCoaster = facility.id === 'coaster';
+  if (controlRoomAlert) {
+    controlRoomAlert.textContent = t(isCompleted ? 'control.restoredAlert' : 'control.systemAlert');
+  }
   if (controlRoomStatus) {
-    controlRoomStatus.textContent = t(isCoaster ? 'control.coasterStatus' : 'control.pendingStatus');
+    controlRoomStatus.textContent = t(isCompleted ? 'control.restoredStatus' : isCoaster ? 'control.coasterStatus' : 'control.pendingStatus');
+  }
+  if (controlRoomObjectiveEyebrow) {
+    controlRoomObjectiveEyebrow.textContent = t(isCompleted ? 'control.restoredObjectiveEyebrow' : 'control.objectiveEyebrow');
+  }
+  if (controlRoomObjectiveTitle) {
+    controlRoomObjectiveTitle.textContent = t(isCompleted ? 'control.restoredObjectiveTitle' : 'control.objectiveTitle');
   }
   if (controlRoomObjective) {
-    controlRoomObjective.textContent = t(isCoaster ? 'control.coasterObjective' : 'control.pendingObjective');
+    controlRoomObjective.textContent = t(isCompleted ? 'control.restoredObjective' : isCoaster ? 'control.coasterObjective' : 'control.pendingObjective');
   }
-  controlRoomEve.speak(() => isCoaster ? t('control.coasterEve') : getFacilityText(facility, 'controlRoomMessage'));
+  if (controlRoomService) {
+    controlRoomService.textContent = t(isCompleted ? 'control.trainRunning' : 'control.trainStopped');
+  }
+  if (controlRoomRail) {
+    controlRoomRail.textContent = isCompleted ? '12 / 12' : '9 / 12';
+  }
+  controlRoomCheckItem?.classList.toggle('is-warning', !isCompleted);
+  if (controlRoomCheck) {
+    controlRoomCheck.textContent = t(isCompleted ? 'control.inspectionComplete' : 'control.inspectionRequired');
+  }
+  if (controlRoomDeparture) {
+    controlRoomDeparture.textContent = t(isCompleted ? 'control.departureReady' : 'control.suspended');
+  }
+  controlRoomEve.speak(() => isCompleted ? t('control.restoredEve', { facility: facility.name }) : isCoaster ? t('control.coasterEve') : getFacilityText(facility, 'controlRoomMessage'));
   if (controlRoomStart) {
-    controlRoomStart.hidden = !isCoaster;
+    controlRoomStart.hidden = !isCoaster || isCompleted;
   }
 
   showScreen('control-room');

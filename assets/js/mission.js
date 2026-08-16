@@ -242,6 +242,11 @@ export function createMissionController({ getExplorer, onComplete, onExit, onRec
     facility = nextFacility;
     progress = readProgress(getExplorer?.());
     const savedMission = progress.missions[facility.id];
+    if (progress.facilities[facility.id]?.status === 'completed') {
+      setPhase('completed', { saveState: false });
+      modal.open({ focusTarget: dialog.querySelector('[data-mission-record]'), opener });
+      return;
+    }
     remaining = savedMission.checkpoint?.remaining ?? MISSION_DURATION;
     repair ??= createCoasterRepair(repairRoot, {
       onChange: () => {

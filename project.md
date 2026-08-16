@@ -877,6 +877,8 @@ MAP과 Control Room의 정보 Panel은 `.ui-panel`, `.ui-panel--content`, `.ui-p
 
 Mission Objective는 긴 Checklist가 아니라 현재 해야 할 일을 설명하는 Brief다. Timer는 Play에서만 표시한다.
 
+복구 완료 시설의 Control Room은 완료 상태를 읽기 전용으로 보여준다. 시설·열차 상태와 EVE 안내를 복구 완료 문구로 전환하고 MISSION START는 숨기며, 완료된 Mission을 Guide나 진행 상태로 되돌리지 않는다.
+
 
 ### 시설 상태 패널
 

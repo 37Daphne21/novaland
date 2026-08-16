@@ -92,6 +92,14 @@ function normalizeProgress(value, explorer) {
       attempts: Number.isInteger(savedMission?.attempts) && savedMission.attempts >= 0 ? savedMission.attempts : 0,
       updatedAt: savedMission?.updatedAt ? toIsoString(savedMission.updatedAt) : null
     };
+    if (progress.facilities[facilityId].status === 'completed') {
+      progress.missions[facilityId].phase = 'completed';
+      progress.missions[facilityId].checkpoint = null;
+    } else if (progress.facilities[facilityId].status === 'locked') {
+      progress.missions[facilityId].phase = 'idle';
+      progress.missions[facilityId].checkpoint = null;
+      progress.missions[facilityId].attempts = 0;
+    }
   });
 
   progress.logs = Array.isArray(value.logs)
@@ -157,7 +165,13 @@ export function readProgress(explorer = null) {
     const parsedValue = savedValue ? JSON.parse(savedValue) : null;
     shouldSave = !parsedValue
       || parsedValue.version !== SCHEMA_VERSION
-      || Boolean(explorer?.id && parsedValue.explorerId !== explorer.id);
+      || Boolean(explorer?.id && parsedValue.explorerId !== explorer.id)
+      || facilityIds.some((facilityId) => {
+        const savedStatus = parsedValue?.facilities?.[facilityId]?.status;
+        const savedMission = parsedValue?.missions?.[facilityId];
+        return savedStatus === 'completed' && (savedMission?.phase !== 'completed' || savedMission?.checkpoint !== null)
+          || savedStatus === 'locked' && (savedMission?.phase !== 'idle' || savedMission?.checkpoint !== null || savedMission?.attempts > 0);
+      });
     progress = normalizeProgress(parsedValue, explorer);
   } catch {
     progress = createProgress(explorer);
