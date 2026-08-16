@@ -10,6 +10,7 @@ export function createArchiveController({ onTabChange } = {}) {
   const passportHost = root?.querySelector('[data-archive-passport]');
   const passport = document.querySelector('[data-passport]');
   let explorer = null;
+  let facilityRecord = '';
 
   function renderTitle() {
     if (!title) {
@@ -72,6 +73,19 @@ export function createArchiveController({ onTabChange } = {}) {
     passport.classList.add('is-open', 'is-mobile-identity', 'is-writing', 'is-stamped', 'is-archive');
     passport.querySelectorAll('[data-passport-edit]').forEach((button) => { button.hidden = false; });
     passport.querySelector('[data-passport-status]')?.replaceChildren('REGISTERED');
+    const record = passport.querySelector('[data-passport-facility-record]');
+    const authorityContent = passport.querySelector('.passport__page-content--authority');
+    const authorityLabel = passport.querySelector('[data-passport-authority-label]');
+    const showCoasterRecord = facilityRecord === 'coaster' && readProgress(explorer).stamps.some((stamp) => stamp.facilityId === 'coaster');
+    if (record) {
+      record.hidden = !showCoasterRecord;
+    }
+    if (authorityContent) {
+      authorityContent.hidden = showCoasterRecord;
+    }
+    if (authorityLabel) {
+      authorityLabel.textContent = showCoasterRecord ? 'FACILITY RESTORATION 01' : 'NOVA LAND AUTHORITY';
+    }
     renderPassportData(passport, explorer);
   }
 
@@ -84,8 +98,9 @@ export function createArchiveController({ onTabChange } = {}) {
 
   const tabs = createTabsController(root, { onChange: handleTabChange });
 
-  function open(tabName = 'log', explorerData = explorer) {
+  function open(tabName = 'log', explorerData = explorer, { stamp = '' } = {}) {
     explorer = explorerData;
+    facilityRecord = stamp;
     renderTitle();
     renderLogs();
     if (tabName === 'passport') {

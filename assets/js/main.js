@@ -5,17 +5,22 @@ import { createIntroController } from './intro.js';
 import { initializeLanguage, t } from './locales.js';
 import { createMapController } from './map.js';
 import { createMobileMapController } from './mobile.js';
+import { createMissionController } from './mission.js';
 import { createNavigationController } from './navigation.js';
 import { createProfileEditor } from './profile-editor.js';
-import { clearProgress } from './progress.js';
+import { clearProgress, readProgress } from './progress.js';
 import { createSettingsController } from './settings.js';
 import { createDialogController, createOverlayController, createToast } from './ui.js';
 
 initializeLanguage();
 
 const screens = document.querySelectorAll('[data-screen]');
+const controlRoomScreen = document.querySelector('[data-screen="control-room"]');
 const controlRoomTitle = document.querySelector('#control-room-title');
 const controlRoomType = document.querySelector('#control-room-type');
+const controlRoomStatus = document.querySelector('[data-control-room-status]');
+const controlRoomObjective = document.querySelector('[data-control-room-objective]');
+const controlRoomStart = document.querySelector('[data-mission-open]');
 const explorerProfileName = document.querySelector('#explorer-profile-name');
 const explorerProfileImage = document.querySelector('.explorer-profile__image');
 const appBackButton = document.querySelector('[data-app-back]');
@@ -29,11 +34,13 @@ const archive = createArchiveController({
 });
 const profileEditor = createProfileEditor({ onSave: updateExplorer });
 const eve = createEveController();
+const controlRoomEve = createEveController(document.querySelector('.eve-panel--control'), { persistent: true, focusMotion: false, initialMessage: () => t('control.coasterEve') });
 const mobileMap = createMobileMapController();
 let map = null;
 let mapStarted = false;
 let intro = null;
 let currentExplorer = null;
+let currentControlFacility = null;
 
 function renderExplorerProfile(explorer) {
   const profile = getExplorerProfile(explorer.gender);
@@ -54,6 +61,9 @@ function updateExplorer(explorer) {
 }
 
 function showScreen(screenName) {
+  if (screenName !== 'control-room') {
+    controlRoomEve.cancel();
+  }
   screens.forEach((screen) => {
     const isActive = screen.dataset.screen === screenName;
     screen.hidden = !isActive;
@@ -79,6 +89,16 @@ function enterMap(explorer, { focusMap = false } = {}) {
 
   navigation?.replace({ screen: 'map' }, { applyRoute: false });
 
+  const progress = readProgress(explorer);
+  const resumableMissionId = Object.keys(progress.missions).find((facilityId) => ['playing', 'testing', 'paused'].includes(progress.missions[facilityId].phase));
+  const resumableFacility = getFacility(resumableMissionId);
+  if (resumableFacility) {
+    showControlRoom(resumableFacility);
+    navigation?.replace({ screen: 'control-room', facilityId: resumableFacility.id }, { applyRoute: false });
+    window.setTimeout(() => mission.open(resumableFacility, controlRoomTitle), 120);
+    return;
+  }
+
   if (focusMap) {
     window.setTimeout(() => worldTitle?.focus({ preventScroll: true }), 120);
   }
@@ -89,12 +109,27 @@ function getFacility(facilityId) {
 }
 
 function showControlRoom(facility, { announce = false } = {}) {
+  currentControlFacility = facility;
+  if (controlRoomScreen) {
+    controlRoomScreen.dataset.facility = facility.id;
+  }
   if (controlRoomTitle) {
     controlRoomTitle.textContent = facility.name;
   }
 
   if (controlRoomType) {
     controlRoomType.textContent = getFacilityText(facility, 'type');
+  }
+  const isCoaster = facility.id === 'coaster';
+  if (controlRoomStatus) {
+    controlRoomStatus.textContent = t(isCoaster ? 'control.coasterStatus' : 'control.pendingStatus');
+  }
+  if (controlRoomObjective) {
+    controlRoomObjective.textContent = t(isCoaster ? 'control.coasterObjective' : 'control.pendingObjective');
+  }
+  controlRoomEve.speak(() => isCoaster ? t('control.coasterEve') : getFacilityText(facility, 'controlRoomMessage'));
+  if (controlRoomStart) {
+    controlRoomStart.hidden = !isCoaster;
   }
 
   showScreen('control-room');
@@ -115,6 +150,16 @@ map = createMapController({
   cancelEveSpeech: eve.cancel,
   onEnterControlRoom: enterControlRoom,
   speakEve: eve.speak
+});
+
+const mission = createMissionController({
+  getExplorer: () => currentExplorer,
+  onComplete: (facility) => map.completeFacility(facility.id),
+  onExit: () => navigation?.back(),
+  onRecord: () => {
+    navigation?.replace({ screen: 'map' });
+    navigation?.push({ screen: 'map', overlay: 'explorer-archive-overlay', archiveTab: 'passport', archiveStamp: 'coaster' });
+  }
 });
 
 intro = createIntroController({
@@ -173,7 +218,7 @@ function applyNavigationRoute(route, { previousRoute, source } = {}) {
     if (route.overlay === 'settings-overlay') {
       settings.setScope(route.settingsScope);
     } else if (route.overlay === 'explorer-archive-overlay') {
-      archive.open(route.archiveTab, currentExplorer);
+      archive.open(route.archiveTab, currentExplorer, { stamp: route.archiveStamp });
     }
     overlay.open(document.querySelector(`#${route.overlay}`));
   }
@@ -184,6 +229,12 @@ navigation = createNavigationController({ button: appBackButton, onNavigate: app
 const settings = createSettingsController({ showToast: toast.show });
 
 async function handleDocumentClick(event) {
+  const missionOpenButton = event.target.closest('[data-mission-open]');
+  if (missionOpenButton && currentControlFacility?.id === 'coaster') {
+    mission.open(currentControlFacility, missionOpenButton);
+    return;
+  }
+
   const passportEditButton = event.target.closest('[data-passport-edit]');
   if (passportEditButton) {
     profileEditor.open(passportEditButton.dataset.passportEdit, currentExplorer, passportEditButton);
@@ -195,7 +246,7 @@ async function handleDocumentClick(event) {
     return;
   }
 
-  const facilityButton = event.target.closest('[data-facility]');
+  const facilityButton = event.target.closest('button[data-facility]');
   if (facilityButton) {
     if (facilityButton.closest('.mission-panel')) {
       if (navigation.current()?.panel) {
@@ -289,6 +340,8 @@ function handleLanguageChange() {
   mobileMap.refreshLanguage();
   intro.refreshLanguage();
   eve.refreshLanguage();
+  controlRoomEve.refreshLanguage();
+  mission.refreshLanguage();
   if (currentExplorer && explorerProfileImage) {
     explorerProfileImage.alt = getExplorerProfile(currentExplorer.gender).alt;
   }
@@ -304,6 +357,9 @@ function handleLanguageChange() {
 }
 
 function handleKeydown(event) {
+  if (mission.isOpen()) {
+    return;
+  }
   if (dialog.isOpen()) {
     if (event.key === 'Escape') {
       event.preventDefault();

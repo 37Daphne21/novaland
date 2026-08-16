@@ -1519,6 +1519,62 @@
   word-break: keep-all;
 }
 
+.passport__facility-record {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  min-height: 0;
+  text-align: center;
+}
+
+.passport__facility-record > span {
+  color: rgba(64, 54, 116, .62);
+  font-family: var(--font-numeric);
+  font-size: .55rem;
+  letter-spacing: .18em;
+}
+
+.passport__facility-record h3 {
+  margin-top: .45rem;
+  color: #3f356f;
+  font-family: var(--font-display);
+  font-size: clamp(.8rem, 1.5vw, 1.15rem);
+  letter-spacing: .08em;
+}
+
+.passport__facility-record img {
+  width: clamp(5.5rem, 11vw, 7rem);
+  margin: .4rem 0;
+  mix-blend-mode: multiply;
+  transform: rotate(-4deg);
+  filter: drop-shadow(0 .08rem .08rem rgba(57, 43, 116, .15));
+}
+
+.passport__facility-record p {
+  max-width: 17rem;
+  color: rgba(25, 54, 69, .62);
+  font-size: clamp(.52rem, .8vw, .68rem);
+  line-height: 1.6;
+}
+
+.passport__facility-record dl {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+  margin-top: .55rem;
+  padding-top: .45rem;
+  border-top: .0625rem solid rgba(41, 65, 78, .18);
+  text-align: left;
+}
+
+.passport__facility-record dl div + div {
+  padding-left: .8rem;
+  border-left: .0625rem solid rgba(41, 65, 78, .18);
+}
+
+.passport__facility-record dt { color: rgba(25, 54, 69, .48); font-family: var(--font-numeric); font-size: .42rem; letter-spacing: .12em; }
+.passport__facility-record dd { margin-top: .25rem; color: #51428f; font-family: var(--font-numeric); font-size: .65rem; font-weight: 700; }
+
 .passport__authority-meta {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

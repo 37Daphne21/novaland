@@ -14,11 +14,13 @@ export function renderPassportData(root, explorer) {
 
   const profile = getExplorerProfile(explorer.gender);
   const restoration = getRestorationState(readProgress(explorer));
+  const coasterStamp = restoration.stamps.find((stamp) => stamp.facilityId === 'coaster');
   setText(root, '[data-passport-name]', explorer.name);
   setText(root, '[data-passport-id]', explorer.id);
   setText(root, '[data-passport-date]', explorer.issueDate);
   setText(root, '[data-passport-gender]', profile.label);
   setText(root, '[data-passport-restoration]', `${restoration.completed} / ${restoration.total}`);
+  setText(root, '[data-passport-coaster-date]', coasterStamp ? new Intl.DateTimeFormat('en-CA').format(new Date(coasterStamp.earnedAt)).replaceAll('-', '.') : '—');
   setText(root, '[data-passport-cover-name]', explorer.name);
   setText(root, '[data-passport-serial]', `${explorer.id} · INITIAL ISSUE`);
   root.querySelectorAll('[data-passport-portrait]').forEach((element) => {

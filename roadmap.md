@@ -72,7 +72,7 @@
 - [x] Intro 완료와 Explorer 신원·Passport 발급 상태 복원
 - [x] 시설 잠금·진행·완료 상태 저장
 - [x] Mission 진행 상태 저장 구조와 공통 API
-- [ ] 실제 Mission Flow의 Checkpoint·Pause 복원 연결
+- [x] 실제 Mission Flow의 Checkpoint·Pause 복원 연결
 - [x] 언어 선택 저장과 Intro·MAP 정적·동적 UI 즉시 반영
 - [x] Common Dialog와 처음부터 다시 시작 Confirm 적용
 - [ ] 시간과 사운드 설정 저장
@@ -91,22 +91,32 @@
 
 ## Then. NOVA COASTER와 공통 Mission Flow
 
-상태: 예정
+상태: PC 전체 기능 Flow 연결 완료, 화면별 Visual Development 진행 중
 
-- [ ] Control Room 공통 Layout
-- [ ] 시설별 Theme Modifier
-- [ ] EVE와 Mission Objective
-- [ ] 시설 상태 Panel
-- [ ] Mission Guide
-- [ ] Countdown
-- [ ] Play
-- [ ] Pause
-- [ ] Fail
-- [ ] Complete
-- [ ] MAP 복귀와 상태 갱신
-- [ ] Rail Connection Puzzle
+- [x] Control Room 공통 Layout 재설계
+- [x] 시설별 Theme Modifier
+- [x] EVE와 Mission Objective
+- [x] 시설 상태 Panel
+- [x] Mission Guide 재설계
+- [x] Countdown
+- [x] 세 고장 구간을 표시하는 Rail Network Play 화면
+- [x] 복구 단계 1: Rail 조각 선택
+- [x] 복구 단계 2: Rail 조각 선택과 회전
+- [x] 복구 단계 3: Rail 조각 조합과 연결 순서
+- [x] 구간 복구 후 다음 고장 지점으로 이어지는 Stage Transition
+- [x] 전체 연결 검사·코스터 시운전·안전 시스템 확인
+- [x] Pause
+- [x] Fail
+- [x] Complete
+- [x] MAP 복귀와 상태 갱신
+- [x] 현재 복구 단계와 구간 상태 Checkpoint 저장
+- [x] Pause 복원 기반
+- [x] NOVA Stamp 기록과 Passport 연결
+- [ ] PC 한국어 화면 검수
+- [ ] PC 영어 화면 검수
+- [ ] 반응형·반응형 영어 화면 검수
 
-완료 조건: MAP 진입부터 NOVA COASTER 복구와 기록 갱신까지 하나의 흐름으로 동작하고, 다음 시설에서 Control Room과 Overlay를 재사용할 수 있어야 한다.
+완료 조건: MAP 진입부터 세 Rail 고장 구간 복구, 시운전과 안전 확인, NOVA Stamp와 기록 갱신까지 하나의 흐름으로 동작하고, 다음 시설에서 공통 Mission Flow를 재사용할 수 있어야 한다.
 
 ---
 

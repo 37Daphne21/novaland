@@ -140,7 +140,7 @@
                 </div>
                 <div class="passport__leaf">
                   <div class="passport__page passport__page--authority passport__leaf-back" data-passport-page="authority">
-                    <header class="passport__page-header"><span class="passport__page-label">NOVA LAND AUTHORITY</span></header>
+                    <header class="passport__page-header"><span class="passport__page-label" data-passport-authority-label>NOVA LAND AUTHORITY</span></header>
                     <div class="passport__page-content passport__page-content--authority">
                       <div class="passport__authority-emblem" aria-hidden="true"><img src="./assets/images/common/passport-authority-emblem.svg" alt=""></div>
                       <p class="passport__authority-title">RESTORATION<br>ACCESS</p>
@@ -150,6 +150,7 @@
                         <div><dt>ACCESS STATUS</dt><dd>AUTHORIZED</dd></div>
                       </dl>
                     </div>
+                    <div class="passport__facility-record" data-passport-facility-record hidden><span>MOVEMENT FACILITY</span><h3>NOVA COASTER</h3><img src="./assets/images/common/stamp-coaster-restored.svg" alt=""><p data-i18n="passport.coasterRecord">Rail Network 복구와 열차 운행 재개가 확인됐습니다.</p><dl><div><dt>RESTORATION</dt><dd data-passport-coaster-date>—</dd></div><div><dt>STATUS</dt><dd>RESTORED</dd></div></dl></div>
                   </div>
                   <div class="passport__cover passport__cover--front passport__leaf-front">
                     <span class="passport__corner passport__corner--one"></span><span class="passport__corner passport__corner--two"></span><span class="passport__corner passport__corner--three"></span><span class="passport__corner passport__corner--four"></span>
@@ -230,9 +231,9 @@
             <aside class="eve-panel ui-panel" aria-labelledby="eve-title" aria-live="polite">
               <header class="ui-panel__header">
                 <div class="ui-panel__heading"><svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-signal"></use></svg><h2 id="eve-title" class="ui-panel__title">EVE</h2></div>
-                <span id="eve-signal-wave" class="signal-wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+                <span class="signal-wave" data-eve-signal-wave aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
               </header>
-              <button class="eve-panel__body" type="button" data-eve-skip="map" disabled><img src="./assets/images/common/eve.webp" data-i18n-alt="map.eveAlt" alt="EVE 홀로그램"><span id="eve-message" data-i18n="map.initialEve">노바랜드의 시설 운영이 중단됐어요. 먼저 미션 목록에서 점검할 시설을 선택해 주세요.</span></button>
+              <button class="eve-panel__body" type="button" data-eve-skip="map" disabled><img src="./assets/images/common/eve.webp" data-i18n-alt="map.eveAlt" alt="EVE 홀로그램"><span data-eve-message data-i18n="map.initialEve">노바랜드의 시설 운영이 중단됐어요. 먼저 미션 목록에서 점검할 시설을 선택해 주세요.</span></button>
             </aside>
             <section class="recent-log ui-panel" aria-labelledby="recent-log-title">
               <header class="ui-panel__header">
@@ -248,16 +249,94 @@
         </div>
       </section>
       <section class="screen screen--control-room" data-screen="control-room" aria-labelledby="control-room-title" hidden>
+        <div class="control-room__backdrop" aria-hidden="true"></div>
         <div class="control-room-shell">
-          <div class="control-room-shell__content ui-panel">
-            <span class="ui-badge ui-badge--active" data-i18n="control.connected">관제실 연결 완료</span>
-            <p id="control-room-type">이동 시설</p>
-            <h1 id="control-room-title" tabindex="-1">NOVA COASTER</h1>
-            <p data-i18n="control.message">시설 관제실 연결이 확인됐어요. 미션 기능은 시설 구현 단계에서 이어집니다.</p>
+          <header class="control-room__header">
+            <div class="control-room__facility"><span class="ui-panel__eyebrow">FACILITY CONTROL · 01</span><p id="control-room-type">이동 시설</p></div>
+            <div class="control-room__gate" aria-hidden="true"><i></i><strong>LAUNCH GATE</strong><i></i></div>
+            <div class="control-room__actions"><span class="ui-badge ui-badge--active" data-i18n="control.connected">관제실 연결 완료</span><button class="ui-button ui-button--icon" type="button" data-overlay-open="settings-overlay" data-settings-scope="full" data-i18n-aria-label="map.openSettings" aria-label="설정 열기"><svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-settings"></use></svg></button></div>
+          </header>
+          <div class="control-room__layout">
+            <aside class="control-room__column control-room__column--brief">
+              <div class="control-room__title"><span data-i18n="control.systemAlert">RAIL SYSTEM ALERT</span><h1 id="control-room-title" tabindex="-1">NOVA COASTER</h1><p data-control-room-status data-i18n="control.coasterStatus">RAIL NETWORK · OFFLINE</p></div>
+              <aside class="eve-panel eve-panel--control ui-panel" aria-labelledby="control-room-eve-title" aria-live="polite">
+                <header class="ui-panel__header">
+                  <div class="ui-panel__heading"><svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-signal"></use></svg><h2 id="control-room-eve-title" class="ui-panel__title">EVE</h2></div>
+                  <span class="signal-wave" data-eve-signal-wave aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+                </header>
+                <button class="eve-panel__body" type="button" data-eve-skip="control-room" disabled><img src="./assets/images/common/eve.webp" data-i18n-alt="map.eveAlt" alt="EVE 홀로그램"><span data-eve-message data-i18n="control.coasterEve">Rail Network에서 세 곳의 단절이 감지됐어요. 고장 구간을 순서대로 복구한 뒤 안전 점검을 진행해 주세요.</span></button>
+              </aside>
+              <section class="control-room__objective ui-panel">
+                <header class="ui-panel__header"><div><span class="ui-panel__eyebrow">MISSION OBJECTIVE</span><h2 class="ui-panel__title" data-i18n="control.objectiveTitle">레일 시스템 복구</h2></div><strong>01</strong></header>
+                <p data-control-room-objective data-i18n="control.coasterObjective">Rail Network의 세 고장 구간을 단계적으로 복구하세요.</p>
+                <ol>
+                  <li><b>01</b><span><strong data-i18n="control.objectiveInspect">고장 구간 확인</strong><small data-i18n="control.objectiveInspectHelp">단절된 Rail 세 곳을 탐색합니다.</small></span></li>
+                  <li><b>02</b><span><strong data-i18n="control.objectiveRepair">Rail 연결</strong><small data-i18n="control.objectiveRepairHelp">각 구간의 조각과 방향을 맞춥니다.</small></span></li>
+                  <li><b>03</b><span><strong data-i18n="control.objectiveTest">운행 점검</strong><small data-i18n="control.objectiveTestHelp">전체 연결과 안전 시스템을 확인합니다.</small></span></li>
+                </ol>
+              </section>
+            </aside>
+            <section class="control-room__station" aria-label="NOVA COASTER 관제 화면" data-i18n-aria-label="control.stationLabel">
+              <div class="control-room__viewport" aria-hidden="true"><div class="control-room__viewport-scene"></div><span class="control-room__scanline"></span><div class="control-room__viewport-label"><span>NOVA COASTER · SECTOR 01</span><strong>RAIL LINK LOST</strong></div></div>
+              <section class="control-room__console ui-panel">
+                <header><div><span class="ui-panel__eyebrow">RAIL NETWORK</span><strong data-i18n="control.faultDetected">3 FAULTS DETECTED</strong></div><span>12 / 15</span></header>
+                <svg class="control-room__network" viewBox="0 0 640 250" aria-hidden="true">
+                  <path class="control-room__network-grid" d="M20 50H620M20 100H620M20 150H620M20 200H620M100 20V230M200 20V230M300 20V230M400 20V230M500 20V230"/>
+                  <path class="control-room__network-line" d="M36 164C104 164 104 72 174 72S244 188 320 188 394 62 468 62 512 146 604 146"/>
+                  <g class="control-room__network-nodes"><circle cx="36" cy="164" r="8"/><circle cx="174" cy="72" r="8"/><circle cx="320" cy="188" r="8"/><circle cx="468" cy="62" r="8"/><circle cx="604" cy="146" r="8"/></g>
+                  <g class="control-room__network-faults"><circle cx="125" cy="103" r="14"/><circle cx="373" cy="126" r="14"/><circle cx="535" cy="120" r="14"/></g>
+                </svg>
+                <p><span aria-hidden="true"></span><b data-i18n="control.networkHelp">세 고장 구간 복구 필요</b></p>
+              </section>
+            </section>
+            <aside class="control-room__column control-room__column--status ui-panel">
+              <header><span class="ui-panel__eyebrow">TRAIN STATUS</span><strong data-i18n="control.trainStopped">운행 중단</strong></header>
+              <dl>
+                <div><dt data-i18n="control.railConnection">RAIL CONNECTION</dt><dd><strong>12 / 15</strong><span class="control-room__segments" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></dd></div>
+                <div><dt data-i18n="control.systemCheck">SYSTEM CHECK</dt><dd class="is-warning" data-i18n="control.inspectionRequired">점검 필요</dd></div>
+                <div><dt data-i18n="control.nextDeparture">NEXT DEPARTURE</dt><dd data-i18n="control.suspended">대기 중</dd></div>
+              </dl>
+            </aside>
           </div>
+          <button class="ui-button ui-button--primary control-room__start" type="button" data-mission-open><span><small data-i18n="control.startEyebrow">RESTORATION MISSION</small><strong data-i18n="mission.start">MISSION START</strong></span><svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-arrow-right"></use></svg></button>
         </div>
       </section>
     </main>
+    <dialog id="mission-dialog" class="mission-dialog" aria-labelledby="mission-title" data-phase="guide">
+      <div class="mission-flow ui-panel" data-coaster-repair>
+        <header class="mission-flow__header">
+          <div><span class="ui-panel__eyebrow">NOVA COASTER · MISSION 01</span><h2 id="mission-title" data-i18n="mission.title">RAIL RESTORATION</h2></div>
+          <div class="mission-flow__meta"><span data-mission-status>MISSION GUIDE</span><strong data-mission-timer>01:30</strong><button class="ui-button ui-button--icon" type="button" data-mission-pause data-i18n-aria-label="mission.pause" aria-label="미션 일시정지"><span aria-hidden="true">Ⅱ</span></button></div>
+        </header>
+        <section class="mission-phase mission-guide" data-mission-phase="guide">
+          <div class="mission-guide__signal" aria-hidden="true"><span></span><i></i><i></i></div>
+          <div class="mission-guide__content"><span class="ui-panel__eyebrow">RESTORATION GUIDE</span><h3 data-i18n="mission.guideTitle">세 곳의 고장 구간을 복구하세요.</h3><p data-i18n="mission.guideDescription">정상 Rail Network는 유지됩니다. 표시된 고장 구간만 단계적으로 연결한 뒤 코스터 안전 점검을 진행합니다.</p><ol><li><b>01</b><span><strong data-i18n="mission.guideStep1Title">조각 선택</strong><small data-i18n="mission.guideStep1">알맞은 Rail 조각을 선택합니다.</small></span></li><li><b>02</b><span><strong data-i18n="mission.guideStep2Title">선택과 회전</strong><small data-i18n="mission.guideStep2">조각을 선택하고 연결 방향을 맞춥니다.</small></span></li><li><b>03</b><span><strong data-i18n="mission.guideStep3Title">조합과 순서</strong><small data-i18n="mission.guideStep3">두 조각을 올바른 순서와 방향으로 연결합니다.</small></span></li></ol><button class="ui-button ui-button--primary" type="button" data-mission-start data-i18n="mission.begin">복구 시작</button></div>
+        </section>
+        <section class="mission-phase mission-countdown" data-mission-phase="countdown" hidden><span>SYSTEM LINK</span><strong data-mission-countdown>3</strong><p data-i18n="mission.countdown">Rail Network를 활성화합니다.</p></section>
+        <section class="mission-phase mission-play" data-mission-phase="playing" hidden>
+          <section class="rail-repair__network" aria-labelledby="rail-network-title">
+            <header><div><span class="ui-panel__eyebrow">RAIL NETWORK</span><h3 id="rail-network-title" data-i18n="mission.networkTitle">전체 연결 경로</h3></div><strong data-repair-connection>12 / 15</strong></header>
+            <div class="rail-repair__route" data-i18n-aria-label="mission.networkLabel" aria-label="세 고장 구간이 표시된 Rail Network">
+              <svg viewBox="0 0 900 290" aria-hidden="true"><path class="rail-repair__grid" d="M40 55H860M40 110H860M40 165H860M40 220H860M150 30V260M300 30V260M450 30V260M600 30V260M750 30V260"/><path class="rail-repair__line" d="M44 188C125 188 130 70 225 70S325 224 438 224 548 66 652 66 738 190 856 150"/><g><circle cx="44" cy="188" r="9"/><circle cx="225" cy="70" r="9"/><circle cx="438" cy="224" r="9"/><circle cx="652" cy="66" r="9"/><circle cx="856" cy="150" r="9"/></g></svg>
+              <ol class="rail-repair__faults"><li data-repair-fault="0"><span>01</span></li><li data-repair-fault="1"><span>02</span></li><li data-repair-fault="2"><span>03</span></li></ol>
+            </div>
+          </section>
+          <section class="rail-repair__workspace">
+            <header><div><span class="ui-panel__eyebrow" data-repair-stage>REPAIR 01 / 03</span><h3 data-repair-title>고장 구간 01</h3></div><span class="ui-badge" data-repair-difficulty>SELECT</span></header>
+            <p data-repair-description>알맞은 Rail 조각을 선택해 단절된 구간을 연결하세요.</p>
+            <div class="rail-repair__slots" data-repair-slots></div>
+            <div class="rail-repair__candidates" role="group" data-repair-candidates data-i18n-aria-label="mission.candidateGroup" aria-label="Rail 조각 선택"></div>
+            <div class="rail-repair__controls"><button class="ui-button" type="button" data-repair-rotate data-i18n="mission.rotate">90° 회전</button><button class="ui-button ui-button--primary" type="button" data-repair-confirm data-i18n="mission.confirm">연결 확인</button></div>
+            <p class="rail-repair__status" role="status" aria-live="polite" data-repair-status></p>
+          </section>
+          <div class="rail-repair__transition" data-repair-transition hidden><span aria-hidden="true">✓</span><strong data-i18n="mission.sectionRestored">RAIL SECTION RESTORED</strong><p data-repair-transition-text></p></div>
+        </section>
+        <section class="mission-phase mission-testing" data-mission-phase="testing" hidden><span class="ui-panel__eyebrow">FINAL SYSTEM CHECK</span><h3 data-i18n="mission.testingTitle">복구된 Rail Network를 점검합니다.</h3><ol><li data-test-step="connection"><span aria-hidden="true">✓</span><b data-i18n="mission.testingConnection">전체 Rail 연결 검사</b></li><li data-test-step="trial"><span aria-hidden="true">✓</span><b data-i18n="mission.testingTrial">코스터 시운전</b></li><li data-test-step="safety"><span aria-hidden="true">✓</span><b data-i18n="mission.testingSafety">안전 시스템 확인</b></li></ol><div class="mission-testing__train" aria-hidden="true"><i></i><span></span></div><p role="status" aria-live="polite" data-testing-status></p></section>
+        <section class="mission-phase mission-result" data-mission-phase="paused" hidden><span class="ui-panel__eyebrow">MISSION PAUSED</span><h3 data-i18n="mission.pausedTitle">복구 작업이 일시정지됐어요.</h3><p data-i18n="mission.pausedDescription">현재 복구 단계와 남은 시간이 저장됐습니다.</p><div class="mission-result__actions"><button class="ui-button" type="button" data-mission-exit data-i18n="mission.toMap">MAP으로 돌아가기</button><button class="ui-button" type="button" data-mission-restart data-i18n="mission.restart">다시 시작</button><button class="ui-button ui-button--primary" type="button" data-mission-resume data-i18n="mission.resume">계속하기</button></div></section>
+        <section class="mission-phase mission-result" data-mission-phase="failed" hidden><span class="ui-panel__eyebrow">CONNECTION FAILED</span><h3 data-i18n="mission.failedTitle">제한 시간 안에 세 구간을 복구하지 못했어요.</h3><p data-i18n="mission.failedDescription">완료한 구간은 기록으로 유지됩니다. 남은 고장 구간부터 다시 시도해 주세요.</p><div class="mission-result__actions"><button class="ui-button" type="button" data-mission-exit data-i18n="mission.toMap">MAP으로 돌아가기</button><button class="ui-button ui-button--primary" type="button" data-mission-restart data-i18n="mission.retry">다시 시도</button></div></section>
+        <section class="mission-phase mission-result mission-result--complete" data-mission-phase="completed" hidden><div class="mission-result__seal" aria-hidden="true">✦</div><span class="ui-panel__eyebrow">FACILITY RESTORED</span><h3 data-i18n="mission.completeTitle">NOVA COASTER 복구가 완료됐어요.</h3><p data-i18n="mission.completeDescription">열차 운행이 재개되고 NOVA Stamp가 Passport에 기록됐습니다.</p><button class="ui-button ui-button--primary" type="button" data-mission-record data-i18n="mission.viewRecord">Passport 기록 확인</button></section>
+      </div>
+    </dialog>
     <section id="explorer-archive-overlay" class="ui-overlay explorer-archive-overlay" aria-labelledby="explorer-archive-title" aria-modal="true" role="dialog" hidden>
       <button class="ui-overlay__backdrop" type="button" data-overlay-close data-i18n-aria-label="archive.close" aria-label="Explorer Archive 닫기"></button>
       <div class="ui-overlay__dialog ui-panel explorer-archive" tabindex="-1">

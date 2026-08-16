@@ -1,11 +1,12 @@
 import { t } from './locales.js';
 
-export function createEveController() {
-  const panel = document.querySelector('.eve-panel');
-  const messageElement = document.querySelector('#eve-message');
-  const speechControl = panel?.querySelector('[data-eve-skip="map"]');
-  const signalWave = document.querySelector('#eve-signal-wave');
-  const initialMessage = () => t('map.initialEve');
+export function createEveController(panel = document.querySelector('.screen--map .eve-panel'), options = {}) {
+  const messageElement = panel?.querySelector('[data-eve-message]');
+  const speechControl = panel?.querySelector('[data-eve-skip]');
+  const signalWave = panel?.querySelector('[data-eve-signal-wave]');
+  const initialMessage = options.initialMessage ?? (() => t('map.initialEve'));
+  const isPersistent = options.persistent ?? false;
+  const useFocusMotion = options.focusMotion ?? true;
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let typingTimer = null;
   let visibilityTimer = null;
@@ -28,7 +29,9 @@ export function createEveController() {
     activeMessageSource = null;
     speechControl?.setAttribute('disabled', '');
     signalWave?.classList.add('is-paused');
-    panel?.classList.remove('is-visible');
+    if (!isPersistent) {
+      panel?.classList.remove('is-visible');
+    }
     panel?.classList.remove('is-focused');
     panel?.classList.remove('is-typing');
     panel?.setAttribute('aria-busy', 'false');
@@ -44,11 +47,13 @@ export function createEveController() {
     panel?.classList.remove('is-typing');
     panel?.setAttribute('aria-busy', 'false');
     speechControl?.setAttribute('disabled', '');
-    visibilityTimer = window.setTimeout(() => {
-      panel?.classList.remove('is-visible');
-      panel?.classList.remove('is-focused');
-      visibilityTimer = null;
-    }, 3200);
+    if (!isPersistent) {
+      visibilityTimer = window.setTimeout(() => {
+        panel?.classList.remove('is-visible');
+        panel?.classList.remove('is-focused');
+        visibilityTimer = null;
+      }, 3200);
+    }
 
     const onComplete = onSpeechComplete;
     onSpeechComplete = null;
@@ -86,7 +91,7 @@ export function createEveController() {
     lastMessageSource = messageSource;
     onSpeechComplete = onComplete;
     panel?.classList.add('is-visible');
-    panel?.classList.add('is-focused');
+    panel?.classList.toggle('is-focused', useFocusMotion);
     speechControl?.removeAttribute('disabled');
 
     if (prefersReducedMotion) {

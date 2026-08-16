@@ -48,7 +48,7 @@ NOVA COMPASS는 정해진 목적지를 가리키기보다 멈춘 세계에서 �
 
 Movement Facility
 
-끊어진 Rail을 연결해 열차가 다시 안전하게 운행하도록 복구하는 퍼즐입니다.
+전체 Rail Network에서 세 곳의 고장 구간을 찾아 단계적으로 복구하고 열차의 안전 운행을 확인하는 퍼즐입니다.
 
 
 ### LUNA LIGHT GARDEN
@@ -138,9 +138,9 @@ Intro의 구조 신호 화면부터 오른쪽 위 설정 아이콘에서 한국�
 
 ## 제작 현황
 
-현재 최초 방문 Intro, Explorer 이름·성별·이미지 등록, Passport 최초 발급과 WORLD MAP 연결 인터페이스부터 PC World Map의 Mission 우선 선택 흐름, EVE 안내와 시설별 단계적 조명 변화까지 연결했습니다. Explorer Archive의 Log와 Passport는 같은 진행 기록을 사용하며 시설 상태, Mission 진행, Log와 Stamp 기록을 함께 관리하는 Save Data 기반을 연결했습니다. 한국어·영어 설정은 Intro와 World Map의 정적 문구, 동적 EVE 대사와 접근성 라벨에 즉시 반영되고 선택값이 저장됩니다. Intro는 PC·Mobile 반응형과 키보드 흐름까지 검수했으며, Mobile World Map은 기능 검증용 1차 버전입니다.
+현재 최초 방문 Intro, Explorer 등록과 Passport 발급, WORLD MAP에 이어 PC NOVA COASTER의 공통 Mission Flow와 NOVA Stamp 기록 기반을 연결했습니다. NOVA COASTER는 세 고장 구간을 조각 선택, 회전과 조합으로 단계적으로 복구한 뒤 연결 검사, 시운전과 안전 점검을 진행합니다. Explorer Archive의 Log와 Passport는 같은 진행 기록을 사용하며 시설 상태, Mission Checkpoint, Log와 Stamp 기록은 Save Data로 복원됩니다. 한국어·영어 설정은 정적 문구, 동적 EVE 대사와 접근성 라벨에 즉시 반영되고 선택값이 저장됩니다. Intro는 PC·Mobile 반응형과 키보드 흐름까지 검수했으며, Mobile World Map은 기능 검증용 1차 버전입니다.
 
-다음 단계에서 Passport의 시설별 Stamp·쿠폰 페이지를 연결하고 PC NOVA COASTER로 공통 Mission Flow를 완성합니다. 이후 Mobile World Map을 전용 HUD로 재설계할 예정입니다.
+다음 단계에서 PC NOVA COASTER의 Guide, Play, System Check와 Complete를 한 화면씩 시각적으로 발전시키고 검수한 뒤 Mobile World Map을 전용 HUD로 재설계할 예정입니다.
 
 ---
 

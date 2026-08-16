@@ -5,7 +5,7 @@ const STORAGE_KEY = 'novaLandProgress';
 const SCHEMA_VERSION = 1;
 const LOG_LIMIT = 100;
 const FACILITY_STATUSES = new Set(['available', 'locked', 'completed']);
-const MISSION_PHASES = new Set(['idle', 'guide', 'countdown', 'playing', 'paused', 'failed', 'completed']);
+const MISSION_PHASES = new Set(['idle', 'guide', 'countdown', 'playing', 'testing', 'paused', 'failed', 'completed']);
 const facilityIds = facilities.map((facility) => facility.id);
 
 function toIsoString(value, fallback = new Date()) {
