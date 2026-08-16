@@ -1,5 +1,9 @@
 const FOCUSABLE_SELECTOR = 'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
+function isVisibleFocusable(element) {
+  return !element.closest('[hidden]') && element.getClientRects().length > 0 && window.getComputedStyle(element).visibility !== 'hidden';
+}
+
 export function getIcon(icon) {
   return `<svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-${icon}"></use></svg>`;
 }
@@ -282,7 +286,7 @@ export function createOverlayController({ onRequestClose } = {}) {
 
     const dialog = activeOverlay.querySelector('.ui-overlay__dialog');
     const focusableElements = dialog
-      ? [...dialog.querySelectorAll(FOCUSABLE_SELECTOR)].filter((element) => !element.hidden)
+      ? [...dialog.querySelectorAll(FOCUSABLE_SELECTOR)].filter(isVisibleFocusable)
       : [];
 
     if (!focusableElements.length) {

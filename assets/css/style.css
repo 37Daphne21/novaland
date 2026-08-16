@@ -35,8 +35,7 @@
 .map-facility-card__number,
 .map-facility-card__content strong,
 .eve-panel .ui-panel__title,
-.recent-log__time,
-.control-room-shell__content h1 {
+.recent-log__time {
   font-family: var(--font-display);
 }
 
@@ -300,6 +299,8 @@
 }
 
 .facility-list {
+  display: grid;
+  gap: var(--space-2);
   margin-top: var(--space-3);
 }
 
@@ -973,6 +974,7 @@
 }
 
 .recent-log__list {
+  display: grid;
   gap: var(--space-2);
 }
 
@@ -1011,7 +1013,7 @@
   background: radial-gradient(circle at 50% 18%, rgba(29, 115, 158, .12), transparent 36%), linear-gradient(145deg, rgba(7, 22, 39, .96), rgba(2, 10, 20, .96));
 }
 
-.explorer-archive__header {
+.explorer-archive > .ui-panel__header {
   padding-bottom: var(--space-4);
   border-bottom: .0625rem solid var(--color-line);
 }
@@ -1099,7 +1101,7 @@
   width: min(31rem, calc(100% - 2rem));
 }
 
-.profile-editor__panel {
+.profile-editor > .ui-dialog__panel {
   text-align: left;
 }
 
@@ -1367,7 +1369,7 @@
 
 .eve-panel--control,
 .control-room__objective,
-.control-room__column--status {
+.control-room__status {
   width: clamp(19rem, 18vw, 21rem);
   max-width: 100%;
 }
@@ -1418,7 +1420,7 @@
 .control-room__objective > .ui-panel__subtitle { margin-top: var(--space-2); }
 .control-room__objective > .ui-panel__description { margin: .25rem 0 var(--space-2); }
 
-.control-room__column--status {
+.control-room__status {
   --ui-info-primary-size: 1rem;
   grid-column: 3;
   justify-self: end;
@@ -1427,11 +1429,11 @@
   background: linear-gradient(145deg, rgba(19, 20, 50, .9), rgba(4, 10, 24, .92));
 }
 
-.control-room__column--status > header strong { color: #ff9eb0; font-size: .75rem; }
-.control-room__column--status .ui-info-list__icon { color: #b9acff; filter: drop-shadow(0 0 .45rem rgba(140, 114, 255, .3)); }
-.control-room__column--status .ui-info-list__value { display: grid; gap: var(--space-2); font-family: var(--font-numeric); }
-.control-room__column--status .ui-info-list__item.is-warning .ui-info-list__icon,
-.control-room__column--status .ui-info-list__item.is-warning .ui-info-list__value { color: #ff9eb0; }
+.control-room__status > header strong { color: #ff9eb0; font-size: .75rem; }
+.control-room__status .ui-info-list__icon { color: #b9acff; filter: drop-shadow(0 0 .45rem rgba(140, 114, 255, .3)); }
+.control-room__status .ui-info-list__value { display: grid; gap: var(--space-2); font-family: var(--font-numeric); }
+.control-room__status .ui-info-list__item.is-warning .ui-info-list__icon,
+.control-room__status .ui-info-list__item.is-warning .ui-info-list__value { color: #ff9eb0; }
 
 .control-room__segments { display: grid; grid-template-columns: repeat(12, 1fr); gap: .1875rem; }
 .control-room__segments i { height: .35rem; border: .0625rem solid rgba(140, 114, 255, .28); background: rgba(140, 114, 255, .07); }
@@ -1611,13 +1613,13 @@
 @media (max-width: 75rem) {
   .screen--control-room { height: auto; overflow-y: auto; }
   .control-room__layout { grid-template-columns: minmax(18rem, 1fr) minmax(17rem, .8fr); }
-  .control-room__column--status { grid-column: 2; }
+  .control-room__status { grid-column: 2; }
 }
 
 @media (max-width: 56rem) {
   .control-room__header { grid-template-columns: 1fr auto; }
   .control-room__layout { grid-template-columns: 1fr; }
-  .control-room__column--status { grid-column: auto; grid-row: auto; }
+  .control-room__status { grid-column: auto; grid-row: auto; }
   .control-room__start { width: min(32rem, calc(100% - 2rem)); }
   .mission-guide { grid-template-columns: 1fr; }
   .mission-guide__signal { display: none; }
@@ -2166,7 +2168,7 @@
     border-radius: 0;
   }
 
-  .explorer-archive__header {
+  .explorer-archive > .ui-panel__header {
     padding-bottom: var(--space-3);
   }
 

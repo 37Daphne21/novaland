@@ -20,7 +20,7 @@
         <h1 id="intro-title" class="intro-sr-title" data-i18n="intro.title">Nova Land Explorer 등록</h1>
         <button class="intro-settings-button" type="button" data-overlay-open="settings-overlay" data-settings-scope="language" data-i18n-aria-label="intro.openSettings" aria-label="Intro 설정 열기" hidden><svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-settings"></use></svg></button>
         <div class="intro-status" role="status" aria-live="polite" aria-atomic="true"></div>
-        <section class="intro-scene intro-scene--welcome is-active" data-intro-scene="welcome" aria-labelledby="intro-welcome-title">
+        <section class="intro-scene intro-scene--welcome intro-welcome is-active" data-intro-scene="welcome" aria-labelledby="intro-welcome-title">
           <div class="intro-welcome__shade" aria-hidden="true"></div>
           <div class="intro-welcome__motion" aria-hidden="true"><i></i><i></i><i></i><b></b><span></span></div>
           <div class="intro-welcome__brand"><span id="intro-welcome-title">NOVA LAND</span><strong>A WORLD IN HARMONY</strong></div>
@@ -60,6 +60,7 @@
         </section>
 
         <section class="intro-scene intro-scene--register" data-intro-scene="register" aria-labelledby="intro-register-title" hidden>
+          <h2 id="intro-register-title" class="intro-sr-title" data-i18n="intro.title">Nova Land Explorer 등록</h2>
           <div class="intro-space" aria-hidden="true"><i></i><i></i><i></i></div>
           <div class="intro-register">
             <div class="intro-eve" aria-hidden="true">
@@ -75,7 +76,7 @@
               <form class="intro-form" data-intro-form novalidate>
                 <div class="intro-form__heading"><span>EXPLORER REGISTRATION</span><strong data-registration-step>01 / 02</strong></div>
                 <div class="intro-form__body" data-registration-body>
-                  <div class="intro-form__step intro-form__step--name" data-register-step="name">
+                  <div class="intro-form__step" data-register-step="name">
                     <div class="ui-field intro-form__field">
                       <label for="explorer-name-input" data-i18n="intro.register.nameLabel">Passport에 기록할 이름</label>
                       <div class="ui-input-wrap ui-input-wrap--large">
@@ -122,8 +123,8 @@
               <div class="passport__glow" aria-hidden="true"></div>
               <div class="passport__book">
                 <div class="passport__cover passport__cover--back" aria-hidden="true"></div>
-                <div class="passport__page passport__page--profile" data-passport-page="identity">
-                  <header class="passport__page-header"><span class="passport__page-label">EXPLORER IDENTITY</span></header>
+                <div class="passport__page passport__page--profile">
+                  <header><span class="passport__page-label">EXPLORER IDENTITY</span></header>
                   <div class="passport__page-content passport__page-content--profile">
                     <div class="passport__portrait"><img src="./assets/images/common/explorer-female.webp" alt="여성 Nova Land Explorer 프로필 이미지" data-passport-portrait><span aria-hidden="true"></span></div>
                     <dl>
@@ -139,8 +140,8 @@
                   <footer class="passport__page-footer"><p class="passport__serial" data-passport-serial>NL · INITIAL ISSUE</p></footer>
                 </div>
                 <div class="passport__leaf">
-                  <div class="passport__page passport__page--authority passport__leaf-back" data-passport-page="authority">
-                    <header class="passport__page-header"><span class="passport__page-label" data-passport-authority-label>NOVA LAND AUTHORITY</span></header>
+                  <div class="passport__page passport__page--authority passport__leaf-back">
+                    <header><span class="passport__page-label" data-passport-authority-label>NOVA LAND AUTHORITY</span></header>
                     <div class="passport__page-content passport__page-content--authority">
                       <div class="passport__authority-emblem" aria-hidden="true"><img src="./assets/images/common/passport-authority-emblem.svg" alt=""></div>
                       <p class="passport__authority-title">RESTORATION<br>ACCESS</p>
@@ -152,7 +153,7 @@
                     </div>
                     <div class="passport__facility-record" data-passport-facility-record hidden><span>MOVEMENT FACILITY</span><h3>NOVA COASTER</h3><img src="./assets/images/common/stamp-coaster-restored.svg" alt=""><p data-i18n="passport.coasterRecord">Rail Network 복구와 열차 운행 재개가 확인됐습니다.</p><dl><div><dt>RESTORATION</dt><dd data-passport-coaster-date>—</dd></div><div><dt>STATUS</dt><dd>RESTORED</dd></div></dl></div>
                   </div>
-                  <div class="passport__cover passport__cover--front passport__leaf-front">
+                  <div class="passport__cover passport__leaf-front">
                     <span class="passport__corner passport__corner--one"></span><span class="passport__corner passport__corner--two"></span><span class="passport__corner passport__corner--three"></span><span class="passport__corner passport__corner--four"></span>
                     <small>THE REPUBLIC OF</small>
                     <strong>EXPLORER<br>PASSPORT</strong>
@@ -210,12 +211,12 @@
           </div>
         </header>
         <div class="map-layout">
-          <section class="mission-panel ui-panel ui-panel--content" aria-labelledby="mission-title">
+          <section class="mission-panel ui-panel ui-panel--content" aria-labelledby="map-mission-title">
             <header class="ui-panel__header">
-              <div class="ui-panel__heading"><svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-mission"></use></svg><h2 id="mission-title" class="ui-panel__title" data-i18n="map.mission">미션</h2></div>
+              <div class="ui-panel__heading"><svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-mission"></use></svg><h2 id="map-mission-title" class="ui-panel__title" data-i18n="map.mission">미션</h2></div>
               <button class="mobile-panel-toggle" type="button" data-mobile-panel-toggle="mission-panel" aria-controls="facility-list cosmic-status mission-progress" aria-expanded="false" data-i18n-aria-label="map.missionListExpand" aria-label="미션 목록 펼치기"><svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-arrow-right"></use></svg></button>
             </header>
-            <ol id="facility-list" class="facility-list ui-card-list" data-i18n-aria-label="map.facilityList" aria-label="시설 목록"></ol>
+            <ol id="facility-list" class="facility-list" data-i18n-aria-label="map.facilityList" aria-label="시설 목록"></ol>
             <button id="cosmic-status" class="cosmic-status" type="button" data-facility="cosmic" aria-disabled="true"></button>
             <div id="mission-progress" class="mission-progress" role="progressbar" data-i18n-aria-label="map.progressActive" aria-label="현재 시설 복구 단계" aria-valuemin="1" aria-valuemax="4">
               <div class="mission-progress__header"><strong id="mission-progress-value">1 / 4</strong><span data-i18n="map.progressActive">현재 복구 단계</span></div>
@@ -243,12 +244,12 @@
                   <button class="mobile-panel-toggle" type="button" data-mobile-panel-toggle="recent-log" aria-controls="recent-log-list" aria-expanded="false" data-i18n-aria-label="map.recentLogExpand" aria-label="최근 기록 펼치기"><svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-arrow-right"></use></svg></button>
                 </div>
               </header>
-              <ul id="recent-log-list" class="recent-log__list ui-lined-list"></ul>
+              <ul id="recent-log-list" class="recent-log__list"></ul>
             </section>
           </div>
         </div>
       </section>
-      <section class="screen screen--control-room" data-screen="control-room" aria-labelledby="control-room-title" hidden>
+      <section class="screen screen--control-room control-room" data-screen="control-room" aria-labelledby="control-room-title" hidden>
         <div class="control-room__backdrop" aria-hidden="true"></div>
         <div class="control-room-shell">
           <header class="control-room__header">
@@ -269,19 +270,19 @@
                 <header class="ui-panel__header"><h2 class="ui-panel__title" data-i18n="control.objectiveEyebrow">미션 목표</h2></header>
                 <h3 class="ui-panel__subtitle" data-i18n="control.objectiveTitle">레일 시스템 복구</h3>
                 <p class="ui-panel__description" data-control-room-objective data-i18n="control.coasterObjective">레일 네트워크의 세 고장 구간을 단계적으로 복구하세요.</p>
-                <ol class="ui-lined-list ui-info-list">
-                  <li class="ui-lined-list__item ui-info-list__item"><span class="ui-info-list__icon" aria-hidden="true"><svg class="ui-icon"><use href="./assets/images/common/icon-sprite.svg#icon-scan"></use></svg></span><span class="ui-info-list__content"><strong class="ui-info-list__title" data-i18n="control.objectiveInspect">고장 구간 확인</strong><small class="ui-info-list__description" data-i18n="control.objectiveInspectHelp">단절된 레일 세 곳을 탐색합니다.</small></span></li>
-                  <li class="ui-lined-list__item ui-info-list__item"><span class="ui-info-list__icon" aria-hidden="true"><svg class="ui-icon"><use href="./assets/images/common/icon-sprite.svg#icon-rail"></use></svg></span><span class="ui-info-list__content"><strong class="ui-info-list__title" data-i18n="control.objectiveRepair">레일 연결</strong><small class="ui-info-list__description" data-i18n="control.objectiveRepairHelp">각 구간의 조각과 방향을 맞춥니다.</small></span></li>
-                  <li class="ui-lined-list__item ui-info-list__item"><span class="ui-info-list__icon" aria-hidden="true"><svg class="ui-icon"><use href="./assets/images/common/icon-sprite.svg#icon-shield"></use></svg></span><span class="ui-info-list__content"><strong class="ui-info-list__title" data-i18n="control.objectiveTest">운행 점검</strong><small class="ui-info-list__description" data-i18n="control.objectiveTestHelp">전체 연결과 안전 시스템을 확인합니다.</small></span></li>
+                <ol class="ui-info-list ui-info-list--lined">
+                  <li class="ui-info-list__item"><span class="ui-info-list__icon" aria-hidden="true"><svg class="ui-icon"><use href="./assets/images/common/icon-sprite.svg#icon-scan"></use></svg></span><span class="ui-info-list__content"><strong class="ui-info-list__title" data-i18n="control.objectiveInspect">고장 구간 확인</strong><small class="ui-info-list__description" data-i18n="control.objectiveInspectHelp">단절된 레일 세 곳을 탐색합니다.</small></span></li>
+                  <li class="ui-info-list__item"><span class="ui-info-list__icon" aria-hidden="true"><svg class="ui-icon"><use href="./assets/images/common/icon-sprite.svg#icon-rail"></use></svg></span><span class="ui-info-list__content"><strong class="ui-info-list__title" data-i18n="control.objectiveRepair">레일 연결</strong><small class="ui-info-list__description" data-i18n="control.objectiveRepairHelp">각 구간의 조각과 방향을 맞춥니다.</small></span></li>
+                  <li class="ui-info-list__item"><span class="ui-info-list__icon" aria-hidden="true"><svg class="ui-icon"><use href="./assets/images/common/icon-sprite.svg#icon-shield"></use></svg></span><span class="ui-info-list__content"><strong class="ui-info-list__title" data-i18n="control.objectiveTest">운행 점검</strong><small class="ui-info-list__description" data-i18n="control.objectiveTestHelp">전체 연결과 안전 시스템을 확인합니다.</small></span></li>
                 </ol>
               </section>
             </aside>
-            <aside class="control-room__column--status ui-panel ui-panel--content" aria-labelledby="control-room-status-title">
+            <aside class="control-room__status ui-panel ui-panel--content" aria-labelledby="control-room-status-title">
               <header class="ui-panel__header"><h2 id="control-room-status-title" class="ui-panel__title" data-i18n="control.statusTitle">열차 상태</h2><strong data-i18n="control.trainStopped">운행 중단</strong></header>
-              <dl class="ui-lined-list ui-info-list">
-                <div class="ui-lined-list__item ui-info-list__item"><span class="ui-info-list__icon ui-info-list__icon--plain" aria-hidden="true"><svg class="ui-icon"><use href="./assets/images/common/icon-sprite.svg#icon-rail"></use></svg></span><div class="ui-info-list__content"><dt class="ui-info-list__label" data-i18n="control.railConnection">레일 연결</dt><dd class="ui-info-list__value"><strong>9 / 12</strong><span class="control-room__segments" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></dd></div></div>
-                <div class="ui-lined-list__item ui-info-list__item is-warning"><span class="ui-info-list__icon ui-info-list__icon--plain" aria-hidden="true"><svg class="ui-icon"><use href="./assets/images/common/icon-sprite.svg#icon-shield"></use></svg></span><div class="ui-info-list__content"><dt class="ui-info-list__label" data-i18n="control.systemCheck">시스템 점검</dt><dd class="ui-info-list__value"><strong data-i18n="control.inspectionRequired">점검 필요</strong></dd></div></div>
-                <div class="ui-lined-list__item ui-info-list__item"><span class="ui-info-list__icon ui-info-list__icon--plain" aria-hidden="true"><svg class="ui-icon"><use href="./assets/images/common/icon-sprite.svg#icon-clock"></use></svg></span><div class="ui-info-list__content"><dt class="ui-info-list__label" data-i18n="control.nextDeparture">다음 출발</dt><dd class="ui-info-list__value"><strong data-i18n="control.suspended">대기 중</strong></dd></div></div>
+              <dl class="ui-info-list ui-info-list--lined ui-info-list--plain-icons">
+                <div class="ui-info-list__item"><span class="ui-info-list__icon" aria-hidden="true"><svg class="ui-icon"><use href="./assets/images/common/icon-sprite.svg#icon-rail"></use></svg></span><div class="ui-info-list__content"><dt class="ui-info-list__label" data-i18n="control.railConnection">레일 연결</dt><dd class="ui-info-list__value"><strong>9 / 12</strong><span class="control-room__segments" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></dd></div></div>
+                <div class="ui-info-list__item is-warning"><span class="ui-info-list__icon" aria-hidden="true"><svg class="ui-icon"><use href="./assets/images/common/icon-sprite.svg#icon-shield"></use></svg></span><div class="ui-info-list__content"><dt class="ui-info-list__label" data-i18n="control.systemCheck">시스템 점검</dt><dd class="ui-info-list__value"><strong data-i18n="control.inspectionRequired">점검 필요</strong></dd></div></div>
+                <div class="ui-info-list__item"><span class="ui-info-list__icon" aria-hidden="true"><svg class="ui-icon"><use href="./assets/images/common/icon-sprite.svg#icon-clock"></use></svg></span><div class="ui-info-list__content"><dt class="ui-info-list__label" data-i18n="control.nextDeparture">다음 출발</dt><dd class="ui-info-list__value"><strong data-i18n="control.suspended">대기 중</strong></dd></div></div>
               </dl>
             </aside>
           </div>
@@ -300,7 +301,7 @@
           <div class="mission-guide__content"><span class="ui-panel__eyebrow">RESTORATION GUIDE</span><h3 data-i18n="mission.guideTitle">세 곳의 고장 구간을 복구하세요.</h3><p data-i18n="mission.guideDescription">정상 Rail Network는 유지됩니다. 표시된 고장 구간만 단계적으로 연결한 뒤 코스터 안전 점검을 진행합니다.</p><ol><li><b>01</b><span><strong data-i18n="mission.guideStep1Title">조각 선택</strong><small data-i18n="mission.guideStep1">알맞은 Rail 조각을 선택합니다.</small></span></li><li><b>02</b><span><strong data-i18n="mission.guideStep2Title">선택과 회전</strong><small data-i18n="mission.guideStep2">조각을 선택하고 연결 방향을 맞춥니다.</small></span></li><li><b>03</b><span><strong data-i18n="mission.guideStep3Title">조합과 순서</strong><small data-i18n="mission.guideStep3">두 조각을 올바른 순서와 방향으로 연결합니다.</small></span></li></ol><button class="ui-button ui-button--primary" type="button" data-mission-start data-i18n="mission.begin">복구 시작</button></div>
         </section>
         <section class="mission-phase mission-countdown" data-mission-phase="countdown" hidden><span>SYSTEM LINK</span><strong data-mission-countdown>3</strong><p data-i18n="mission.countdown">Rail Network를 활성화합니다.</p></section>
-        <section class="mission-phase mission-play" data-mission-phase="playing" hidden>
+        <section class="mission-phase mission-play rail-repair" data-mission-phase="playing" hidden>
           <section class="rail-repair__network" aria-labelledby="rail-network-title">
             <header><div><span class="ui-panel__eyebrow">RAIL NETWORK</span><h3 id="rail-network-title" data-i18n="mission.networkTitle">전체 연결 경로</h3></div><strong data-repair-connection>9 / 12</strong></header>
             <div class="rail-repair__route" data-i18n-aria-label="mission.networkLabel" aria-label="세 고장 구간이 표시된 Rail Network">
@@ -327,7 +328,7 @@
     <section id="explorer-archive-overlay" class="ui-overlay explorer-archive-overlay" aria-labelledby="explorer-archive-title" aria-modal="true" role="dialog" hidden>
       <button class="ui-overlay__backdrop" type="button" data-overlay-close data-i18n-aria-label="archive.close" aria-label="Explorer Archive 닫기"></button>
       <div class="ui-overlay__dialog ui-panel explorer-archive" tabindex="-1">
-        <header class="ui-panel__header explorer-archive__header">
+        <header class="ui-panel__header">
           <div><span class="ui-panel__eyebrow">EXPLORER ARCHIVE</span><h2 id="explorer-archive-title" class="explorer-archive__title" data-archive-title>Explorer Archive</h2></div>
           <button class="ui-button ui-button--icon ui-button--small" type="button" data-overlay-close data-i18n-aria-label="archive.close" aria-label="Explorer Archive 닫기"><svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-close"></use></svg></button>
         </header>
@@ -336,7 +337,7 @@
           <button id="archive-passport-tab" type="button" role="tab" data-tab="passport" aria-controls="archive-passport-panel" aria-selected="false" tabindex="-1"><strong data-i18n="archive.passportTab">EXPLORER PASSPORT</strong></button>
         </div>
         <div class="explorer-archive__body">
-          <section id="archive-log-panel" class="explorer-archive__panel explorer-archive__panel--log" role="tabpanel" data-tab-panel="log" aria-labelledby="archive-log-tab">
+          <section id="archive-log-panel" class="explorer-archive__panel explorer-archive__panel--log archive-log" role="tabpanel" data-tab-panel="log" aria-labelledby="archive-log-tab">
             <div class="archive-log__heading"><span data-i18n="archive.logEyebrow">JOURNEY RECORD</span><h3 data-i18n="archive.logTitle">탐험 기록</h3><p data-i18n="archive.logDescription">Explorer 등록과 노바랜드에서 확인된 사건을 시간순으로 기록합니다.</p></div>
             <ol class="archive-log__list" data-archive-log-list></ol>
           </section>
@@ -378,7 +379,7 @@
       </div>
     </dialog>
     <dialog id="explorer-profile-dialog" class="ui-dialog profile-editor" aria-labelledby="profile-editor-title" aria-describedby="profile-editor-description">
-      <form class="ui-dialog__panel ui-panel profile-editor__panel" data-profile-editor-form novalidate>
+      <form class="ui-dialog__panel ui-panel" data-profile-editor-form novalidate>
         <header class="ui-dialog__header">
           <span class="ui-dialog__eyebrow">EXPLORER IDENTITY</span>
           <h2 id="profile-editor-title" class="ui-dialog__title" data-profile-editor-title>Explorer 정보 수정</h2>
