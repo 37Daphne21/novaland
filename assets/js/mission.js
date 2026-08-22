@@ -1,12 +1,9 @@
-import { createCoasterRepair } from './coaster-repair.js';
 import { t } from './locales.js';
+import { getMissionRestoreState } from './mission-state.js';
 import { readProgress, updateMissionProgress } from './progress.js';
 import { createModalController } from './ui.js';
 
-const MISSION_DURATION = 90;
-const TEST_STEPS = ['connection', 'trial', 'safety'];
-
-export function createMissionController({ getExplorer, onComplete, onExit, onRecord } = {}) {
+export function createMissionController({ createGame, duration = 90, getExplorer, onComplete, onExit, onRecord, testSteps = [] } = {}) {
   const dialog = document.querySelector('#mission-dialog');
   const panels = dialog ? [...dialog.querySelectorAll('[data-mission-phase]')] : [];
   const timer = dialog?.querySelector('[data-mission-timer]');
@@ -16,19 +13,19 @@ export function createMissionController({ getExplorer, onComplete, onExit, onRec
   const countdownPanel = dialog?.querySelector('[data-mission-phase="countdown"]');
   const countdownElement = dialog?.querySelector('[data-mission-countdown]');
   const countdownMessage = dialog?.querySelector('[data-mission-countdown-message]');
-  const repairRoot = dialog?.querySelector('[data-coaster-repair]');
+  const gameRoot = dialog?.querySelector('[data-mission-game]');
   const testingStatus = dialog?.querySelector('[data-testing-status]');
-  const testingItems = new Map(TEST_STEPS.map((step) => [step, dialog?.querySelector(`[data-test-step="${step}"]`)]));
+  const testingItems = new Map(testSteps.map((step) => [step, dialog?.querySelector(`[data-test-step="${step}"]`)]));
   let facility = null;
   let progress = null;
   let phase = 'guide';
   let resumeMode = 'playing';
-  let remaining = MISSION_DURATION;
+  let remaining = duration;
   let timerId = null;
   let countdownId = null;
   let countdownCompletionId = null;
   let stageTransitionId = null;
-  let repair = null;
+  let game = null;
   let testingTimerIds = [];
   let isPreviewMode = false;
   const modal = createModalController(dialog, { onClose: () => {
@@ -47,7 +44,7 @@ export function createMissionController({ getExplorer, onComplete, onExit, onRec
   }
 
   function getCheckpoint(mode = phase) {
-    return { ...repair.getCheckpoint(), remaining, mode };
+    return { ...game.getCheckpoint(), remaining, mode };
   }
 
   function renderTimer() {
@@ -73,7 +70,7 @@ export function createMissionController({ getExplorer, onComplete, onExit, onRec
   function stopStageTransition() {
     window.clearTimeout(stageTransitionId);
     stageTransitionId = null;
-    repair?.showTransition(false);
+    game?.showTransition(false);
   }
 
   function stopTesting() {
@@ -126,11 +123,13 @@ export function createMissionController({ getExplorer, onComplete, onExit, onRec
     countdownPanel.classList.add('is-changing');
   }
 
-  function beginCountdown() {
+  function beginCountdown({ countAttempt = true } = {}) {
     stopCountdown();
     stopStageTransition();
     setPhase('countdown');
-    save({ attempts: (progress.missions[facility.id].attempts ?? 0) + 1 });
+    if (countAttempt) {
+      save({ attempts: (progress.missions[facility.id].attempts ?? 0) + 1 });
+    }
     let count = 3;
     countdownPanel?.classList.remove('is-online');
     renderCountdown(String(count), count);
@@ -149,13 +148,13 @@ export function createMissionController({ getExplorer, onComplete, onExit, onRec
         }
         countdownCompletionId = window.setTimeout(() => {
           countdownCompletionId = null;
-          remaining = MISSION_DURATION;
+          remaining = duration;
           resumeMode = 'playing';
-          repair.reset();
+          game.reset();
           renderTimer();
           setPhase('playing');
           startTimer();
-          repair.focus();
+          game.focus();
         }, 650);
       } else {
         renderCountdown(String(count), count);
@@ -196,9 +195,9 @@ export function createMissionController({ getExplorer, onComplete, onExit, onRec
     resumeMode = 'testing';
     setPhase('testing', { checkpointMode: 'testing' });
     resetTestingView();
-    TEST_STEPS.forEach((step, index) => {
+    testSteps.forEach((step, index) => {
       testingTimerIds.push(window.setTimeout(() => {
-        const previousItem = testingItems.get(TEST_STEPS[index - 1]);
+        const previousItem = testingItems.get(testSteps[index - 1]);
         previousItem?.classList.remove('is-active');
         previousItem?.classList.add('is-complete');
         const item = testingItems.get(step);
@@ -209,57 +208,57 @@ export function createMissionController({ getExplorer, onComplete, onExit, onRec
       }, index * 900));
     });
     testingTimerIds.push(window.setTimeout(() => {
-      const finalItem = testingItems.get(TEST_STEPS.at(-1));
+      const finalItem = testingItems.get(testSteps.at(-1));
       finalItem?.classList.remove('is-active');
       finalItem?.classList.add('is-complete');
       complete();
-    }, TEST_STEPS.length * 900 + 450));
+    }, testSteps.length * 900 + 450));
   }
 
   function resume() {
-    if (resumeMode === 'testing' || repair.isComplete()) {
+    if (resumeMode === 'testing' || game.isComplete()) {
       beginTesting();
       return;
     }
     setPhase('playing', { checkpointMode: 'playing' });
     startTimer();
-    repair.focus();
+    game.focus();
   }
 
   function restart() {
     stopCountdown();
     stopStageTransition();
     stopTesting();
-    remaining = MISSION_DURATION;
+    remaining = duration;
     if (phase === 'failed') {
-      repair.reset(repair.getCheckpoint());
+      game.reset(game.getCheckpoint());
     } else {
-      repair.reset();
+      game.reset();
     }
     resumeMode = 'playing';
     renderTimer();
     setPhase('playing', { checkpointMode: 'playing' });
     save({ attempts: (progress.missions[facility.id].attempts ?? 0) + 1, checkpoint: getCheckpoint('playing') });
     startTimer();
-    repair.focus();
+    game.focus();
   }
 
   function handleStageComplete({ stage, complete: allStagesComplete }) {
     stopTimer();
     stopStageTransition();
-    repair.showTransition(true, stage + 1);
+    game.showTransition(true, stage + 1);
     if (status) {
       status.textContent = t('mission.sectionRestored');
     }
     save({ phase: 'playing', checkpoint: getCheckpoint('playing') });
     stageTransitionId = window.setTimeout(() => {
       stageTransitionId = null;
-      repair.showTransition(false);
+      game.showTransition(false);
       if (allStagesComplete) {
         beginTesting();
         return;
       }
-      repair.advance();
+      game.advance();
       if (status) {
         status.textContent = t('mission.status.playing');
       }
@@ -283,8 +282,8 @@ export function createMissionController({ getExplorer, onComplete, onExit, onRec
       modal.open({ focusTarget: dialog.querySelector('[data-mission-record]'), opener });
       return;
     }
-    remaining = savedMission.checkpoint?.remaining ?? MISSION_DURATION;
-    repair ??= createCoasterRepair(repairRoot, {
+    remaining = savedMission.checkpoint?.remaining ?? duration;
+    game ??= createGame(gameRoot, {
       onChange: () => {
         if (phase === 'playing') {
           save({ phase, checkpoint: getCheckpoint('playing') });
@@ -293,9 +292,9 @@ export function createMissionController({ getExplorer, onComplete, onExit, onRec
       onStageComplete: handleStageComplete
     });
     if (isPreviewMode) {
-      remaining = MISSION_DURATION;
+      remaining = duration;
       resumeMode = 'playing';
-      repair.reset();
+      game.reset();
       renderTimer();
       setPhase('guide', { saveState: false });
       modal.open({ focusTarget: startButton, opener });
@@ -304,16 +303,20 @@ export function createMissionController({ getExplorer, onComplete, onExit, onRec
       }
       return;
     }
-    repair.reset(savedMission.checkpoint);
+    game.reset(savedMission.checkpoint);
     renderTimer();
-    const resumable = ['playing', 'paused', 'testing'].includes(savedMission.phase) && savedMission.checkpoint;
-    resumeMode = savedMission.phase === 'testing' || savedMission.checkpoint?.mode === 'testing' ? 'testing' : 'playing';
-    if (savedMission.phase === 'failed' && savedMission.checkpoint) {
-      setPhase('failed', { saveState: false });
-    } else {
-      setPhase(resumable ? 'paused' : 'guide', { saveState: !resumable, checkpointMode: resumeMode });
+    const restoreState = getMissionRestoreState(savedMission);
+    resumeMode = restoreState.resumeMode;
+    setPhase(restoreState.phase, { saveState: !restoreState.shouldRestore, checkpointMode: resumeMode });
+    const focusTarget = restoreState.phase === 'failed'
+      ? dialog.querySelector('[data-mission-restart]')
+      : restoreState.phase === 'paused'
+        ? dialog.querySelector('[data-mission-resume]')
+        : startButton;
+    modal.open({ focusTarget, opener });
+    if (restoreState.phase === 'countdown') {
+      window.setTimeout(() => beginCountdown({ countAttempt: false }), 0);
     }
-    modal.open({ focusTarget: savedMission.phase === 'failed' ? dialog.querySelector('[data-mission-restart]') : resumable ? dialog.querySelector('[data-mission-resume]') : startButton, opener });
   }
 
   startButton?.addEventListener('click', beginCountdown);
@@ -342,7 +345,7 @@ export function createMissionController({ getExplorer, onComplete, onExit, onRec
 
   function refreshLanguage() {
     setPhase(phase, { saveState: false });
-    repair?.refreshLanguage();
+    game?.refreshLanguage();
   }
 
   return { isOpen: modal.isOpen, open, refreshLanguage };

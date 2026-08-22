@@ -94,6 +94,7 @@
 상태: PC 전체 기능 Flow 연결 완료, 화면별 Visual Development 진행 중
 
 - [x] Control Room 공통 Layout 재설계
+- [x] Control Room 화면 Controller 분리
 - [x] NOVA COASTER PC 관제실 Production Background 적용
 - [x] NOVA COASTER 관제실 2560×1080 Production Background 확정
 - [x] NOVA COASTER Gate·관제 Console·Mission Start Visual Development
@@ -101,6 +102,7 @@
 - [x] EVE와 Mission Objective
 - [x] 시설 상태 Panel
 - [x] Mission Guide 기본 구조와 기능 Flow
+- [x] 공통 Mission Flow와 시설별 Game Module 책임 분리
 - [x] Countdown 기본 기능 Flow
 - [x] NOVA COASTER Full-screen Countdown Visual Development
 - [ ] NOVA COASTER Full-screen Play HUD Visual Development
@@ -117,7 +119,7 @@
 - [x] 복구 완료 시설의 Control Room 상태 보호와 Mission 재시작 차단
 - [x] MAP 복귀와 상태 갱신
 - [x] 현재 복구 단계와 구간 상태 Checkpoint 저장
-- [x] Pause 복원 기반
+- [x] Guide·Countdown·Pause 새로고침 복원
 - [x] NOVA Stamp 기록과 Passport 연결
 - [ ] PC 한국어 화면 검수
 - [ ] PC 영어 화면 검수
