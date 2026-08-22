@@ -1,7 +1,6 @@
 import { createArchiveController } from './archive.js';
 import { createEveController } from './eve.js';
 import { cosmicVoyage, facilities, getExplorerProfile, getFacilityText } from './data.js';
-import { readExplorer } from './explorer.js';
 import { createIntroController } from './intro.js';
 import { initializeLanguage, t } from './locales.js';
 import { createMapController } from './map.js';
@@ -428,9 +427,8 @@ function handleKeydown(event) {
 
 settings.render();
 if (shouldPreviewMission) {
-  const explorer = readExplorer() ?? previewExplorer;
   const facility = getFacility('coaster');
-  enterMap(explorer);
+  enterMap(previewExplorer);
   showControlRoom(facility);
   navigation?.replace({ screen: 'control-room', facilityId: facility.id }, { applyRoute: false });
   window.setTimeout(() => mission.open(facility, controlRoomTitle, { previewPhase: missionPreviewPhase }), 120);
