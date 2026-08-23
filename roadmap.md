@@ -145,14 +145,16 @@
 - [x] 출발역·분기 제어기·종착역 Label·Production Image 공통 반응형 Scale 적용
 - [x] Play Header의 정보 아이콘 Guide·시계 Icon Timer와 불필요한 `남은 시간` Text 제거
 - [x] Board Panel 상단 중앙의 `복구 01 / 03` Notch Plate와 단계 중복 정보 제거
-- [x] 한글 출발역·종착역 단일 Label과 영문 Station 명칭 분리
+- [x] START·GOAL 고정 표기와 현지화 역명의 2단 Label 적용
 - [x] Train과 분리된 Top View 출발역 Base Asset과 종착역 Scale 보강
 - [x] Header의 Mission Identity·연결 상태·조작부 분리와 얇은 Mechanical Frame 적용
+- [x] Play Header·Board·Candidate Workspace의 얇은 통합 Mechanical Border 정리
 - [x] Board 상단 결합형 복구 Notch와 낮은 명도의 Grid·Dot Matrix 적용
 - [x] 시안 기준 세로형 출발역과 직사각형 종착역 Top View Asset·Rail 연결점 적용
 - [x] 곡선·직선·T자 Rail의 좁은 금속 베드·침목·이중 레일 규격 통일
 - [x] 게임 Board 집중도를 위한 낮은 Candidate Workspace 높이 유지
 - [x] Candidate 묶음의 Workspace 전체 기준 중앙 정렬
+- [x] 출발역·종착역 전광판 크기와 Label Scale 통일, 코너·T자 Candidate Artwork 수직 중앙 정렬
 - [x] STEP 1 회전 불가 직선 Rail B의 가로 방향 교정
 - [x] Rail SVG의 금속 베드·침목·체결판·볼트 Detail 보강
 - [x] NOVA Stamp 기록과 Passport 연결

@@ -964,7 +964,7 @@ NOVA COASTER Mission은 하나의 Rail Network 안에서 세 고장 구간을 �
 
 NOVA COASTER Play의 Rail Puzzle은 실제 Roller Coaster를 3D 원근으로 조작하는 화면이 아니라, 연결 방향을 즉시 비교할 수 있는 Top View Rail Network로 표현한다. Rail은 평면 선으로 그리지 않고 금속 베드, 침목, 이중 레일, 체결부와 신호광이 보이는 고밀도 SVG Asset을 사용해 실제 기찻길의 재질과 깊이를 전달한다.
 
-현재 단계의 Rail Board 하나만 화면에 보여준다. Board에는 한글에서 `출발역`과 `종착역`, 영문에서 `START STATION`과 `TERMINAL STATION`, 고정 Rail과 현재 단계에서 채워야 할 2개·3개·4개의 빈 연결 공간을 함께 표시한다. 단계가 올라가면 Board 크기, Rail 경로, 빈 공간의 수와 위치가 모두 바뀌어 새로운 퍼즐임을 명확히 전달한다.
+현재 단계의 Rail Board 하나만 화면에 보여준다. Board의 출발점은 고정 표기 `START`와 현지화된 역명, 도착점은 고정 표기 `GOAL`과 현지화된 역명을 두 줄로 함께 표시한다. 한국어 보조 표기는 `출발역`과 `종착역`, 영문 보조 표기는 `START STATION`과 `TERMINAL STATION`을 사용한다. 고정 Rail과 현재 단계에서 채워야 할 2개·3개·4개의 빈 연결 공간을 함께 표시하며, 단계가 올라가면 Board 크기, Rail 경로, 빈 공간의 수와 위치가 모두 바뀌어 새로운 퍼즐임을 명확히 전달한다.
 
 조작 가능한 Rail 조각은 Puzzle Board 아래의 Candidate Area에 배치한다. 후보 조각과 Board의 빈 공간은 동일한 Top View 기준과 동일한 Rail 규격을 사용하여, 사용자가 조각을 선택하거나 90° 회전했을 때 실제로 연결될 수 있는지를 화면만 보고 판단할 수 있어야 한다.
 
@@ -972,7 +972,7 @@ NOVA COASTER Play의 Rail Puzzle은 실제 Roller Coaster를 3D 원근으로 조
 
 Rail 조각에 Perspective, Isometric 또는 강한 3D 원근을 적용하지 않는다. 입체감은 Top View 연결 규격을 유지한 상태에서 금속 재질, 음영과 광원으로 표현하며 Board와 후보 조각의 시점·두께·연결점 규격은 동일하게 유지한다.
 
-Board의 시작점과 도착점은 언어별 단일 명칭으로 표시한다. 한글은 `출발역`, `종착역`만 크게 표시하고 영문은 `START STATION`, `TERMINAL STATION`을 사용한다. Label은 각 Image 위에 배치하며 영문 명칭이 길면 글자 크기를 줄이지 않고 최대 두 줄까지 허용한다. 출발역은 Rail과 동일한 90° Top View의 세로형 Mechanical Dock Base Image와 별도 Train Image를 겹쳐 하나의 시설처럼 표현한다. Train을 정거장 Image에 합치지 않아 이후 완성된 Rail을 따라 종착역까지 이동시키는 Animation에 그대로 사용할 수 있어야 한다. 종착역도 같은 Top View 시점과 Metal·Cyan·Violet 재질의 세로형 Production Image를 사용하고 두 시설의 선로 중심과 Board Rail의 중심이 자연스럽게 이어져야 한다.
+Board의 시작점과 도착점 Label은 위쪽에 고정 영문 `START`, `GOAL`을 크게 표시하고 아래쪽에 현재 언어의 역명을 작게 표시한다. 한국어는 `출발역`, `종착역`, 영문은 `START STATION`, `TERMINAL STATION`을 사용하며 긴 영문 보조 표기는 최대 두 줄까지 허용한다. Label은 각 Image 위에 배치하고 두 시설에 동일한 글자 크기를 적용한다. 출발역과 종착역 Image는 같은 외곽 크기와 비율로 표시하며 상단 전광판의 보이는 너비와 높이도 동일한 기준으로 맞춘다. 출발역은 Rail과 동일한 90° Top View의 세로형 Mechanical Dock Base Image와 별도 Train Image를 겹쳐 하나의 시설처럼 표현한다. Train을 정거장 Image에 합치지 않아 이후 완성된 Rail을 따라 종착역까지 이동시키는 Animation에 그대로 사용할 수 있어야 한다. 종착역도 같은 Top View 시점과 Metal·Cyan·Violet 재질의 세로형 Production Image를 사용하고 두 시설의 선로 중심과 Board Rail의 중심이 자연스럽게 이어져야 한다.
 
 출발역, 종착역과 분기 제어기의 Label·Production Image는 같은 반응형 Scale 기준을 사용한다. 화면 높이와 너비가 줄면 글자, Padding과 Image가 같은 비율로 축소되고, 한글 `분기 제어기`는 한 줄을 유지하며 영문만 최대 두 줄까지 허용한다.
 
@@ -1017,7 +1017,7 @@ Play Visual의 직접 비교 기준은 `game-coaster1.png`다. 확정된 실제 
 
 Play 진입 직후 STEP 1의 새 Rail Board와 두 빈 연결 공간을 표시하고 Candidate는 모두 미배치 상태로 시작한다. 현재 단계의 빈 공간이 모두 채워지기 전까지 `연결 확인` Button은 비활성화한다.
 
-Candidate Area는 개별 실물 조각 목록이 아니라 현재 STEP에서 사용할 수 있는 Rail Type Palette다. Candidate 묶음은 EVE 영역과 조작 Button의 실제 너비에 밀리지 않도록 Workspace의 전체 가로축 정중앙에 배치한다. Candidate Card는 정사각형으로 만들고 `Rail 모양 → Rail 이름`을 세로로 배치한다. Board 공간 번호 `01~04`와 Candidate 식별자 `A~C`는 축소된 게임 화면에서도 즉시 구분할 수 있는 독립 Badge 크기와 대비를 유지한다. Candidate를 선택하면 해당 Rail Type을 현재 활성 공간에 Preview로 즉시 배치한다. Candidate Card에는 `선택 중`, `선택 가능` 또는 `N번 공간에 배치됨` 같은 상태 문구와 배치 강조를 표시하지 않고 Rail 모양과 종류만 유지한다. 배치 여부와 활성 공간은 Board에서만 확인한다. Board 공간을 직접 선택하면 EVE Live Status가 선택한 두 자리 공간 번호를 말하고 사용할 Rail 조각 선택을 안내한다. 배치 직후에는 현재 Board 공간을 유지하여 Candidate 옆의 회전 Button을 사용할 수 있게 하며, 다른 Rail Type을 선택하면 다음 빈 공간에 자동 배치한다. Preview는 연결을 확정하기 전까지 청록색 외곽선과 Scan 표현으로 고정 Rail과 구분한다.
+Candidate Area는 개별 실물 조각 목록이 아니라 현재 STEP에서 사용할 수 있는 Rail Type Palette다. Candidate 묶음은 EVE 영역과 조작 Button의 실제 너비에 밀리지 않도록 Workspace의 전체 가로축 정중앙에 배치한다. Candidate Card는 정사각형으로 만들고 `Rail 모양 → Rail 이름`을 세로로 배치하며, 직선·코너·T자 Rail의 실제 Artwork 경계를 기준으로 위아래 여백이 같게 중앙 정렬한다. Board 공간 번호 `01~04`와 Candidate 식별자 `A~C`는 축소된 게임 화면에서도 즉시 구분할 수 있는 독립 Badge 크기와 대비를 유지한다. Candidate를 선택하면 해당 Rail Type을 현재 활성 공간에 Preview로 즉시 배치한다. Candidate Card에는 `선택 중`, `선택 가능` 또는 `N번 공간에 배치됨` 같은 상태 문구와 배치 강조를 표시하지 않고 Rail 모양과 종류만 유지한다. 배치 여부와 활성 공간은 Board에서만 확인한다. Board 공간을 직접 선택하면 EVE Live Status가 선택한 두 자리 공간 번호를 말하고 사용할 Rail 조각 선택을 안내한다. 배치 직후에는 현재 Board 공간을 유지하여 Candidate 옆의 회전 Button을 사용할 수 있게 하며, 다른 Rail Type을 선택하면 다음 빈 공간에 자동 배치한다. Preview는 연결을 확정하기 전까지 청록색 외곽선과 Scan 표현으로 고정 Rail과 구분한다.
 
 같은 Candidate는 한 단계 안의 여러 Board 공간에 반복 배치할 수 있다. 예를 들어 STEP 2의 직선 레일 A 하나를 1번과 3번 공간에 각각 배치한다. 같은 Rail Type을 다시 사용하려면 대상 Board 공간을 먼저 선택한 뒤 Candidate를 누른다. 현재 활성 공간에 이미 들어 있는 Candidate를 한 번 더 누르면 해당 공간에서 조각을 제거하고 빈칸으로 되돌린다. 다른 Candidate를 누르면 현재 공간의 Preview를 해당 Rail Type으로 교체한다.
 

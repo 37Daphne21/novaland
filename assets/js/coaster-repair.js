@@ -241,6 +241,13 @@ export function createCoasterRepair(root, { onChange, onStageComplete } = {}) {
     node.style.setProperty('--rail-span', String(span));
   }
 
+  function positionFacilityNode(node, cell, anchorEdge) {
+    const { columns, rows } = getStage().board;
+    const anchorColumn = anchorEdge === 'right' ? cell.column + 1 : cell.column;
+    node.style.setProperty('--rail-anchor-x', `${(anchorColumn / columns) * 100}%`);
+    node.style.setProperty('--rail-anchor-y', `${((cell.row + .5) / rows) * 100}%`);
+  }
+
   function setBoardDimensions(element) {
     if (!element) {
       return;
@@ -429,31 +436,39 @@ export function createCoasterRepair(root, { onChange, onStageComplete } = {}) {
     const start = document.createElement('span');
     start.className = 'rail-repair__endpoint rail-repair__endpoint--start';
     const startTitle = document.createElement('strong');
-    startTitle.textContent = t('mission.startPoint');
-    start.append(startTitle);
-    positionBoardNode(start, stage.board.start);
-    boardNodes.push(start);
+    const startName = document.createElement('small');
+    start.setAttribute('aria-hidden', 'true');
+    startTitle.setAttribute('aria-hidden', 'true');
+    startName.setAttribute('aria-hidden', 'true');
+    startTitle.textContent = 'START';
+    startName.textContent = t('mission.startPoint');
+    start.append(startTitle, startName);
     const goal = document.createElement('span');
     goal.className = 'rail-repair__endpoint rail-repair__endpoint--goal';
     const goalTitle = document.createElement('strong');
-    goalTitle.textContent = t('mission.goalPoint');
-    goal.append(goalTitle);
-    positionBoardNode(goal, stage.board.goal);
-    boardNodes.push(goal);
+    const goalName = document.createElement('small');
+    goal.setAttribute('aria-hidden', 'true');
+    goalTitle.setAttribute('aria-hidden', 'true');
+    goalName.setAttribute('aria-hidden', 'true');
+    goalTitle.textContent = 'GOAL';
+    goalName.textContent = t('mission.goalPoint');
+    goal.append(goalTitle, goalName);
     const station = document.createElement('span');
     station.className = 'rail-repair__station';
-    station.setAttribute('aria-hidden', 'true');
-    positionBoardNode(station, stage.board.start);
-    boardNodes.push(station);
+    station.setAttribute('role', 'img');
+    station.setAttribute('aria-label', t('mission.startPoint'));
     const train = document.createElement('span');
     train.className = 'rail-repair__train';
     train.setAttribute('aria-hidden', 'true');
-    positionBoardNode(train, stage.board.start);
-    boardNodes.push(train);
+    station.append(start, train);
+    positionFacilityNode(station, stage.board.start, 'right');
+    boardNodes.push(station);
     const gate = document.createElement('span');
     gate.className = 'rail-repair__gate';
-    gate.setAttribute('aria-hidden', 'true');
-    positionBoardNode(gate, stage.board.goal);
+    gate.setAttribute('role', 'img');
+    gate.setAttribute('aria-label', t('mission.goalPoint'));
+    gate.append(goal);
+    positionFacilityNode(gate, stage.board.goal, 'left');
     boardNodes.push(gate);
     stage.board.branchTerminals?.forEach((cell) => {
       const terminal = document.createElement('span');

@@ -1796,54 +1796,51 @@
   position: relative;
   display: grid;
   grid-template-columns: minmax(15rem, 1fr) minmax(22rem, 1.7fr) minmax(15rem, 1fr);
-  align-items: start;
-  min-height: 4.6rem;
-  padding: 0;
-  overflow: visible;
+  align-items: center;
+  min-height: 5rem;
+  padding: .55rem clamp(var(--space-7), 2vw, 2.5rem);
   border: 0;
   background: transparent;
   box-shadow: none;
+  isolation: isolate;
 }
 
 .mission-dialog[data-phase="playing"] .mission-flow__header::before {
   position: absolute;
-  top: 0;
-  left: 50%;
-  width: min(48rem, 44%);
-  height: 4.35rem;
-  border-block: .0625rem solid rgba(92, 110, 204, .44);
-  background: linear-gradient(180deg, rgba(6, 16, 37, .9), rgba(3, 8, 21, .76));
+  z-index: 1;
+  inset: 0;
+  background: url("../images/coaster/game-coaster-frame-header.png") center / 100% 100% no-repeat;
   content: "";
-  clip-path: polygon(7% 0, 93% 0, 100% 72%, 89% 100%, 11% 100%, 0 72%);
-  box-shadow: inset 0 -.1rem rgba(82, 226, 255, .22), 0 .3rem 1rem rgba(0, 2, 10, .46);
   pointer-events: none;
-  transform: translateX(-50%);
 }
 
 .mission-dialog[data-phase="playing"] .mission-flow__header::after {
   position: absolute;
-  top: 4.18rem;
-  right: 31%;
-  left: 31%;
-  height: .12rem;
-  background: linear-gradient(90deg, transparent, #52e2ff 24%, #9f8cff 50%, #52e2ff 76%, transparent);
+  z-index: 0;
+  inset: .3rem .8rem;
+  background: linear-gradient(180deg, rgba(5, 13, 29, .99), rgba(1, 6, 17, .99));
   content: "";
-  filter: drop-shadow(0 0 .35rem rgba(82, 226, 255, .5));
+  clip-path: polygon(.5rem 0, calc(100% - .5rem) 0, 100% .5rem, 100% calc(100% - .5rem), calc(100% - .5rem) 100%, .5rem 100%, 0 calc(100% - .5rem), 0 .5rem);
   pointer-events: none;
 }
 
 .mission-dialog[data-phase="playing"] .mission-flow__identity {
   position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
   gap: 1rem;
   min-width: 0;
   min-height: 3.65rem;
-  padding: .75rem 1.55rem .75rem 1.7rem;
-  border: .0625rem solid rgba(86, 112, 192, .52);
-  background: linear-gradient(180deg, rgba(6, 17, 38, .94), rgba(2, 8, 20, .84));
-  box-shadow: inset 0 -.08rem rgba(82, 226, 255, .16), 0 .25rem .8rem rgba(0, 2, 10, .38);
-  clip-path: polygon(.8rem 0, calc(100% - 2.1rem) 0, 100% 2.1rem, calc(100% - .8rem) 100%, .8rem 100%, 0 calc(100% - .8rem), 0 .8rem);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  clip-path: none;
+}
+
+.mission-dialog[data-phase="playing"] .mission-flow__identity::after {
+  content: none;
 }
 
 .mission-dialog[data-phase="playing"] .mission-flow__identity .ui-panel__eyebrow {
@@ -1872,7 +1869,6 @@
 
 html[lang="en"] .mission-dialog[data-phase="playing"] .mission-flow__identity {
   gap: .55rem;
-  padding-right: 1rem;
 }
 
 html[lang="en"] .mission-dialog[data-phase="playing"] .mission-flow__identity h2 {
@@ -1886,13 +1882,15 @@ html[lang="en"] .mission-dialog[data-phase="playing"] .mission-flow__identity h2
 
 .mission-dialog[data-phase="playing"] .mission-flow__connection {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   display: grid;
   grid-column: 2;
   justify-items: center;
   gap: .22rem;
   padding: .38rem 3.4rem .52rem;
   background: transparent;
+  box-shadow: none;
+  clip-path: polygon(7% 0, 93% 0, 100% 100%, 0 100%);
 }
 
 .mission-dialog[data-phase="playing"] .mission-flow__connection > strong {
@@ -1926,15 +1924,21 @@ html[lang="en"] .mission-dialog[data-phase="playing"] .mission-flow__identity h2
 
 .mission-dialog[data-phase="playing"] .mission-flow__meta {
   position: relative;
-  z-index: 1;
+  z-index: 2;
+  align-self: stretch;
   justify-self: end;
   gap: var(--space-3);
-  min-height: 3.65rem;
-  padding: .48rem 1rem .48rem 2.8rem;
-  border: .0625rem solid rgba(86, 112, 192, .52);
-  background: linear-gradient(180deg, rgba(6, 17, 38, .94), rgba(2, 8, 20, .84));
-  box-shadow: inset 0 -.08rem rgba(159, 140, 255, .16), 0 .25rem .8rem rgba(0, 2, 10, .38);
-  clip-path: polygon(2.1rem 0, calc(100% - .8rem) 0, 100% .8rem, 100% calc(100% - .8rem), calc(100% - .8rem) 100%, .8rem 100%, 0 calc(100% - 2.1rem));
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  clip-path: none;
+  transform: translateY(-.15rem);
+}
+
+.mission-dialog[data-phase="playing"] .mission-flow__meta::before {
+  content: none;
 }
 
 .mission-dialog[data-phase="playing"] .mission-flow__meta > [data-mission-status] {
@@ -2346,41 +2350,46 @@ html[lang="en"] .mission-dialog[data-phase="playing"] .mission-flow__identity h2
 .rail-repair__network, .rail-repair__workspace {
   position: relative;
   min-width: 0;
-  padding: var(--space-5);
+  padding: var(--space-6) clamp(var(--space-7), 2vw, 2.5rem);
   overflow: hidden;
-  border: .0625rem solid rgba(112, 123, 214, .78);
+  border: 0;
   border-radius: 0;
-  background: radial-gradient(circle at 50% 0, rgba(50, 67, 137, .1), transparent 36%), linear-gradient(180deg, rgba(5, 12, 29, .99), rgba(1, 6, 16, .99));
-  box-shadow: inset 0 0 0 .16rem rgba(2, 6, 17, .98), inset 0 0 0 .22rem rgba(82, 226, 255, .05), inset 0 .0625rem rgba(221, 235, 255, .12), inset 0 0 2rem rgba(38, 81, 140, .08), 0 .3rem .9rem rgba(0, 2, 10, .48);
-  clip-path: polygon(.8rem 0, calc(100% - .8rem) 0, 100% .8rem, 100% calc(100% - .8rem), calc(100% - .8rem) 100%, .8rem 100%, 0 calc(100% - .8rem), 0 .8rem);
+  box-shadow: none;
   isolation: isolate;
 }
 
 .rail-repair__network::before, .rail-repair__workspace::before {
   position: absolute;
-  z-index: 0;
-  inset: .34rem;
-  border: .0625rem solid rgba(82, 226, 255, .14);
+  z-index: 1;
+  inset: 0;
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
   content: "";
-  box-shadow: inset 0 0 1rem rgba(82, 226, 255, .035);
-  clip-path: polygon(.52rem 0, calc(100% - .52rem) 0, 100% .52rem, 100% calc(100% - .52rem), calc(100% - .52rem) 100%, .52rem 100%, 0 calc(100% - .52rem), 0 .52rem);
   pointer-events: none;
 }
 
 .rail-repair__network::after, .rail-repair__workspace::after {
   position: absolute;
-  z-index: 3;
-  inset: .16rem;
-  background: linear-gradient(90deg, #52e2ff, transparent) left top / 4rem .08rem no-repeat, linear-gradient(180deg, #52e2ff, transparent) left top / .08rem 3rem no-repeat, linear-gradient(270deg, #9f8cff, transparent) right top / 4rem .08rem no-repeat, linear-gradient(180deg, #9f8cff, transparent) right top / .08rem 3rem no-repeat, linear-gradient(90deg, #52e2ff, transparent) left bottom / 4rem .08rem no-repeat, linear-gradient(0deg, #52e2ff, transparent) left bottom / .08rem 3rem no-repeat, linear-gradient(270deg, #9f8cff, transparent) right bottom / 4rem .08rem no-repeat, linear-gradient(0deg, #9f8cff, transparent) right bottom / .08rem 3rem no-repeat;
+  z-index: 0;
+  inset: .65rem;
+  background: radial-gradient(circle at 50% 0, rgba(50, 67, 137, .1), transparent 36%), linear-gradient(180deg, rgba(5, 12, 29, .99), rgba(1, 6, 16, .99));
   content: "";
-  opacity: .52;
-  filter: drop-shadow(0 0 .24rem rgba(82, 226, 255, .16));
+  clip-path: polygon(.5rem 0, calc(100% - .5rem) 0, 100% .5rem, 100% calc(100% - .5rem), calc(100% - .5rem) 100%, .5rem 100%, 0 calc(100% - .5rem), 0 .5rem);
   pointer-events: none;
+}
+
+.rail-repair__network::before {
+  background-image: url("../images/coaster/game-coaster-frame-network.png");
+}
+
+.rail-repair__workspace::before {
+  background-image: url("../images/coaster/game-coaster-frame-workspace.png");
 }
 
 .rail-repair__network > *, .rail-repair__workspace > * {
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
 .rail-repair__network {
@@ -2449,7 +2458,7 @@ html[lang="en"] .mission-dialog[data-phase="playing"] .mission-flow__identity h2
   min-height: 0;
   margin-top: var(--space-3);
   padding: 1.4rem 1rem .8rem;
-  overflow: hidden;
+  overflow: visible;
   border: 0;
   border-radius: 0;
   background: repeating-linear-gradient(180deg, rgba(111, 170, 215, .016) 0 .0625rem, transparent .0625rem .55rem), radial-gradient(circle at 74% 46%, rgba(82, 226, 255, .055), transparent 29%), radial-gradient(circle at 20% 72%, rgba(159, 140, 255, .045), transparent 25%), linear-gradient(145deg, #020916, #010611 64%, #030718);
@@ -2480,13 +2489,9 @@ html[lang="en"] .mission-dialog[data-phase="playing"] .mission-flow__identity h2
   --rail-label-min-width: 6.8rem;
   --rail-label-padding-block: .4rem;
   --rail-label-padding-inline: .72rem;
-  --rail-label-title-size: 1rem;
-  --rail-label-copy-size: .86rem;
-  --rail-station-width: 205%;
-  --rail-station-height: 260%;
-  --rail-train-width: 140%;
-  --rail-gate-width: 220%;
-  --rail-gate-height: 260%;
+  --rail-label-title-size: .84rem;
+  --rail-label-copy-size: .72rem;
+  --rail-facility-width: clamp(8rem, 13.2vw, 15.8rem);
   --rail-terminal-width: 180%;
   --rail-terminal-height: 118%;
   position: relative;
@@ -2497,21 +2502,22 @@ html[lang="en"] .mission-dialog[data-phase="playing"] .mission-flow__identity h2
   max-height: calc(100svh - 20.5rem);
   aspect-ratio: var(--rail-aspect);
   isolation: isolate;
+  transform: translateY(-3rem);
   z-index: 1;
 }
 
 .mission-flow[data-repair-step="1"] .rail-repair__board {
-  width: min(100%, calc((100svh - 20.5rem) * 12 / 5));
+  width: min(calc(100% - 12rem), calc((100svh - 20.5rem) * 12 / 5));
   aspect-ratio: 12 / 5;
 }
 
 .mission-flow[data-repair-step="2"] .rail-repair__board {
-  width: min(100%, calc((100svh - 20.5rem) * 7 / 3));
+  width: min(calc(100% - 12rem), calc((100svh - 20.5rem) * 7 / 3));
   aspect-ratio: 7 / 3;
 }
 
 .mission-flow[data-repair-step="3"] .rail-repair__board {
-  width: min(100%, calc((100svh - 20.5rem) * 8 / 3));
+  width: min(calc(100% - 12rem), calc((100svh - 20.5rem) * 8 / 3));
   aspect-ratio: 8 / 3;
 }
 
@@ -2527,10 +2533,6 @@ html[lang="en"] .mission-dialog[data-phase="playing"] .mission-flow__identity h2
 
 .rail-repair__tile,
 .rail-repair__slot,
-.rail-repair__endpoint,
-.rail-repair__station,
-.rail-repair__train,
-.rail-repair__gate,
 .rail-repair__branch-terminal {
   grid-column: var(--rail-column) / span var(--rail-span);
   grid-row: var(--rail-row);
@@ -2538,10 +2540,7 @@ html[lang="en"] .mission-dialog[data-phase="playing"] .mission-flow__identity h2
 }
 
 .rail-repair__tile,
-.rail-repair__slot,
-.rail-repair__station,
-.rail-repair__train,
-.rail-repair__gate {
+.rail-repair__slot {
   aspect-ratio: 1;
 }
 
@@ -2550,31 +2549,24 @@ html[lang="en"] .mission-dialog[data-phase="playing"] .mission-flow__identity h2
   place-items: center;
 }
 
-.rail-repair__tile .rail-repair__piece, .rail-repair__slot .rail-repair__piece {
-  filter: drop-shadow(0 .24rem .22rem rgba(0, 2, 10, .82)) drop-shadow(0 0 .34rem rgba(82, 226, 255, .22));
-}
-
 .rail-repair__endpoint {
+  position: absolute;
   z-index: 5;
   display: grid;
+  align-content: center;
   justify-items: center;
   gap: .14rem;
-  align-self: start;
-  width: max-content;
-  height: max-content;
-  min-width: var(--rail-label-min-width);
-  padding: var(--rail-label-padding-block) var(--rail-label-padding-inline);
-  border: .125rem solid rgba(82, 226, 255, .58);
-  border-radius: 0;
-  background: linear-gradient(180deg, rgba(11, 28, 54, .96), rgba(3, 10, 25, .96));
+  padding: 0;
+  border: 0;
+  background: transparent;
   color: #52e2ff;
   font-family: var(--font-display);
-  box-shadow: inset 0 0 0 .18rem rgba(2, 7, 18, .82), 0 0 .7rem rgba(82, 226, 255, .16);
-  clip-path: polygon(.4rem 0, calc(100% - .4rem) 0, 100% .4rem, 100% 100%, 0 100%, 0 .4rem);
-  transform: translateY(-82%);
+  box-shadow: none;
 }
 
 .rail-repair__endpoint strong {
+  position: relative;
+  z-index: 1;
   max-width: calc(var(--rail-label-min-width) + 1rem);
   font-size: var(--rail-label-title-size);
   line-height: 1.15;
@@ -2583,57 +2575,82 @@ html[lang="en"] .mission-dialog[data-phase="playing"] .mission-flow__identity h2
   white-space: nowrap;
 }
 
+.rail-repair__endpoint small {
+  position: relative;
+  z-index: 1;
+  max-width: calc(var(--rail-label-min-width) + 1rem);
+  color: rgba(222, 242, 255, .82);
+  font-family: var(--font-body);
+  font-size: var(--rail-label-copy-size);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: .02em;
+  text-align: center;
+  white-space: nowrap;
+}
+
 .rail-repair__endpoint--start {
-  justify-self: start;
-  transform: translate(-62%, -150%);
+  top: 17%;
+  left: 43.4%;
+  width: 50%;
+  height: 21%;
+  transform: translate(-50%, -50%);
 }
 
 .rail-repair__endpoint--goal {
-  justify-self: end;
+  top: 14.2%;
+  left: 50.5%;
+  width: 50%;
+  height: 21%;
   color: #d6a5ff;
-  border-color: rgba(188, 102, 255, .62);
-  box-shadow: inset 0 0 0 .18rem rgba(2, 7, 18, .82), 0 0 .75rem rgba(188, 102, 255, .2);
-  transform: translate(65%, -155%);
+  transform: translate(-50%, -50%);
 }
 
-html[lang="en"] .rail-repair__endpoint strong {
+.rail-repair__endpoint--goal small {
+  color: rgba(235, 214, 255, .86);
+}
+
+html[lang="en"] .rail-repair__endpoint small {
   white-space: normal;
 }
 
 .rail-repair__station {
+  position: absolute;
   z-index: 3;
-  align-self: center;
-  justify-self: center;
-  width: var(--rail-station-width);
-  height: var(--rail-station-height);
-  background: url("../images/coaster/station-start-v3.webp") center / contain no-repeat;
+  top: var(--rail-anchor-y);
+  left: var(--rail-anchor-x);
+  width: var(--rail-facility-width);
+  aspect-ratio: 1181 / 1331;
+  background: url("../images/coaster/station-start-v4.webp") center / 100% 100% no-repeat;
   filter: drop-shadow(0 .42rem .48rem rgba(0, 3, 12, .9)) drop-shadow(0 0 .95rem rgba(82, 226, 255, .25));
   pointer-events: none;
-  transform: translateX(-23%);
+  transform: translate(-97.3%, -50.53%);
 }
 
 .rail-repair__train {
+  position: absolute;
   z-index: 4;
-  align-self: center;
-  justify-self: center;
-  width: var(--rail-train-width);
-  height: 64%;
-  background: url("../images/coaster/train-start.webp") center / contain no-repeat;
+  top: 50.53%;
+  left: 5%;
+  width: 76%;
+  aspect-ratio: 8 / 3;
+  background: url("../images/coaster/train-start-v2.webp") center / contain no-repeat;
   filter: drop-shadow(0 .22rem .28rem rgba(0, 4, 14, .72)) drop-shadow(0 0 .5rem rgba(82, 226, 255, .28));
   pointer-events: none;
-  transform: translateX(-23%);
+  transform: translateY(-50%);
 }
 
 .rail-repair__gate {
+  position: absolute;
   z-index: 4;
-  align-self: center;
-  justify-self: center;
-  width: var(--rail-gate-width);
-  height: var(--rail-gate-height);
-  background: url("../images/coaster/station-goal-clean.webp") center / contain no-repeat;
+  top: var(--rail-anchor-y);
+  left: var(--rail-anchor-x);
+  width: var(--rail-facility-width);
+  aspect-ratio: 1181 / 1331;
+  background: url("../images/coaster/station-goal-v3.webp") center / 100% 100% no-repeat;
   filter: drop-shadow(0 .42rem .48rem rgba(0, 3, 12, .9)) drop-shadow(0 0 1rem rgba(189, 102, 255, .34));
   pointer-events: none;
-  transform: translateX(22%) scaleX(.82);
+  transform: translateY(-59.9%);
 }
 
 .rail-repair__branch-terminal {
@@ -2678,7 +2695,7 @@ html[lang="en"] .rail-repair__branch-terminal small {
   align-items: center;
   gap: var(--space-2) var(--space-5);
   min-height: 8.6rem;
-  padding-block: var(--space-4);
+  padding-block: var(--space-5);
 }
 
 .rail-repair__eve {
@@ -2966,6 +2983,14 @@ html[lang="en"] .rail-repair__branch-terminal small {
 
 .rail-repair__candidate .rail-repair__piece {
   width: min(4.5rem, 72%);
+}
+
+.rail-repair__candidate .rail-repair__piece--corner {
+  top: .425rem;
+}
+
+.rail-repair__candidate .rail-repair__piece--t {
+  top: .425rem;
 }
 
 .rail-repair__piece img {
@@ -3378,23 +3403,14 @@ html[lang="en"] .rail-repair__branch-terminal small {
     --rail-label-min-width: 5.984rem;
     --rail-label-padding-block: .352rem;
     --rail-label-padding-inline: .634rem;
-    --rail-label-title-size: .88rem;
-    --rail-label-copy-size: .757rem;
-    --rail-station-width: 185%;
-    --rail-station-height: 230%;
-    --rail-train-width: 126%;
-    --rail-gate-width: 198%;
-    --rail-gate-height: 234%;
+    --rail-label-title-size: .74rem;
+    --rail-label-copy-size: .64rem;
     --rail-terminal-width: 158.4%;
     --rail-terminal-height: 103.84%;
   }
 }
 
 @media (min-width: 100rem) and (min-height: 50rem) {
-  .rail-repair__network, .rail-repair__workspace {
-    padding-inline: var(--space-7);
-  }
-
   .rail-repair__network h3 {
     font-size: 1.3rem;
   }
@@ -3449,13 +3465,8 @@ html[lang="en"] .rail-repair__branch-terminal small {
     --rail-label-min-width: 7.344rem;
     --rail-label-padding-block: .432rem;
     --rail-label-padding-inline: .778rem;
-    --rail-label-title-size: 1.08rem;
-    --rail-label-copy-size: .929rem;
-    --rail-station-width: 220%;
-    --rail-station-height: 280%;
-    --rail-train-width: 150%;
-    --rail-gate-width: 236%;
-    --rail-gate-height: 280%;
+    --rail-label-title-size: .9rem;
+    --rail-label-copy-size: .77rem;
     --rail-terminal-width: 194.4%;
     --rail-terminal-height: 127.44%;
   }
@@ -3479,13 +3490,8 @@ html[lang="en"] .rail-repair__branch-terminal small {
     --rail-label-min-width: 5.576rem;
     --rail-label-padding-block: .328rem;
     --rail-label-padding-inline: .59rem;
-    --rail-label-title-size: .82rem;
-    --rail-label-copy-size: .705rem;
-    --rail-station-width: 168.1%;
-    --rail-station-height: 213.2%;
-    --rail-train-width: 114.8%;
-    --rail-gate-width: 180.4%;
-    --rail-gate-height: 213.2%;
+    --rail-label-title-size: .68rem;
+    --rail-label-copy-size: .59rem;
     --rail-terminal-width: 147.6%;
     --rail-terminal-height: 96.76%;
   }
