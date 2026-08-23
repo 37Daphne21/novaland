@@ -3,7 +3,7 @@ import { getMissionRestoreState } from './mission-state.js';
 import { readProgress, updateMissionProgress } from './progress.js';
 import { createModalController } from './ui.js';
 
-export function createMissionController({ createGame, duration = 90, getExplorer, onComplete, onExit, onRecord, testSteps = [] } = {}) {
+export function createMissionController({ createGame, duration = 90, getExplorer, onComplete, onControlRoom, onExit, onRecord, testSteps = [] } = {}) {
   const dialog = document.querySelector('#mission-dialog');
   const panels = dialog ? [...dialog.querySelectorAll('[data-mission-phase]')] : [];
   const timer = dialog?.querySelector('[data-mission-timer]');
@@ -380,6 +380,7 @@ export function createMissionController({ createGame, duration = 90, getExplorer
     stopStageTransition();
     stopTesting();
     modal.close('control-room');
+    onControlRoom?.();
   });
   dialog?.querySelectorAll('[data-mission-exit]').forEach((button) => button.addEventListener('click', () => {
     stopTimer();

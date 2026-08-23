@@ -278,11 +278,11 @@
               </section>
             </aside>
             <aside class="control-room__status ui-panel ui-panel--content" aria-labelledby="control-room-status-title">
-              <header class="ui-panel__header"><h2 id="control-room-status-title" class="ui-panel__title" data-i18n="control.statusTitle">열차 상태</h2><strong data-control-room-service data-i18n="control.trainStopped">운행 중단</strong></header>
+              <header class="ui-panel__header"><h2 id="control-room-status-title" class="ui-panel__title" data-i18n="control.statusTitle">복구 현황</h2><strong data-control-room-service data-i18n="control.trainStopped">운행 중단</strong></header>
               <dl class="ui-info-list ui-info-list--lined ui-info-list--plain-icons">
                 <div class="ui-info-list__item"><span class="ui-info-list__icon" aria-hidden="true"><svg class="ui-icon"><use href="./assets/images/common/icon-sprite.svg#icon-rail"></use></svg></span><div class="ui-info-list__content"><dt class="ui-info-list__label" data-i18n="control.railConnection">레일 연결</dt><dd class="ui-info-list__value"><strong data-control-room-rail>0 / 9</strong><span class="control-room__segments" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></dd></div></div>
-                <div class="ui-info-list__item is-warning" data-control-room-check-item><span class="ui-info-list__icon" aria-hidden="true"><svg class="ui-icon"><use href="./assets/images/common/icon-sprite.svg#icon-shield"></use></svg></span><div class="ui-info-list__content"><dt class="ui-info-list__label" data-i18n="control.systemCheck">시스템 점검</dt><dd class="ui-info-list__value"><strong data-control-room-check data-i18n="control.inspectionRequired">점검 필요</strong></dd></div></div>
-                <div class="ui-info-list__item"><span class="ui-info-list__icon" aria-hidden="true"><svg class="ui-icon"><use href="./assets/images/common/icon-sprite.svg#icon-clock"></use></svg></span><div class="ui-info-list__content"><dt class="ui-info-list__label" data-i18n="control.nextDeparture">다음 출발</dt><dd class="ui-info-list__value"><strong data-control-room-departure data-i18n="control.suspended">대기 중</strong></dd></div></div>
+                <div class="ui-info-list__item"><span class="ui-info-list__icon" aria-hidden="true"><svg class="ui-icon"><use href="./assets/images/common/icon-sprite.svg#icon-scan"></use></svg></span><div class="ui-info-list__content"><dt class="ui-info-list__label" data-i18n="control.restorationStep">복구 단계</dt><dd class="ui-info-list__value"><strong data-control-room-step>0 / 3</strong></dd></div></div>
+                <div class="ui-info-list__item is-warning" data-control-room-check-item><span class="ui-info-list__icon" aria-hidden="true"><svg class="ui-icon"><use href="./assets/images/common/icon-sprite.svg#icon-shield"></use></svg></span><div class="ui-info-list__content"><dt class="ui-info-list__label" data-i18n="control.systemCheck">안전 점검</dt><dd class="ui-info-list__value"><strong data-control-room-check data-i18n="control.inspectionRequired">점검 대기</strong></dd></div></div>
               </dl>
             </aside>
           </div>
@@ -315,7 +315,7 @@
           <section class="rail-repair__network" aria-labelledby="rail-network-title">
             <header><div><h3 id="rail-network-title" data-i18n="mission.networkTitle">노바 코스터 레일망</h3><p data-repair-description>두 개의 단절 구간을 올바른 레일로 연결하세요.</p></div><strong class="rail-repair__step" data-repair-step-progress>복구 01 / 03</strong></header>
             <div class="rail-repair__route" data-i18n-aria-label="mission.networkLabel" aria-label="현재 복구 단계의 레일망">
-              <div class="rail-repair__board" data-repair-board data-repair-slots></div>
+              <div class="rail-repair__board" data-repair-board></div>
             </div>
           </section>
           <section class="rail-repair__workspace">

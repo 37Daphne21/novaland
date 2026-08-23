@@ -136,7 +136,11 @@ const mission = createMissionController({
   createGame: createCoasterRepair,
   duration: 90,
   getExplorer: () => currentExplorer,
-  onComplete: (facility) => map.completeFacility(facility.id),
+  onComplete: (facility) => {
+    map.completeFacility(facility.id);
+    controlRoom.refreshState();
+  },
+  onControlRoom: () => controlRoom.refreshState(),
   onExit: () => navigation?.back(),
   onRecord: () => {
     navigation?.replace({ screen: 'map' });

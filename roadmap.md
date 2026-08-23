@@ -134,6 +134,7 @@
 - [x] Complete
 - [x] 복구 완료 시설의 Control Room 상태 보호와 Mission 재시작 차단
 - [x] 복구 완료 Control Room의 MISSION START 위치 정상 운행 상태 표시
+- [x] Control Room 복구 현황의 3단계·9조각 Checkpoint 연동과 9개 Segment 표시
 - [x] MAP 복귀와 상태 갱신
 - [x] 현재 복구 단계와 구간 상태 Checkpoint 저장
 - [x] Guide·Countdown·Pause 새로고침 복원

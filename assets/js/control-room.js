@@ -3,6 +3,25 @@ import { createEveController } from './eve.js';
 import { t } from './locales.js';
 import { readProgress } from './progress.js';
 
+const COASTER_STAGE_CONNECTIONS = [2, 3, 4];
+
+function getCoasterProgress(progress, isCompleted) {
+  if (isCompleted) {
+    return { connections: 9, steps: 3 };
+  }
+  const completed = progress.missions.coaster?.checkpoint?.completed;
+  if (!Array.isArray(completed)) {
+    return { connections: 0, steps: 0 };
+  }
+  return completed.reduce((result, stageCompleted, index) => {
+    if (stageCompleted) {
+      result.connections += COASTER_STAGE_CONNECTIONS[index] ?? 0;
+      result.steps += 1;
+    }
+    return result;
+  }, { connections: 0, steps: 0 });
+}
+
 export function createControlRoomController({ getExplorer, onMapRequest, onShowScreen, showToast } = {}) {
   const screen = document.querySelector('[data-screen="control-room"]');
   const title = document.querySelector('#control-room-title');
@@ -19,9 +38,10 @@ export function createControlRoomController({ getExplorer, onMapRequest, onShowS
   ];
   const service = document.querySelector('[data-control-room-service]');
   const rail = document.querySelector('[data-control-room-rail]');
+  const railSegments = [...document.querySelectorAll('.control-room__segments i')];
+  const step = document.querySelector('[data-control-room-step]');
   const checkItem = document.querySelector('[data-control-room-check-item]');
   const check = document.querySelector('[data-control-room-check]');
-  const departure = document.querySelector('[data-control-room-departure]');
   const missionStart = document.querySelector('[data-mission-open]');
   const operationStatus = document.querySelector('[data-control-room-operation]');
   const mapButton = document.querySelector('[data-control-room-map]');
@@ -44,6 +64,7 @@ export function createControlRoomController({ getExplorer, onMapRequest, onShowS
     const progress = readProgress(getExplorer?.());
     const isCompleted = progress.facilities[nextFacility.id]?.status === 'completed';
     const isCoaster = nextFacility.id === 'coaster';
+    const coasterProgress = isCoaster ? getCoasterProgress(progress, isCompleted) : { connections: 0, steps: 0 };
 
     if (screen) {
       screen.dataset.facility = nextFacility.id;
@@ -82,14 +103,15 @@ export function createControlRoomController({ getExplorer, onMapRequest, onShowS
       service.textContent = t(isCompleted ? 'control.trainRunning' : 'control.trainStopped');
     }
     if (rail) {
-      rail.textContent = isCompleted ? '9 / 9' : '0 / 9';
+      rail.textContent = `${coasterProgress.connections} / 9`;
+    }
+    railSegments.forEach((segment, index) => { segment.classList.toggle('is-active', index < coasterProgress.connections); });
+    if (step) {
+      step.textContent = `${coasterProgress.steps} / 3`;
     }
     checkItem?.classList.toggle('is-warning', !isCompleted);
     if (check) {
       check.textContent = t(isCompleted ? 'control.inspectionComplete' : 'control.inspectionRequired');
-    }
-    if (departure) {
-      departure.textContent = t(isCompleted ? 'control.departureReady' : 'control.suspended');
     }
     if (missionStart) {
       missionStart.hidden = !isCoaster || isCompleted;
@@ -124,6 +146,7 @@ export function createControlRoomController({ getExplorer, onMapRequest, onShowS
     cancel: eve.cancel,
     getFacility: () => facility,
     getFocusTarget: () => title,
+    refreshState: () => facility ? render(facility) : null,
     refreshLanguage,
     show
   };

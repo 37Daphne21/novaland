@@ -140,7 +140,6 @@ function createInitialState() {
   return {
     stage: 0,
     completed: STAGES.map(() => false),
-    selectedId: '',
     placements: STAGES[0].targets.map(() => null),
     activeSlot: 0
   };
@@ -181,7 +180,6 @@ function normalizeState(checkpoint) {
   return {
     stage,
     completed,
-    selectedId: placements[activeSlot]?.candidateId ?? '',
     placements,
     activeSlot
   };
@@ -254,16 +252,12 @@ export function createCoasterRepair(root, { onChange, onStageComplete } = {}) {
     element.style.setProperty('--rail-aspect', `${columns} / ${rows}`);
   }
 
-  function getPlacements() {
-    return state.placements;
-  }
-
   function canConfirm() {
-    return getPlacements().length === getStage().targets.length && getPlacements().every(Boolean);
+    return state.placements.length === getStage().targets.length && state.placements.every(Boolean);
   }
 
   function getIncorrectSlots() {
-    return getPlacements().reduce((incorrectSlots, placement, index) => {
+    return state.placements.reduce((incorrectSlots, placement, index) => {
       const target = getStage().targets[index];
       const candidate = placement ? getCandidate(placement.candidateId) : null;
       const targetCandidate = getCandidate(target.candidateId);
@@ -557,7 +551,6 @@ export function createCoasterRepair(root, { onChange, onStageComplete } = {}) {
       const clearedSlot = state.activeSlot;
       state.placements[clearedSlot] = null;
       invalidSlots.delete(clearedSlot);
-      state.selectedId = '';
       replaceRequested = false;
       setStatusMessage('mission.pieceRemoved', { number: clearedSlot + 1 });
       render();
@@ -569,7 +562,6 @@ export function createCoasterRepair(root, { onChange, onStageComplete } = {}) {
     state.activeSlot = targetSlot;
     state.placements[targetSlot] = { candidateId, rotation: normalizeRotation(candidate.rotation) };
     invalidSlots.delete(targetSlot);
-    state.selectedId = candidateId;
     replaceRequested = false;
     const statusKey = canConfirm() ? 'mission.allPiecesPlaced' : getStage().allowRotation ? 'mission.pieceSelected' : 'mission.pieceSelectedBasic';
     setStatusMessage(statusKey);
@@ -582,7 +574,6 @@ export function createCoasterRepair(root, { onChange, onStageComplete } = {}) {
       return;
     }
     state.activeSlot = index;
-    state.selectedId = state.placements[index]?.candidateId ?? '';
     replaceRequested = true;
     setStatusMessage('mission.slotSelected', { number: String(index + 1).padStart(2, '0') });
     render();
@@ -595,7 +586,6 @@ export function createCoasterRepair(root, { onChange, onStageComplete } = {}) {
     if (locked || !stage.allowRotation || placement?.candidateId !== candidateId) {
       return;
     }
-    state.selectedId = candidateId;
     replaceRequested = false;
     placement.rotation = (placement.rotation + 1) % 4;
     invalidSlots.delete(state.activeSlot);
@@ -608,7 +598,6 @@ export function createCoasterRepair(root, { onChange, onStageComplete } = {}) {
     if (locked || !state.placements.some(Boolean)) {
       return;
     }
-    state.selectedId = '';
     state.placements = getStage().targets.map(() => null);
     state.activeSlot = 0;
     replaceRequested = false;
@@ -627,7 +616,6 @@ export function createCoasterRepair(root, { onChange, onStageComplete } = {}) {
     if (incorrectSlots.length) {
       invalidSlots = new Set(incorrectSlots);
       state.activeSlot = incorrectSlots[0];
-      state.selectedId = state.placements[state.activeSlot]?.candidateId ?? '';
       replaceRequested = true;
       const slotReferences = incorrectSlots.map((index) => t('mission.slotReference', { number: String(index + 1).padStart(2, '0') })).join(', ');
       setStatusMessage('mission.repairErrorSlots', { slots: slotReferences }, 'error');
@@ -654,7 +642,6 @@ export function createCoasterRepair(root, { onChange, onStageComplete } = {}) {
       return;
     }
     state.stage += 1;
-    state.selectedId = '';
     state.placements = getStage().targets.map(() => null);
     state.activeSlot = 0;
     locked = false;
