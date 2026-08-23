@@ -105,27 +105,61 @@
 - [x] 공통 Mission Flow와 시설별 Game Module 책임 분리
 - [x] Countdown 기본 기능 Flow
 - [x] NOVA COASTER Full-screen Countdown Visual Development
-- [ ] NOVA COASTER Full-screen Play HUD Visual Development
-- [ ] 실제 Play Asset 기반 Mission Guide Visual Development
-- [x] 세 고장 구간을 표시하는 Rail Network Play 화면
-- [x] 복구 단계 1: Rail 조각 선택
-- [x] 복구 단계 2: Rail 조각 선택과 회전
-- [x] 복구 단계 3: Rail 조각 조합과 연결 순서
-- [x] 구간 복구 후 다음 고장 지점으로 이어지는 Stage Transition
+- [x] NOVA COASTER Full-screen Play HUD Visual Development
+- [x] Top View Rail의 금속 베드·침목·이중 레일 고밀도 Asset 적용
+- [x] Rail과 동일한 Top View 시점의 START 기차와 GOAL 종착역 Production Image 적용
+- [x] Top View 분기 제어기 Production Image와 왼쪽 Rail 접속 적용
+- [x] 출발역·종착역 Label 상단 배치와 한글·영문 가독성 보완
+- [x] Rail 방향 화살표 제거와 직선 중앙 Cyan 점선 강화
+- [x] 정사각형 Candidate Card와 Rail 모양·이름 세로 배치
+- [x] Board Description과 EVE 조작 안내 분리 및 얼굴 중심 Crop
+- [x] EVE 단계 안내 유지와 조작 Live Status 개별 타이핑
+- [x] Play Header 전체 연결 상태의 가변 Segment 수 기준 중앙 정렬
+- [x] 실제 Play Asset 기반 Mission Guide Visual Development
+- [x] 단계마다 새 경로로 교체되는 Rail Network Play 화면
+- [x] 복구 단계 1: 빈 공간 2개와 후보 2개 기본 연결
+- [x] 복구 단계 2: 빈 공간 3개와 중복 없는 Rail Type 3개의 반복 배치·회전
+- [x] 복구 단계 3: 빈 공간 4개와 Rail Type 3개의 반복 배치·T자 분기
+- [x] 동일 Rail Type의 슬롯별 반복 배치와 독립 회전 판정
+- [x] 현재 STEP의 조각·회전 초기화
+- [x] 연결 실패 시 오류 공간 표시와 첫 오류 공간 자동 활성화
+- [x] 연결 실패 Live Status Red Text와 다음 조작까지 오류 상태 유지
+- [x] Board 공간 선택 시 두 자리 공간 번호를 포함한 EVE 조각 선택 안내
+- [x] STEP 1의 두 빈 공간을 서로 다른 단절 구간으로 분리
+- [x] Board 공간 번호와 Candidate A·B·C 식별 Badge 확대
+- [x] 현재 Rail 복구 후 다음 Rail Board로 이어지는 Stage Transition
 - [x] 전체 연결 검사·코스터 시운전·안전 시스템 확인
 - [x] Pause
 - [x] Fail
 - [x] Complete
 - [x] 복구 완료 시설의 Control Room 상태 보호와 Mission 재시작 차단
+- [x] 복구 완료 Control Room의 MISSION START 위치 정상 운행 상태 표시
 - [x] MAP 복귀와 상태 갱신
 - [x] 현재 복구 단계와 구간 상태 Checkpoint 저장
 - [x] Guide·Countdown·Pause 새로고침 복원
+- [x] Play에서 다시 연 Mission Guide의 닫기 X Button과 게임 복귀 Focus
+- [x] 완료 시설 MAP 재선택 대사와 Control Room 복구 결과 문구 동기화
+- [x] 완료 화면 잔여 Timer 제거와 Pause·Fail·Complete 상태 Visual 보완
+- [x] Rail Type별 금속·침목·Cyan 점선 규격과 Tile 이음부 통일
+- [x] 출발역·분기 제어기·종착역 Label·Production Image 공통 반응형 Scale 적용
+- [x] Play Header의 정보 아이콘 Guide·시계 Icon Timer와 불필요한 `남은 시간` Text 제거
+- [x] Board Panel 상단 중앙의 `복구 01 / 03` Notch Plate와 단계 중복 정보 제거
+- [x] 한글 출발역·종착역 단일 Label과 영문 Station 명칭 분리
+- [x] Train과 분리된 Top View 출발역 Base Asset과 종착역 Scale 보강
+- [x] Header의 Mission Identity·연결 상태·조작부 분리와 얇은 Mechanical Frame 적용
+- [x] Board 상단 결합형 복구 Notch와 낮은 명도의 Grid·Dot Matrix 적용
+- [x] 시안 기준 세로형 출발역과 직사각형 종착역 Top View Asset·Rail 연결점 적용
+- [x] 곡선·직선·T자 Rail의 좁은 금속 베드·침목·이중 레일 규격 통일
+- [x] 게임 Board 집중도를 위한 낮은 Candidate Workspace 높이 유지
+- [x] Candidate 묶음의 Workspace 전체 기준 중앙 정렬
+- [x] STEP 1 회전 불가 직선 Rail B의 가로 방향 교정
+- [x] Rail SVG의 금속 베드·침목·체결판·볼트 Detail 보강
 - [x] NOVA Stamp 기록과 Passport 연결
 - [ ] PC 한국어 화면 검수
 - [ ] PC 영어 화면 검수
 - [ ] 반응형·반응형 영어 화면 검수
 
-완료 조건: MAP 진입부터 세 Rail 고장 구간 복구, 시운전과 안전 확인, NOVA Stamp와 기록 갱신까지 하나의 흐름으로 동작하고, 다음 시설에서 공통 Mission Flow를 재사용할 수 있어야 한다.
+완료 조건: MAP 진입부터 세 단계의 Rail Board 복구, 시운전과 안전 확인, NOVA Stamp와 기록 갱신까지 하나의 흐름으로 동작하고, 다음 시설에서 공통 Mission Flow를 재사용할 수 있어야 한다.
 
 ---
 

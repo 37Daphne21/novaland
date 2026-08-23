@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+  <defs>
+    <linearGradient id="bed" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#101a27"/><stop offset=".16" stop-color="#60758a"/><stop offset=".3" stop-color="#26384b"/><stop offset=".5" stop-color="#101c2b"/><stop offset=".7" stop-color="#26384b"/><stop offset=".84" stop-color="#60758a"/><stop offset="1" stop-color="#101a27"/></linearGradient>
+    <linearGradient id="deck" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#07101b"/><stop offset=".18" stop-color="#1e3348"/><stop offset=".5" stop-color="#0a1725"/><stop offset=".82" stop-color="#1e3348"/><stop offset="1" stop-color="#07101b"/></linearGradient>
+    <linearGradient id="sleeper" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#182535"/><stop offset=".12" stop-color="#7f91a3"/><stop offset=".28" stop-color="#35495d"/><stop offset=".5" stop-color="#17283a"/><stop offset=".72" stop-color="#35495d"/><stop offset=".88" stop-color="#8899aa"/><stop offset="1" stop-color="#182535"/></linearGradient>
+    <linearGradient id="rail" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#687a8d"/><stop offset=".38" stop-color="#d8e2ea"/><stop offset=".62" stop-color="#8fa0af"/><stop offset="1" stop-color="#4c5f73"/></linearGradient>
+    <g id="sleeper-unit"><rect x="-36" y="-3.8" width="72" height="7.6" rx="1.5" fill="#03070c"/><rect x="-33" y="-2.8" width="66" height="5.6" rx="1.1" fill="url(#sleeper)"/><path d="M-30-1.4H30" stroke="#d9e4ed" stroke-width=".7" opacity=".28"/><rect x="-20" y="-3.9" width="7" height="7.8" rx=".9" fill="#6f8295" stroke="#101923"/><rect x="13" y="-3.9" width="7" height="7.8" rx=".9" fill="#6f8295" stroke="#101923"/><circle cx="-16.5" r="1" fill="#d8a85c"/><circle cx="16.5" r="1" fill="#d8a85c"/></g>
+    <filter id="shadow" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="5" stdDeviation="5" flood-color="#000611" flood-opacity=".9"/></filter>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <path d="M-3 60H32A28 28 0 0 0 60 32V-3" stroke="#01040a" stroke-width="72" filter="url(#shadow)"/>
+  <path d="M-3 60H32A28 28 0 0 0 60 32V-3" stroke="url(#bed)" stroke-width="66"/>
+  <path d="M-3 60H32A28 28 0 0 0 60 32V-3" stroke="#7d8fa1" stroke-width="60" opacity=".4"/>
+  <g><use href="#sleeper-unit" transform="translate(0 60) rotate(90)"/><use href="#sleeper-unit" transform="translate(12 60) rotate(90)"/><use href="#sleeper-unit" transform="translate(24 60) rotate(90)"/><use href="#sleeper-unit" transform="translate(36 59.7) rotate(81.8)"/><use href="#sleeper-unit" transform="translate(47.2 55.6) rotate(57.3)"/><use href="#sleeper-unit" transform="translate(55.6 47.1) rotate(32.7)"/><use href="#sleeper-unit" transform="translate(59.7 36) rotate(8.2)"/><use href="#sleeper-unit" transform="translate(60 24)"/><use href="#sleeper-unit" transform="translate(60 12)"/><use href="#sleeper-unit" transform="translate(60 0)"/></g>
+  <path d="M-3 60H32A28 28 0 0 0 60 32V-3" stroke="#050a11" stroke-width="49"/>
+  <path d="M-3 60H32A28 28 0 0 0 60 32V-3" stroke="url(#deck)" stroke-width="45"/>
+  <path d="M-3 60H32A28 28 0 0 0 60 32V-3" stroke="#02060d" stroke-width="25"/>
+  <path d="M-3 47H32A15 15 0 0 0 47 32V-3M-3 73H32A41 41 0 0 0 73 32V-3" stroke="#01040a" stroke-width="8"/>
+  <path d="M-3 47H32A15 15 0 0 0 47 32V-3M-3 73H32A41 41 0 0 0 73 32V-3" stroke="url(#rail)" stroke-width="4.8"/>
+  <path d="M-3 46.5H32A14.5 14.5 0 0 0 46.5 32V-3M-3 72.5H32A40.5 40.5 0 0 0 72.5 32V-3" stroke="#f3f7fa" stroke-width="1" opacity=".72"/>
+  <path d="M-3 60H32A28 28 0 0 0 60 32V-3" stroke="#071c2d" stroke-width="6"/>
+  <path d="M-3 60H32A28 28 0 0 0 60 32V-3" stroke="#35e9ff" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="3.2 6.4" filter="url(#glow)"/>
+  <g fill="#a8b7c7" stroke="#111c2a" stroke-width="1"><circle cx="12" cy="35" r="1.8"/><circle cx="12" cy="85" r="1.8"/><circle cx="49" cy="74" r="1.8"/><circle cx="78" cy="49" r="1.8"/><circle cx="35" cy="12" r="1.8"/><circle cx="85" cy="12" r="1.8"/></g>
+</svg>

@@ -9,6 +9,9 @@ export function createMissionController({ createGame, duration = 90, getExplorer
   const timer = dialog?.querySelector('[data-mission-timer]');
   const status = dialog?.querySelector('[data-mission-status]');
   const startButton = dialog?.querySelector('[data-mission-start]');
+  const guideButton = dialog?.querySelector('[data-mission-guide]');
+  const guideCloseButton = dialog?.querySelector('[data-mission-guide-close]');
+  const guideReturnButton = dialog?.querySelector('[data-mission-guide-return]');
   const pauseButton = dialog?.querySelector('[data-mission-pause]');
   const countdownPanel = dialog?.querySelector('[data-mission-phase="countdown"]');
   const countdownElement = dialog?.querySelector('[data-mission-countdown]');
@@ -172,6 +175,42 @@ export function createMissionController({ createGame, duration = 90, getExplorer
     dialog?.querySelector('[data-mission-resume]')?.focus();
   }
 
+  function showGuide() {
+    if (phase !== 'playing') {
+      return;
+    }
+    stopTimer();
+    resumeMode = 'playing';
+    save({ phase: 'paused', checkpoint: getCheckpoint('playing') });
+    if (startButton) {
+      startButton.hidden = true;
+    }
+    if (guideReturnButton) {
+      guideReturnButton.hidden = false;
+    }
+    if (guideCloseButton) {
+      guideCloseButton.hidden = false;
+    }
+    setPhase('guide', { saveState: false });
+    guideReturnButton?.focus();
+  }
+
+  function returnFromGuide() {
+    if (phase !== 'guide' || guideReturnButton?.hidden) {
+      return;
+    }
+    if (startButton) {
+      startButton.hidden = false;
+    }
+    if (guideCloseButton) {
+      guideCloseButton.hidden = true;
+    }
+    guideReturnButton.hidden = true;
+    setPhase('playing', { checkpointMode: 'playing' });
+    startTimer();
+    game.focus();
+  }
+
   function resetTestingView() {
     testingItems.forEach((item) => item?.classList.remove('is-active', 'is-complete'));
     if (testingStatus) {
@@ -274,6 +313,15 @@ export function createMissionController({ createGame, duration = 90, getExplorer
     stopTesting();
     facility = nextFacility;
     isPreviewMode = ['guide', 'countdown'].includes(previewPhase);
+    if (startButton) {
+      startButton.hidden = false;
+    }
+    if (guideReturnButton) {
+      guideReturnButton.hidden = true;
+    }
+    if (guideCloseButton) {
+      guideCloseButton.hidden = true;
+    }
     dialog.dataset.facility = facility.id;
     progress = readProgress(getExplorer?.());
     const savedMission = progress.missions[facility.id];
@@ -320,6 +368,9 @@ export function createMissionController({ createGame, duration = 90, getExplorer
   }
 
   startButton?.addEventListener('click', beginCountdown);
+  guideButton?.addEventListener('click', showGuide);
+  guideCloseButton?.addEventListener('click', returnFromGuide);
+  guideReturnButton?.addEventListener('click', returnFromGuide);
   pauseButton?.addEventListener('click', pause);
   dialog?.querySelector('[data-mission-resume]')?.addEventListener('click', resume);
   dialog?.querySelectorAll('[data-mission-restart]').forEach((button) => button.addEventListener('click', restart));

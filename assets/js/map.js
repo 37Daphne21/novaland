@@ -498,7 +498,8 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, speak
       transitionMapVisual(progressVisual);
     }
 
-    speakEve(() => getFacilityText(facility, 'message'), () => guideFacility(facility));
+    const messageField = facility.state === 'completed' ? 'completionMessage' : 'message';
+    speakEve(() => getFacilityText(facility, messageField), () => guideFacility(facility));
   }
 
   function playIntro() {

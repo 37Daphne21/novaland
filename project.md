@@ -875,7 +875,7 @@ MAP과 Control Room의 정보 Panel은 `.ui-panel`, `.ui-panel--content`, `.ui-p
 
 Mission Objective는 긴 Checklist가 아니라 현재 해야 할 일을 설명하는 Brief다. Timer는 Play에서만 표시한다.
 
-복구 완료 시설의 Control Room은 완료 상태를 읽기 전용으로 보여준다. 시설·열차 상태와 EVE 안내를 복구 완료 문구로 전환하고 MISSION START는 숨기며, 완료된 Mission을 Guide나 진행 상태로 되돌리지 않는다.
+복구 완료 시설의 Control Room은 완료 상태를 읽기 전용으로 보여준다. 시설·열차 상태와 EVE 안내를 복구 완료 문구로 전환하고, MISSION START 위치에는 같은 크기의 비인터랙티브 `열차 정상 운행 중` 상태 Panel을 표시한다. 완료된 Mission을 Guide나 진행 상태로 되돌리지 않는다.
 
 
 ### 시설 상태 패널
@@ -919,6 +919,8 @@ Mission Guide의 최종 Visual Development는 Play UI와 실제 조작 방식이
 - EVE 안내
 - 시작 Button
 
+Play에서 Mission Guide를 다시 연 경우에는 상단의 닫기 `X` Button과 하단의 `게임으로 돌아가기` Button을 모두 제공한다. 두 Button은 같은 복귀 동작을 사용하며 현재 STEP과 남은 시간을 유지한 채 Play로 돌아간다. 닫기 Button의 Visual Development는 Play HUD 마무리 단계에서 진행한다.
+
 
 ### Countdown
 
@@ -948,53 +950,92 @@ Mission 진행 중 새로고침하거나 재접속한 경우에도 Pause 상태�
 - 역할: Movement
 - 문제: 끊어진 Rail로 열차 운행 중단
 - 장르: Rail Fault Repair Puzzle
-- 핵심 조작: 평면형 2D Rail Network의 세 고장 구간을 순서대로 복구한다. 현재 고장 구간의 빈 연결 공간을 확인하고, 하단 후보 Rail 조각을 선택·90° 회전·조합하여 양쪽 정상 Rail을 실제로 이어지게 만든다.
-- 규칙: 정상 구간은 고정하며 현재 고장 구간만 조작한다. 고장 구간의 양쪽 연결점과 Rail 조각의 연결점이 같은 2D 기준에서 정확히 이어져야 복구된다.
-- 완료: 세 고장 구간 복구 후 전체 연결 검사, 코스터 시운전과 안전 시스템 확인을 통과
-- 난이도: 복구 단계마다 선택 → 선택과 회전 → 조합과 연결 순서로 판단 요소를 하나씩 추가
+- 핵심 조작: 난이도가 다른 세 개의 Top View Rail Board를 순서대로 복구한다. 단계가 바뀌면 출발역과 종착역을 포함한 Rail Board 전체가 새 경로로 교체되며, 빈 연결 공간에 후보 Rail 조각을 선택·90° 회전·조합해 실제 경로를 완성한다.
+- 규칙: 현재 단계의 정상 Rail은 고정하고 빈 연결 공간만 조작한다. 빈 공간 양쪽 연결점과 Rail 조각의 연결점이 같은 Top View 기준에서 정확히 이어져야 복구된다.
+- 완료: 세 단계의 Rail Board 복구 후 전체 연결 검사, 코스터 시운전과 안전 시스템 확인을 통과
+- 난이도: 복구 단계마다 필요한 조각을 2개 → 3개 → 4개로 늘리고, 2단계부터 회전과 오답 후보를 추가한다.
 - 복구 결과: Rail 점등, 열차 운행과 이동 재개
 
-NOVA COASTER Mission은 하나의 정상 Rail Network 안에 세 곳의 단절 구간이 표시되는 방식으로 진행한다. 전체 경로를 다시 맞추거나 빈칸을 이동하는 Sliding Puzzle을 사용하지 않는다. 시작 연결 상태는 9/12이며 각 구간 복구 후 10/12, 11/12, 12/12로 갱신한다.
+NOVA COASTER Mission은 하나의 Rail Network 안에서 세 고장 구간을 차례로 수리하는 방식이 아니다. STEP 1, STEP 2와 STEP 3은 서로 다른 Rail Board이며 이전 단계가 완료되면 기존 Rail을 닫고 다음 단계의 새 Rail을 표시한다. 전체 연결 상태는 필요한 Rail 조각 아홉 개를 기준으로 `0 / 9 → 2 / 9 → 5 / 9 → 9 / 9` 순서로 갱신한다.
 
 #### Play 화면 표현 규칙
 
-NOVA COASTER Play의 Rail Puzzle은 실제 Roller Coaster를 3D 원근으로 조작하는 화면이 아니라, 연결 방향을 즉시 비교할 수 있는 평면형 2D Rail Network로 표현한다.
+NOVA COASTER Play의 Rail Puzzle은 실제 Roller Coaster를 3D 원근으로 조작하는 화면이 아니라, 연결 방향을 즉시 비교할 수 있는 Top View Rail Network로 표현한다. Rail은 평면 선으로 그리지 않고 금속 베드, 침목, 이중 레일, 체결부와 신호광이 보이는 고밀도 SVG Asset을 사용해 실제 기찻길의 재질과 깊이를 전달한다.
 
-전체 Rail Network는 하나의 고정된 Puzzle Board로 보여주며 정상 Rail은 이미 연결된 상태로 유지한다. 현재 복구할 고장 구간에는 Rail이 비어 있는 명확한 연결 공간을 표시하고, 양쪽 정상 Rail의 연결 방향이 한눈에 보이도록 한다.
+현재 단계의 Rail Board 하나만 화면에 보여준다. Board에는 한글에서 `출발역`과 `종착역`, 영문에서 `START STATION`과 `TERMINAL STATION`, 고정 Rail과 현재 단계에서 채워야 할 2개·3개·4개의 빈 연결 공간을 함께 표시한다. 단계가 올라가면 Board 크기, Rail 경로, 빈 공간의 수와 위치가 모두 바뀌어 새로운 퍼즐임을 명확히 전달한다.
 
-조작 가능한 Rail 조각은 Puzzle Board 아래의 Candidate Area에 별도로 배치한다. 후보 조각과 고장 구간은 동일한 Top View 기준과 동일한 Rail 규격을 사용하여, 사용자가 조각을 선택하거나 90° 회전했을 때 실제로 빈 공간에 연결될 수 있는지를 화면만 보고 판단할 수 있어야 한다.
+조작 가능한 Rail 조각은 Puzzle Board 아래의 Candidate Area에 배치한다. 후보 조각과 Board의 빈 공간은 동일한 Top View 기준과 동일한 Rail 규격을 사용하여, 사용자가 조각을 선택하거나 90° 회전했을 때 실제로 연결될 수 있는지를 화면만 보고 판단할 수 있어야 한다.
 
-후보 조각을 선택하면 현재 고장 구간의 빈 공간 안에 즉시 Preview로 배치되고, 회전 상태도 Puzzle Board 안에서 함께 갱신한다. 별도의 독립 Slot만으로 정답을 표현하지 않는다.
+후보 조각을 선택하면 현재 활성 빈 공간 안에 즉시 Preview로 배치하고 해당 공간의 활성 상태를 유지한다. 이어서 다른 미배치 Candidate를 선택하면 다음 빈 공간을 자동으로 활성화해 배치한다. 이미 배치한 Candidate나 Board 공간을 누르면 해당 공간을 교체 대상으로 활성화하며, 이후 다른 Candidate를 선택해 Preview를 교체할 수 있다. 별도의 독립 Slot만으로 정답을 표현하지 않는다.
 
-Rail 조각에 Perspective, Isometric 또는 강한 3D 원근을 적용하지 않는다. 고장 구간과 후보 조각의 시점·두께·연결점 규격이 달라져 형태 비교가 어려워지는 표현도 사용하지 않는다.
+Rail 조각에 Perspective, Isometric 또는 강한 3D 원근을 적용하지 않는다. 입체감은 Top View 연결 규격을 유지한 상태에서 금속 재질, 음영과 광원으로 표현하며 Board와 후보 조각의 시점·두께·연결점 규격은 동일하게 유지한다.
+
+Board의 시작점과 도착점은 언어별 단일 명칭으로 표시한다. 한글은 `출발역`, `종착역`만 크게 표시하고 영문은 `START STATION`, `TERMINAL STATION`을 사용한다. Label은 각 Image 위에 배치하며 영문 명칭이 길면 글자 크기를 줄이지 않고 최대 두 줄까지 허용한다. 출발역은 Rail과 동일한 90° Top View의 세로형 Mechanical Dock Base Image와 별도 Train Image를 겹쳐 하나의 시설처럼 표현한다. Train을 정거장 Image에 합치지 않아 이후 완성된 Rail을 따라 종착역까지 이동시키는 Animation에 그대로 사용할 수 있어야 한다. 종착역도 같은 Top View 시점과 Metal·Cyan·Violet 재질의 세로형 Production Image를 사용하고 두 시설의 선로 중심과 Board Rail의 중심이 자연스럽게 이어져야 한다.
+
+출발역, 종착역과 분기 제어기의 Label·Production Image는 같은 반응형 Scale 기준을 사용한다. 화면 높이와 너비가 줄면 글자, Padding과 Image가 같은 비율로 축소되고, 한글 `분기 제어기`는 한 줄을 유지하며 영문만 최대 두 줄까지 허용한다.
+
+Rail 위에 별도의 이동 방향 화살표를 반복하지 않는다. 연결 경로는 모든 Rail Type의 중앙을 따라 이어지는 Cyan 점선 신호로 통일하며 직선, 코너와 T자 분기에서 밝기와 간격이 시각적으로 동일해야 한다.
+
+직선, 코너와 T자 분기 Rail은 금속 베드·침목·이중 레일·체결판·볼트·Cyan 점선의 색과 선폭, Dash 간격을 같은 규격으로 사용한다. 금속 Highlight와 황동 체결 포인트로 실제 기차 Rail의 깊이를 보강하되 Tile 경계에 별도의 마감 Bar를 중복 배치하지 않아 조각이 이어질 때 하나의 연속된 Rail처럼 보여야 한다.
+
+Play Header의 전체 연결 상태는 완료 수와 전체 수를 숫자로 표시하고 같은 수의 Segment를 함께 제공한다. 전체 Segment가 9개 또는 12개처럼 달라져도 Segment 묶음 자체를 Header 중앙에 정렬하며, 고정된 최대 칸의 왼쪽부터 채우는 방식으로 표현하지 않는다.
 
 기본 화면 구조는 다음과 같다.
 
-    상단 또는 중앙: 전체 2D Rail Network
-    → 현재 고장 구간 강조
-    → 고장 구간의 빈 연결 공간 표시
+    상단 또는 중앙: 현재 STEP의 2D Rail Board
+    → 출발역과 종착역 사이의 고정 Rail 경로 표시
+    → 현재 단계에서 채울 빈 연결 공간 표시
     → 하단: 현재 단계에서 사용할 Rail 후보 조각
-    → 필요한 단계에서 선택한 조각의 90° 회전
+    → 빈 공간 선택과 조각 배치
+    → STEP 2부터 선택한 조각의 90° 회전
     → 연결 검증
-    → 성공 시 Rail 점등 및 다음 고장 구간 강조
+    → 성공 시 Rail 점등 및 다음 STEP의 새 Rail Board 표시
 
-REPAIR 01 / 03에서는 빈 공간 하나와 후보 Rail 두 개를 동시에 보여주며, 두 후보 중 어느 조각이 현재 Rail의 시작점과 끝점을 연결할 수 있는지 형태만으로 비교할 수 있어야 한다.
+STEP 1은 가장 단순한 새 Rail Board로 시작한다. 빈 공간 2개와 필요한 후보 2개를 제공하고 회전 기능은 사용하지 않는다. 두 공간은 서로 맞닿게 배치하지 않고 출발부와 상단 본선의 서로 다른 단절 구간으로 분리하여, 사용자가 Board 전체 경로를 살펴보며 기본 선택과 공간 이동을 익히게 한다.
 
-REPAIR 02 / 03에서는 후보 Rail의 현재 방향과 빈 공간의 연결 방향을 함께 확인할 수 있어야 하며, 선택한 조각을 90° 단위로 회전해 정확한 방향으로 맞춘다.
+STEP 1의 직선 Rail B는 회전 기능을 제공하지 않으므로 Candidate와 정답 방향 모두 가로 방향으로 고정하고 Board의 상단 본선과 같은 방향으로 보여준다.
 
-REPAIR 03 / 03에서는 하나의 고장 구간 안에 두 Rail 조각이 들어갈 연속된 빈 공간을 표시한다. 두 조각의 연결 위치와 순서를 Puzzle Board에서 확인할 수 있어야 하며, 선택·회전·배치 결과가 실제 Rail 연결 형태와 일치해야 한다.
+STEP 2는 STEP 1과 다른 Rail Board를 표시한다. 빈 공간 3개와 중복 없는 Rail Type 3개를 제공한다. 직선 레일 하나를 1번과 3번 공간에 반복 배치하고, 각 공간의 조각을 서로 다른 방향으로 회전할 수 있어야 한다.
+
+STEP 3은 가장 크고 복합적인 새 Rail Board를 표시한다. 빈 공간 4개와 중복 없는 Rail Type 3개를 제공하며 같은 코너 레일을 두 공간에 반복 배치한다. 경로는 단순한 가로 일렬이 아니라 위아래 이동과 연속된 꺾임이 포함되며, 본선 옆 분기 제어기까지 세 방향을 연결하는 T자 분기 레일을 반드시 사용한다. 분기 제어기는 Rail과 동일한 Top View Production Image로 표현하고 외부 Rail 접속점은 왼쪽 한 곳만 제공한다. 1번 T자 분기의 오른쪽 가지가 제어기 안으로 직접 들어가며, 아래 3번 공간이나 위·오른쪽 Rail과 연결되는 것처럼 보이는 표현은 사용하지 않는다. 분기 제어기 Label은 한글에서 한 줄을 우선하고 영문은 글자 크기를 줄이지 않은 채 최대 두 줄까지 허용한다.
 
 배경의 Nova Land 시설과 Roller Coaster 비주얼은 분위기 표현으로 사용할 수 있지만 Puzzle Board의 Rail보다 시각적으로 우선하지 않는다. Play의 핵심 정보는 항상 평면 Rail Puzzle 자체가 담당한다.
 
-복구 단계는 별도 Button 없이 현재 구간의 검증이 완료되면 자동으로 상승한다. 화면 표기는 Explorer Level이나 시설 진행도와 혼동되지 않도록 `REPAIR 01 / 03`과 `복구 단계 01 / 03`을 사용한다.
+복구 단계는 별도 Button 없이 현재 Board의 검증이 완료되면 자동으로 상승한다. Play Header에는 `NOVA COASTER`와 현지화된 레일 복구 Mission 명칭, 전체 연결 상태, 가이드, 시계 Icon과 남은 시간 값, 일시정지만 표시한다. 전체 연결 상태는 Header 중앙의 사다리꼴 Plate에 유지하고 `남은 시간` Text는 표시하지 않는다. 가이드 Button은 정보 아이콘과 테두리를 가진 각진 Game Button 형태로 강조한다. Header는 하나의 굵은 외곽 상자로 묶지 않고 왼쪽 Mission Identity, 중앙 연결 상태 Housing과 오른쪽 조작부가 각각 분리된 얇은 Mechanical Frame으로 표현한다. 현재 단계는 Board Panel 상단 테두리에 결합된 좁고 어두운 Notch형 Plate에서 `복구 01 / 03`, `복구 02 / 03`, `복구 03 / 03`으로 표시하고 난이도 Badge와 현재 단계 조각 수는 반복하지 않는다.
 
-1. 복구 단계 1: 후보 두 개 중 알맞은 Rail 조각을 선택한다. 회전 없이 조작을 익히는 단계다.
-2. 복구 단계 2: 알맞은 Rail 조각을 선택하고 90도 회전해 연결 방향을 맞춘다.
-3. 복구 단계 3: 두 Rail 조각을 선택·회전하고 올바른 순서로 연결한다.
+Play의 Board Panel과 Candidate Workspace는 가는 이중선, 작은 모서리 Bracket, 내부 Highlight와 낮은 Neon Glow를 공통으로 적용한다. 두꺼운 Cyan 외곽선과 큰 금속 모서리 장식은 사용하지 않는다. Rail Board 배경은 큰 격자, 낮은 밀도의 Dot Matrix와 약한 Scanline을 겹치되 Rail보다 앞서지 않게 명도를 억제한다. Candidate Workspace는 게임 Board의 집중도를 유지하도록 현재의 낮은 높이와 정보 밀도를 유지하며 시안의 높은 하단 Panel 비율을 그대로 따르지 않는다.
 
-각 단계는 `구간 복구 → 해당 Rail 점등 → 시스템 스캔 → 다음 고장 지점 강조` 순서로 이어진다. 세 단계 완료 후 `전체 연결 검사 → 코스터 시운전 → 안전 시스템 확인 → 시설 복구 완료`를 진행한다. 잘못된 선택은 현재 고장 구간 안에서만 오류로 안내하고 앞서 완료한 단계는 초기화하지 않는다.
+Play Visual의 직접 비교 기준은 `game-coaster1.png`다. 확정된 실제 UI와 단계별 Rail Board 구조는 유지하되 Header 분할 비율, Panel 선 굵기, 복구 Notch, 좁은 Top View 출발역과 직사각형 종착역, Rail의 금속 베드·침목·이중 레일 밀도는 해당 시안에 최대한 가깝게 맞춘다. 출발역 Image와 Train은 향후 실제 운행 Animation을 위해 분리하고, 역 이름은 Image에 포함하지 않고 현지화 가능한 HTML Label로 배치한다.
 
-Control Room, Guide, Countdown, Play, Pause, Fail과 Complete는 공통 Mission Flow가 관리하고 고장 구간 선택·검증 규칙만 NOVA COASTER 전용 Module이 담당한다. 진행 중 현재 복구 단계, 완료된 고장 구간, 선택한 조각과 남은 시간은 Checkpoint로 저장하며 새로고침하면 Control Room의 Pause 상태로 복원한다. 완료 후 NOVA Stamp 기록을 먼저 확인하고 MAP으로 돌아가 LUNA 개방과 Log 갱신을 확인한다.
+1. 복구 단계 1: 빈 공간 2개, 후보 2개, 회전 없음
+2. 복구 단계 2: 빈 공간 3개, Rail Type 3개, 동일 Type 반복 배치와 90° 회전 사용
+3. 복구 단계 3: 빈 공간 4개, Rail Type 3개, 동일 Type 반복 배치와 T자 분기 사용
+
+#### 조작 및 상태 변화
+
+Play 진입 직후 STEP 1의 새 Rail Board와 두 빈 연결 공간을 표시하고 Candidate는 모두 미배치 상태로 시작한다. 현재 단계의 빈 공간이 모두 채워지기 전까지 `연결 확인` Button은 비활성화한다.
+
+Candidate Area는 개별 실물 조각 목록이 아니라 현재 STEP에서 사용할 수 있는 Rail Type Palette다. Candidate 묶음은 EVE 영역과 조작 Button의 실제 너비에 밀리지 않도록 Workspace의 전체 가로축 정중앙에 배치한다. Candidate Card는 정사각형으로 만들고 `Rail 모양 → Rail 이름`을 세로로 배치한다. Board 공간 번호 `01~04`와 Candidate 식별자 `A~C`는 축소된 게임 화면에서도 즉시 구분할 수 있는 독립 Badge 크기와 대비를 유지한다. Candidate를 선택하면 해당 Rail Type을 현재 활성 공간에 Preview로 즉시 배치한다. Candidate Card에는 `선택 중`, `선택 가능` 또는 `N번 공간에 배치됨` 같은 상태 문구와 배치 강조를 표시하지 않고 Rail 모양과 종류만 유지한다. 배치 여부와 활성 공간은 Board에서만 확인한다. Board 공간을 직접 선택하면 EVE Live Status가 선택한 두 자리 공간 번호를 말하고 사용할 Rail 조각 선택을 안내한다. 배치 직후에는 현재 Board 공간을 유지하여 Candidate 옆의 회전 Button을 사용할 수 있게 하며, 다른 Rail Type을 선택하면 다음 빈 공간에 자동 배치한다. Preview는 연결을 확정하기 전까지 청록색 외곽선과 Scan 표현으로 고정 Rail과 구분한다.
+
+같은 Candidate는 한 단계 안의 여러 Board 공간에 반복 배치할 수 있다. 예를 들어 STEP 2의 직선 레일 A 하나를 1번과 3번 공간에 각각 배치한다. 같은 Rail Type을 다시 사용하려면 대상 Board 공간을 먼저 선택한 뒤 Candidate를 누른다. 현재 활성 공간에 이미 들어 있는 Candidate를 한 번 더 누르면 해당 공간에서 조각을 제거하고 빈칸으로 되돌린다. 다른 Candidate를 누르면 현재 공간의 Preview를 해당 Rail Type으로 교체한다.
+
+정답은 Rail Type과 각 Board 공간의 실제 연결 방향으로 판정한다. 180° 회전해도 형태가 같은 직선 레일은 동일 방향으로 취급한다. 같은 Candidate를 여러 공간에 사용해도 각 Preview의 회전값은 슬롯별로 독립적으로 저장하고 판정한다.
+
+STEP 1에서는 Rotate Button을 표시하지 않는다. 두 Candidate를 두 빈 공간에 모두 배치하면 `연결 확인`을 활성화하고 회전 없이 순서만 검증한다.
+
+STEP 2와 STEP 3에서는 각 Candidate Card 안의 조각 옆에 개별 회전 Button을 표시한다. 현재 활성 공간에 배치된 Rail Type의 회전 Button만 활성화하고, 누르면 해당 공간의 Preview를 `0° → 90° → 180° → 270° → 0°` 순서로 회전한다. Candidate Preview는 현재 활성 공간의 방향만 반영하며 다른 공간에 반복 배치된 같은 Rail Type의 회전값에는 영향을 주지 않는다.
+
+Candidate Area 오른쪽에는 `조각 초기화` 보조 Button과 `연결 확인` 주 Button을 세로로 배치한다. `조각 초기화`는 현재 STEP의 배치와 회전만 초기화하고 이전 완료 단계, 남은 시간과 전체 진행 상태는 유지한다. 배치된 조각이 없거나 현재 단계가 확정된 동안에는 비활성화한다.
+
+`연결 확인` 전에는 정답 여부를 미리 표시하지 않는다. 연결이 맞지 않으면 종류 또는 방향이 틀린 공간만 오류 상태로 표시하고 첫 오류 공간을 자동으로 활성화한다. 상태 안내에는 확인할 공간 번호를 함께 제공하고 오류 Live Status는 일반 청록 안내와 구분되는 Red Text로 유지한다. 선택한 조각, 배치 순서와 회전 상태는 보존하여 바로 수정할 수 있게 하며 앞서 완료한 단계는 변경하거나 초기화하지 않는다.
+
+연결이 맞으면 조작을 잠그고 Preview를 정상 Rail과 같은 확정 상태로 전환한다. 전체 연결 상태를 STEP 1 완료 후 `2 / 9`, STEP 2 완료 후 `5 / 9`, STEP 3 완료 후 `9 / 9`로 갱신한다. Rail 점등과 시스템 스캔을 거친 뒤 기존 Board를 새 Board로 교체하고 다음 단계의 빈 공간과 Candidate를 초기 상태로 표시한다.
+
+Play의 Board Header에는 현재 STEP의 목표를 설명하는 Description을 제목 아래에 표시한다. 하단 EVE는 얼굴 중심의 원형 Crop을 사용하고 Header Description을 반복하지 않으며, 현재 단계에서 필요한 조작 Tip을 별도 문장으로 안내하는 Compact UI로 유지한다. 단계별 조작 Tip은 타이핑된 뒤 사라지지 않고 유지하며, 조각 선택·회전·초기화·검증에 따라 바뀌는 Live Status는 EVE의 두 번째 문장으로 배치해 변경된 문장만 다시 타이핑한다. Candidate, 배치 공간, Rotate와 연결 확인은 실제 동작에 맞는 `button`을 사용하고 활성 공간, 배치·비활성 상태, Keyboard Focus와 Live Status가 화면 상태와 함께 갱신되어야 한다.
+
+각 단계는 `현재 Rail 복구 → Rail 점등 → 시스템 스캔 → 다음 단계의 새 Rail Board 표시` 순서로 이어진다. 세 단계 완료 후 `전체 연결 검사 → 코스터 시운전 → 안전 시스템 확인 → 시설 복구 완료`를 진행한다. 잘못된 선택은 현재 Board에서만 오류로 안내하고 앞서 완료한 단계는 초기화하지 않는다.
+
+Control Room, Guide, Countdown, Play, Pause, Fail과 Complete는 공통 Mission Flow가 관리하고 단계별 Board 데이터, Candidate 선택·회전·검증 규칙만 NOVA COASTER 전용 Module이 담당한다. 진행 중 현재 복구 단계, 완료된 단계, 현재 Board의 조각 배치와 남은 시간은 Checkpoint로 저장하며 새로고침하면 Control Room의 Pause 상태로 복원한다. 완료 후 NOVA Stamp 기록을 먼저 확인하고 MAP으로 돌아가 LUNA 개방과 Log 갱신을 확인한다.
 
 
 ### LUNA LIGHT GARDEN

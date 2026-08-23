@@ -12,12 +12,18 @@ export function createControlRoomController({ getExplorer, onMapRequest, onShowS
   const objectiveEyebrow = document.querySelector('[data-control-room-objective-eyebrow]');
   const objectiveTitle = document.querySelector('[data-control-room-objective-title]');
   const objective = document.querySelector('[data-control-room-objective]');
+  const objectiveSteps = [
+    { title: document.querySelector('[data-control-room-objective-inspect]'), description: document.querySelector('[data-control-room-objective-inspect-help]'), key: 'Inspect' },
+    { title: document.querySelector('[data-control-room-objective-repair]'), description: document.querySelector('[data-control-room-objective-repair-help]'), key: 'Repair' },
+    { title: document.querySelector('[data-control-room-objective-test]'), description: document.querySelector('[data-control-room-objective-test-help]'), key: 'Test' }
+  ];
   const service = document.querySelector('[data-control-room-service]');
   const rail = document.querySelector('[data-control-room-rail]');
   const checkItem = document.querySelector('[data-control-room-check-item]');
   const check = document.querySelector('[data-control-room-check]');
   const departure = document.querySelector('[data-control-room-departure]');
   const missionStart = document.querySelector('[data-mission-open]');
+  const operationStatus = document.querySelector('[data-control-room-operation]');
   const mapButton = document.querySelector('[data-control-room-map]');
   const eve = createEveController(document.querySelector('.eve-panel--control'), {
     persistent: true,
@@ -64,11 +70,19 @@ export function createControlRoomController({ getExplorer, onMapRequest, onShowS
     if (objective) {
       objective.textContent = t(isCompleted ? 'control.restoredObjective' : isCoaster ? 'control.coasterObjective' : 'control.pendingObjective');
     }
+    objectiveSteps.forEach((step) => {
+      if (step.title) {
+        step.title.textContent = t(`control.${isCompleted ? 'restoredObjective' : 'objective'}${step.key}`);
+      }
+      if (step.description) {
+        step.description.textContent = t(`control.${isCompleted ? 'restoredObjective' : 'objective'}${step.key}Help`);
+      }
+    });
     if (service) {
       service.textContent = t(isCompleted ? 'control.trainRunning' : 'control.trainStopped');
     }
     if (rail) {
-      rail.textContent = isCompleted ? '12 / 12' : '9 / 12';
+      rail.textContent = isCompleted ? '9 / 9' : '0 / 9';
     }
     checkItem?.classList.toggle('is-warning', !isCompleted);
     if (check) {
@@ -79,6 +93,9 @@ export function createControlRoomController({ getExplorer, onMapRequest, onShowS
     }
     if (missionStart) {
       missionStart.hidden = !isCoaster || isCompleted;
+    }
+    if (operationStatus) {
+      operationStatus.hidden = !isCoaster || !isCompleted;
     }
 
     return { isCompleted };
