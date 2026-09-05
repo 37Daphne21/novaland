@@ -66,8 +66,6 @@ function updateExplorer(explorer) {
 function showScreen(screenName) {
   if (screenName !== 'control-room') {
     controlRoom?.cancel();
-  } else if (appBackButton) {
-    appBackButton.hidden = true;
   }
   screens.forEach((screen) => {
     const isActive = screen.dataset.screen === screenName;
@@ -83,7 +81,10 @@ function showScreen(screenName) {
 
 controlRoom = createControlRoomController({
   getExplorer: () => currentExplorer,
-  onShowScreen: showScreen,
+  onShowScreen: (screenName) => {
+    map?.restoreFacilitySelection(controlRoom.getFacility()?.id);
+    showScreen(screenName);
+  },
   showToast: toast.show
 });
 
@@ -106,7 +107,7 @@ function enterMap(explorer, { focusMap = false } = {}) {
     const resumableFacility = getFacility(resumableMissionId);
     if (resumableFacility) {
       controlRoom.show(resumableFacility);
-      navigation?.replace({ screen: 'control-room', facilityId: resumableFacility.id }, { applyRoute: false });
+      navigation?.push({ screen: 'control-room', facilityId: resumableFacility.id }, { applyRoute: false });
       window.setTimeout(() => mission.open(resumableFacility, controlRoom.getFocusTarget()), 120);
       return;
     }
@@ -144,7 +145,10 @@ const mission = createMissionController({
     controlRoom.refreshState();
   },
   onControlRoom: () => controlRoom.refreshState(),
-  onExit: () => navigation?.back(),
+  onExit: () => {
+    navigation?.replace({ screen: 'map' });
+    map.focusReturnTarget();
+  },
   onRecord: ({ award = false } = {}) => {
     navigation?.replace({ screen: 'map' });
     pendingStampAward = award;
@@ -176,6 +180,9 @@ function applyNavigationRoute(route, { previousRoute, source } = {}) {
 
   overlay.close();
   mobileMap.reset();
+  if (mission.isOpen()) {
+    mission.close();
+  }
 
   if (route.screen === 'intro') {
     if (previousRoute?.screen !== 'intro') {
@@ -373,7 +380,7 @@ if (shouldPreviewMission) {
   const facility = getFacility('coaster');
   enterMap(previewExplorer);
   controlRoom.show(facility);
-  navigation?.replace({ screen: 'control-room', facilityId: facility.id }, { applyRoute: false });
+  navigation?.push({ screen: 'control-room', facilityId: facility.id }, { applyRoute: false });
   window.setTimeout(() => mission.open(facility, controlRoom.getFocusTarget(), { previewPhase: missionPreviewPhase }), 120);
 } else {
   intro.start();

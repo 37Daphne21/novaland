@@ -147,7 +147,7 @@
 .explorer-profile > span,
 .status-chip span,
 .cosmic-status span,
-.settings-item > span {
+#settings-overlay .ui-info-list__item > span {
   display: grid;
 }
 
@@ -978,25 +978,15 @@
 }
 
 .recent-log__list {
-  display: grid;
-  gap: var(--space-2);
+  --ui-info-padding: var(--space-4);
 }
 
-.recent-log__item {
-  display: grid;
+.recent-log__list > .ui-info-list__item {
   grid-template-columns: auto 1fr;
-  align-items: center;
   gap: var(--space-3);
   color: var(--color-text-subtle);
   font-size: .8125rem;
   line-height: 1.5;
-  min-height: 2.75rem;
-  padding-top: var(--space-2);
-  border-bottom: 0;
-}
-
-.recent-log__item + .recent-log__item {
-  border-top: .0625rem solid rgba(116, 188, 224, .1);
 }
 
 .recent-log__time {
@@ -1196,7 +1186,7 @@
 }
 
 .explorer-archive__passport .passport__book {
-  width: min(51rem, 74vw);
+  width: min(51rem, 74vw, calc((100svh - 15rem) * 1.62));
 }
 
 .explorer-archive__passport .passport.is-archive .passport__book {
@@ -1462,50 +1452,45 @@
   display: none;
 }
 
-.settings-list {
-  display: grid;
-  gap: var(--space-4);
-  margin-top: var(--space-6);
+#settings-overlay .ui-info-list {
+  --ui-info-padding: var(--space-6);
 }
 
 #settings-overlay.is-language-only .ui-overlay__dialog {
   width: min(26rem, 100%);
 }
 
-#settings-overlay.is-language-only .settings-item:not([data-settings-item="language"]) {
+#settings-overlay.is-language-only .ui-info-list__item[data-settings-item="language"] {
+  padding-block: 0;
+}
+
+#settings-overlay.is-language-only .ui-info-list__item:not([data-settings-item="language"]) {
   display: none;
 }
 
-.settings-item {
+#settings-overlay .ui-info-list__item {
   display: flex;
-  align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
-  padding: var(--space-4) 0;
-  border-top: .0625rem solid var(--color-line);
 }
 
-.settings-item:last-child {
-  padding-bottom: 0;
-}
-
-.settings-item strong {
+#settings-overlay .ui-info-list__item strong {
   font-size: .875rem;
 }
 
-.settings-item small {
+#settings-overlay .ui-info-list__item small {
   margin-top: var(--space-1);
   color: var(--color-text-muted);
   font-size: .6875rem;
 }
 
-.settings-item--danger .ui-button {
+#settings-overlay [data-settings-item="reset"] .ui-button {
   border-color: rgba(255, 142, 157, .34);
   color: #ffb3bd;
   background: rgba(121, 32, 48, .12);
 }
 
-.settings-item--danger .ui-button:hover {
+#settings-overlay [data-settings-item="reset"] .ui-button:hover {
   border-color: rgba(255, 142, 157, .68);
   background: rgba(121, 32, 48, .22);
 }
@@ -1693,12 +1678,12 @@
   background: linear-gradient(145deg, rgba(19, 20, 50, .88), rgba(4, 10, 24, .9));
 }
 
-.control-room__objective > .ui-panel__subtitle {
-  margin-top: var(--space-2);
+.control-room__objective .ui-info-list {
+  --ui-info-padding: var(--space-2);
 }
 
 .control-room__objective > .ui-panel__description {
-  margin: .25rem 0 var(--space-2);
+  margin-top: .25rem;
 }
 
 .control-room__status {
@@ -1712,10 +1697,6 @@
   background: linear-gradient(145deg, rgba(19, 20, 50, .9), rgba(4, 10, 24, .92));
 }
 
-.control-room__status > .ui-panel__header {
-  padding-bottom: var(--space-3);
-}
-
 .control-room__status > header strong {
   color: #ff9eb0;
   font-size: .875rem;
@@ -1724,14 +1705,6 @@
 .control-room__status .ui-info-list__item {
   grid-template-columns: 2.25rem minmax(0, 1fr);
   gap: var(--space-3);
-}
-
-.control-room__status .ui-info-list--lined > .ui-info-list__item {
-  padding: var(--space-3) 0;
-}
-
-.control-room__status .ui-info-list--lined > .ui-info-list__item:last-child {
-  padding-bottom: 0;
 }
 
 .control-room__status .ui-info-list__icon {
@@ -1954,10 +1927,8 @@
 .mission-flow {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
-  height: min(45rem, calc(100svh - 2rem));
   padding: var(--space-6);
-  border-color: rgba(159, 140, 255, .5);
-  background: radial-gradient(circle at 50% 0, rgba(140, 114, 255, .14), transparent 38%), linear-gradient(145deg, rgba(11, 17, 39, .98), rgba(3, 9, 21, .98));
+  border-color: var(--color-line-strong);
 }
 
 .mission-dialog:is([data-phase="countdown"], [data-phase="playing"], .is-result) {
@@ -2085,6 +2056,7 @@
 }
 
 .mission-dialog:is([data-phase="guide"], [data-phase="playing"], .is-result) .mission-flow__identity .ui-panel__eyebrow {
+  margin-bottom: 0;
   color: #f4f8ff;
   font-size: 1rem;
   letter-spacing: .08em;
@@ -2187,23 +2159,19 @@ html[lang="en"] .mission-dialog:is([data-phase="guide"], [data-phase="playing"],
 }
 
 .mission-dialog[data-phase="guide"] .mission-flow {
-  padding: .75rem 1rem 1rem;
-  border: 1rem solid transparent;
-  border-image: url("../images/coaster/game-coaster-frame-workspace.png") 30 fill / 1rem / 0 stretch;
-  border-radius: 0;
-  background: linear-gradient(rgba(34, 92, 137, .065) .0625rem, transparent .0625rem), linear-gradient(90deg, rgba(34, 92, 137, .065) .0625rem, transparent .0625rem), radial-gradient(circle at 50% -12%, rgba(41, 103, 166, .2), transparent 36%), linear-gradient(145deg, #050b1a, #020713 62%, #050817);
-  background-clip: padding-box;
-  background-size: 3rem 3rem, 3rem 3rem, auto, auto;
-  box-shadow: inset 0 0 5rem rgba(0, 5, 16, .72), 0 0 3rem rgba(0, 0, 0, .62);
+  max-height: calc(100svh - 2rem);
+  padding: var(--mission-guide-space);
 }
 
 .mission-dialog[data-phase="guide"] {
-  width: min(80rem, calc(100% - 1rem));
+  --mission-guide-space: var(--space-6);
+  width: min(68rem, calc(100% - 2rem));
 }
 
 .mission-dialog[data-phase="guide"] .mission-flow__header {
-  min-height: 4.35rem;
-  padding: .2rem 1rem .75rem;
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-height: 0;
+  padding: 0 0 var(--space-4);
   border-bottom: .0625rem solid rgba(82, 226, 255, .16);
   isolation: auto;
 }
@@ -2219,16 +2187,7 @@ html[lang="en"] .mission-dialog:is([data-phase="guide"], [data-phase="playing"],
 }
 
 .mission-dialog[data-phase="guide"] .mission-flow__meta > [data-mission-status] {
-  z-index: 2;
-  grid-column: 2;
-  grid-row: 1;
-  justify-self: center;
-  color: #d8d1ff;
-  font-family: var(--font-display);
-  font-size: .82rem;
-  letter-spacing: .12em;
-  text-shadow: 0 0 .75rem rgba(159, 140, 255, .45);
-  white-space: nowrap;
+  display: none;
 }
 
 .mission-dialog:is([data-phase="playing"], .is-result) .mission-flow__guide-button {
@@ -2249,6 +2208,11 @@ html[lang="en"] .mission-dialog:is([data-phase="guide"], [data-phase="playing"],
   border-color: #8bf6ff;
   background: linear-gradient(180deg, rgba(26, 92, 126, .66), rgba(7, 34, 57, .82));
   box-shadow: inset 0 0 1rem rgba(82, 226, 255, .12), 0 0 1rem rgba(82, 226, 255, .22);
+}
+
+.mission-flow__meta > [data-mission-pause] {
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
 }
 
 .mission-flow__guide-icon {
@@ -2288,137 +2252,160 @@ html[lang="en"] .mission-dialog:is([data-phase="guide"], [data-phase="playing"],
   align-items: stretch;
   gap: clamp(1.5rem, 4vw, 4.5rem);
   margin-top: 0;
-  padding: clamp(1.5rem, 3vw, 2.75rem);
+  padding: var(--mission-guide-space) 0 0;
   border: 0;
   background: radial-gradient(circle at 25% 44%, rgba(26, 115, 160, .1), transparent 28%);
   box-shadow: none;
 }
 
+.mission-dialog[data-phase="guide"] .mission-flow__identity {
+  flex-wrap: wrap;
+  gap: .35rem .75rem;
+}
+
+.mission-dialog[data-phase="guide"] .mission-flow__identity #mission-title {
+  display: block;
+  color: var(--color-text);
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  white-space: normal;
+}
+
+.mission-dialog[data-phase="guide"] .mission-flow__identity #mission-title::before {
+  content: none;
+}
+
 .mission-guide__close {
-  position: absolute;
-  top: 1.65rem;
-  right: 1.65rem;
+  position: static;
+  grid-column: -1;
+  grid-row: 1;
+  justify-self: end;
   z-index: 3;
-  width: 2.75rem;
-  min-height: 2.75rem;
-  border-color: rgba(82, 226, 255, .42);
-  border-radius: 0;
-  background: linear-gradient(180deg, rgba(13, 38, 62, .96), rgba(3, 13, 29, .98));
-  color: #dffbff;
-  box-shadow: inset 0 0 .7rem rgba(82, 226, 255, .08), 0 0 .8rem rgba(82, 226, 255, .1);
-  clip-path: polygon(.45rem 0, 100% 0, 100% calc(100% - .45rem), calc(100% - .45rem) 100%, 0 100%, 0 .45rem);
-}
-
-.mission-guide__close:is(:hover, :focus-visible) {
-  border-color: #8bf6ff;
-  background: linear-gradient(180deg, rgba(27, 91, 124, .92), rgba(5, 29, 48, .98));
-  box-shadow: inset 0 0 .85rem rgba(82, 226, 255, .12), 0 0 1rem rgba(82, 226, 255, .28);
-}
-
-.mission-guide__close[hidden] {
-  display: none;
-}
-
-.mission-guide__close span {
-  font-size: 1.5rem;
-  line-height: 1;
 }
 
 .mission-guide__visual {
-  position: relative;
   display: grid;
-  place-items: center;
-  min-height: 22rem;
-  overflow: hidden;
-  border: .0625rem solid rgba(82, 226, 255, .32);
-  border-radius: 0;
-  background: radial-gradient(circle at 50% 48%, rgba(82, 226, 255, .16), transparent 30%), linear-gradient(145deg, rgba(7, 25, 46, .9), rgba(2, 8, 20, .96));
-  box-shadow: inset 0 0 3rem rgba(46, 122, 178, .18), 0 0 1.4rem rgba(32, 101, 160, .08);
-  clip-path: polygon(.8rem 0, calc(100% - .8rem) 0, 100% .8rem, 100% calc(100% - .8rem), calc(100% - .8rem) 100%, .8rem 100%, 0 calc(100% - .8rem), 0 .8rem);
-  isolation: isolate;
+  align-content: center;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  border: .0625rem solid var(--color-line);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
 }
 
-.mission-guide__visual::before {
-  position: absolute;
-  z-index: -2;
-  inset: 0;
-  background: linear-gradient(rgba(82, 226, 255, .08) .0625rem, transparent .0625rem), linear-gradient(90deg, rgba(82, 226, 255, .08) .0625rem, transparent .0625rem);
-  background-size: 2.5rem 2.5rem;
-  content: "";
-  mask-image: radial-gradient(circle, #000 12%, transparent 76%);
-}
-
-.mission-guide__visual::after {
-  position: absolute;
-  z-index: -1;
-  width: 76%;
-  aspect-ratio: 1.45;
-  border: .0625rem dashed rgba(159, 140, 255, .36);
-  border-radius: 50%;
-  box-shadow: 0 0 2rem rgba(140, 114, 255, .14);
-  content: "";
+.mission-dialog:not([data-phase="guide"]) .mission-guide__close {
+  display: none;
 }
 
 .mission-guide__rail-demo {
-  position: relative;
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   align-items: center;
-  justify-content: center;
-  width: min(26rem, 92%);
-  filter: drop-shadow(0 .45rem .55rem rgba(0, 4, 14, .72));
 }
 
 .mission-guide__rail-piece {
-  position: relative;
-  display: block;
-  width: 34%;
-  aspect-ratio: 1;
-  margin-inline: -2%;
-}
-
-.mission-guide__rail-piece img {
   display: block;
   width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.mission-guide__rail-piece--straight {
-  transform: rotate(90deg);
-}
-
-.mission-guide__rail-piece--corner {
-  z-index: 1;
-  transform: rotate(90deg);
-}
-
-.mission-guide__rail-piece--junction {
-  transform: rotate(270deg);
-}
-
-.mission-guide__scan {
-  position: absolute;
-  z-index: 2;
-  width: 31%;
   aspect-ratio: 1;
-  border: .12rem solid rgba(82, 226, 255, .82);
-  border-radius: var(--radius-md);
-  box-shadow: inset 0 0 1.2rem rgba(82, 226, 255, .18), 0 0 1.2rem rgba(82, 226, 255, .42);
-  animation: mission-guide-scan 2.4s ease-in-out infinite;
+  object-fit: contain;
+  transform: rotate(90deg);
 }
 
-.mission-guide__visual-flow {
+.mission-guide__slot {
+  position: relative;
+  padding: 0;
+  aspect-ratio: 1;
+  border-style: dashed;
+  border-color: var(--color-line-strong);
+}
+
+.mission-guide__slot > span {
   position: absolute;
-  bottom: 1.5rem;
-  padding: .48rem 1.1rem;
-  border: .0625rem solid rgba(82, 226, 255, .34);
-  border-radius: 0;
-  background: linear-gradient(180deg, rgba(8, 31, 52, .92), rgba(3, 12, 27, .94));
-  color: #bff8ff;
-  font-family: var(--font-display);
-  font-size: .76rem;
-  letter-spacing: .12em;
-  clip-path: polygon(.45rem 0, calc(100% - .45rem) 0, 100% 50%, calc(100% - .45rem) 100%, .45rem 100%, 0 50%);
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--color-primary);
+}
+
+.mission-guide__visual.is-placed .mission-guide__slot > span {
+  visibility: hidden;
+}
+
+.mission-guide__slot[aria-pressed="false"]::before {
+  position: absolute;
+  inset: -.25rem;
+  border: .0625rem dashed var(--color-primary);
+  border-radius: inherit;
+  content: "";
+  pointer-events: none;
+  animation: mission-guide-slot-invite 1.8s ease-in-out infinite;
+}
+
+@keyframes mission-guide-slot-invite {
+  0%, 100% { opacity: .35; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.07); }
+}
+
+.mission-guide__slot img {
+  opacity: 0;
+  transform: rotate(var(--demo-rotation, 0deg));
+  transition: opacity .3s ease, transform .45s ease;
+}
+
+.mission-guide__slot[aria-pressed="true"] {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
+.mission-guide__visual.is-placed .mission-guide__slot img {
+  opacity: 1;
+}
+
+.mission-guide__visual.is-connected .mission-guide__rail-demo {
+  filter: drop-shadow(0 0 .5rem var(--color-primary));
+}
+
+.mission-guide__demo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.mission-guide__demo-actions .ui-button {
+  flex: 1 1 auto;
+}
+
+.mission-guide__demo-actions .ui-button:disabled {
+  border-style: dashed;
+  border-color: var(--color-line);
+  color: var(--color-text-muted);
+  background: rgba(1, 5, 10, .55);
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.mission-guide__demo-actions .ui-button:not(:disabled) {
+  border-color: var(--color-primary);
+  color: var(--color-text);
+  background: var(--color-primary-soft);
+}
+
+.mission-guide__visual > p {
+  display: grid;
+  color: var(--color-text-subtle);
+  font-size: .875rem;
+  line-height: 1.6;
+}
+
+.mission-guide__visual > p::before {
+  grid-area: 1 / 1;
+  visibility: hidden;
+  content: attr(data-sizing-text);
+}
+
+.mission-guide__visual > p > span {
+  grid-area: 1 / 1;
 }
 
 .mission-guide__content {
@@ -2443,67 +2430,55 @@ html[lang="en"] .mission-dialog:is([data-phase="guide"], [data-phase="playing"],
   line-height: 1.8;
 }
 
-.mission-guide__content ol {
-  display: grid;
-  gap: .55rem;
+.mission-guide__content > .ui-info-list {
+  gap: var(--space-2);
   margin: var(--space-5) 0;
 }
 
-.mission-guide__content li {
-  position: relative;
-  display: grid;
-  grid-template-columns: 2.65rem minmax(0, 1fr);
-  align-items: center;
-  gap: .85rem;
-  padding: .72rem 1rem .72rem .72rem;
-  border: .0625rem solid rgba(82, 226, 255, .2);
-  border-radius: 0;
-  background: linear-gradient(90deg, rgba(13, 39, 64, .72), rgba(7, 15, 34, .74));
-  box-shadow: inset .18rem 0 rgba(82, 226, 255, .46);
-  clip-path: polygon(.45rem 0, 100% 0, 100% calc(100% - .45rem), calc(100% - .45rem) 100%, 0 100%, 0 .45rem);
+.mission-guide__content .ui-info-list__item {
+  grid-template-columns: 1.25rem minmax(0, 1fr);
+  align-items: start;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-color: color-mix(in srgb, var(--color-line) 60%, transparent);
 }
 
-.mission-guide__content li > b {
-  display: grid;
-  place-items: center;
-  width: 2.3rem;
-  aspect-ratio: 1;
-  border: .0625rem solid rgba(159, 140, 255, .5);
-  color: #b9acff;
+.mission-guide__content .ui-info-list__content {
+  gap: var(--space-1);
+}
+
+.mission-guide__content .ui-info-list__item > b {
+  color: var(--color-primary);
   font-family: var(--font-numeric);
-  font-size: .8rem;
-  background: rgba(10, 14, 37, .88);
-  box-shadow: inset 0 0 .65rem rgba(140, 114, 255, .16);
-  clip-path: polygon(25% 0, 75% 0, 100% 25%, 100% 75%, 75% 100%, 25% 100%, 0 75%, 0 25%);
-}
-
-.mission-guide__content li > span {
-  display: grid;
-  gap: .15rem;
+  font-size: 1rem;
+  line-height: 1.3125;
 }
 
 .mission-guide__content li strong {
   color: var(--color-text);
-  font-size: .85rem;
-}
-
-.mission-guide__content li small {
-  color: var(--color-text-muted);
+  font-size: .875rem;
   line-height: 1.5;
 }
 
+.mission-guide__content li small {
+  color: var(--color-text-subtle);
+  font-size: .8125rem;
+  line-height: 1.6;
+}
+
 .mission-guide__content > .ui-panel__eyebrow {
+  font-size: 1rem;
   color: #52e2ff;
   letter-spacing: .14em;
 }
 
 .mission-guide__content > .ui-button {
   width: min(16rem, 100%);
-  min-height: 3rem;
-  border-radius: 0;
-  font-family: var(--font-display);
-  letter-spacing: .08em;
-  clip-path: polygon(.55rem 0, 100% 0, 100% calc(100% - .55rem), calc(100% - .55rem) 100%, 0 100%, 0 .55rem);
+}
+
+.mission-guide__content > [data-mission-guide-return] {
+  display: flex;
+  margin-inline: auto;
 }
 
 .mission-dialog[data-phase="countdown"] .mission-flow {
@@ -3553,18 +3528,6 @@ html[lang="en"] .rail-repair__branch-terminal small {
   }
 }
 
-@keyframes mission-guide-scan {
-  0%, 100% {
-    border-color: rgba(82, 226, 255, .52);
-    transform: translateX(-108%) scale(.9);
-  }
-
-  50% {
-    border-color: rgba(185, 172, 255, .88);
-    transform: translateX(108%) scale(1);
-  }
-}
-
 @keyframes mission-train-test {
   0% {
     transform: translateX(0);
@@ -3598,7 +3561,6 @@ html[lang="en"] .rail-repair__branch-terminal small {
   justify-items: center;
   padding: var(--space-8);
   overflow: hidden;
-  background: radial-gradient(circle at 50% 46%, rgba(140, 114, 255, .12), transparent 30%);
   text-align: center;
   isolation: isolate;
 }
@@ -3627,10 +3589,7 @@ html[lang="en"] .rail-repair__branch-terminal small {
   padding: clamp(1.25rem, 3vw, 2.5rem);
   place-content: start center;
   overflow: auto;
-  border: .5rem solid transparent;
-  border-image: url("../images/coaster/game-coaster-frame-workspace.png") 30 fill / .5rem / 0 stretch;
-  background: radial-gradient(circle at 50% 0, rgba(55, 98, 145, .2), transparent 60%), #050c1b;
-  box-shadow: 0 1.5rem 5rem rgba(0, 0, 0, .65);
+  border-color: var(--color-line-strong);
 }
 
 .mission-dialog.is-result .mission-result h3,
@@ -3640,7 +3599,6 @@ html[lang="en"] .rail-repair__branch-terminal small {
 
 .mission-dialog.is-result .mission-result .ui-button {
   min-width: 0;
-  border-radius: .2rem;
   font-size: .875rem;
 }
 
@@ -3675,14 +3633,7 @@ html[lang="en"] .rail-repair__branch-terminal small {
 }
 
 .mission-result__actions .ui-button {
-  min-width: 10rem;
-  border-color: rgba(159, 140, 255, .34);
-  background: rgba(6, 13, 31, .78);
-}
-
-.mission-result__actions .ui-button--primary {
-  border-color: #52e2ff;
-  background: rgba(16, 73, 112, .52);
+  min-width: 0;
 }
 
 .mission-result__seal {
@@ -3691,18 +3642,18 @@ html[lang="en"] .rail-repair__branch-terminal small {
   width: 3.5rem;
   aspect-ratio: 1;
   margin-bottom: var(--space-5);
-  border: .18rem double #a693ff;
+  border: .18rem double var(--color-primary);
   border-radius: .35rem;
-  color: #c7bcff;
+  color: var(--color-primary);
   font-size: 2.6rem;
-  box-shadow: 0 0 2rem rgba(140, 114, 255, .4);
+  box-shadow: 0 0 2rem var(--color-primary-soft);
 }
 
 
 .mission-result--paused > .ui-panel__eyebrow {
-  color: #52e2ff;
+  color: var(--color-primary);
   letter-spacing: .16em;
-  text-shadow: 0 0 .7rem rgba(82, 226, 255, .36);
+  text-shadow: 0 0 .7rem var(--color-primary-soft);
 }
 
 .mission-result--paused > p {
@@ -3718,37 +3669,9 @@ html[lang="en"] .rail-repair__branch-terminal small {
   margin-top: var(--space-5);
 }
 
-.mission-result--paused .mission-result__actions .ui-button {
-  min-width: 0;
-  min-height: 2.85rem;
-  border-radius: 0;
-  font-size: .78rem;
-  letter-spacing: .05em;
-  clip-path: polygon(.45rem 0, 100% 0, 100% calc(100% - .45rem), calc(100% - .45rem) 100%, 0 100%, 0 .45rem);
-}
-
-.mission-result--paused .mission-result__actions [data-mission-resume] {
-  grid-column: 1 / -1;
-  min-height: 3.15rem;
-  border-color: #52e2ff;
-  background: linear-gradient(180deg, rgba(19, 92, 132, .9), rgba(6, 39, 66, .96));
-  color: #effdff;
-  font-family: var(--font-display);
-  font-size: .88rem;
-  box-shadow: inset 0 0 1rem rgba(82, 226, 255, .14), 0 0 1.15rem rgba(82, 226, 255, .2);
-}
-
+.mission-result--paused .mission-result__actions [data-mission-resume],
 .mission-result--paused .mission-result__actions [data-mission-restart] {
   grid-column: 1 / -1;
-  border-color: rgba(159, 140, 255, .46);
-  background: linear-gradient(180deg, rgba(47, 37, 99, .72), rgba(17, 15, 50, .9));
-  color: #ddd7ff;
-}
-
-.mission-result--paused .mission-result__actions :is([data-mission-control-room], [data-mission-exit]) {
-  border-color: rgba(93, 125, 158, .3);
-  background: rgba(4, 13, 29, .8);
-  color: #98a8bc;
 }
 
 .mission-result--failed .mission-result__seal {
@@ -3762,6 +3685,15 @@ html[lang="en"] .rail-repair__branch-terminal small {
 }
 
 @media (max-height: 48rem) and (min-width: 56.0625rem) {
+  .explorer-archive {
+    gap: var(--space-3);
+    padding: var(--space-4);
+  }
+
+  .explorer-archive > .ui-panel__header {
+    padding-bottom: var(--space-3);
+  }
+
   .screen--control-room {
     padding: .75rem 1.5rem;
   }
@@ -3810,20 +3742,15 @@ html[lang="en"] .rail-repair__branch-terminal small {
 
   .mission-guide {
     gap: var(--space-6);
-    padding: var(--space-5);
   }
 
   .mission-guide__content p {
     margin-top: var(--space-3);
   }
 
-  .mission-guide__content ol {
+  .mission-guide__content > .ui-info-list {
     gap: var(--space-2);
     margin: var(--space-4) 0;
-  }
-
-  .mission-guide__content li {
-    padding: var(--space-2) var(--space-3);
   }
 
   .rail-repair__board {
@@ -3948,15 +3875,12 @@ html[lang="en"] .rail-repair__branch-terminal small {
     padding: .6rem .8rem;
   }
 
-  .mission-dialog[data-phase="guide"] .mission-flow {
-    padding: .5rem .75rem .75rem;
-    border-width: .75rem;
-    border-image-width: .75rem;
+  .mission-dialog[data-phase="guide"] {
+    --mission-guide-space: var(--space-4);
   }
 
   .mission-dialog[data-phase="guide"] .mission-flow__header {
-    min-height: 4rem;
-    padding: .2rem .5rem .6rem;
+    padding: 0 0 var(--space-4);
   }
 
   .mission-dialog:is([data-phase="guide"], [data-phase="playing"], .is-result) .mission-flow__identity {
@@ -4001,21 +3925,20 @@ html[lang="en"] .rail-repair__branch-terminal small {
 
   .mission-guide {
     grid-template-columns: 1fr;
-    padding: var(--space-5);
   }
 
   .mission-guide__visual {
-    display: none;
+    padding: var(--space-3);
+  }
+
+  .mission-guide__rail-demo {
+    width: min(15rem, 100%);
+    margin-inline: auto;
   }
 
   .mission-guide__content {
     max-width: none;
     padding-right: 0;
-  }
-
-  .mission-guide__close {
-    top: 1.15rem;
-    right: 1.15rem;
   }
 
   .mission-result--paused {
@@ -4123,6 +4046,10 @@ html[lang="en"] .rail-repair__branch-terminal small {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .mission-guide__slot[aria-pressed="false"]::before {
+    animation: none;
+  }
+
   .passport.is-awarding .passport__facility-record > img,
   .passport.is-awarding .passport__facility-record > dl {
     animation: none;
@@ -4205,7 +4132,7 @@ html[lang="en"] .rail-repair__branch-terminal small {
   }
 
   .top-navigation {
-    grid-template-columns: minmax(0, auto) minmax(0, auto);
+    grid-template-columns: auto minmax(0, 1fr);
     gap: var(--space-2);
     min-height: 0;
   }
@@ -4256,6 +4183,8 @@ html[lang="en"] .rail-repair__branch-terminal small {
   }
 
   .top-navigation__right {
+    flex-wrap: wrap;
+    justify-content: flex-end;
     gap: var(--space-2);
   }
 
@@ -4290,6 +4219,7 @@ html[lang="en"] .rail-repair__branch-terminal small {
   .top-navigation__actions .utility-button,
   .utility-button {
     min-width: 2.75rem;
+    min-height: 2.75rem;
     padding: 0 .25rem;
   }
 
@@ -4643,7 +4573,7 @@ html[lang="en"] .rail-repair__branch-terminal small {
   .recent-log.is-mobile-open .recent-log__list {
     visibility: visible;
     max-height: 14rem;
-    margin-top: var(--space-3);
+    margin-top: var(--space-4);
     opacity: 1;
     transform: translateY(0);
     transition-delay: 0s;
@@ -4668,11 +4598,7 @@ html[lang="en"] .rail-repair__branch-terminal small {
     border-radius: var(--radius-md);
   }
 
-  .settings-list {
-    margin-top: var(--space-5);
-  }
-
-  .settings-item {
+  #settings-overlay .ui-info-list__item {
     align-items: flex-start;
     flex-direction: column;
     gap: var(--space-3);
@@ -4731,19 +4657,11 @@ html[lang="en"] .rail-repair__branch-terminal small {
 }
 
 @media (max-width: 40rem) {
-  .mission-guide {
-    padding: var(--space-4);
-  }
-
-  .mission-guide__content h3 {
-    padding-right: 2.75rem;
-  }
-
   .mission-guide__content p {
     margin-top: var(--space-3);
   }
 
-  .mission-guide__content ol {
+  .mission-guide__content > .ui-info-list {
     margin: var(--space-4) 0;
   }
 

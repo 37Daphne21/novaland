@@ -117,7 +117,7 @@
 - [x] EVE 단계 안내 유지와 조작 Live Status 개별 타이핑
 - [x] Play Header 전체 연결 상태의 가변 Segment 수 기준 중앙 정렬
 - [x] 실제 Play Asset 기반 Mission Guide Visual Development
-- [x] Mission Guide Mechanical Frame·Rail Scan Monitor·단계 명령 Panel 고도화
+- [x] Mission Guide 공통 Panel·직접 조작 연습·번호 설명 박스 적용
 - [x] 단계마다 새 경로로 교체되는 Rail Network Play 화면
 - [x] 복구 단계 1: 빈 공간 2개와 후보 2개 기본 연결
 - [x] 복구 단계 2: 빈 공간 3개와 중복 없는 Rail Type 3개의 반복 배치·회전
@@ -132,7 +132,7 @@
 - [x] 현재 Rail 복구 후 다음 Rail Board로 이어지는 Stage Transition
 - [x] 전체 연결 검사·코스터 시운전·안전 시스템 확인
 - [x] Pause
-- [x] Pause Mechanical Frame·진행 상태 Header·행동 우선순위와 반응형 배치 고도화
+- [x] Pause 공통 Panel·진행 상태 Header·행동 우선순위와 반응형 배치 적용
 - [x] Fail
 - [x] Complete
 - [x] 복구 완료 시설의 Control Room 상태 보호와 Mission 재시작 차단
@@ -191,13 +191,51 @@
 6. 완료: Passport 보완 — NOVA 쿠폰 준비 중 상태·저장·기존 기록 보완과 Violet 표지 가장자리 반영 (실제 혜택·사용 조건·발급 방식은 별도 확정 필요)
 7. 주요 검증 완료: 문서 정합성, 한국어·영어 주요 화면, 브라우저 반응형, 저장·복귀·키보드 확인. 실제 모바일 기기·모션 감소 실행 검수는 남음
 
-검증: 전체 JavaScript 문법·Git diff·HTML 자산 경로·중복 ID, 쿠폰 최초 생성·복구·재접속·중복 방지·기존 기록 보완·Preview 저장 격리 테스트 통과. 브라우저에서 시간 종료·재시도·세 단계 직접 연결·완료, Pause, Guide, Passport 기록·언어·History 재열람을 확인했다. 자동 Passport 이동은 타이머 로직 테스트로, 초기화 후 등록 진입과 모션 감소는 정적 코드로 확인했으며 실제 사용자 데이터 초기화는 수행하지 않았다. 모바일 MAP은 시설 주변 밝기 마스크 방식이며 전용 조명 이미지 기반 검수와 구분한다.
+검증: 전체 JavaScript 문법·Git diff·HTML 자산 경로·중복 ID 검사 통과. 앞선 쿠폰 최초 생성·복구·중복 방지·기존 기록 보완·Preview 저장 격리 테스트에 더해, 별도 테스트 계정으로 Welcome → 등록 → Passport → MAP → NOVA 세 단계 직접 완료 → 자동 Passport 이동·기록 저장·LUNA 해금을 확인했다. 초기화·언어 유지, 시간 종료·재시도·오답 안내도 검수했다. 실제 사용자 저장 데이터는 초기화하지 않았다. 모바일 MAP은 시설 주변 밝기 마스크 방식이며 전용 조명 이미지 기반 검수와 구분한다.
+
+
+### LUNA 전 회귀 수정
+
+- [x] 관제실 MISSION START 문구 고정 및 MAP 재렌더링 시 선택 시설의 활성 표시 복원
+- [x] 새 탭 미션 복원 후 MAP 복귀 경로 확보와 명시적 MAP 이동
+- [x] 관제실 Settings 닫기 후 MAP Button 소실 수정 및 Mission Preview의 MAP 이력 보존 (닫기 Button·Escape 후 Button 유지, Preview에서 실제 MAP 도착 확인)
+- [x] Browser 뒤로가기 시 Mission 닫기·Timer 정지·Checkpoint 저장
+- [x] 초기화 안내에 시설 복구·Mission·Stamp·쿠폰 삭제 범위 명시
+- [x] 초기화 후 이름 입력 직행을 제거하고 Welcome부터 재시작하도록 복원 (테스트 계정으로 Welcome·언어 유지·구조 신호 진입 확인)
+- [x] 1280×720 Passport 하단 귀퉁이 노출과 낮은 PC 화면 간격 보정
+- [x] Mobile 영어 Header 겹침 해소와 Settings 조작 영역 확보
+- [x] Guide·Pause·점검·Fail·Complete에 MAP 공통 Panel 적용, 관제실 MISSION START·게임 HUD·Board의 기존 Frame 유지
+- [x] 공통 보조 Button 재사용과 Guide 닫기 Icon 통일
+- [x] Settings 제목 구분선 유지, 항목 사이에만 Divider 적용
+- [x] 최근 기록·미션 목표·복구 현황·Settings의 라인 목록과 항목을 `ui-info-list--lined`·`ui-info-list__item`으로 통일 (최근 기록 동적 생성 포함): 항목 사이 Padding, 첫 위·마지막 아래 Padding 제거. 일괄 12px 적용을 보정하여 최근 기록 16px·Settings 24px·미션 목표 8px·복구 현황 12px로 기존 목록별 밀도 유지. 제목 다음 콘텐츠·설명 다음 목록 간격은 공통 16px 적용
+- [x] 완료 결과 표시를 5초로 늘리고 즉시 기록 확인 Button 유지
+- [x] Guide에 선택·배치·90° 회전 연습 추가 (실제 진행과 저장에 영향 없음)
+- [x] Guide 번호를 제목 첫 줄에 정렬, 16px Padding·14px 제목·13px 설명과 약한 테두리 적용, 설명 문구 정리
+- [x] 관제실 직접 진입·저장 게임 복원 경로에서 MAP 미션 목록 선택과 시설 카드 진입 상태 동기화: 8783 본화면 검수 계정으로 게임 시작·Pause 저장·재접속 → 관제실 → MAP의 선택/진입 활성 유지와 목록 재선택 없이 관제실 재진입 확인. Preview 동일 경로 확인
+- [x] Play Header 가이드 Button의 기존 최소 높이·Padding 복원
+- [x] Play Header 일시정지 Button을 공통 Icon Button 기반의 약한 라운드로 적용, 일시정지 팝업 Icon·소제목을 공통 Primary 색상으로 통일
+- [x] Guide 팝업 고정 높이 제거, 콘텐츠 자동 높이와 화면 기준 max-height 적용
+- [x] Guide 팝업 위아래 외곽 여백 통일·중복 본문 Padding 제거: 1280×720·1366×768 내부 스크롤 없음, 390px에서는 필요한 본문 스크롤과 대칭 16px 외곽 여백 유지
+- [x] 회전 상태별 안내 높이 확보, 설명 부모 목록의 공통 ui-info-list--angular Modifier(var(--radius-sm), 8px), 게임으로 돌아가기 중앙 정렬
+- [x] 공통 미션 가이드 제목·16px 소제목, 공간 선택 안내와 점선 Motion 적용. 왼쪽 연습 순번·잠금 Icon 제거, 오른쪽 설명은 공통 Panel·정보 목록 박스를 유지하고 번호만 테두리 없는 숫자로 표시, 배치·제거·재배치와 연결 후 반복 회전 허용, 가로 시설명 아래 Margin 제거. 본문 소제목은 시설별 미션명(NOVA: 레일 복구 미션) 사용. 관제실 재진입·반복 회전·제거·재배치·초기화 및 390px 조작 확인
+
+이전 전체 흐름 검증: 당시 새 Explorer 발급과 실제 세 단계 완료·자동 Passport 이동·재접속 기록 유지 통과. 플레이 중 Browser 뒤로가기 후 Mission 종료와 Timer 정지, 새 탭 복원 후 MAP 복귀를 직접 재검증했다. 1280×720 Passport 귀퉁이 노출, 390px Guide 연습과 영어 Header 겹침 해소, Settings 첫 항목 Divider 제거를 확인했다. 실제 모바일 기기·Safari·모션 감소 설정 실행은 미검증이다. 이 기록은 이후 가이드·공통 목록 수정분까지 전체 흐름을 재검증했다는 뜻이 아니다.
+
+최신 변경 검토: 미커밋 12개 파일의 diff를 요청·확정사항과 대조했다. 추가 파일·이미지 삭제는 없으며 게임 Board·판정 Module은 변경하지 않았다. JavaScript 19개 문법, HTML 중복 ID·자산 경로·양 언어 번역 Key, Git diff 검사를 통과했다. 이번 검토는 소스·문서 검토이며 본화면 전체 흐름 재실행은 하지 않았다.
+
+검토 후 남은 항목:
+
+- [x] 모션 감소 설정의 Guide 점선 선택자 우선순위를 일반 규칙과 일치시켜 animation: none 적용
+- 보류: 관제실 제목 영역의 과거 삭제 항목 확인: 현재 Git에서 경고·연결 상태·가로선 삭제 후 재추가 근거를 찾지 못해 임의 변경하지 않음
+- [x] 일반 주소(Preview 쿼리 없음)의 별도 로컬 계정으로 Welcome → Signal → 이름·신원 등록 → Passport 발급 → MAP → 미션 선택·시설 카드 → 관제실 → Settings 닫기·MAP 복귀·재진입 → 가이드 연습 → 실제 3단계 완료 → Passport 자동 이동·Stamp·쿠폰 준비 중·LUNA 해금 확인. 3단계 Pause 후 재접속 복원·MISSION START 문구·가이드 복귀, 완료 후 재접속 기록 유지, 초기화 후 Welcome·영어 유지 확인. 콘솔 오류 없음.
+- [x] 마지막 표시 수정은 별도 Guide 확인: 공통 제목 미션 미리 해보기/TRY THE MISSION, 부모 ui-info-list--angular의 8px 라운드, 번호 16px·테두리/Padding 0 확인. 이 표시 변경 후 전체 게임을 다시 완료하지는 않음.
+- 모션 감소는 동일 우선순위 선택자와 뒤쪽 미디어 규칙 적용을 CSS에서 확인했다. 운영체제 모션 감소 설정을 켠 실제 실행 검수는 별도다.
 
 ---
 
 ## Later. 모바일 MAP 재설계
 
-상태: PC NOVA COASTER 전체 흐름 검증 후 진행
+상태: 전체 시설과 COSMIC VOYAGE 연결 후 전용 이미지·세부 디자인 진행. 시설 제작 중 Mobile 기본 조작·접근성·화면 넘침 검증은 병행
 
 현재 반응형 구현은 기능 검증용 1차 버전이다. PC 패널을 축소한 인상이 강하므로 모바일 게임형 HUD를 기준으로 시각 구조를 다시 확정한다.
 
@@ -214,11 +252,14 @@
 
 ### 확인된 수정 사항
 
+시간·날씨 준비 중 표시의 제거·축소는 보류하며 실제 기능 연결 전까지 유지한다.
+
 - [ ] 접힌 Mission Panel에 남는 Divider와 빈 공간 제거
 - [ ] Recent Log의 크기와 시각 비중 축소
 - [ ] PC와 동일한 큰 Glass Box 구조 제거
 - [ ] 시설 건물이 UI보다 먼저 보이도록 Label과 Card 축소
 - [ ] 상단 Header의 큰 박스 분할 완화
+- [ ] 시설명 말줄임 개선과 게임 Board 가로·조작부 세로 스크롤 부담 완화 (전체 모바일 디자인 단계)
 - [ ] EVE가 지도와 시설을 가리지 않도록 노출 방식 조정
 - [ ] 10px 이하 글자 금지와 일반 UI 13px 기준 유지
 
@@ -244,7 +285,7 @@
 
 ## Phase 2. LUNA LIGHT GARDEN
 
-상태: 예정
+상태: 다음 제작 대상 (Mobile 터치 조작·버튼 접근·화면 넘침 검증 병행)
 
 - [ ] 시설 배경과 Mint Theme
 - [ ] Light Fragment 수집
@@ -342,7 +383,9 @@
 
     Explorer Archive와 Save Data
     → NOVA COASTER와 공통 Mission Flow
-    → 모바일 MAP Wireframe과 UI 재구성
-    → 나머지 시설
+    → LUNA LIGHT GARDEN
+    → SPARK ENERGY TOWER
+    → WONDER PARADE HALL
     → COSMIC VOYAGE와 Ending
-    → 전체 QA와 배포
+    → 모바일 전용 이미지·MAP UI 재구성과 전체 QA
+    → 배포

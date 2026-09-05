@@ -113,6 +113,8 @@ Explorer는 영웅이나 성장형 캐릭터가 아니라 노바랜드의 회복
 
 Control Room과 Mission UI는 일반적인 게임 HUD보다 실제 시설을 점검하고 복구하는 관제 인터페이스처럼 느껴져야 한다. HP, EXP, Coin, Combo, Damage와 Rank는 사용하지 않는다.
 
+라인이 있는 정보 목록(최근 기록·미션 목표·복구 현황·설정)은 `ui-info-list--lined`와 항목 클래스 `ui-info-list__item`을 공통 사용한다. 동적으로 생성하는 최근 기록에도 같은 항목 클래스를 적용하고, 항목 배치 차이만 부모 범위에서 지정한다. 항목 사이 Gap 대신 상하 Padding을 적용하고 구분선은 항목 사이에만 표시한다. 공통화는 구조와 처리 방식을 통일하는 작업이며 기존 화면의 간격을 일괄 축소하지 않는다. 목록별 항목 밀도만 공통 Padding 변수로 조절한다. 제목 구분선 다음 콘텐츠와 설명 다음 목록의 간격은 공통 16px로 유지하며 화면별로 재정의하지 않는다. Mobile 최근 기록을 접을 때만 해당 간격을 함께 접는다. 첫 항목 위와 마지막 항목 아래 Padding을 모두 제거하며, 제목과 목록의 간격은 공통 인접 요소 규칙에서 관리한다. 한 항목만 보이는 Intro 설정도 위아래 Padding이 없어야 한다.
+
 ---
 
 ## Voice & Tone
@@ -441,7 +443,7 @@ Welcome과 MAP 기본 화면은 각 Flow의 Root로 사용하며 공용 뒤로�
 
 공용 Button은 꼬리가 있는 왼쪽 화살표 Icon만 시각적으로 표시하고 실제 조작 영역은 최소 44×44px로 확보한다. `aria-label`은 현재 상태에 맞춰 이전 목적지를 설명하며 Mobile에서는 Safe Area를 반영한다.
 
-화면 Button, 키보드와 Mobile Browser의 뒤로가기는 별도 로직으로 분리하지 않고 같은 History 상태를 사용한다.
+화면 Button, 키보드와 Mobile Browser의 뒤로가기는 별도 로직으로 분리하지 않고 같은 History 상태를 사용한다. 공용 뒤로가기 Button의 표시와 목적지는 Navigation Controller에서 관리하며, 화면 표시 함수가 별도로 숨기지 않는다. Control Room에서 Settings를 닫으면 MAP 복귀 Button을 유지하고, Mission Preview 진입도 MAP 복귀 이력을 보존한다.
 
     Overlay 또는 Mobile Panel 닫기
     → Intro 세부 단계 복귀
@@ -451,7 +453,7 @@ Welcome과 MAP 기본 화면은 각 Flow의 Root로 사용하며 공용 뒤로�
 
 Intro에서는 `Welcome → Signal → Register 01 / 02 → Register 02 / 02 → Passport` 순서로 History를 기록한다. 역방향 이동 시 실행 중인 장면 Timer와 Transition을 정리하고 이름과 성별 선택값을 유지한다. Passport에서 돌아오면 `02 / 02` 선택 상태를 복원하고, Browser Forward로 Passport에 재진입하면 완료된 발급 상태를 복원한다.
 
-Overlay와 Mobile Panel은 화면 이동보다 먼저 닫는다. Control Room에서 MAP으로 돌아오면 진입했던 시설 Card로 Focus를 복원한다. Intro 발급이 완료된 뒤에는 저장된 Explorer가 완료된 Intro History로 다시 진입하지 않도록 건너뛴다.
+Overlay와 Mobile Panel은 화면 이동보다 먼저 닫는다. 열린 Mission도 화면 이동 시 닫고 Timer·전환 예약을 정리하며 진행 중인 Checkpoint를 저장한다. 재접속 복원 시 MAP 복귀 경로를 먼저 만들고, 명시적인 MAP 복귀는 외부 Browser History에 의존하지 않는다. Control Room에서 MAP으로 돌아오면 진입했던 시설 Card로 Focus를 복원한다. Intro 발급이 완료된 뒤에는 저장된 Explorer가 완료된 Intro History로 다시 진입하지 않도록 건너뛴다.
 
 
 ### Explorer Archive
@@ -618,7 +620,7 @@ ID Portrait는 사용자가 제공하는 개인정보가 아니라 Nova Land가 
 → 쿠폰 준비 중 상태 저장·표시
 ```
 
-시설 복구 결과, Stamp와 쿠폰 지급을 여러 Popup으로 반복하지 않고 Passport 안에서 하나의 보상 흐름으로 연결한다. 실제 NOVA 복구 완료는 결과를 1.8초 표시한 뒤 Passport 기록으로 자동 이동하며, 기록 확인 Button을 누르면 즉시 이동한다. 최초 획득 때만 NOVA 도장 눌림·잉크 농도 변화 후 완료일을 표시하고, 일반 재열람·Browser History 복귀에서는 획득 연출을 반복하지 않는다. 모션 감소 설정에서는 도장 이동을 생략하고 최종 기록을 즉시 표시한다.
+시설 복구 결과, Stamp와 쿠폰 지급을 여러 Popup으로 반복하지 않고 Passport 안에서 하나의 보상 흐름으로 연결한다. 실제 NOVA 복구 완료는 결과를 5초 표시한 뒤 Passport 기록으로 자동 이동하며, 기록 확인 Button을 누르면 즉시 이동한다. 최초 획득 때만 NOVA 도장 눌림·잉크 농도 변화 후 완료일을 표시하고, 일반 재열람·Browser History 복귀에서는 획득 연출을 반복하지 않는다. 모션 감소 설정에서는 도장 이동을 생략하고 최종 기록을 즉시 표시한다.
 
 #### Passport 페이지 이동
 
@@ -682,7 +684,7 @@ Intro의 Welcome에는 Settings Button을 표시하지 않는다. Signal부터 �
 
 Intro에서 선택한 언어는 Passport와 MAP 진입 이후에도 유지하고, 새로고침과 재접속에서도 복원한다.
 
-공통 설정 항목:
+공통 설정 기획 항목:
 
 - 한국어 / 영어
 - BGM 음량
@@ -692,12 +694,14 @@ Intro에서 선택한 언어는 Passport와 MAP 진입 이후에도 유지하고
 - 처음부터 다시 시작
 - 설정 초기화하기
 
+현재 구현은 언어·전체 화면·처음부터 다시 시작이며 사운드는 준비 중으로 표시한다. BGM·효과음 조절, 시간대 선택과 환경 설정만 초기화하는 기능은 후속 구현 대상이다. 미구현 항목을 이번 UI 정리에서 삭제한 것으로 해석하지 않는다.
+
 브라우저 Fullscreen API는 사용자의 직접 입력에서만 실행하고,
 브라우저가 전체 화면을 해제하면 설정 상태도 동기화한다.
 
 처음부터 다시 시작은 Explorer 정보, Intro 완료 상태, Passport, 쿠폰과 전체 진행 기록을 초기화하며 환경 설정은 유지한다.
 
-초기화가 완료되면 MAP이 아니라 Intro의 Explorer 등록부터 다시 시작한다.
+초기화가 완료되면 Intro의 Welcome부터 다시 시작한다. Welcome → 구조 신호 → Explorer 이름·성별 등록 → Passport 발급 순서를 처음부터 진행하며 언어 설정은 유지한다.
 
 설정 초기화하기는 언어, 시간과 사운드 설정만 기본값으로 되돌린다.
 
@@ -803,6 +807,9 @@ Mission Card는 상태가 바뀌어도 높이와 Icon 크기가 변하지 않아
 - Mission List에서 선택한 시설만 EVE 안내 종료 후 지도 Card가 활성화된다.
 - 다른 Mission을 선택하면 기존 지도 Card는 다시 비활성화된다.
 - Mission List 선택만으로 Control Room에 진입하지 않는다.
+- Mission List 선택 → 지도 시설 Card → Control Room 진입 후 MAP으로 돌아와도 해당 Mission 선택과 지도 Card 활성 표시·조작 가능 상태를 유지한다. 다른 Mission을 선택하거나 복구 완료로 진행 단계가 변경될 때만 갱신한다.
+- 관제실 진입 시 해당 시설의 MAP 미션 목록 선택과 시설 카드 진입 가능 상태를 함께 복원한다. 저장된 게임 재접속·Mission Preview·일시정지에서 관제실을 거쳐 MAP으로 복귀하는 경우에도 목록을 다시 누르지 않고 해당 시설로 진입할 수 있어야 한다. 잠긴 시설은 활성화하지 않는다.
+- 관제실 진입 Button 문구는 저장된 진행 여부와 무관하게 MISSION START로 유지한다. 계속하기는 Pause의 재개 동작에 사용하며, 저장된 진행 복원 기능과 관제실 Button 이름을 혼동하지 않는다.
 - 선택 상태는 Border와 Background로 구분한다.
 - Guide Glow는 아직 조명이 꺼진 현재 진행 시설을 안내할 때만 시설 전체를 감싸는 형태로 나타난다.
 - 복구 완료로 조명이 켜진 시설과 개방된 COSMIC VOYAGE에는 배경 Guide Glow를 사용하지 않는다.
@@ -837,7 +844,7 @@ MAP 상단의 시간·날씨는 실제 환경 정보로 오인할 수 있는 고
 
 ### 모바일 MAP 후순위 판단 지점
 
-모바일 MAP은 기존 세로 배경 위에 시설별 복구 상태를 반영한 밝기 마스크를 사용한다. 미복구 영역은 어둡게 유지하고 완료한 시설 주변부터 밝아지며 네 시설 완료 시 전체 밝기를 복원한다. 이 방식은 조명 픽셀을 개별 제어하는 전용 상태 이미지와는 구분한다. 모바일 전용 세로 배경과 1차 반응형 구조는 구현되어 있지만 전체 HUD 디자인은 확정되지 않았다. 현재 구현을 완료본으로 간주하지 않는다.
+모바일 MAP은 기존 세로 배경 위에 시설별 복구 상태를 반영한 밝기 마스크를 사용한다. 미복구 영역은 어둡게 유지하고 완료한 시설 주변부터 밝아지며 네 시설 완료 시 전체 밝기를 복원한다. 이 방식은 조명 픽셀을 개별 제어하는 전용 상태 이미지와는 구분한다. 모바일 전용 세로 배경과 1차 반응형 구조는 구현되어 있지만 전체 HUD 디자인은 확정되지 않았다. 현재 구현을 완료본으로 간주하지 않는다. 시설명 말줄임과 게임 Board 가로 스크롤·조작부 세로 스크롤의 동시 사용은 전체 모바일 디자인 단계에서 개선한다. 시간·날씨의 준비 중 표시는 실제 기능 연결 전까지 유지한다.
 
 확인된 문제:
 
@@ -847,7 +854,7 @@ MAP 상단의 시간·날씨는 실제 환경 정보로 오인할 수 있는 고
 4. 시설 비주얼보다 Card가 먼저 보여 지도 속 시설을 직접 선택한다는 느낌이 약하다.
 5. 작은 화면에서 Logo, 시간과 Settings가 각각 큰 박스로 나뉘어 상단이 답답하다.
 
-PC에서 공통 시스템과 NOVA COASTER의 전체 흐름을 먼저 완성한다. 이후 모바일 구현을 시작할 때는 코드를 미세 조정하기 전에 390px 세로 화면 기준의 모바일 와이어프레임을 먼저 확정한다.
+PC 시설 제작은 LUNA LIGHT GARDEN → SPARK ENERGY TOWER → WONDER PARADE HALL 순서로 진행하고 시설별 기록·보상과 COSMIC VOYAGE까지 연결한다. 각 시설을 구현할 때 Mobile의 터치 조작, 버튼 접근성, 화면 넘침, 기본 가독성과 진행·복귀 기능도 함께 확인한다. Mobile 전용 이미지 제작과 세밀한 비주얼·HUD 디자인은 전체 시설과 흐름이 나온 뒤 통합해 진행한다. 본격적인 Mobile 시각 설계 단계에서는 390px 세로 화면 기준의 와이어프레임을 먼저 확정한다.
 
 권장 방향:
 
@@ -915,14 +922,14 @@ NOVA COASTER의 시설 상태 패널은 `복구 현황`을 제목으로 사용�
     → Explorer Archive
     → MAP
 
-Mission Guide, Countdown, Play, Pause, Fail과 Complete는 Control Room 위의 공통 Mission Layer로 제공하며 별도 페이지로 만들지 않는다. `dialog`와 공통 Mission Flow는 유지하되 화면 단계에 따라 표현 범위를 구분한다. Mission Guide는 Control Room이 뒤에 남는 큰 Overlay Panel로, Countdown과 Play는 화면 전체를 사용하는 Full-screen Layer로 제공한다. Pause, 최종 점검, Fail과 Complete는 Full-screen Play 위의 집중형 Panel로 표시한다. 같은 Play 보드를 어둡게 유지하고 배경의 게임 조작은 키보드와 보조기술에서도 비활성화한다. 결과 Panel은 공통 Mechanical Frame과 버튼 위계를 사용하며 낮은 화면에서는 Panel 내부를 스크롤한다.
+Mission Guide, Countdown, Play, Pause, Fail과 Complete는 Control Room 위의 공통 Mission Layer로 제공하며 별도 페이지로 만들지 않는다. `dialog`와 공통 Mission Flow는 유지하되 화면 단계에 따라 표현 범위를 구분한다. Mission Guide는 Control Room이 뒤에 남는 큰 Overlay Panel로, Countdown과 Play는 화면 전체를 사용하는 Full-screen Layer로 제공한다. Pause, 최종 점검, Fail과 Complete는 Full-screen Play 위의 집중형 Panel로 표시한다. 같은 Play 보드를 어둡게 유지하고 배경의 게임 조작은 키보드와 보조기술에서도 비활성화한다. Guide와 Pause·최종 점검·Fail·Complete는 MAP과 같은 공통 Panel·Button·닫기 Icon을 사용하며 낮은 화면에서는 Panel 내부를 스크롤한다. Guide와 결과 Popup에 이미지 기반 Mechanical Frame을 적용하지 않는다. 기존 관제실 MISSION START의 투명 Frame과 시설별 게임 HUD·Board의 Frame은 유지하며, 다른 시설에는 코스터 Frame을 공통 적용하지 않는다.
 
 
 ### Mission Guide
 
 목표를 반복하는 설명 화면이 아니라 30초 이내에 조작을 이해시키는 튜토리얼이다.
 
-Mission Guide의 최종 Visual Development는 Play UI와 실제 조작 방식이 확정된 뒤 진행한다. Guide의 Rail 조각, 선택 상태, 회전과 연결 예시는 실제 Play 화면과 동일한 Asset과 상태 표현을 사용한다.
+Mission Guide의 최종 Visual Development는 Play UI와 실제 조작 방식이 확정된 뒤 진행한다. Guide의 Rail 조각, 선택 상태, 회전과 연결 예시는 실제 Play 화면과 동일한 Asset과 상태 표현을 사용한다. NOVA Guide는 빈 공간 선택 → 조각 배치 → 90° 회전을 직접 연습할 수 있는 작은 예시를 제공한다. 연습은 실제 Mission 진행·시간·저장에 영향을 주지 않으며 완료하지 않아도 미션을 시작할 수 있다. 공통 창 제목은 미션 가이드로 유지하고 시설명을 함께 표시한다. 본문 소제목은 시설별 미션명(NOVA는 레일 복구 미션)을 16px로 표시하며, 왼쪽 연습 영역의 공통 제목은 미션 미리 해보기(TRY THE MISSION)로 사용하며 시설별 복구 방식을 제목에 넣지 않는다. 왼쪽 연습 조작에는 순번을 표시하지 않는다. 오른쪽 설명 목록의 01·02·03은 유지하며 공통 ui-panel·ui-info-list 항목을 조합한 박스로 표시한다. 번호는 16px 숫자 Font와 공통 강조색을 사용하고 Badge 테두리·배경·Padding 없이 제목 첫 줄에 정렬한다. 설명 박스는 내부 Padding 16px·박스 간격 8px를 유지하며 제목 14px·설명 13px·두 문구 간격 4px·설명 줄높이 1.6으로 표시한다. 테두리는 공통 선색의 대비를 낮추고 내용 길이에 따른 높이 차이는 허용한다. 약한 라운드(var(--radius-sm), 8px)는 부모 목록에 ui-info-list--angular를 한 번만 지정해 모든 직계 항목에 적용하며 항목별 Modifier를 반복하지 않는다. 전용 절단 모서리나 장식 테두리를 새로 만들지 않는다. 연습 안내는 현재 언어의 가장 긴 연결 안내가 차지하는 공간을 항상 확보하여 회전 상태별 줄 수 변화가 레일·안내·버튼 위치를 바꾸지 않도록 한다. 게임으로 돌아가기 Button은 설명 영역 가운데 정렬한다. Guide 팝업 높이는 콘텐츠에 따라 자동으로 결정하며 고정 높이로 빈 공간을 채우지 않는다. 화면 높이에서 외곽 여유를 뺀 max-height만 두고 초과할 때 본문을 스크롤한다. Countdown·Play의 전체 화면 높이와 구분한다. Guide 팝업 외곽 Padding은 PC 24px·작은 화면 16px로 위아래를 동일하게 유지한다. 본문은 제목 구분선 아래에만 같은 간격을 두어 외곽 하단 Padding과 중복하지 않는다. 내용이 실제 화면 높이를 넘는 작은 화면에서는 본문 스크롤을 유지한다. 빈 공간은 공간 선택 문구와 선택 전 점선 Motion으로 안내한다. 배치 후 같은 Button은 조각 제거로 바뀌며 재배치할 수 있다. 회전은 조각이 없을 때만 비활성화하고 연결 후에도 90°씩 반복할 수 있다. 잠금 Icon 대신 비활성 스타일과 안내 문구로 선행 조건을 설명한다. 모션 감소 설정에서는 점선 Motion을 끈다. 가로로 배치한 시설명과 창 제목에는 세로 제목용 아래 Margin을 적용하지 않는다.
 
 - 시설과 문제 상황
 - Mission 목표
@@ -932,7 +939,7 @@ Mission Guide의 최종 Visual Development는 Play UI와 실제 조작 방식이
 - EVE 안내
 - 시작 Button
 
-Play에서 Mission Guide를 다시 연 경우에는 상단의 닫기 `X` Button과 하단의 `게임으로 돌아가기` Button을 모두 제공한다. 두 Button은 같은 복귀 동작을 사용하며 현재 STEP과 남은 시간을 유지한 채 Play로 돌아간다. 닫기 Button의 Visual Development는 Play HUD 마무리 단계에서 진행한다.
+관제실에서 처음 연 Mission Guide는 공통 닫기 `X` Button과 복구 시작 Button을 제공한다. 최초 Focus는 닫기 Button에 두어 긴 Guide의 하단으로 자동 스크롤되지 않도록 하며, 닫으면 관제실로 돌아간다. Play에서 Mission Guide를 다시 연 경우에는 상단 닫기와 하단 게임으로 돌아가기 Button이 현재 STEP·배치·남은 시간을 유지한 채 Play로 복귀한다. 닫기 Icon과 Button은 공통 UI를 사용한다. 연습의 회전·배치 조작 후 Focus를 다른 Button으로 강제로 옮기지 않으며, 다시 연습을 실행하면 공간 선택으로 Focus를 돌린다.
 
 
 ### Countdown
@@ -1018,7 +1025,7 @@ STEP 3은 가장 크고 복합적인 새 Rail Board를 표시한다. 빈 공간 
 
 배경의 Nova Land 시설과 Roller Coaster 비주얼은 분위기 표현으로 사용할 수 있지만 Puzzle Board의 Rail보다 시각적으로 우선하지 않는다. Play의 핵심 정보는 항상 평면 Rail Puzzle 자체가 담당한다.
 
-복구 단계는 별도 Button 없이 현재 Board의 검증이 완료되면 자동으로 상승한다. Play Header에는 `NOVA COASTER`와 현지화된 레일 복구 Mission 명칭, 전체 연결 상태, 가이드, 시계 Icon과 남은 시간 값, 일시정지만 표시한다. 전체 연결 상태는 Header 중앙의 사다리꼴 Plate에 유지하고 `남은 시간` Text는 표시하지 않는다. 가이드 Button은 정보 아이콘과 테두리를 가진 각진 Game Button 형태로 강조한다. Header는 하나의 굵은 외곽 상자로 묶지 않고 왼쪽 Mission Identity, 중앙 연결 상태 Housing과 오른쪽 조작부가 각각 분리된 얇은 Mechanical Frame으로 표현한다. 현재 단계는 Board Panel 상단 테두리에 결합된 좁고 어두운 Notch형 Plate에서 `복구 01 / 03`, `복구 02 / 03`, `복구 03 / 03`으로 표시하고 난이도 Badge와 현재 단계 조각 수는 반복하지 않는다.
+복구 단계는 별도 Button 없이 현재 Board의 검증이 완료되면 자동으로 상승한다. Play Header에는 `NOVA COASTER`와 현지화된 레일 복구 Mission 명칭, 전체 연결 상태, 가이드, 시계 Icon과 남은 시간 값, 일시정지만 표시한다. 전체 연결 상태는 Header 중앙의 사다리꼴 Plate에 유지하고 `남은 시간` Text는 표시하지 않는다. 가이드 Button은 정보 아이콘과 테두리를 가진 각진 Game Button 형태로 강조한다. 가이드 Button은 기존 최소 높이 2.45rem과 Padding .4rem 1rem을 유지한다. 일시정지 Button은 공통 Icon Button의 44px 조작 영역·어두운 배경·은은한 테두리·Hover를 유지하며 라운드는 var(--radius-sm)로 적용한다. 일시정지 팝업의 Icon·소제목은 시설 Theme와 무관한 공통 Primary 색상을 사용한다. 팝업 내부 Button에는 이 Game 전용 형태를 적용하지 않는다. Header는 하나의 굵은 외곽 상자로 묶지 않고 왼쪽 Mission Identity, 중앙 연결 상태 Housing과 오른쪽 조작부가 각각 분리된 얇은 Mechanical Frame으로 표현한다. 현재 단계는 Board Panel 상단 테두리에 결합된 좁고 어두운 Notch형 Plate에서 `복구 01 / 03`, `복구 02 / 03`, `복구 03 / 03`으로 표시하고 난이도 Badge와 현재 단계 조각 수는 반복하지 않는다.
 
 Play의 Board Panel과 Candidate Workspace는 가는 이중선, 작은 모서리 Bracket, 내부 Highlight와 낮은 Neon Glow를 공통으로 적용한다. 두꺼운 Cyan 외곽선과 큰 금속 모서리 장식은 사용하지 않는다. Rail Board 배경은 큰 격자, 낮은 밀도의 Dot Matrix와 약한 Scanline을 겹치되 Rail보다 앞서지 않게 명도를 억제한다. Candidate Workspace는 게임 Board의 집중도를 유지하도록 현재의 낮은 높이와 정보 밀도를 유지하며 시안의 높은 하단 Panel 비율을 그대로 따르지 않는다.
 

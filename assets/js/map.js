@@ -303,7 +303,7 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, speak
       const isAwaitingGuide = !view.isDisabled && !isEntryEnabled;
 
       return `
-        <button class="map-facility-card is-state-${facility.state}${view.isSelected ? ' is-selected' : ''}${isAwaitingGuide ? ' is-awaiting-guide' : ''}" type="button" data-facility="${facility.id}" data-control-room-entry aria-pressed="${view.isSelected}"${isEntryEnabled ? '' : ' aria-disabled="true" tabindex="-1"'} style="--marker-x: ${facility.position.x}%; --marker-y: ${facility.position.y}%; --mobile-marker-x: ${facility.mobilePosition.x}%; --mobile-marker-y: ${facility.mobilePosition.y}%; --facility-color: var(--color-${facility.id});">
+        <button class="map-facility-card is-state-${facility.state}${view.isSelected ? ' is-selected' : ''}${isEntryEnabled ? ' is-guided' : ''}${isAwaitingGuide ? ' is-awaiting-guide' : ''}" type="button" data-facility="${facility.id}" data-control-room-entry aria-pressed="${view.isSelected}"${isEntryEnabled ? '' : ' aria-disabled="true" tabindex="-1"'} style="--marker-x: ${facility.position.x}%; --marker-y: ${facility.position.y}%; --mobile-marker-x: ${facility.mobilePosition.x}%; --mobile-marker-y: ${facility.mobilePosition.y}%; --facility-color: var(--color-${facility.id});">
           <span class="map-facility-card__number">${marker}</span>
           <span class="map-facility-card__content"><strong>${facility.name}</strong><small>${getFacilityText(facility, 'type')}</small><i>${getIcon(view.state.icon)}${view.state.label}</i></span>
           <span class="map-facility-card__enter" aria-hidden="true">${getIcon('arrow-right')}</span>
@@ -319,7 +319,7 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, speak
     const isCosmicSelected = state.selectedFacilityId === 'cosmic';
     const isCosmicEntryEnabled = !isCosmicSealed && state.guidedFacilityId === 'cosmic';
     const cosmicCard = `
-      <button class="map-facility-card map-facility-card--cosmic is-state-${state.cosmicVoyage.state}${isCosmicSelected ? ' is-selected' : ''}${!isCosmicSealed && !isCosmicEntryEnabled ? ' is-awaiting-guide' : ''}" type="button" data-facility="cosmic" data-control-room-entry aria-pressed="${isCosmicSelected}"${isCosmicEntryEnabled ? '' : ' aria-disabled="true" tabindex="-1"'} style="--marker-x: ${cosmicPosition.x}%; --marker-y: ${cosmicPosition.y}%; --mobile-marker-x: ${cosmicMobilePosition.x}%; --mobile-marker-y: ${cosmicMobilePosition.y}%;">
+      <button class="map-facility-card map-facility-card--cosmic is-state-${state.cosmicVoyage.state}${isCosmicSelected ? ' is-selected' : ''}${isCosmicEntryEnabled ? ' is-guided' : ''}${!isCosmicSealed && !isCosmicEntryEnabled ? ' is-awaiting-guide' : ''}" type="button" data-facility="cosmic" data-control-room-entry aria-pressed="${isCosmicSelected}"${isCosmicEntryEnabled ? '' : ' aria-disabled="true" tabindex="-1"'} style="--marker-x: ${cosmicPosition.x}%; --marker-y: ${cosmicPosition.y}%; --mobile-marker-x: ${cosmicMobilePosition.x}%; --mobile-marker-y: ${cosmicMobilePosition.y}%;">
         <span class="map-facility-card__number">${getIcon(cosmicState.icon)}</span>
         <span class="map-facility-card__content"><strong>${cosmicName}</strong><i>${cosmicState.label}</i></span>
       </button>
@@ -360,7 +360,7 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, speak
     const visibleLogs = progress ? getProgressLogs(progress, 3) : [];
 
     recentLogList.innerHTML = visibleLogs.map((log) => `
-      <li class="recent-log__item">
+      <li class="ui-info-list__item">
         <time class="recent-log__time" datetime="${log.datetime}">${log.time}</time>
         <span>${log.message}</span>
       </li>
@@ -546,6 +546,18 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, speak
     }, 90);
   }
 
+  function restoreFacilitySelection(facilityId) {
+    const facility = getFacility(facilityId);
+    if (!facility || facility.state === 'locked' || facility.state === 'sealed') {
+      return;
+    }
+
+    state.selectedFacilityId = facility.id;
+    state.guidedFacilityId = facility.id;
+    render();
+    guideFacility(facility);
+  }
+
   function focusReturnTarget() {
     const facilityId = state.selectedFacilityId ?? (isRestored() ? 'cosmic' : 'coaster');
     document.querySelector(`[data-screen="map"] [data-control-room-entry][data-facility="${facilityId}"]`)?.focus();
@@ -581,6 +593,7 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, speak
     playIntro,
     render,
     selectFacility,
+    restoreFacilitySelection,
     start,
     transitionMapVisual
   };

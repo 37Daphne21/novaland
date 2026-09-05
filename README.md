@@ -140,7 +140,7 @@ Intro의 구조 신호 화면부터 오른쪽 위 설정 아이콘에서 한국�
 
 현재 최초 방문 Intro, Explorer 등록과 Passport 발급, WORLD MAP에 이어 PC NOVA COASTER의 공통 Mission Flow와 NOVA Stamp 기록 기반을 연결했습니다. NOVA COASTER는 세 고장 구간을 조각 선택, 회전과 조합으로 단계적으로 복구한 뒤 연결 검사, 시운전과 안전 점검을 진행합니다. Explorer Archive의 Log와 Passport는 같은 진행 기록을 사용하며 시설 상태, Mission Checkpoint, Log, Stamp와 쿠폰 준비 상태는 Save Data로 복원됩니다. 한국어·영어 설정은 정적 문구, 동적 EVE 대사와 접근성 라벨에 즉시 반영되고 선택값이 저장됩니다. Intro는 PC·Mobile 반응형과 키보드 흐름까지 검수했으며, Mobile World Map은 기능 검증용 1차 버전입니다.
 
-다음 단계에서 PC NOVA COASTER의 Guide, Play, System Check와 Complete를 한 화면씩 시각적으로 발전시키고 검수한 뒤 Mobile World Map을 전용 HUD로 재설계할 예정입니다.
+다음 단계는 LUNA LIGHT GARDEN이며, SPARK ENERGY TOWER와 WONDER PARADE HALL, COSMIC VOYAGE로 제작을 이어갑니다. 각 시설의 모바일 기본 조작과 접근성은 함께 검증하고, 모바일 전용 이미지와 세부 UI 디자인은 전체 시설과 흐름이 연결된 뒤 통합해 진행할 예정입니다.
 
 ---
 

@@ -115,8 +115,7 @@ export function createControlRoomController({ getExplorer, onShowScreen, showToa
     if (missionStart) {
       missionStart.hidden = !isCoaster || isCompleted;
       const label = missionStart.querySelector('strong');
-      const resumable = progress.missions[nextFacility.id]?.checkpoint && ['playing', 'paused', 'testing'].includes(progress.missions[nextFacility.id]?.phase);
-      label.dataset.i18n = resumable ? 'mission.resume' : 'mission.start';
+      label.dataset.i18n = 'mission.start';
       label.textContent = t(label.dataset.i18n);
     }
     if (operationStatus) {

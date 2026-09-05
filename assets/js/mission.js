@@ -12,6 +12,13 @@ export function createMissionController({ createGame, duration = 90, getExplorer
   const guideButton = dialog?.querySelector('[data-mission-guide]');
   const guideCloseButton = dialog?.querySelector('[data-mission-guide-close]');
   const guideReturnButton = dialog?.querySelector('[data-mission-guide-return]');
+  const guideDemo = dialog?.querySelector('[data-guide-demo]');
+  const demoSlot = guideDemo?.querySelector('[data-guide-slot]');
+  const demoPlace = guideDemo?.querySelector('[data-guide-place]');
+  const demoRotate = guideDemo?.querySelector('[data-guide-rotate]');
+  const demoReset = guideDemo?.querySelector('[data-guide-reset]');
+  let demoStep = 0;
+  let demoRotation = 0;
   const pauseButton = dialog?.querySelector('[data-mission-pause]');
   const countdownPanel = dialog?.querySelector('[data-mission-phase="countdown"]');
   const countdownElement = dialog?.querySelector('[data-mission-countdown]');
@@ -34,6 +41,9 @@ export function createMissionController({ createGame, duration = 90, getExplorer
   let awardPending = false;
   let completionTimer = null;
   const modal = createModalController(dialog, { onClose: () => {
+    if (game && ['playing', 'testing'].includes(phase)) {
+      save({ phase: 'paused', checkpoint: getCheckpoint(phase) });
+    }
     stopTimer();
     stopCountdown();
     stopStageTransition();
@@ -101,6 +111,9 @@ export function createMissionController({ createGame, duration = 90, getExplorer
     dialog.classList.toggle('is-result', isResult);
     dialog.querySelector('.mission-flow__header').inert = isResult;
     dialog.dataset.phase = phase;
+    const title = dialog.querySelector('#mission-title');
+    title.dataset.i18n = phase === 'guide' ? 'mission.status.guide' : 'mission.title';
+    title.textContent = t(title.dataset.i18n);
     if (status) {
       status.textContent = t(`mission.status.${phase}`);
     }
@@ -211,11 +224,17 @@ export function createMissionController({ createGame, duration = 90, getExplorer
       guideCloseButton.hidden = false;
     }
     setPhase('guide', { saveState: false });
+    renderDemo(0);
     guideReturnButton?.focus();
   }
 
   function returnFromGuide() {
-    if (phase !== 'guide' || guideReturnButton?.hidden) {
+    if (phase !== 'guide') {
+      return;
+    }
+    if (guideReturnButton?.hidden) {
+      modal.close('control-room');
+      onControlRoom?.();
       return;
     }
     if (startButton) {
@@ -244,7 +263,7 @@ export function createMissionController({ createGame, duration = 90, getExplorer
     if (!isPreviewMode) {
       onComplete?.(facility);
       awardPending = true;
-      completionTimer = window.setTimeout(openRecord, 1800);
+      completionTimer = window.setTimeout(openRecord, 5000);
     }
     dialog?.querySelector('[data-mission-record]')?.focus();
   }
@@ -328,6 +347,7 @@ export function createMissionController({ createGame, duration = 90, getExplorer
   }
 
   function open(nextFacility, opener, { previewPhase = '' } = {}) {
+    renderDemo(0);
     window.clearTimeout(completionTimer);
     awardPending = previewPhase === 'completed';
     stopTimer();
@@ -343,7 +363,7 @@ export function createMissionController({ createGame, duration = 90, getExplorer
       guideReturnButton.hidden = true;
     }
     if (guideCloseButton) {
-      guideCloseButton.hidden = true;
+      guideCloseButton.hidden = false;
     }
     dialog.dataset.facility = facility.id;
     progress = readProgress(getExplorer?.());
@@ -369,7 +389,7 @@ export function createMissionController({ createGame, duration = 90, getExplorer
       game.reset();
       renderTimer();
       setPhase('guide', { saveState: false });
-      modal.open({ focusTarget: startButton, opener });
+      modal.open({ focusTarget: guideCloseButton, opener });
       if (previewPhase === 'countdown') {
         window.setTimeout(beginCountdown, 0);
       }
@@ -384,14 +404,54 @@ export function createMissionController({ createGame, duration = 90, getExplorer
       ? dialog.querySelector('[data-mission-restart]')
       : restoreState.phase === 'paused'
         ? dialog.querySelector('[data-mission-resume]')
-        : startButton;
+        : guideCloseButton;
     modal.open({ focusTarget, opener });
     if (restoreState.phase === 'countdown') {
       window.setTimeout(() => beginCountdown({ countAttempt: false }), 0);
     }
   }
 
+  function renderDemo(step = demoStep) {
+    if (!guideDemo) {
+      return;
+    }
+    demoStep = step;
+    if (step < 2) {
+      demoRotation = 0;
+    }
+    demoSlot.style.setProperty('--demo-rotation', `${demoRotation * 90}deg`);
+    guideDemo.classList.toggle('is-placed', step >= 2);
+    guideDemo.classList.toggle('is-connected', step === 3);
+    demoSlot.setAttribute('aria-pressed', String(step >= 1));
+    demoPlace.disabled = step === 0;
+    demoPlace.dataset.i18n = step >= 2 ? 'mission.demoRemove' : 'mission.demoPlace';
+    demoPlace.textContent = t(demoPlace.dataset.i18n);
+    demoRotate.disabled = step < 2;
+    demoReset.hidden = step === 0;
+    const feedback = guideDemo.querySelector('[data-guide-feedback]');
+    const message = feedback.querySelector('span');
+    feedback.dataset.sizingText = t('mission.demoConnected');
+    message.dataset.i18n = `mission.${['demoHint', 'demoSelected', 'demoPlaced', 'demoConnected'][step]}`;
+    message.textContent = t(message.dataset.i18n);
+  }
+
   startButton?.addEventListener('click', beginCountdown);
+  demoSlot?.addEventListener('click', () => {
+    if (demoStep === 0) {
+      renderDemo(1);
+    }
+  });
+  demoPlace?.addEventListener('click', () => {
+    renderDemo(demoStep >= 2 ? 1 : 2);
+  });
+  demoRotate?.addEventListener('click', () => {
+    demoRotation += 1;
+    renderDemo(demoRotation % 2 ? 3 : 2);
+  });
+  demoReset?.addEventListener('click', () => {
+    renderDemo(0);
+    demoSlot.focus();
+  });
   guideButton?.addEventListener('click', showGuide);
   guideCloseButton?.addEventListener('click', returnFromGuide);
   guideReturnButton?.addEventListener('click', returnFromGuide);
@@ -428,9 +488,18 @@ export function createMissionController({ createGame, duration = 90, getExplorer
   dialog?.querySelector('[data-mission-record]')?.addEventListener('click', openRecord);
 
   function refreshLanguage() {
+    renderDemo();
     setPhase(phase, { saveState: false });
     game?.refreshLanguage();
   }
 
-  return { isOpen: modal.isOpen, open, refreshLanguage };
+  function close() {
+    stopTimer();
+    stopCountdown();
+    stopStageTransition();
+    stopTesting();
+    modal.close('navigation');
+  }
+
+  return { close, isOpen: modal.isOpen, open, refreshLanguage };
 }
