@@ -132,7 +132,7 @@ export function isMissionPreview() {
   const hostname = window.location.hostname;
   const previewPhase = new URLSearchParams(window.location.search).get('mission-preview');
   return (hostname === 'localhost' || hostname.startsWith('127.'))
-    && ['guide', 'countdown'].includes(previewPhase);
+    && ['guide', 'countdown', 'completed'].includes(previewPhase);
 }
 
 function createRestoredPreview(progress) {
@@ -168,6 +168,9 @@ export function saveProgress(progress) {
 }
 
 export function readProgress(explorer = null) {
+  if (isMissionPreview() && new URLSearchParams(window.location.search).get('mission-preview') === 'completed') {
+    return recordFacilityCompletion(createProgress(explorer), facilities.find((facility) => facility.id === 'coaster'));
+  }
   let progress = null;
   let shouldSave = false;
   try {

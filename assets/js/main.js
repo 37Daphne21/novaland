@@ -31,6 +31,7 @@ const dialog = createDialogController();
 let navigation = null;
 const overlay = createOverlayController({ onRequestClose: () => navigation?.back() });
 const archive = createArchiveController({
+  showToast: toast.show,
   onTabChange: (archiveTab) => navigation?.replace({ ...navigation.current(), archiveTab }, { applyRoute: false })
 });
 const profileEditor = createProfileEditor({ onSave: updateExplorer });

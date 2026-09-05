@@ -756,7 +756,7 @@
 .ui-toast {
   position: fixed;
   left: 50%;
-  bottom: var(--space-8);
+  bottom: 1rem;
   z-index: var(--z-toast);
   max-width: min(28rem, calc(100% - 2rem));
   padding: .75rem 1rem;

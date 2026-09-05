@@ -312,7 +312,7 @@ export function createMissionController({ createGame, duration = 90, getExplorer
     stopStageTransition();
     stopTesting();
     facility = nextFacility;
-    isPreviewMode = ['guide', 'countdown'].includes(previewPhase);
+    isPreviewMode = ['guide', 'countdown', 'completed'].includes(previewPhase);
     if (startButton) {
       startButton.hidden = false;
     }
@@ -325,7 +325,7 @@ export function createMissionController({ createGame, duration = 90, getExplorer
     dialog.dataset.facility = facility.id;
     progress = readProgress(getExplorer?.());
     const savedMission = progress.missions[facility.id];
-    if (!isPreviewMode && progress.facilities[facility.id]?.status === 'completed') {
+    if (previewPhase === 'completed' || !isPreviewMode && progress.facilities[facility.id]?.status === 'completed') {
       setPhase('completed', { saveState: false });
       modal.open({ focusTarget: dialog.querySelector('[data-mission-record]'), opener });
       return;
