@@ -1,7 +1,15 @@
 const FOCUSABLE_SELECTOR = 'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 function isVisibleFocusable(element) {
-  return !element.closest('[hidden]') && element.getClientRects().length > 0 && window.getComputedStyle(element).visibility !== 'hidden';
+  return !element.closest('[hidden], [inert], [aria-disabled="true"]') && element.getClientRects().length > 0 && window.getComputedStyle(element).visibility !== 'hidden';
+}
+
+export function consumeNonInteractiveClick(event) {
+  const control = event.target?.closest('button, a[href], input, select, textarea, label, summary, [role="button"], [role="link"], [role="tab"], [role="switch"], [role="checkbox"], [role="radio"], [contenteditable]:not([contenteditable="false"])');
+  if (!control) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
 }
 
 export function getIcon(icon) {
@@ -33,7 +41,7 @@ export function createToast(selector = '#app-toast') {
   return { show };
 }
 
-export function createModalController(dialog, { onClose } = {}) {
+export function createModalController(dialog, { onClose, onCancel } = {}) {
   let returnTarget = null;
 
   function close(returnValue = '') {
@@ -57,7 +65,21 @@ export function createModalController(dialog, { onClose } = {}) {
 
   function handleCancel(event) {
     event.preventDefault();
-    close('cancel');
+    if (onCancel) {
+      onCancel();
+    } else {
+      close('cancel');
+    }
+  }
+
+  function handleModalKeydown(event) {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      event.stopPropagation();
+      if (!event.repeat) {
+        handleCancel(event);
+      }
+    }
   }
 
   function handleBackdropClick(event) {
@@ -68,17 +90,20 @@ export function createModalController(dialog, { onClose } = {}) {
     const rect = dialog.getBoundingClientRect();
     const isInside = event.clientX >= rect.left && event.clientX <= rect.right && event.clientY >= rect.top && event.clientY <= rect.bottom;
     if (!isInside) {
-      close('cancel');
+      handleCancel(event);
     }
   }
 
   function handleClose() {
-    document.body.classList.remove('is-dialog-open');
+    document.body.classList.toggle('is-dialog-open', Boolean(document.querySelector('dialog[open]')));
     onClose?.(dialog.returnValue);
-    returnTarget?.focus({ preventScroll: true });
+    if (returnTarget?.isConnected && isVisibleFocusable(returnTarget)) {
+      returnTarget.focus({ preventScroll: true });
+    }
     returnTarget = null;
   }
 
+  dialog?.addEventListener('keydown', handleModalKeydown);
   dialog?.addEventListener('cancel', handleCancel);
   dialog?.addEventListener('click', handleBackdropClick);
   dialog?.addEventListener('close', handleClose);
@@ -238,6 +263,7 @@ export function createChoiceGroupController(root, { onChange } = {}) {
 export function createOverlayController({ onRequestClose } = {}) {
   let activeOverlay = null;
   let previouslyFocused = null;
+  let backgroundElements = [];
 
   function open(overlay) {
     if (!overlay) {
@@ -245,6 +271,8 @@ export function createOverlayController({ onRequestClose } = {}) {
     }
 
     previouslyFocused = document.activeElement;
+    backgroundElements = [...document.querySelectorAll('main, [data-app-back]')].map((element) => ({ element, inert: element.inert }));
+    backgroundElements.forEach(({ element }) => { element.inert = true; });
     activeOverlay = overlay;
     overlay.hidden = false;
     document.body.classList.add('is-overlay-open');
@@ -259,7 +287,12 @@ export function createOverlayController({ onRequestClose } = {}) {
     activeOverlay.hidden = true;
     activeOverlay = null;
     document.body.classList.remove('is-overlay-open');
-    previouslyFocused?.focus();
+    backgroundElements.forEach(({ element, inert }) => { element.inert = inert; });
+    backgroundElements = [];
+    if (previouslyFocused?.isConnected && isVisibleFocusable(previouslyFocused)) {
+      previouslyFocused.focus({ preventScroll: true });
+    }
+    previouslyFocused = null;
   }
 
   function requestClose() {
@@ -302,13 +335,13 @@ export function createOverlayController({ onRequestClose } = {}) {
     const firstElement = focusableElements[0];
     const lastElement = focusableElements.at(-1);
 
-    if (event.shiftKey && document.activeElement === firstElement) {
+    if (event.shiftKey && (document.activeElement === firstElement || !focusableElements.includes(document.activeElement))) {
       event.preventDefault();
       lastElement.focus();
       return true;
     }
 
-    if (!event.shiftKey && document.activeElement === lastElement) {
+    if (!event.shiftKey && (document.activeElement === lastElement || !focusableElements.includes(document.activeElement))) {
       event.preventDefault();
       firstElement.focus();
       return true;

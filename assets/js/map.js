@@ -247,19 +247,18 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, speak
       return;
     }
 
-    const currentStep = Math.max(1, state.facilities.filter((facility) => facility.state !== 'locked').length);
-    const progress = currentStep / state.facilities.length * 100;
+    const completedCount = state.facilities.filter((facility) => facility.state === 'completed').length;
+    const totalCount = state.facilities.length;
+    const progress = completedCount / totalCount * 100;
     const restored = isRestored();
     const progressLabel = restored ? uiCopy.progressComplete : uiCopy.progressActive;
-    const currentFacility = state.facilities[currentStep - 1];
-    const progressText = restored
-      ? `${currentStep} / ${state.facilities.length}, ${progressLabel}`
-      : `${currentStep} / ${state.facilities.length}, ${currentFacility.name} ${progressLabel}`;
+    const progressText = `${completedCount} / ${totalCount}, ${progressLabel}`;
 
-    missionProgress.setAttribute('aria-valuenow', String(currentStep));
+    missionProgress.setAttribute('aria-valuenow', String(completedCount));
+    missionProgress.setAttribute('aria-valuemax', String(totalCount));
     missionProgress.setAttribute('aria-valuetext', progressText);
     missionProgress.classList.toggle('is-completed', restored);
-    missionProgressValue.textContent = `${currentStep} / ${state.facilities.length}`;
+    missionProgressValue.textContent = `${completedCount} / ${totalCount}`;
     missionProgressLabel.textContent = progressLabel;
     missionProgressBar.style.width = `${progress}%`;
   }

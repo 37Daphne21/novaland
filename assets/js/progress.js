@@ -139,7 +139,7 @@ export function isMissionPreview() {
   const hostname = window.location.hostname;
   const previewPhase = new URLSearchParams(window.location.search).get('mission-preview');
   return (hostname === 'localhost' || hostname.startsWith('127.'))
-    && ['guide', 'countdown', 'completed'].includes(previewPhase);
+    && ['guide', 'countdown', 'testing', 'completed'].includes(previewPhase);
 }
 
 function createRestoredPreview(progress) {

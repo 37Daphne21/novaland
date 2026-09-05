@@ -11,9 +11,13 @@ export function createSettingsController({ showToast }) {
       return;
     }
 
+    const focusedLanguage = languageOptions.contains(document.activeElement) ? document.activeElement.dataset.language : '';
     languageOptions.innerHTML = languages.map((language) => `
       <button class="${language.code === getLanguage() ? 'is-selected' : ''}" type="button" data-language="${language.code}" aria-pressed="${language.code === getLanguage()}">${language.label}</button>
     `).join('');
+    if (focusedLanguage) {
+      languageOptions.querySelector(`[data-language="${focusedLanguage}"]`)?.focus({ preventScroll: true });
+    }
   }
 
   function selectLanguage(button) {
@@ -22,7 +26,6 @@ export function createSettingsController({ showToast }) {
     }
 
     if (setLanguage(button.dataset.language)) {
-      renderLanguages();
       showToast(t(`common.languageFeedback.${button.dataset.language}`));
     }
   }

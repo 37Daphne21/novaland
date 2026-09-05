@@ -1,4 +1,5 @@
 import { t } from './locales.js';
+import { consumeNonInteractiveClick } from './ui.js';
 
 export function createEveController(panel = document.querySelector('.screen--map .eve-panel'), options = {}) {
   const messageElement = panel?.querySelector('[data-eve-message]');
@@ -70,12 +71,11 @@ export function createEveController(panel = document.querySelector('.screen--map
   }
 
   function handleGlobalReveal(event) {
-    if (!typingTimer || !activeMessage) {
+    if (!typingTimer || !activeMessage || panel?.closest('[hidden], [inert]') || document.querySelector('dialog[open]')) {
       return;
     }
 
-    event.preventDefault();
-    event.stopPropagation();
+    consumeNonInteractiveClick(event);
     reveal();
   }
 

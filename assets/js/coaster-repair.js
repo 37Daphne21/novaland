@@ -1,4 +1,5 @@
 import { t } from './locales.js';
+import { consumeNonInteractiveClick } from './ui.js';
 
 const RAIL_ASSETS = {
   corner: './assets/images/coaster/rail-corner-hd.svg',
@@ -170,13 +171,15 @@ function normalizeState(checkpoint) {
   }
   const validCandidateIds = new Set(STAGES[stage].candidates.map((candidate) => candidate.id));
   const placements = STAGES[stage].targets.map((_, index) => {
-    const placement = checkpoint.placements?.[index];
+    const placement = stage === checkpoint.stage ? checkpoint.placements?.[index] : null;
     if (!placement || !validCandidateIds.has(placement.candidateId)) {
       return null;
     }
     return { candidateId: placement.candidateId, rotation: normalizeRotation(placement.rotation) };
   });
-  const activeSlot = Math.min(Math.max(Number(checkpoint.activeSlot) || 0, 0), STAGES[stage].targets.length - 1);
+  const activeSlot = stage === checkpoint.stage
+    ? Math.min(Math.max(Number(checkpoint.activeSlot) || 0, 0), STAGES[stage].targets.length - 1)
+    : 0;
   return {
     stage,
     completed,
@@ -713,6 +716,13 @@ export function createCoasterRepair(root, { onChange, onStageComplete } = {}) {
     }
   });
   confirmButton?.addEventListener('click', confirm);
+  document.addEventListener('click', (event) => {
+    if ((!eveMessageTimer && !statusTimer) || board?.closest('[hidden], [inert], dialog:not([open])')) {
+      return;
+    }
+    consumeNonInteractiveClick(event);
+    refreshDialogueLanguage();
+  }, true);
   reset();
 
   return {

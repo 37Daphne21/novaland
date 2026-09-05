@@ -64,6 +64,9 @@ function updateExplorer(explorer) {
 }
 
 function showScreen(screenName) {
+  if (screenName !== 'map') {
+    eve.cancel();
+  }
   if (screenName !== 'control-room') {
     controlRoom?.cancel();
   }
@@ -197,7 +200,11 @@ function applyNavigationRoute(route, { previousRoute, source } = {}) {
   } else if (route.screen === 'control-room') {
     const facility = getFacility(route.facilityId);
     if (facility) {
-      controlRoom.show(facility);
+      if (previousRoute?.screen !== 'control-room' || previousRoute.facilityId !== facility.id) {
+        controlRoom.show(facility);
+      } else {
+        controlRoom.refreshState();
+      }
     }
   } else {
     if (previousRoute?.screen !== 'map') {

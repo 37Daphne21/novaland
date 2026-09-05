@@ -1496,6 +1496,10 @@
 }
 
 .screen--control-room {
+  --ui-info-icon-border: color-mix(in srgb, var(--facility-accent) 54%, transparent);
+  --ui-info-icon-color: color-mix(in srgb, var(--facility-accent) 55%, white);
+  --ui-info-icon-fill: color-mix(in srgb, var(--facility-accent) 18%, transparent);
+  --ui-info-icon-glow: color-mix(in srgb, var(--facility-accent) 12%, transparent);
   --facility-accent: var(--color-primary);
   position: relative;
   display: grid;
@@ -1687,8 +1691,6 @@
 }
 
 .control-room__status {
-  --ui-info-primary-size: 1.125rem;
-  --ui-info-secondary-size: .8125rem;
   --ui-panel-padding: clamp(1.125rem, 1.4vw, 1.5rem);
   grid-column: 3;
   justify-self: end;
@@ -2415,16 +2417,12 @@ html[lang="en"] .mission-dialog:is([data-phase="guide"], [data-phase="playing"],
   padding-right: 1rem;
 }
 
-.mission-guide__content h3, .mission-result h3 {
+.mission-guide__content h3 {
   margin-top: var(--space-3);
-  font-size: clamp(1.5rem, 3vw, 2.5rem);
-}
-
-.mission-guide__content h3, .mission-result--paused h3 {
   font-size: clamp(1.45rem, 2.5vw, 2.15rem);
 }
 
-.mission-guide__content p, .mission-result p {
+.mission-guide__content p {
   margin-top: var(--space-4);
   color: var(--color-text-muted);
   line-height: 1.8;
@@ -2473,11 +2471,8 @@ html[lang="en"] .mission-dialog:is([data-phase="guide"], [data-phase="playing"],
 }
 
 .mission-guide__content > .ui-button {
-  width: min(16rem, 100%);
-}
-
-.mission-guide__content > [data-mission-guide-return] {
   display: flex;
+  width: min(16rem, 100%);
   margin-inline: auto;
 }
 
@@ -3399,28 +3394,31 @@ html[lang="en"] .rail-repair__branch-terminal small {
   color: var(--color-text-muted);
 }
 
-.mission-testing {
+.mission-testing,
+.mission-result {
   display: grid;
-  place-content: center;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
   justify-items: center;
-  padding: var(--space-7);
   text-align: center;
 }
 
-.mission-testing h3 {
+.mission-testing h3,
+.mission-result h3 {
   margin-top: var(--space-3);
-  font-size: clamp(1.5rem, 3vw, 2.4rem);
+  font-size: clamp(1.25rem, 2.5vw, 1.75rem);
 }
 
 .mission-testing ol {
-  display: flex;
-  gap: var(--space-4);
-  margin-top: var(--space-7);
+  display: grid;
+  width: 100%;
+  gap: .75rem;
+  margin-top: var(--space-5);
 }
 
 .mission-testing li {
   display: grid;
-  grid-template-columns: 1.75rem auto;
+  grid-template-columns: 1.75rem minmax(0, 1fr);
   align-items: center;
   gap: var(--space-2);
   padding: var(--space-3) var(--space-4);
@@ -3451,7 +3449,8 @@ html[lang="en"] .rail-repair__branch-terminal small {
 
 .mission-testing__train {
   position: relative;
-  width: min(34rem, 80vw);
+  width: 100%;
+  max-width: 34rem;
   height: 4rem;
   margin-top: var(--space-7);
   border-bottom: .18rem double rgba(159, 140, 255, .45);
@@ -3530,11 +3529,13 @@ html[lang="en"] .rail-repair__branch-terminal small {
 
 @keyframes mission-train-test {
   0% {
+    left: 0;
     transform: translateX(0);
   }
 
   70%, 100% {
-    transform: translateX(calc(min(34rem, 80vw) - 5rem));
+    left: 100%;
+    transform: translateX(-100%);
   }
 }
 
@@ -3555,18 +3556,19 @@ html[lang="en"] .rail-repair__branch-terminal small {
 }
 
 .mission-result {
-  position: relative;
-  display: grid;
-  place-content: center;
-  justify-items: center;
-  padding: var(--space-8);
-  overflow: hidden;
-  text-align: center;
   isolation: isolate;
+}
+
+.mission-result p {
+  margin-top: var(--space-4);
+  color: var(--color-text-muted);
+  line-height: 1.8;
 }
 
 
 .mission-dialog.is-result .mission-flow {
+  --ui-overlay-dialog-width: min(36rem, calc(100% - 2rem));
+  --ui-overlay-dialog-padding: clamp(1.25rem, 3vw, 2.5rem);
   position: relative;
   overflow: hidden;
 }
@@ -3577,27 +3579,16 @@ html[lang="en"] .rail-repair__branch-terminal small {
   pointer-events: none;
 }
 
-.mission-dialog.is-result .mission-result,
-.mission-dialog.is-result .mission-testing {
+.mission-dialog.is-result .mission-flow > .ui-overlay__dialog {
   position: absolute;
   z-index: 2;
   inset: 1rem;
-  width: min(36rem, calc(100% - 2rem));
   height: max-content;
   max-height: calc(100% - 2rem);
   margin: auto;
-  padding: clamp(1.25rem, 3vw, 2.5rem);
-  place-content: start center;
-  overflow: auto;
-  border-color: var(--color-line-strong);
 }
 
-.mission-dialog.is-result .mission-result h3,
-.mission-dialog.is-result .mission-testing h3 {
-  font-size: clamp(1.25rem, 2.5vw, 1.75rem);
-}
-
-.mission-dialog.is-result .mission-result .ui-button {
+.mission-result .ui-button {
   min-width: 0;
   font-size: .875rem;
 }
@@ -3617,23 +3608,12 @@ html[lang="en"] .rail-repair__branch-terminal small {
   height: 100%;
 }
 
-.mission-dialog.is-result .mission-testing ol {
-  flex-direction: column;
-  width: 100%;
-  gap: .75rem;
-  margin-top: var(--space-5);
-}
-
 .mission-result__actions {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: var(--space-3);
   margin-top: var(--space-6);
-}
-
-.mission-result__actions .ui-button {
-  min-width: 0;
 }
 
 .mission-result__seal {
@@ -3851,6 +3831,76 @@ html[lang="en"] .rail-repair__branch-terminal small {
   }
 }
 
+
+
+@media (prefers-reduced-motion: reduce) {
+  .mission-guide__slot[aria-pressed="false"]::before {
+    animation: none;
+  }
+
+  .passport.is-awarding .passport__facility-record > img,
+  .passport.is-awarding .passport__facility-record > dl {
+    animation: none;
+  }
+
+  .passport__page-corner::before,
+  .passport__page-corner::after,
+  .passport__page-corner > span {
+    transition: none;
+  }
+
+  .passport__page-corner::before,
+  .passport__page-corner::after {
+    animation: none;
+  }
+
+  .control-room__start:not(.control-room__operation)::after, .mission-countdown::before, .mission-countdown__display::before, .mission-countdown__display::after, .mission-countdown strong, .mission-testing__train i, .mission-flow.is-repair-error .rail-repair__workspace {
+    animation: none;
+  }
+}
+
+@media (min-width: 75rem) and (min-height: 62.5rem) {
+  .map-facility-card[data-facility="coaster"] {
+    top: 17%;
+  }
+
+  .map-facility-card[data-facility="spark"] {
+    top: 50%;
+  }
+}
+
+@media (max-width: 90rem) {
+  .facility-card {
+    grid-template-columns: 1.25rem 3.5rem minmax(0, 1fr);
+    gap: var(--space-2);
+    padding-inline: var(--space-2);
+  }
+
+  .facility-card__name {
+    font-size: .75rem;
+    letter-spacing: 0;
+  }
+}
+
+@media (max-width: 68rem) {
+  .top-navigation__status {
+    display: none;
+  }
+
+  .explorer-profile {
+    min-width: 0;
+  }
+
+  .facility-card__name {
+    font-size: .75rem;
+    letter-spacing: 0;
+  }
+
+  .map-layout {
+    grid-template-columns: minmax(18rem, 19rem) 1fr minmax(18rem, 19rem);
+  }
+}
+
 @media (max-width: 56rem) {
   .control-room__header {
     grid-template-columns: 1fr auto;
@@ -3941,10 +3991,6 @@ html[lang="en"] .rail-repair__branch-terminal small {
     padding-right: 0;
   }
 
-  .mission-result--paused {
-    padding: var(--space-4);
-  }
-
   .mission-result--paused .mission-result__seal {
     width: 3.5rem;
     margin-bottom: .55rem;
@@ -3953,7 +3999,6 @@ html[lang="en"] .rail-repair__branch-terminal small {
 
   .mission-result--paused h3 {
     margin-top: .55rem;
-    font-size: 1.5rem;
   }
 
   .mission-result--paused > p {
@@ -4039,81 +4084,6 @@ html[lang="en"] .rail-repair__branch-terminal small {
     margin-top: var(--space-3);
   }
 
-  .mission-testing ol {
-    flex-direction: column;
-    width: min(22rem, 100%);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .mission-guide__slot[aria-pressed="false"]::before {
-    animation: none;
-  }
-
-  .passport.is-awarding .passport__facility-record > img,
-  .passport.is-awarding .passport__facility-record > dl {
-    animation: none;
-  }
-
-  .passport__page-corner::before,
-  .passport__page-corner::after,
-  .passport__page-corner > span {
-    transition: none;
-  }
-
-  .passport__page-corner::before,
-  .passport__page-corner::after {
-    animation: none;
-  }
-
-  .control-room__start:not(.control-room__operation)::after, .mission-countdown::before, .mission-countdown__display::before, .mission-countdown__display::after, .mission-countdown strong, .mission-testing__train i, .mission-flow.is-repair-error .rail-repair__workspace {
-    animation: none;
-  }
-}
-
-@media (min-width: 75rem) and (min-height: 62.5rem) {
-  .map-facility-card[data-facility="coaster"] {
-    top: 17%;
-  }
-
-  .map-facility-card[data-facility="spark"] {
-    top: 50%;
-  }
-}
-
-@media (max-width: 90rem) {
-  .facility-card {
-    grid-template-columns: 1.25rem 3.5rem minmax(0, 1fr);
-    gap: var(--space-2);
-    padding-inline: var(--space-2);
-  }
-
-  .facility-card__name {
-    font-size: .75rem;
-    letter-spacing: 0;
-  }
-}
-
-@media (max-width: 68rem) {
-  .top-navigation__status {
-    display: none;
-  }
-
-  .explorer-profile {
-    min-width: 0;
-  }
-
-  .facility-card__name {
-    font-size: .75rem;
-    letter-spacing: 0;
-  }
-
-  .map-layout {
-    grid-template-columns: minmax(18rem, 19rem) 1fr minmax(18rem, 19rem);
-  }
-}
-
-@media (max-width: 56rem) {
   .screen--map {
     grid-template-rows: auto minmax(0, 1fr);
     gap: var(--space-2);

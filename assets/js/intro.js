@@ -2,7 +2,7 @@ import { explorerProfiles } from './data.js';
 import { clearExplorer, createExplorerNameField, readExplorer, saveExplorer, validateExplorerName } from './explorer.js';
 import { t } from './locales.js';
 import { renderPassportData } from './passport.js';
-import { createChoiceGroupController } from './ui.js';
+import { consumeNonInteractiveClick, createChoiceGroupController } from './ui.js';
 
 const INTRO_STATE_KEY = 'novaLandIntroState';
 
@@ -244,8 +244,7 @@ export function createIntroController({ onComplete, onRouteChange }) {
       return;
     }
 
-    event.preventDefault();
-    event.stopPropagation();
+    consumeNonInteractiveClick(event);
     if (registerTypingState) {
       finishRegisterDialogue();
       return;
@@ -786,7 +785,11 @@ export function createIntroController({ onComplete, onRouteChange }) {
 
   function refreshLanguage() {
     const registerDialogueText = t('intro.register.dialogue');
-    if (registerDialogueMessage && !registerTypingState) {
+    if (registerTypingState) {
+      registerTypingState.message = registerDialogueText;
+      finishRegisterDialogue();
+    }
+    if (registerDialogueMessage) {
       registerDialogueMessage.textContent = registerDialogueText;
       registerDialogueMessage.setAttribute('aria-label', registerDialogueText.replace(/\n/g, ' '));
     }
@@ -818,6 +821,7 @@ export function createIntroController({ onComplete, onRouteChange }) {
       return;
     }
 
+    const onPassportMessageComplete = passportTypingState?.onComplete;
     window.clearInterval(passportTypingTimer);
     passportTypingTimer = null;
     passportTypingState = null;
@@ -843,6 +847,7 @@ export function createIntroController({ onComplete, onRouteChange }) {
     passportMessage.textContent = message;
     passportMessage.setAttribute('aria-label', message.replace(/\n/g, ' '));
     announce(announcement);
+    onPassportMessageComplete?.();
   }
 
   function start() {
