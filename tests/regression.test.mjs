@@ -85,14 +85,14 @@ test('advancing a completed saved stage does not reuse its placements in the nex
   const result = api.normalizeState({ stage: 0, activeSlot: 1, completed: [true, false, false], placements: [{ candidateId: 'a', rotation: 0 }, { candidateId: 'b', rotation: 1 }] });
   assert.equal(result.stage, 1); assert.equal(result.activeSlot, 0); assert.ok(result.placements.every(value => value === null));
 });
-function missionFixture({ saved = { phase: 'idle', checkpoint: null, attempts: 0 } } = {}) {
+function missionFixture({ saved = { phase: 'idle', checkpoint: null, attempts: 0 }, testSteps = ['connection'] } = {}) {
   const timers = clock(), elements = new Map(), dialog = node();
   const element = selector => {
     if (selector === '[data-guide-demo]') return null;
-    if (!elements.has(selector)) { const e = node(); e.closest = () => node(); elements.set(selector, e); }
+    if (!elements.has(selector)) { const e = node(); e.closest = () => node(); e.querySelector = child => element(`${selector} ${child}`); elements.set(selector, e); }
     return elements.get(selector);
   };
-  const panels = ['guide', 'countdown', 'playing', 'paused', 'failed', 'testing', 'completed'].map(phase => { const e = node(); e.dataset.missionPhase = phase; return e; });
+  const panels = ['guide', 'countdown', 'playing', 'paused', 'failed', 'testing', 'completed'].map(phase => { const e = node(); e.dataset.missionPhase = phase; e.querySelector = () => ['paused', 'failed', 'testing', 'completed'].includes(phase) ? { id: `mission-${phase === 'completed' ? 'complete' : phase}-title` } : null; return e; });
   dialog.querySelector = element;
   dialog.querySelectorAll = selector => selector === '[data-mission-phase]' ? panels : selector === '[data-mission-restart]' ? [element('[data-mission-restart]')] : [];
   const progress = { facilities: { coaster: { status: 'available' } }, missions: { coaster: saved } };
@@ -108,7 +108,7 @@ function missionFixture({ saved = { phase: 'idle', checkpoint: null, attempts: 0
     updateMissionProgress(value, id, updates) { Object.assign(value.missions[id], updates); return value; },
     createModalController(_dialog, options) { modalCallbacks = options; return { isOpen: () => opened, open({ focusTarget }) { opened = true; focusTarget?.focus(); }, close() { opened = false; options.onClose(); } }; }
   });
-  const controller = api.createMissionController({ createGame(_root, next) { callbacks = next; return game; }, getExplorer: () => ({ id: 'qa' }), duration: 90, testSteps: ['connection'] });
+  const controller = api.createMissionController({ createGame(_root, next) { callbacks = next; return game; }, getExplorer: () => ({ id: 'qa' }), duration: 90, testSteps });
   controller.open(facilities[0]);
   return { controller, element, dialog, timers, progress, get advances() { return advances; }, cancel: () => modalCallbacks.onCancel(), start() { element('[data-mission-start]').dispatch('click'); timers.tick(3100); }, completeStage() { checkpoint.completed[checkpoint.stage] = true; callbacks.onStageComplete({ stage: checkpoint.stage, complete: checkpoint.stage === 2 }); } };
 }
@@ -247,4 +247,19 @@ test('normal final checks still run and reach completion after the last rail sta
   assert.equal(fixture.dialog.dataset.phase, 'testing');
   fixture.timers.tick(1350);
   assert.equal(fixture.dialog.dataset.phase, 'completed');
+});
+
+
+test('result dialog uses the visible title and testing exposes pending, active and complete states', () => {
+  const fixture = missionFixture({ testSteps: ['connection', 'trial', 'safety'] }); fixture.start();
+  fixture.cancel();
+  assert.equal(fixture.dialog.getAttribute('aria-labelledby'), 'mission-paused-title');
+  fixture.controller.open(facilities[0], null, { previewPhase: 'testing' });
+  assert.equal(fixture.dialog.getAttribute('aria-labelledby'), 'mission-testing-title');
+  assert.equal(fixture.element('[data-test-step="trial"]').getAttribute('aria-current'), 'step');
+  assert.equal(fixture.element('[data-test-step="connection"] [data-test-state]').textContent, 'mission.testingState.done');
+  assert.equal(fixture.element('[data-test-step="trial"] [data-test-state]').textContent, 'mission.testingState.active');
+  assert.equal(fixture.element('[data-test-step="safety"] [data-test-state]').textContent, 'mission.testingState.pending');
+  assert.equal(fixture.element('[data-test-step="connection"] [aria-hidden]').textContent, '✓');
+  assert.equal(fixture.element('[data-test-step="safety"] [aria-hidden]').textContent, '');
 });

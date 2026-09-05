@@ -1087,7 +1087,7 @@
 }
 
 .archive-log__list {
-  display: grid;
+  --ui-info-padding: var(--space-4);
   align-content: start;
 }
 
@@ -1100,16 +1100,10 @@
 }
 
 .archive-log__item {
-  display: grid;
+  position: relative;
   grid-template-columns: 1.25rem 3.25rem minmax(0, 1fr);
   align-items: center;
   gap: var(--space-3);
-  padding: var(--space-4) 0;
-  border-top: .0625rem solid rgba(116, 188, 224, .13);
-}
-
-.archive-log__item:last-child {
-  border-bottom: .0625rem solid rgba(116, 188, 224, .13);
 }
 
 .archive-log__marker {
@@ -1122,16 +1116,17 @@
   border-radius: 50%;
 }
 
-.archive-log__marker::before {
+.archive-log__item::before {
   content: "";
   position: absolute;
-  top: 100%;
+  top: calc(50% + .5rem);
+  left: .5rem;
+  bottom: calc(-1 * var(--ui-info-padding));
   width: .0625rem;
-  height: calc(var(--space-8) + .5rem);
   background: linear-gradient(rgba(98, 220, 255, .28), transparent);
 }
 
-.archive-log__item:last-child .archive-log__marker::before {
+.archive-log__item:last-child::before {
   display: none;
 }
 
@@ -1159,7 +1154,7 @@
 .archive-log__item small {
   color: var(--color-text-muted);
   font-family: var(--font-display);
-  font-size: .5rem;
+  font-size: .6875rem;
   letter-spacing: .12em;
 }
 
@@ -2424,25 +2419,13 @@ html[lang="en"] .mission-dialog:is([data-phase="guide"], [data-phase="playing"],
 
 .mission-guide__content p {
   margin-top: var(--space-4);
-  color: var(--color-text-muted);
+  color: var(--color-text-subtle);
   line-height: 1.8;
 }
 
 .mission-guide__content > .ui-info-list {
-  gap: var(--space-2);
+  --ui-info-divider: color-mix(in srgb, var(--color-line) 60%, transparent);
   margin: var(--space-5) 0;
-}
-
-.mission-guide__content .ui-info-list__item {
-  grid-template-columns: 1.25rem minmax(0, 1fr);
-  align-items: start;
-  gap: var(--space-3);
-  padding: var(--space-4);
-  border-color: color-mix(in srgb, var(--color-line) 60%, transparent);
-}
-
-.mission-guide__content .ui-info-list__content {
-  gap: var(--space-1);
 }
 
 .mission-guide__content .ui-info-list__item > b {
@@ -2450,18 +2433,6 @@ html[lang="en"] .mission-dialog:is([data-phase="guide"], [data-phase="playing"],
   font-family: var(--font-numeric);
   font-size: 1rem;
   line-height: 1.3125;
-}
-
-.mission-guide__content li strong {
-  color: var(--color-text);
-  font-size: .875rem;
-  line-height: 1.5;
-}
-
-.mission-guide__content li small {
-  color: var(--color-text-subtle);
-  font-size: .8125rem;
-  line-height: 1.6;
 }
 
 .mission-guide__content > .ui-panel__eyebrow {
@@ -3409,22 +3380,22 @@ html[lang="en"] .rail-repair__branch-terminal small {
   font-size: clamp(1.25rem, 2.5vw, 1.75rem);
 }
 
-.mission-testing ol {
-  display: grid;
+.mission-testing > .ui-info-list {
+  --ui-info-columns: 1.75rem minmax(0, 1fr) auto;
+  --ui-info-align: center;
+  --ui-info-box-padding: var(--space-3) var(--space-4);
   width: 100%;
-  gap: .75rem;
+  gap: var(--space-3);
   margin-top: var(--space-5);
 }
 
-.mission-testing li {
-  display: grid;
-  grid-template-columns: 1.75rem minmax(0, 1fr);
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-3) var(--space-4);
-  border: .0625rem solid var(--color-line);
-  border-radius: var(--radius-md);
+.mission-testing .ui-info-list__item {
   color: var(--color-text-muted);
+}
+
+.mission-testing [data-test-state] {
+  font-size: .6875rem;
+  white-space: nowrap;
 }
 
 .mission-testing li > span {
@@ -3436,13 +3407,18 @@ html[lang="en"] .rail-repair__branch-terminal small {
   border-radius: 50%;
 }
 
-.mission-testing li.is-active {
+.mission-testing .ui-info-list__item.is-active {
   border-color: #a693ff;
   color: #d9d2ff;
   box-shadow: 0 0 1.2rem rgba(140, 114, 255, .24);
 }
 
-.mission-testing li.is-complete {
+.mission-testing .is-active > span {
+  border-style: dashed;
+  animation: mission-countdown-radar 2s linear infinite;
+}
+
+.mission-testing .ui-info-list__item.is-complete {
   border-color: rgba(47, 230, 177, .55);
   color: var(--color-success);
 }
@@ -3457,36 +3433,13 @@ html[lang="en"] .rail-repair__branch-terminal small {
   overflow: hidden;
 }
 
-.mission-testing__train i {
+.mission-testing__train img {
   position: absolute;
   left: 0;
-  bottom: .35rem;
-  width: 5rem;
-  height: 1.8rem;
-  border: .12rem solid #b9acff;
-  border-radius: 1.1rem .35rem .3rem .3rem;
-  background: rgba(140, 114, 255, .18);
-  box-shadow: 0 0 1rem rgba(140, 114, 255, .5);
+  bottom: 0;
+  width: min(9rem, 40%);
+  height: auto;
   animation: mission-train-test 2.4s ease-in-out infinite;
-}
-
-.mission-testing__train i::before, .mission-testing__train i::after {
-  content: "";
-  position: absolute;
-  bottom: -.55rem;
-  width: .7rem;
-  aspect-ratio: 1;
-  border: .12rem solid #b9acff;
-  border-radius: 50%;
-  background: #081023;
-}
-
-.mission-testing__train i::before {
-  left: .65rem;
-}
-
-.mission-testing__train i::after {
-  right: .65rem;
 }
 
 .mission-testing > p {
@@ -3522,6 +3475,18 @@ html[lang="en"] .rail-repair__branch-terminal small {
   }
 
   100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes mission-stamp-reveal {
+  from {
+    opacity: 0;
+    transform: scale(.9);
+  }
+
+  to {
     opacity: 1;
     transform: scale(1);
   }
@@ -3598,9 +3563,11 @@ html[lang="en"] .rail-repair__branch-terminal small {
 }
 
 .mission-result--complete .mission-result__seal {
-  width: 5rem;
+  width: 7rem;
   border: 0;
   box-shadow: none;
+  filter: drop-shadow(0 0 .65rem rgba(140, 114, 255, .3));
+  animation: mission-stamp-reveal .45s ease-out both;
 }
 
 .mission-result__seal img {
@@ -3854,7 +3821,7 @@ html[lang="en"] .rail-repair__branch-terminal small {
     animation: none;
   }
 
-  .control-room__start:not(.control-room__operation)::after, .mission-countdown::before, .mission-countdown__display::before, .mission-countdown__display::after, .mission-countdown strong, .mission-testing__train i, .mission-flow.is-repair-error .rail-repair__workspace {
+  .control-room__start:not(.control-room__operation)::after, .mission-countdown::before, .mission-countdown__display::before, .mission-countdown__display::after, .mission-countdown strong, .mission-testing__train img, .mission-testing .is-active > span, .mission-result--complete .mission-result__seal, .mission-flow.is-repair-error .rail-repair__workspace {
     animation: none;
   }
 }

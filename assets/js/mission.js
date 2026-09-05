@@ -129,6 +129,8 @@ export function createMissionController({ createGame, duration = 90, getExplorer
     const title = dialog.querySelector('#mission-title');
     title.dataset.i18n = phase === 'guide' ? 'mission.status.guide' : 'mission.title';
     title.textContent = t(title.dataset.i18n);
+    const visibleTitle = panels.find((panel) => panel.dataset.missionPhase === phase)?.querySelector('h3[id]');
+    dialog.setAttribute('aria-labelledby', visibleTitle?.id || 'mission-title');
     if (status) {
       status.textContent = t(`mission.status.${phase}`);
     }
@@ -264,7 +266,7 @@ export function createMissionController({ createGame, duration = 90, getExplorer
   }
 
   function resetTestingView() {
-    testingItems.forEach((item) => item?.classList.remove('is-active', 'is-complete'));
+    renderTestingStep(-1);
     if (testingStatus) {
       testingStatus.textContent = '';
     }
@@ -287,8 +289,26 @@ export function createMissionController({ createGame, duration = 90, getExplorer
       const stepIndex = testSteps.indexOf(step);
       item?.classList.toggle('is-active', stepIndex === index);
       item?.classList.toggle('is-complete', stepIndex < index);
+      if (!item) {
+        return;
+      }
+      const state = stepIndex < index ? 'done' : stepIndex === index ? 'active' : 'pending';
+      if (state === 'active') {
+        item.setAttribute('aria-current', 'step');
+      } else {
+        item.removeAttribute('aria-current');
+      }
+      const marker = item.querySelector('[aria-hidden]');
+      if (marker) {
+        marker.textContent = state === 'done' ? '✓' : '';
+      }
+      const label = item.querySelector('[data-test-state]');
+      if (label) {
+        label.dataset.i18n = `mission.testingState.${state}`;
+        label.textContent = t(label.dataset.i18n);
+      }
     });
-    if (testingStatus) {
+    if (testingStatus && index >= 0 && index < testSteps.length) {
       testingStatus.textContent = t(`mission.testingStatus.${testSteps[index]}`);
     }
   }
@@ -305,9 +325,7 @@ export function createMissionController({ createGame, duration = 90, getExplorer
       }, index * 900));
     });
     testingTimerIds.push(window.setTimeout(() => {
-      const finalItem = testingItems.get(testSteps.at(-1));
-      finalItem?.classList.remove('is-active');
-      finalItem?.classList.add('is-complete');
+      renderTestingStep(testSteps.length);
       complete();
     }, testSteps.length * 900 + 450));
   }

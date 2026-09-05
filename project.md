@@ -467,7 +467,7 @@ Overlay 제목은 Explorer 이름을 Accent로 강조하며, 한국어에서는 
 * Explorer Profile의 Portrait와 이름은 정보를 표시하며 Button 역할을 갖지 않음
 * Passport의 이름과 성별 항목에 있는 Edit Button: 해당 정보만 수정
 
-Explorer Log는 사건과 Mission 완료 내역을 시간순으로 보여준다. 기록 수와 관계없이 제목과 Log 시작 위치를 상단에 고정하고 새 기록을 아래로 누적하며, 사용 가능한 높이를 넘으면 Log 영역을 Scroll한다.
+Explorer Log는 사건과 Mission 완료 내역을 시간순으로 보여준다. 기록 분류 글자는 11px 이상으로 유지하고 공통 라인 목록의 항목 간격·구분선을 재사용한다. 타임라인 표시는 유지하되 첫 항목 위·마지막 항목 아래의 선과 Padding은 대칭으로 제거한다. 기록 수와 관계없이 제목과 Log 시작 위치를 상단에 고정하고 새 기록을 아래로 누적하며, 사용 가능한 높이를 넘으면 Log 영역을 Scroll한다.
 
 Explorer Passport는 사용자의 이름, 시설별 복구 상태, Stamp, 쿠폰과 최종 탑승권을 수집형 기록으로 보여준다.
 
@@ -929,6 +929,8 @@ Mission Guide, Countdown, Play, Pause, Fail과 Complete는 Control Room 위의 �
 
 ### Mission Guide
 
+가이드와 점검의 박스 목록은 공통 목록 형태를 사용하고 번호·상태 표시만 역할에 맞게 구분한다. 가이드의 필수 설명은 보조 본문 수준의 명암을 유지한다. 점검 항목은 빈 원·회전 표시·체크와 대기·점검 중·완료 문구를 함께 사용하며, 현재 단계와 결과 팝업 제목을 보조기술에도 동기화한다. NOVA 시운전은 기존 열차 자산을 재사용하고 완료 Stamp는 크기와 짧은 등장 효과로 강조한다. 모션 감소 설정에서는 회전·이동·등장 모션을 제거한다.
+
 목표를 반복하는 설명 화면이 아니라 30초 이내에 조작을 이해시키는 튜토리얼이다.
 
 Mission Guide의 최종 Visual Development는 Play UI와 실제 조작 방식이 확정된 뒤 진행한다. Guide의 Rail 조각, 선택 상태, 회전과 연결 예시는 실제 Play 화면과 동일한 Asset과 상태 표현을 사용한다. NOVA Guide는 빈 공간 선택 → 조각 배치 → 90° 회전을 직접 연습할 수 있는 작은 예시를 제공한다. 연습은 실제 Mission 진행·시간·저장에 영향을 주지 않으며 완료하지 않아도 미션을 시작할 수 있다.
@@ -1073,7 +1075,7 @@ Play의 Board Header에는 현재 STEP의 목표를 설명하는 Description을 
 
 각 단계는 `현재 Rail 복구 → Rail 점등 → 시스템 스캔 → 다음 단계의 새 Rail Board 표시` 순서로 이어진다. 세 단계 완료 후 `전체 연결 검사 → 코스터 시운전 → 안전 시스템 확인 → 시설 복구 완료`를 진행한다. 잘못된 선택은 현재 Board에서만 오류로 안내하고 앞서 완료한 단계는 초기화하지 않는다.
 
-Control Room, Guide, Countdown, Play, Pause, Fail과 Complete는 공통 Mission Flow가 관리하고 단계별 Board 데이터, Candidate 선택·회전·검증 규칙만 NOVA COASTER 전용 Module이 담당한다. 진행 중 현재 복구 단계, 완료된 단계, 현재 Board의 조각 배치와 남은 시간은 Checkpoint로 저장하며 새로고침하면 Control Room의 Pause 상태로 복원한다. 완료 후 NOVA Stamp 기록을 먼저 확인하고 MAP으로 돌아가 LUNA 개방과 Log 갱신을 확인한다.
+Control Room, Guide, Countdown, Play, Pause, Fail과 Complete는 공통 Mission Flow가 관리하고 단계별 Board 데이터, Candidate 선택·회전·검증 규칙은 NOVA COASTER 전용 Module이 담당한다. 현재 Guide 연습과 점검 표현에는 NOVA 전용 구현이 남아 있으며, 다른 시설의 조작이 확정될 때 해당 표현을 분리한다. 진행 중 현재 복구 단계, 완료된 단계, 현재 Board의 조각 배치와 남은 시간은 Checkpoint로 저장하며 새로고침하면 Control Room의 Pause 상태로 복원한다. 완료 후 NOVA Stamp 기록을 먼저 확인하고 MAP으로 돌아가 LUNA 개방과 Log 갱신을 확인한다.
 
 
 ### LUNA LIGHT GARDEN

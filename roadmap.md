@@ -145,7 +145,7 @@ Mint 생명 시설, 약해진 정원의 빛과 멈춘 Lotus, Light Fragment 수�
 - [x] EVE와 Mission Objective
 - [x] 시설 상태 Panel
 - [x] Mission Guide 기본 구조와 기능 Flow
-- [x] 공통 Mission Flow와 시설별 Game Module 책임 분리
+- [x] 공통 Mission Flow와 NOVA Game Module 연결·보드 로직 분리 (Guide 연습·시설별 점검 표현은 LUNA 조작 확정 후 추가 분리)
 - [x] Countdown 기본 기능 Flow
 - [x] NOVA COASTER Full-screen Countdown Visual Development
 - [x] NOVA COASTER Full-screen Play HUD Visual Development
@@ -237,6 +237,8 @@ Mint 생명 시설, 약해진 정원의 빛과 멈춘 Lotus, Light Fragment 수�
 
 
 ### LUNA 전 회귀 수정
+
+- [x] 개선 검토 반영: 박스 목록 공통화, Explorer Log 구분선·간격 재사용과 분류 글자 11px, Guide 본문 명암 보완, 점검 상태별 표시·접근성 제목 동기화, 기존 열차 자산·완료 Stamp 강조. 시설별 연습·점검 표현의 남은 분리 범위 명시. 검증: 회귀 테스트 18개·JavaScript 문법·HTML ID/자산 경로·CSS 괄호·diff 검사 통과. 브라우저에서 Guide 배치·회전 위치 유지, Play→Pause→MAP→Log, 점검 3상태와 제목, 390px 영문 점검·1280×480 완료 팝업을 확인.
 
 - [x] MAP Progress를 완료 시설 수 기준 0 / 4 → 4 / 4로 변경, 한·영 문구와 접근성 범위 동기화
 

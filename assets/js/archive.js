@@ -50,7 +50,7 @@ export function createArchiveController({ onTabChange, showToast } = {}) {
       const label = document.createElement('small');
       const message = document.createElement('strong');
 
-      item.className = 'archive-log__item';
+      item.className = 'archive-log__item ui-info-list__item';
       marker.className = 'archive-log__marker';
       marker.setAttribute('aria-hidden', 'true');
       marker.append(document.createElement('i'));
