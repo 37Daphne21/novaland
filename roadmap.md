@@ -116,6 +116,7 @@
 - [x] EVE 단계 안내 유지와 조작 Live Status 개별 타이핑
 - [x] Play Header 전체 연결 상태의 가변 Segment 수 기준 중앙 정렬
 - [x] 실제 Play Asset 기반 Mission Guide Visual Development
+- [x] Mission Guide Mechanical Frame·Rail Scan Monitor·단계 명령 Panel 고도화
 - [x] 단계마다 새 경로로 교체되는 Rail Network Play 화면
 - [x] 복구 단계 1: 빈 공간 2개와 후보 2개 기본 연결
 - [x] 복구 단계 2: 빈 공간 3개와 중복 없는 Rail Type 3개의 반복 배치·회전
@@ -130,6 +131,7 @@
 - [x] 현재 Rail 복구 후 다음 Rail Board로 이어지는 Stage Transition
 - [x] 전체 연결 검사·코스터 시운전·안전 시스템 확인
 - [x] Pause
+- [x] Pause Mechanical Frame·진행 상태 Header·행동 우선순위와 반응형 배치 고도화
 - [x] Fail
 - [x] Complete
 - [x] 복구 완료 시설의 Control Room 상태 보호와 Mission 재시작 차단

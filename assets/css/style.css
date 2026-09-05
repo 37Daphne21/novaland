@@ -1792,7 +1792,7 @@
   filter: drop-shadow(0 0 .35rem rgba(82, 226, 255, .45));
 }
 
-.mission-dialog[data-phase="playing"] .mission-flow__header {
+.mission-dialog:is([data-phase="guide"], [data-phase="playing"], [data-phase="paused"]) .mission-flow__header {
   position: relative;
   display: grid;
   grid-template-columns: minmax(15rem, 1fr) minmax(22rem, 1.7fr) minmax(15rem, 1fr);
@@ -1805,7 +1805,7 @@
   isolation: isolate;
 }
 
-.mission-dialog[data-phase="playing"] .mission-flow__header::before {
+.mission-dialog:is([data-phase="guide"], [data-phase="playing"], [data-phase="paused"]) .mission-flow__header::before {
   position: absolute;
   z-index: 1;
   inset: 0;
@@ -1814,7 +1814,7 @@
   pointer-events: none;
 }
 
-.mission-dialog[data-phase="playing"] .mission-flow__header::after {
+.mission-dialog:is([data-phase="guide"], [data-phase="playing"], [data-phase="paused"]) .mission-flow__header::after {
   position: absolute;
   z-index: 0;
   inset: .3rem .8rem;
@@ -1824,7 +1824,7 @@
   pointer-events: none;
 }
 
-.mission-dialog[data-phase="playing"] .mission-flow__identity {
+.mission-dialog:is([data-phase="guide"], [data-phase="playing"], [data-phase="paused"]) .mission-flow__identity {
   position: relative;
   z-index: 2;
   display: flex;
@@ -1839,11 +1839,11 @@
   clip-path: none;
 }
 
-.mission-dialog[data-phase="playing"] .mission-flow__identity::after {
+.mission-dialog:is([data-phase="guide"], [data-phase="playing"], [data-phase="paused"]) .mission-flow__identity::after {
   content: none;
 }
 
-.mission-dialog[data-phase="playing"] .mission-flow__identity .ui-panel__eyebrow {
+.mission-dialog:is([data-phase="guide"], [data-phase="playing"], [data-phase="paused"]) .mission-flow__identity .ui-panel__eyebrow {
   color: #f4f8ff;
   font-size: 1rem;
   letter-spacing: .08em;
@@ -1851,7 +1851,7 @@
   white-space: nowrap;
 }
 
-.mission-dialog[data-phase="playing"] .mission-flow__identity h2 {
+.mission-dialog:is([data-phase="guide"], [data-phase="playing"], [data-phase="paused"]) .mission-flow__identity h2 {
   display: block;
   color: #aebbd0;
   font-family: var(--font-body);
@@ -1861,26 +1861,26 @@
   white-space: nowrap;
 }
 
-.mission-dialog[data-phase="playing"] .mission-flow__identity h2::before {
+.mission-dialog:is([data-phase="guide"], [data-phase="playing"], [data-phase="paused"]) .mission-flow__identity h2::before {
   margin-right: 1rem;
   color: rgba(159, 140, 255, .62);
   content: "·";
 }
 
-html[lang="en"] .mission-dialog[data-phase="playing"] .mission-flow__identity {
+html[lang="en"] .mission-dialog:is([data-phase="guide"], [data-phase="playing"], [data-phase="paused"]) .mission-flow__identity {
   gap: .55rem;
 }
 
-html[lang="en"] .mission-dialog[data-phase="playing"] .mission-flow__identity h2 {
+html[lang="en"] .mission-dialog:is([data-phase="guide"], [data-phase="playing"], [data-phase="paused"]) .mission-flow__identity h2 {
   font-size: .64rem;
   letter-spacing: .045em;
 }
 
-html[lang="en"] .mission-dialog[data-phase="playing"] .mission-flow__identity h2::before {
+html[lang="en"] .mission-dialog:is([data-phase="guide"], [data-phase="playing"], [data-phase="paused"]) .mission-flow__identity h2::before {
   margin-right: .5rem;
 }
 
-.mission-dialog[data-phase="playing"] .mission-flow__connection {
+.mission-dialog:is([data-phase="playing"], [data-phase="paused"]) .mission-flow__connection {
   position: relative;
   z-index: 2;
   display: grid;
@@ -1893,21 +1893,21 @@ html[lang="en"] .mission-dialog[data-phase="playing"] .mission-flow__identity h2
   clip-path: polygon(7% 0, 93% 0, 100% 100%, 0 100%);
 }
 
-.mission-dialog[data-phase="playing"] .mission-flow__connection > strong {
+.mission-dialog:is([data-phase="playing"], [data-phase="paused"]) .mission-flow__connection > strong {
   color: #eef8ff;
   font-family: var(--font-numeric);
   font-size: 1.05rem;
   letter-spacing: .08em;
 }
 
-.mission-dialog[data-phase="playing"] .mission-flow__connection > span {
+.mission-dialog:is([data-phase="playing"], [data-phase="paused"]) .mission-flow__connection > span {
   display: flex;
   justify-content: center;
   gap: .28rem;
   width: 100%;
 }
 
-.mission-dialog[data-phase="playing"] .mission-flow__connection i {
+.mission-dialog:is([data-phase="playing"], [data-phase="paused"]) .mission-flow__connection i {
   flex: 0 0 1.35rem;
   height: .46rem;
   border: .0625rem solid rgba(69, 100, 137, .7);
@@ -1916,13 +1916,13 @@ html[lang="en"] .mission-dialog[data-phase="playing"] .mission-flow__identity h2
   box-shadow: inset 0 .0625rem rgba(170, 212, 239, .08);
 }
 
-.mission-dialog[data-phase="playing"] .mission-flow__connection i.is-active {
+.mission-dialog:is([data-phase="playing"], [data-phase="paused"]) .mission-flow__connection i.is-active {
   border-color: rgba(139, 246, 255, .72);
   background: linear-gradient(180deg, #8bf6ff, #20d8ff 58%, #149fcf);
   box-shadow: 0 0 .55rem rgba(82, 226, 255, .58);
 }
 
-.mission-dialog[data-phase="playing"] .mission-flow__meta {
+.mission-dialog:is([data-phase="guide"], [data-phase="playing"], [data-phase="paused"]) .mission-flow__meta {
   position: relative;
   z-index: 2;
   align-self: stretch;
@@ -1937,12 +1937,64 @@ html[lang="en"] .mission-dialog[data-phase="playing"] .mission-flow__identity h2
   transform: translateY(-.15rem);
 }
 
-.mission-dialog[data-phase="playing"] .mission-flow__meta::before {
+.mission-dialog:is([data-phase="guide"], [data-phase="playing"], [data-phase="paused"]) .mission-flow__meta::before {
   content: none;
 }
 
 .mission-dialog[data-phase="playing"] .mission-flow__meta > [data-mission-status] {
   display: none;
+}
+
+.mission-dialog:is([data-phase="guide"], [data-phase="paused"]) .mission-flow {
+  padding: .75rem 1rem 1rem;
+  border: 1rem solid transparent;
+  border-image: url("../images/coaster/game-coaster-frame-workspace.png") 30 fill / 1rem / 0 stretch;
+  border-radius: 0;
+  background: linear-gradient(rgba(34, 92, 137, .065) .0625rem, transparent .0625rem), linear-gradient(90deg, rgba(34, 92, 137, .065) .0625rem, transparent .0625rem), radial-gradient(circle at 50% -12%, rgba(41, 103, 166, .2), transparent 36%), linear-gradient(145deg, #050b1a, #020713 62%, #050817);
+  background-clip: padding-box;
+  background-size: 3rem 3rem, 3rem 3rem, auto, auto;
+  box-shadow: inset 0 0 5rem rgba(0, 5, 16, .72), 0 0 3rem rgba(0, 0, 0, .62);
+}
+
+.mission-dialog:is([data-phase="guide"], [data-phase="paused"]) {
+  width: min(80rem, calc(100% - 1rem));
+}
+
+.mission-dialog:is([data-phase="guide"], [data-phase="paused"]) .mission-flow__header {
+  min-height: 4.35rem;
+  padding: .2rem 1rem .75rem;
+  border-bottom: .0625rem solid rgba(82, 226, 255, .16);
+  isolation: auto;
+}
+
+.mission-dialog:is([data-phase="guide"], [data-phase="paused"]) .mission-flow__header::before,
+.mission-dialog:is([data-phase="guide"], [data-phase="paused"]) .mission-flow__header::after {
+  content: none;
+}
+
+.mission-dialog:is([data-phase="guide"], [data-phase="paused"]) .mission-flow__meta {
+  display: contents;
+  transform: none;
+}
+
+.mission-dialog:is([data-phase="guide"], [data-phase="paused"]) .mission-flow__meta > [data-mission-status] {
+  z-index: 2;
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: center;
+  color: #d8d1ff;
+  font-family: var(--font-display);
+  font-size: .82rem;
+  letter-spacing: .12em;
+  text-shadow: 0 0 .75rem rgba(159, 140, 255, .45);
+  white-space: nowrap;
+}
+
+.mission-dialog:is([data-phase="guide"], [data-phase="paused"]) .mission-flow__time {
+  z-index: 2;
+  grid-column: 3;
+  grid-row: 1;
+  justify-self: end;
 }
 
 .mission-dialog[data-phase="playing"] .mission-flow__guide-button {
@@ -1982,6 +2034,10 @@ html[lang="en"] .mission-dialog[data-phase="playing"] .mission-flow__identity h2
   visibility: hidden;
 }
 
+.mission-dialog:is([data-phase="guide"], [data-phase="paused"]) [data-mission-pause] {
+  display: none;
+}
+
 .mission-dialog[data-phase="completed"] .mission-flow__time {
   display: none;
 }
@@ -1991,25 +2047,42 @@ html[lang="en"] .mission-dialog[data-phase="playing"] .mission-flow__identity h2
   overflow: auto;
 }
 
+.mission-dialog:is([data-phase="guide"], [data-phase="paused"]) .mission-phase {
+  overflow: hidden;
+}
+
 .mission-guide {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(18rem, .8fr) minmax(0, 1.2fr);
-  align-items: center;
-  gap: clamp(2rem, 7vw, 7rem);
-  padding: clamp(2rem, 5vw, 5rem);
+  grid-template-columns: minmax(18rem, .9fr) minmax(24rem, 1.1fr);
+  align-items: stretch;
+  gap: clamp(1.5rem, 4vw, 4.5rem);
+  margin-top: 0;
+  padding: clamp(1.5rem, 3vw, 2.75rem);
+  border: 0;
+  background: radial-gradient(circle at 25% 44%, rgba(26, 115, 160, .1), transparent 28%);
+  box-shadow: none;
 }
 
 .mission-guide__close {
   position: absolute;
-  top: var(--space-4);
-  right: var(--space-4);
+  top: 1.65rem;
+  right: 1.65rem;
   z-index: 3;
   width: 2.75rem;
   min-height: 2.75rem;
-  border-color: rgba(159, 140, 255, .42);
-  background: rgba(5, 10, 26, .88);
-  color: #d9d2ff;
+  border-color: rgba(82, 226, 255, .42);
+  border-radius: 0;
+  background: linear-gradient(180deg, rgba(13, 38, 62, .96), rgba(3, 13, 29, .98));
+  color: #dffbff;
+  box-shadow: inset 0 0 .7rem rgba(82, 226, 255, .08), 0 0 .8rem rgba(82, 226, 255, .1);
+  clip-path: polygon(.45rem 0, 100% 0, 100% calc(100% - .45rem), calc(100% - .45rem) 100%, 0 100%, 0 .45rem);
+}
+
+.mission-guide__close:is(:hover, :focus-visible) {
+  border-color: #8bf6ff;
+  background: linear-gradient(180deg, rgba(27, 91, 124, .92), rgba(5, 29, 48, .98));
+  box-shadow: inset 0 0 .85rem rgba(82, 226, 255, .12), 0 0 1rem rgba(82, 226, 255, .28);
 }
 
 .mission-guide__close[hidden] {
@@ -2025,12 +2098,13 @@ html[lang="en"] .mission-dialog[data-phase="playing"] .mission-flow__identity h2
   position: relative;
   display: grid;
   place-items: center;
-  min-height: 24rem;
+  min-height: 22rem;
   overflow: hidden;
-  border: .0625rem solid rgba(82, 226, 255, .24);
-  border-radius: 50% 50% var(--radius-lg) var(--radius-lg);
-  background: radial-gradient(circle at 50% 48%, rgba(82, 226, 255, .14), transparent 34%), radial-gradient(circle, rgba(140, 114, 255, .18), rgba(3, 9, 22, .9) 68%);
-  box-shadow: inset 0 0 3rem rgba(46, 122, 178, .14), 0 0 2rem rgba(32, 101, 160, .08);
+  border: .0625rem solid rgba(82, 226, 255, .32);
+  border-radius: 0;
+  background: radial-gradient(circle at 50% 48%, rgba(82, 226, 255, .16), transparent 30%), linear-gradient(145deg, rgba(7, 25, 46, .9), rgba(2, 8, 20, .96));
+  box-shadow: inset 0 0 3rem rgba(46, 122, 178, .18), 0 0 1.4rem rgba(32, 101, 160, .08);
+  clip-path: polygon(.8rem 0, calc(100% - .8rem) 0, 100% .8rem, 100% calc(100% - .8rem), calc(100% - .8rem) 100%, .8rem 100%, 0 calc(100% - .8rem), 0 .8rem);
   isolation: isolate;
 }
 
@@ -2039,16 +2113,16 @@ html[lang="en"] .mission-dialog[data-phase="playing"] .mission-flow__identity h2
   z-index: -2;
   inset: 0;
   background: linear-gradient(rgba(82, 226, 255, .08) .0625rem, transparent .0625rem), linear-gradient(90deg, rgba(82, 226, 255, .08) .0625rem, transparent .0625rem);
-  background-size: 3.75rem 3.75rem;
+  background-size: 2.5rem 2.5rem;
   content: "";
-  mask-image: radial-gradient(circle, #000 16%, transparent 72%);
+  mask-image: radial-gradient(circle, #000 12%, transparent 76%);
 }
 
 .mission-guide__visual::after {
   position: absolute;
   z-index: -1;
-  width: 72%;
-  aspect-ratio: 1;
+  width: 76%;
+  aspect-ratio: 1.45;
   border: .0625rem dashed rgba(159, 140, 255, .36);
   border-radius: 50%;
   box-shadow: 0 0 2rem rgba(140, 114, 255, .14);
@@ -2105,24 +2179,31 @@ html[lang="en"] .mission-dialog[data-phase="playing"] .mission-flow__identity h2
 
 .mission-guide__visual-flow {
   position: absolute;
-  bottom: 2.3rem;
-  padding: .42rem .8rem;
-  border: .0625rem solid rgba(159, 140, 255, .32);
-  border-radius: 99rem;
-  background: rgba(4, 10, 25, .84);
+  bottom: 1.5rem;
+  padding: .48rem 1.1rem;
+  border: .0625rem solid rgba(82, 226, 255, .34);
+  border-radius: 0;
+  background: linear-gradient(180deg, rgba(8, 31, 52, .92), rgba(3, 12, 27, .94));
   color: #bff8ff;
   font-family: var(--font-display);
   font-size: .76rem;
   letter-spacing: .12em;
+  clip-path: polygon(.45rem 0, calc(100% - .45rem) 0, 100% 50%, calc(100% - .45rem) 100%, .45rem 100%, 0 50%);
 }
 
 .mission-guide__content {
-  max-width: 34rem;
+  align-self: center;
+  max-width: 36rem;
+  padding-right: 1rem;
 }
 
 .mission-guide__content h3, .mission-result h3 {
   margin-top: var(--space-3);
   font-size: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.mission-guide__content h3, .mission-result--paused h3 {
+  font-size: clamp(1.45rem, 2.5vw, 2.15rem);
 }
 
 .mission-guide__content p, .mission-result p {
@@ -2133,25 +2214,36 @@ html[lang="en"] .mission-dialog[data-phase="playing"] .mission-flow__identity h2
 
 .mission-guide__content ol {
   display: grid;
-  gap: var(--space-3);
-  margin: var(--space-6) 0;
+  gap: .55rem;
+  margin: var(--space-5) 0;
 }
 
 .mission-guide__content li {
+  position: relative;
   display: grid;
-  grid-template-columns: 2.25rem minmax(0, 1fr);
+  grid-template-columns: 2.65rem minmax(0, 1fr);
   align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-3);
-  border: .0625rem solid rgba(159, 140, 255, .2);
-  border-radius: var(--radius-md);
-  background: rgba(9, 15, 33, .58);
+  gap: .85rem;
+  padding: .72rem 1rem .72rem .72rem;
+  border: .0625rem solid rgba(82, 226, 255, .2);
+  border-radius: 0;
+  background: linear-gradient(90deg, rgba(13, 39, 64, .72), rgba(7, 15, 34, .74));
+  box-shadow: inset .18rem 0 rgba(82, 226, 255, .46);
+  clip-path: polygon(.45rem 0, 100% 0, 100% calc(100% - .45rem), calc(100% - .45rem) 100%, 0 100%, 0 .45rem);
 }
 
 .mission-guide__content li > b {
-  color: #a693ff;
+  display: grid;
+  place-items: center;
+  width: 2.3rem;
+  aspect-ratio: 1;
+  border: .0625rem solid rgba(159, 140, 255, .5);
+  color: #b9acff;
   font-family: var(--font-numeric);
   font-size: .8rem;
+  background: rgba(10, 14, 37, .88);
+  box-shadow: inset 0 0 .65rem rgba(140, 114, 255, .16);
+  clip-path: polygon(25% 0, 75% 0, 100% 25%, 100% 75%, 75% 100%, 25% 100%, 0 75%, 0 25%);
 }
 
 .mission-guide__content li > span {
@@ -2167,6 +2259,20 @@ html[lang="en"] .mission-dialog[data-phase="playing"] .mission-flow__identity h2
 .mission-guide__content li small {
   color: var(--color-text-muted);
   line-height: 1.5;
+}
+
+.mission-guide__content > .ui-panel__eyebrow {
+  color: #52e2ff;
+  letter-spacing: .14em;
+}
+
+.mission-guide__content > .ui-button {
+  width: min(16rem, 100%);
+  min-height: 3rem;
+  border-radius: 0;
+  font-family: var(--font-display);
+  letter-spacing: .08em;
+  clip-path: polygon(.55rem 0, 100% 0, 100% calc(100% - .55rem), calc(100% - .55rem) 100%, 0 100%, 0 .55rem);
 }
 
 .mission-dialog[data-phase="countdown"] .mission-flow {
@@ -3319,9 +3425,98 @@ html[lang="en"] .rail-repair__branch-terminal small {
 }
 
 .mission-result--paused .mission-result__seal {
-  border-color: #52e2ff;
+  width: 7.25rem;
+  margin-bottom: var(--space-4);
+  border: .0625rem solid rgba(82, 226, 255, .72);
+  border-radius: 0;
+  background: linear-gradient(145deg, rgba(13, 48, 74, .94), rgba(4, 13, 30, .98));
   color: #bff8ff;
-  box-shadow: 0 0 2rem rgba(82, 226, 255, .3);
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  box-shadow: inset 0 0 1.6rem rgba(82, 226, 255, .14), 0 0 2rem rgba(82, 226, 255, .24);
+  clip-path: polygon(26% 0, 74% 0, 100% 26%, 100% 74%, 74% 100%, 26% 100%, 0 74%, 0 26%);
+}
+
+.mission-result--paused {
+  margin-top: 0;
+  padding: clamp(2.5rem, 5vw, 4.5rem);
+  border: 0;
+  background: radial-gradient(circle at 50% 44%, rgba(35, 133, 176, .15), transparent 23%);
+  box-shadow: none;
+}
+
+.mission-result--paused::before {
+  width: min(25rem, 58vw);
+  aspect-ratio: 1.55;
+  border-color: rgba(82, 226, 255, .16);
+  border-radius: 50%;
+  background: repeating-radial-gradient(ellipse, transparent 0 18%, rgba(82, 226, 255, .055) 18.4% 18.8%, transparent 19.2% 29%);
+  box-shadow: 0 0 3rem rgba(82, 226, 255, .08);
+}
+
+.mission-result--paused::after {
+  position: absolute;
+  z-index: -2;
+  width: min(40rem, 76vw);
+  height: 10rem;
+  border-block: .0625rem solid rgba(82, 226, 255, .1);
+  background: linear-gradient(90deg, transparent, rgba(82, 226, 255, .05) 25% 75%, transparent);
+  content: "";
+  clip-path: polygon(6% 0, 94% 0, 100% 50%, 94% 100%, 6% 100%, 0 50%);
+}
+
+.mission-result--paused > .ui-panel__eyebrow {
+  color: #52e2ff;
+  letter-spacing: .16em;
+  text-shadow: 0 0 .7rem rgba(82, 226, 255, .36);
+}
+
+.mission-result--paused > p {
+  max-width: 34rem;
+  margin-top: .8rem;
+}
+
+.mission-result--paused .mission-result__actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  width: min(38rem, 100%);
+  gap: .65rem;
+  margin-top: var(--space-5);
+}
+
+.mission-result--paused .mission-result__actions .ui-button {
+  min-width: 0;
+  min-height: 2.85rem;
+  border-radius: 0;
+  font-size: .78rem;
+  letter-spacing: .05em;
+  clip-path: polygon(.45rem 0, 100% 0, 100% calc(100% - .45rem), calc(100% - .45rem) 100%, 0 100%, 0 .45rem);
+}
+
+.mission-result--paused .mission-result__actions [data-mission-resume] {
+  order: -2;
+  grid-column: 1 / -1;
+  min-height: 3.15rem;
+  border-color: #52e2ff;
+  background: linear-gradient(180deg, rgba(19, 92, 132, .9), rgba(6, 39, 66, .96));
+  color: #effdff;
+  font-family: var(--font-display);
+  font-size: .88rem;
+  box-shadow: inset 0 0 1rem rgba(82, 226, 255, .14), 0 0 1.15rem rgba(82, 226, 255, .2);
+}
+
+.mission-result--paused .mission-result__actions [data-mission-restart] {
+  order: -1;
+  grid-column: 1 / -1;
+  border-color: rgba(159, 140, 255, .46);
+  background: linear-gradient(180deg, rgba(47, 37, 99, .72), rgba(17, 15, 50, .9));
+  color: #ddd7ff;
+}
+
+.mission-result--paused .mission-result__actions :is([data-mission-control-room], [data-mission-exit]) {
+  border-color: rgba(93, 125, 158, .3);
+  background: rgba(4, 13, 29, .8);
+  color: #98a8bc;
 }
 
 .mission-result--failed .mission-result__seal {
@@ -3515,23 +3710,34 @@ html[lang="en"] .rail-repair__branch-terminal small {
     width: min(32rem, calc(100% - 2rem));
   }
 
-  .mission-dialog[data-phase="playing"] .mission-flow__header {
+  .mission-dialog:is([data-phase="guide"], [data-phase="playing"], [data-phase="paused"]) .mission-flow__header {
     grid-template-columns: minmax(0, 1fr) auto;
     gap: var(--space-2);
     padding: .6rem .8rem;
   }
 
-  .mission-dialog[data-phase="playing"] .mission-flow__identity {
+  .mission-dialog:is([data-phase="guide"], [data-phase="paused"]) .mission-flow {
+    padding: .5rem .75rem .75rem;
+    border-width: .75rem;
+    border-image-width: .75rem;
+  }
+
+  .mission-dialog:is([data-phase="guide"], [data-phase="paused"]) .mission-flow__header {
+    min-height: 4rem;
+    padding: .2rem .5rem .6rem;
+  }
+
+  .mission-dialog:is([data-phase="guide"], [data-phase="playing"], [data-phase="paused"]) .mission-flow__identity {
     grid-column: 1;
     grid-row: 1;
     gap: .45rem;
   }
 
-  .mission-dialog[data-phase="playing"] .mission-flow__identity h2 {
+  .mission-dialog:is([data-phase="guide"], [data-phase="playing"], [data-phase="paused"]) .mission-flow__identity h2 {
     display: none;
   }
 
-  .mission-dialog[data-phase="playing"] .mission-flow__connection {
+  .mission-dialog:is([data-phase="playing"], [data-phase="paused"]) .mission-flow__connection {
     grid-column: 1 / -1;
     grid-row: 2;
     justify-self: center;
@@ -3539,18 +3745,72 @@ html[lang="en"] .rail-repair__branch-terminal small {
     min-width: 0;
   }
 
-  .mission-dialog[data-phase="playing"] .mission-flow__meta {
+  .mission-dialog:is([data-phase="guide"], [data-phase="playing"], [data-phase="paused"]) .mission-flow__meta {
     grid-column: 2;
     grid-row: 1;
     gap: var(--space-2);
   }
 
+  .mission-dialog:is([data-phase="guide"], [data-phase="paused"]) .mission-flow__meta > [data-mission-status] {
+    display: none;
+  }
+
+  .mission-dialog:is([data-phase="guide"], [data-phase="paused"]) .mission-flow__time {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
   .mission-guide {
     grid-template-columns: 1fr;
+    padding: var(--space-5);
   }
 
   .mission-guide__visual {
     display: none;
+  }
+
+  .mission-guide__content {
+    max-width: none;
+    padding-right: 0;
+  }
+
+  .mission-guide__close {
+    top: 1.15rem;
+    right: 1.15rem;
+  }
+
+  .mission-result--paused {
+    padding: var(--space-4);
+  }
+
+  .mission-result--paused .mission-result__seal {
+    width: 5.5rem;
+    margin-bottom: .55rem;
+    font-size: 1.75rem;
+  }
+
+  .mission-result--paused h3 {
+    margin-top: .55rem;
+    font-size: 1.5rem;
+  }
+
+  .mission-result--paused > p {
+    margin-top: .55rem;
+  }
+
+  .mission-result--paused .mission-result__actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: min(24rem, 100%);
+    gap: .5rem;
+    margin-top: var(--space-4);
+  }
+
+  .mission-result--paused .mission-result__actions .ui-button {
+    min-height: 2.5rem;
+  }
+
+  .mission-result--paused .mission-result__actions [data-mission-resume] {
+    min-height: 2.75rem;
   }
 
   .mission-play {
@@ -4160,6 +4420,34 @@ html[lang="en"] .rail-repair__branch-terminal small {
 }
 
 @media (max-width: 40rem) {
+  .mission-guide {
+    padding: var(--space-4);
+  }
+
+  .mission-guide__content h3 {
+    padding-right: 2.75rem;
+  }
+
+  .mission-guide__content p {
+    margin-top: var(--space-3);
+  }
+
+  .mission-guide__content ol {
+    margin: var(--space-4) 0;
+  }
+
+  .mission-guide__content > .ui-button {
+    min-height: 2.75rem;
+  }
+
+  .mission-result--paused .mission-result__actions {
+    grid-template-columns: 1fr;
+  }
+
+  .mission-result--paused .mission-result__actions .ui-button {
+    grid-column: 1;
+  }
+
   .brand__lockup {
     width: 4.5rem;
   }
