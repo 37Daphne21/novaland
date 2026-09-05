@@ -425,11 +425,6 @@ export function createCoasterRepair(root, { onChange, onStageComplete } = {}) {
       positionBoardNode(slot, cell);
       if (candidate) {
         slot.append(createPiece(candidate, placement.rotation, 'rail-repair__piece'));
-      } else {
-        const empty = document.createElement('span');
-        empty.className = 'rail-repair__slot-empty';
-        empty.textContent = String(slotIndex + 1).padStart(2, '0');
-        slot.append(empty);
       }
       boardNodes.push(slot);
     });
@@ -733,6 +728,7 @@ export function createCoasterRepair(root, { onChange, onStageComplete } = {}) {
       refreshDialogueLanguage();
     },
     reset,
+    showCompleted: () => reset({ stage: STAGES.length - 1, completed: STAGES.map(() => true), placements: STAGES.at(-1).targets.map((target) => ({ ...target })), activeSlot: 0 }),
     showTransition
   };
 }

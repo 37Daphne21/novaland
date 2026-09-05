@@ -41,6 +41,7 @@ export function createArchiveController({ onTabChange, showToast } = {}) {
       return;
     }
     const logs = explorer ? getProgressLogs(readProgress(explorer)) : [];
+    logs.reverse().sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
     const items = logs.map((log, index) => {
       const item = document.createElement('li');
       const marker = document.createElement('span');
@@ -137,6 +138,7 @@ export function createArchiveController({ onTabChange, showToast } = {}) {
     if (nextIndex < 0 || nextIndex >= pages.length) {
       return;
     }
+    passport?.classList.remove('is-awarding');
     pageNavigation?.classList.add('is-turning');
     const front = clonePage(mobilePassport.matches ? facilityRecord !== 'identity' : direction < 0);
     const restingPage = mobilePassport.matches ? null : clonePage(direction > 0);
@@ -209,6 +211,7 @@ export function createArchiveController({ onTabChange, showToast } = {}) {
   });
 
   function handleTabChange(tabName) {
+    passport?.classList.remove('is-awarding');
     cancelPageTurn();
     if (tabName === 'passport') {
       preparePassport();
@@ -226,15 +229,20 @@ export function createArchiveController({ onTabChange, showToast } = {}) {
     }
   }
 
-  function open(tabName = 'log', explorerData = explorer, { stamp = '' } = {}) {
+  function open(tabName = 'log', explorerData = explorer, { stamp = '', award = false } = {}) {
     cancelPageTurn();
+    passport?.classList.remove('is-awarding');
     explorer = explorerData;
     facilityRecord = stamp;
     renderTitle();
     renderLogs();
     if (tabName === 'passport') {
       preparePassport();
-      showPageHint();
+      if (award && stamp === 'coaster') {
+        passport.classList.add('is-awarding');
+      } else {
+        showPageHint();
+      }
     }
     tabs.select(tabName);
   }

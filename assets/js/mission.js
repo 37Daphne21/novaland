@@ -3,7 +3,7 @@ import { getMissionRestoreState } from './mission-state.js';
 import { readProgress, updateMissionProgress } from './progress.js';
 import { createModalController } from './ui.js';
 
-export function createMissionController({ createGame, duration = 90, getExplorer, onComplete, onControlRoom, onExit, onRecord, testSteps = [] } = {}) {
+export function createMissionController({ createGame, duration = 90, getExplorer, onComplete, onControlRoom, onExit, onRecord, showToast, testSteps = [] } = {}) {
   const dialog = document.querySelector('#mission-dialog');
   const panels = dialog ? [...dialog.querySelectorAll('[data-mission-phase]')] : [];
   const timer = dialog?.querySelector('[data-mission-timer]');
@@ -31,12 +31,15 @@ export function createMissionController({ createGame, duration = 90, getExplorer
   let game = null;
   let testingTimerIds = [];
   let isPreviewMode = false;
+  let awardPending = false;
+  let completionTimer = null;
   const modal = createModalController(dialog, { onClose: () => {
     stopTimer();
     stopCountdown();
     stopStageTransition();
     stopTesting();
     isPreviewMode = false;
+    window.clearTimeout(completionTimer);
   } });
 
   function save(updates) {
@@ -54,6 +57,7 @@ export function createMissionController({ createGame, duration = 90, getExplorer
     if (timer) {
       const minutes = Math.floor(remaining / 60);
       const seconds = remaining % 60;
+      timer.closest('.mission-flow__time').classList.toggle('is-urgent', remaining > 0 && remaining <= 15);
       timer.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     }
   }
@@ -83,7 +87,19 @@ export function createMissionController({ createGame, duration = 90, getExplorer
 
   function setPhase(nextPhase, { saveState = true, checkpointMode = nextPhase } = {}) {
     phase = nextPhase;
-    panels.forEach((panel) => { panel.hidden = panel.dataset.missionPhase !== phase; });
+    const isResult = ['paused', 'testing', 'failed', 'completed'].includes(phase);
+    panels.forEach((panel) => {
+      const isBoard = panel.dataset.missionPhase === 'playing';
+      panel.hidden = panel.dataset.missionPhase !== phase && !(isResult && isBoard);
+      panel.inert = isResult && isBoard;
+      if (isResult && isBoard) {
+        panel.setAttribute('aria-hidden', 'true');
+      } else {
+        panel.removeAttribute('aria-hidden');
+      }
+    });
+    dialog.classList.toggle('is-result', isResult);
+    dialog.querySelector('.mission-flow__header').inert = isResult;
     dialog.dataset.phase = phase;
     if (status) {
       status.textContent = t(`mission.status.${phase}`);
@@ -107,6 +123,9 @@ export function createMissionController({ createGame, duration = 90, getExplorer
     timerId = window.setInterval(() => {
       remaining -= 1;
       renderTimer();
+      if (remaining === 15) {
+        showToast?.(t('mission.timeUrgent'));
+      }
       if (remaining <= 0) {
         fail();
       } else if (remaining % 3 === 0) {
@@ -224,6 +243,8 @@ export function createMissionController({ createGame, duration = 90, getExplorer
     setPhase('completed', { saveState: false });
     if (!isPreviewMode) {
       onComplete?.(facility);
+      awardPending = true;
+      completionTimer = window.setTimeout(openRecord, 1800);
     }
     dialog?.querySelector('[data-mission-record]')?.focus();
   }
@@ -307,6 +328,8 @@ export function createMissionController({ createGame, duration = 90, getExplorer
   }
 
   function open(nextFacility, opener, { previewPhase = '' } = {}) {
+    window.clearTimeout(completionTimer);
+    awardPending = previewPhase === 'completed';
     stopTimer();
     stopCountdown();
     stopStageTransition();
@@ -325,11 +348,6 @@ export function createMissionController({ createGame, duration = 90, getExplorer
     dialog.dataset.facility = facility.id;
     progress = readProgress(getExplorer?.());
     const savedMission = progress.missions[facility.id];
-    if (previewPhase === 'completed' || !isPreviewMode && progress.facilities[facility.id]?.status === 'completed') {
-      setPhase('completed', { saveState: false });
-      modal.open({ focusTarget: dialog.querySelector('[data-mission-record]'), opener });
-      return;
-    }
     remaining = savedMission.checkpoint?.remaining ?? duration;
     game ??= createGame(gameRoot, {
       onChange: () => {
@@ -339,6 +357,12 @@ export function createMissionController({ createGame, duration = 90, getExplorer
       },
       onStageComplete: handleStageComplete
     });
+    if (previewPhase === 'completed' || !isPreviewMode && progress.facilities[facility.id]?.status === 'completed') {
+      game.showCompleted();
+      setPhase('completed', { saveState: false });
+      modal.open({ focusTarget: dialog.querySelector('[data-mission-record]'), opener });
+      return;
+    }
     if (isPreviewMode) {
       remaining = duration;
       resumeMode = 'playing';
@@ -390,10 +414,18 @@ export function createMissionController({ createGame, duration = 90, getExplorer
     modal.close('exit');
     onExit?.();
   }));
-  dialog?.querySelector('[data-mission-record]')?.addEventListener('click', () => {
+  function openRecord() {
+    window.clearTimeout(completionTimer);
+    if (!modal.isOpen()) {
+      return;
+    }
+    const award = awardPending;
+    awardPending = false;
     modal.close('record');
-    window.setTimeout(() => onRecord?.(), 0);
-  });
+    window.setTimeout(() => onRecord?.({ award }), 0);
+  }
+
+  dialog?.querySelector('[data-mission-record]')?.addEventListener('click', openRecord);
 
   function refreshLanguage() {
     setPhase(phase, { saveState: false });

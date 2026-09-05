@@ -61,6 +61,7 @@ export function createProgress(explorer = null) {
     }])),
     logs: createInitialLogs(createdAt),
     stamps: [],
+    coupons: [],
     createdAt,
     updatedAt: createdAt
   };
@@ -119,6 +120,12 @@ function normalizeProgress(value, explorer) {
     }))
     : [];
 
+  progress.coupons = facilityIds.filter((id) => progress.facilities[id].status === 'completed').map((facilityId) => ({
+    facilityId,
+    status: 'pending',
+    earnedAt: progress.facilities[facilityId].completedAt || progress.stamps.find((stamp) => stamp.facilityId === facilityId)?.earnedAt || progress.updatedAt
+  }));
+
   return progress;
 }
 
@@ -143,6 +150,7 @@ function createRestoredPreview(progress) {
     restored.missions[facilityId] = { phase: 'completed', checkpoint: null, attempts: 1, updatedAt: restoredAt };
   });
   restored.stamps = facilityIds.map((facilityId) => ({ id: `${facilityId}-restored`, facilityId, earnedAt: restoredAt }));
+  restored.coupons = facilityIds.map((facilityId) => ({ facilityId, status: 'pending', earnedAt: restoredAt }));
   if (!restored.logs.some((log) => log.messageKey === 'map.restoredLog')) {
     restored.logs.unshift(createLog('map.restoredLog', restoredAt));
   }
@@ -177,6 +185,7 @@ export function readProgress(explorer = null) {
     const savedValue = window.localStorage.getItem(STORAGE_KEY);
     const parsedValue = savedValue ? JSON.parse(savedValue) : null;
     shouldSave = !parsedValue
+      || !Array.isArray(parsedValue.coupons)
       || parsedValue.version !== SCHEMA_VERSION
       || Boolean(explorer?.id && parsedValue.explorerId !== explorer.id)
       || facilityIds.some((facilityId) => {

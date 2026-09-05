@@ -272,7 +272,7 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, speak
     facilityList.innerHTML = state.facilities.map((facility, index) => {
       const view = getFacilityView(facility);
       const facilityColor = view.isDisabled ? 'var(--color-locked)' : `var(--color-${facility.id})`;
-      const description = view.isDisabled ? uiCopy.lockedCondition : getFacilityText(facility, 'type');
+      const description = getFacilityText(facility, 'type');
 
       return `
         <li>
@@ -284,6 +284,7 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, speak
               <span class="facility-card__description">${description}</span>
               <span class="facility-card__state">${getIcon(view.state.icon)}${view.state.label}</span>
             </span>
+            ${view.isDisabled ? `<small class="facility-card__description">${getFacilityText(facility, 'lockedMessage')}</small>` : ''}
           </button>
         </li>
       `;
@@ -412,6 +413,9 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, speak
 
   function render() {
     syncMapState();
+    const completed = state.facilities.filter((facility) => facility.state === 'completed');
+    const lighting = completed.map((facility) => `radial-gradient(ellipse 25% 18% at ${facility.mobileGlow.x}% ${facility.mobileGlow.y}%, transparent 30%, #000 100%)`);
+    screen.style.setProperty('--mobile-restoration-mask', isRestored() ? 'linear-gradient(transparent, transparent)' : lighting.join(', ') || 'linear-gradient(#000, #000)');
     renderFacilities();
     renderMapCards();
     renderCosmicStatus();

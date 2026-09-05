@@ -19,7 +19,8 @@ initializeLanguage();
 
 const missionPreviewPhase = new URLSearchParams(window.location.search).get('mission-preview');
 const shouldPreviewMission = isMissionPreview();
-const previewExplorer = { name: 'TEST EXPLORER', gender: 'female', id: 'NL-TEST-0000', introCompleted: true };
+const previewIssuedAt = new Date(Date.now() - 60000);
+const previewExplorer = { name: 'TEST EXPLORER', gender: 'female', id: 'NL-TEST-0000', introCompleted: true, issuedAt: previewIssuedAt.toISOString(), issueDate: new Intl.DateTimeFormat('en-CA').format(previewIssuedAt).replaceAll('-', '.') };
 
 const screens = document.querySelectorAll('[data-screen]');
 const explorerProfileName = document.querySelector('#explorer-profile-name');
@@ -29,6 +30,7 @@ const worldTitle = document.querySelector('#world-title');
 const toast = createToast();
 const dialog = createDialogController();
 let navigation = null;
+let pendingStampAward = false;
 const overlay = createOverlayController({ onRequestClose: () => navigation?.back() });
 const archive = createArchiveController({
   showToast: toast.show,
@@ -81,7 +83,6 @@ function showScreen(screenName) {
 
 controlRoom = createControlRoomController({
   getExplorer: () => currentExplorer,
-  onMapRequest: () => navigation?.back(),
   onShowScreen: showScreen,
   showToast: toast.show
 });
@@ -134,6 +135,7 @@ map = createMapController({
 });
 
 const mission = createMissionController({
+  showToast: toast.show,
   createGame: createCoasterRepair,
   duration: 90,
   getExplorer: () => currentExplorer,
@@ -143,8 +145,9 @@ const mission = createMissionController({
   },
   onControlRoom: () => controlRoom.refreshState(),
   onExit: () => navigation?.back(),
-  onRecord: () => {
+  onRecord: ({ award = false } = {}) => {
     navigation?.replace({ screen: 'map' });
+    pendingStampAward = award;
     navigation?.push({ screen: 'map', overlay: 'explorer-archive-overlay', archiveTab: 'passport', archiveStamp: 'coaster' });
   },
   testSteps: ['connection', 'trial', 'safety']
@@ -206,7 +209,8 @@ function applyNavigationRoute(route, { previousRoute, source } = {}) {
     if (route.overlay === 'settings-overlay') {
       settings.setScope(route.settingsScope);
     } else if (route.overlay === 'explorer-archive-overlay') {
-      archive.open(route.archiveTab, currentExplorer, { stamp: route.archiveStamp });
+      archive.open(route.archiveTab, currentExplorer, { stamp: route.archiveStamp, award: pendingStampAward });
+      pendingStampAward = false;
     }
     overlay.open(document.querySelector(`#${route.overlay}`));
   }

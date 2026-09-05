@@ -359,7 +359,7 @@
 
 .facility-card__content {
   display: grid;
-  gap: .5rem;
+  gap: .25rem;
   min-width: 0;
 }
 
@@ -376,6 +376,12 @@
   color: var(--color-text-subtle);
   font-size: .8125rem;
   line-height: 1.4;
+}
+
+.facility-card > .facility-card__description {
+  grid-column: 1 / -1;
+  text-align: center;
+  word-break: keep-all;
 }
 
 .facility-card__state {
@@ -1357,11 +1363,31 @@
     transform: perspective(18rem) rotate3d(1, -1.2, 0, 4deg);
   }
   35% {
-    transform: perspective(18rem) rotate3d(1, -1.2, 0, 16deg);
+    transform: perspective(18rem) rotate3d(1, -1.2, 0, 30deg);
   }
   70% {
     transform: perspective(18rem) rotate3d(1, -1.2, 0, 2deg);
   }
+}
+
+.passport.is-awarding .passport__facility-record > img {
+  animation: passport-facility-stamp 1.5s ease-out both;
+}
+
+.passport.is-awarding .passport__facility-record > dl {
+  animation: passport-record-reveal .4s ease-out 1.3s both;
+}
+
+@keyframes passport-facility-stamp {
+  0%, 24% { opacity: 0; transform: scale(1.5) rotate(-12deg); }
+  50% { opacity: .85; transform: scale(.96) rotate(-5deg); }
+  65% { opacity: 1; transform: scale(1.03) rotate(-4deg); }
+  100% { opacity: 1; transform: scale(1) rotate(-4deg); }
+}
+
+@keyframes passport-record-reveal {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .passport__turn {
@@ -1562,41 +1588,8 @@
   align-items: center;
 }
 
-.control-room__map {
-  display: inline-flex;
-  align-items: center;
-  justify-self: start;
-  gap: .65rem;
-  min-width: 7rem;
-  min-height: 3.15rem;
-  padding: .65rem 1.15rem;
-  border: 0;
-  border-radius: 0;
-  color: #f1efff;
-  font-family: var(--font-display);
-  font-size: .9rem;
-  letter-spacing: .08em;
-  background: linear-gradient(145deg, rgba(15, 21, 46, .94), rgba(5, 9, 23, .86));
-  box-shadow: inset 0 0 0 .0625rem rgba(185, 172, 255, .58), inset 0 0 1.2rem rgba(140, 114, 255, .12), 0 0 1.25rem rgba(80, 57, 186, .22);
-  clip-path: polygon(.7rem 0, calc(100% - .7rem) 0, 100% .7rem, 100% calc(100% - .7rem), calc(100% - .7rem) 100%, .7rem 100%, 0 calc(100% - .7rem), 0 .7rem);
-}
-
-.control-room__map:hover {
-  color: #fff;
-  background: linear-gradient(145deg, rgba(39, 36, 87, .98), rgba(8, 14, 33, .92));
-  box-shadow: inset 0 0 0 .0625rem #b9acff, inset 0 0 1.5rem rgba(140, 114, 255, .2), 0 0 1.5rem rgba(140, 114, 255, .34);
-}
-
-.control-room__map:focus-visible {
-  outline-offset: .25rem;
-}
-
-.control-room__map .ui-icon {
-  width: 1.3rem;
-  height: 1.3rem;
-}
-
 .control-room__actions {
+  grid-column: 2;
   display: flex;
   align-items: center;
   justify-self: end;
@@ -1967,25 +1960,25 @@
   background: radial-gradient(circle at 50% 0, rgba(140, 114, 255, .14), transparent 38%), linear-gradient(145deg, rgba(11, 17, 39, .98), rgba(3, 9, 21, .98));
 }
 
-.mission-dialog:is([data-phase="countdown"], [data-phase="playing"]) {
+.mission-dialog:is([data-phase="countdown"], [data-phase="playing"], .is-result) {
   width: 100%;
   height: 100%;
   max-height: none;
   margin: 0;
 }
 
-.mission-dialog:is([data-phase="countdown"], [data-phase="playing"])::backdrop {
+.mission-dialog:is([data-phase="countdown"], [data-phase="playing"], .is-result)::backdrop {
   background: #02040d;
   backdrop-filter: none;
 }
 
-.mission-dialog:is([data-phase="countdown"], [data-phase="playing"]) .mission-flow {
+.mission-dialog:is([data-phase="countdown"], [data-phase="playing"], .is-result) .mission-flow {
   height: 100svh;
   border: 0;
   border-radius: 0;
 }
 
-.mission-dialog[data-phase="playing"] .mission-flow {
+.mission-dialog:is([data-phase="playing"], .is-result) .mission-flow {
   background: radial-gradient(circle at 50% -10%, rgba(52, 102, 171, .18), transparent 32%), linear-gradient(145deg, #060b1b, #020713 58%, #050817);
 }
 
@@ -2028,6 +2021,11 @@
   gap: var(--space-2);
 }
 
+.mission-flow__time.is-urgent strong {
+  color: #ffb692;
+  text-shadow: 0 0 .7rem rgba(255, 110, 72, .35);
+}
+
 .mission-flow__time .ui-icon {
   width: 1rem;
   height: 1rem;
@@ -2035,7 +2033,7 @@
   filter: drop-shadow(0 0 .35rem rgba(82, 226, 255, .45));
 }
 
-.mission-dialog:is([data-phase="guide"], [data-phase="playing"], [data-phase="paused"]) .mission-flow__header {
+.mission-dialog:is([data-phase="guide"], [data-phase="playing"], .is-result) .mission-flow__header {
   position: relative;
   display: grid;
   grid-template-columns: minmax(15rem, 1fr) minmax(22rem, 1.7fr) minmax(15rem, 1fr);
@@ -2048,7 +2046,7 @@
   isolation: isolate;
 }
 
-.mission-dialog:is([data-phase="guide"], [data-phase="playing"], [data-phase="paused"]) .mission-flow__header::before {
+.mission-dialog:is([data-phase="guide"], [data-phase="playing"], .is-result) .mission-flow__header::before {
   position: absolute;
   z-index: 1;
   inset: 0;
@@ -2057,7 +2055,7 @@
   pointer-events: none;
 }
 
-.mission-dialog:is([data-phase="guide"], [data-phase="playing"], [data-phase="paused"]) .mission-flow__header::after {
+.mission-dialog:is([data-phase="guide"], [data-phase="playing"], .is-result) .mission-flow__header::after {
   position: absolute;
   z-index: 0;
   inset: .3rem .8rem;
@@ -2067,7 +2065,7 @@
   pointer-events: none;
 }
 
-.mission-dialog:is([data-phase="guide"], [data-phase="playing"], [data-phase="paused"]) .mission-flow__identity {
+.mission-dialog:is([data-phase="guide"], [data-phase="playing"], .is-result) .mission-flow__identity {
   position: relative;
   z-index: 2;
   display: flex;
@@ -2082,11 +2080,11 @@
   clip-path: none;
 }
 
-.mission-dialog:is([data-phase="guide"], [data-phase="playing"], [data-phase="paused"]) .mission-flow__identity::after {
+.mission-dialog:is([data-phase="guide"], [data-phase="playing"], .is-result) .mission-flow__identity::after {
   content: none;
 }
 
-.mission-dialog:is([data-phase="guide"], [data-phase="playing"], [data-phase="paused"]) .mission-flow__identity .ui-panel__eyebrow {
+.mission-dialog:is([data-phase="guide"], [data-phase="playing"], .is-result) .mission-flow__identity .ui-panel__eyebrow {
   color: #f4f8ff;
   font-size: 1rem;
   letter-spacing: .08em;
@@ -2094,7 +2092,7 @@
   white-space: nowrap;
 }
 
-.mission-dialog:is([data-phase="guide"], [data-phase="playing"], [data-phase="paused"]) .mission-flow__identity h2 {
+.mission-dialog:is([data-phase="guide"], [data-phase="playing"], .is-result) .mission-flow__identity h2 {
   display: block;
   color: #aebbd0;
   font-family: var(--font-body);
@@ -2104,26 +2102,26 @@
   white-space: nowrap;
 }
 
-.mission-dialog:is([data-phase="guide"], [data-phase="playing"], [data-phase="paused"]) .mission-flow__identity h2::before {
+.mission-dialog:is([data-phase="guide"], [data-phase="playing"], .is-result) .mission-flow__identity h2::before {
   margin-right: 1rem;
   color: rgba(159, 140, 255, .62);
   content: "·";
 }
 
-html[lang="en"] .mission-dialog:is([data-phase="guide"], [data-phase="playing"], [data-phase="paused"]) .mission-flow__identity {
+html[lang="en"] .mission-dialog:is([data-phase="guide"], [data-phase="playing"], .is-result) .mission-flow__identity {
   gap: .55rem;
 }
 
-html[lang="en"] .mission-dialog:is([data-phase="guide"], [data-phase="playing"], [data-phase="paused"]) .mission-flow__identity h2 {
+html[lang="en"] .mission-dialog:is([data-phase="guide"], [data-phase="playing"], .is-result) .mission-flow__identity h2 {
   font-size: .64rem;
   letter-spacing: .045em;
 }
 
-html[lang="en"] .mission-dialog:is([data-phase="guide"], [data-phase="playing"], [data-phase="paused"]) .mission-flow__identity h2::before {
+html[lang="en"] .mission-dialog:is([data-phase="guide"], [data-phase="playing"], .is-result) .mission-flow__identity h2::before {
   margin-right: .5rem;
 }
 
-.mission-dialog:is([data-phase="playing"], [data-phase="paused"]) .mission-flow__connection {
+.mission-dialog:is([data-phase="playing"], .is-result) .mission-flow__connection {
   position: relative;
   z-index: 2;
   display: grid;
@@ -2136,21 +2134,21 @@ html[lang="en"] .mission-dialog:is([data-phase="guide"], [data-phase="playing"],
   clip-path: polygon(7% 0, 93% 0, 100% 100%, 0 100%);
 }
 
-.mission-dialog:is([data-phase="playing"], [data-phase="paused"]) .mission-flow__connection > strong {
+.mission-dialog:is([data-phase="playing"], .is-result) .mission-flow__connection > strong {
   color: #eef8ff;
   font-family: var(--font-numeric);
   font-size: 1.05rem;
   letter-spacing: .08em;
 }
 
-.mission-dialog:is([data-phase="playing"], [data-phase="paused"]) .mission-flow__connection > span {
+.mission-dialog:is([data-phase="playing"], .is-result) .mission-flow__connection > span {
   display: flex;
   justify-content: center;
   gap: .28rem;
   width: 100%;
 }
 
-.mission-dialog:is([data-phase="playing"], [data-phase="paused"]) .mission-flow__connection i {
+.mission-dialog:is([data-phase="playing"], .is-result) .mission-flow__connection i {
   flex: 0 0 1.35rem;
   height: .46rem;
   border: .0625rem solid rgba(69, 100, 137, .7);
@@ -2159,13 +2157,13 @@ html[lang="en"] .mission-dialog:is([data-phase="guide"], [data-phase="playing"],
   box-shadow: inset 0 .0625rem rgba(170, 212, 239, .08);
 }
 
-.mission-dialog:is([data-phase="playing"], [data-phase="paused"]) .mission-flow__connection i.is-active {
+.mission-dialog:is([data-phase="playing"], .is-result) .mission-flow__connection i.is-active {
   border-color: rgba(139, 246, 255, .72);
   background: linear-gradient(180deg, #8bf6ff, #20d8ff 58%, #149fcf);
   box-shadow: 0 0 .55rem rgba(82, 226, 255, .58);
 }
 
-.mission-dialog:is([data-phase="guide"], [data-phase="playing"], [data-phase="paused"]) .mission-flow__meta {
+.mission-dialog:is([data-phase="guide"], [data-phase="playing"], .is-result) .mission-flow__meta {
   position: relative;
   z-index: 2;
   align-self: stretch;
@@ -2180,15 +2178,15 @@ html[lang="en"] .mission-dialog:is([data-phase="guide"], [data-phase="playing"],
   transform: translateY(-.15rem);
 }
 
-.mission-dialog:is([data-phase="guide"], [data-phase="playing"], [data-phase="paused"]) .mission-flow__meta::before {
+.mission-dialog:is([data-phase="guide"], [data-phase="playing"], .is-result) .mission-flow__meta::before {
   content: none;
 }
 
-.mission-dialog[data-phase="playing"] .mission-flow__meta > [data-mission-status] {
+.mission-dialog:is([data-phase="playing"], .is-result) .mission-flow__meta > [data-mission-status] {
   display: none;
 }
 
-.mission-dialog:is([data-phase="guide"], [data-phase="paused"]) .mission-flow {
+.mission-dialog[data-phase="guide"] .mission-flow {
   padding: .75rem 1rem 1rem;
   border: 1rem solid transparent;
   border-image: url("../images/coaster/game-coaster-frame-workspace.png") 30 fill / 1rem / 0 stretch;
@@ -2199,28 +2197,28 @@ html[lang="en"] .mission-dialog:is([data-phase="guide"], [data-phase="playing"],
   box-shadow: inset 0 0 5rem rgba(0, 5, 16, .72), 0 0 3rem rgba(0, 0, 0, .62);
 }
 
-.mission-dialog:is([data-phase="guide"], [data-phase="paused"]) {
+.mission-dialog[data-phase="guide"] {
   width: min(80rem, calc(100% - 1rem));
 }
 
-.mission-dialog:is([data-phase="guide"], [data-phase="paused"]) .mission-flow__header {
+.mission-dialog[data-phase="guide"] .mission-flow__header {
   min-height: 4.35rem;
   padding: .2rem 1rem .75rem;
   border-bottom: .0625rem solid rgba(82, 226, 255, .16);
   isolation: auto;
 }
 
-.mission-dialog:is([data-phase="guide"], [data-phase="paused"]) .mission-flow__header::before,
-.mission-dialog:is([data-phase="guide"], [data-phase="paused"]) .mission-flow__header::after {
+.mission-dialog[data-phase="guide"] .mission-flow__header::before,
+.mission-dialog[data-phase="guide"] .mission-flow__header::after {
   content: none;
 }
 
-.mission-dialog:is([data-phase="guide"], [data-phase="paused"]) .mission-flow__meta {
+.mission-dialog[data-phase="guide"] .mission-flow__meta {
   display: contents;
   transform: none;
 }
 
-.mission-dialog:is([data-phase="guide"], [data-phase="paused"]) .mission-flow__meta > [data-mission-status] {
+.mission-dialog[data-phase="guide"] .mission-flow__meta > [data-mission-status] {
   z-index: 2;
   grid-column: 2;
   grid-row: 1;
@@ -2233,14 +2231,7 @@ html[lang="en"] .mission-dialog:is([data-phase="guide"], [data-phase="playing"],
   white-space: nowrap;
 }
 
-.mission-dialog:is([data-phase="guide"], [data-phase="paused"]) .mission-flow__time {
-  z-index: 2;
-  grid-column: 3;
-  grid-row: 1;
-  justify-self: end;
-}
-
-.mission-dialog[data-phase="playing"] .mission-flow__guide-button {
+.mission-dialog:is([data-phase="playing"], .is-result) .mission-flow__guide-button {
   display: inline-flex;
   align-items: center;
   gap: .45rem;
@@ -2254,7 +2245,7 @@ html[lang="en"] .mission-dialog:is([data-phase="guide"], [data-phase="playing"],
   clip-path: polygon(.45rem 0, 100% 0, 100% calc(100% - .45rem), calc(100% - .45rem) 100%, 0 100%, 0 .45rem);
 }
 
-.mission-dialog[data-phase="playing"] .mission-flow__guide-button:is(:hover, :focus-visible) {
+.mission-dialog:is([data-phase="playing"], .is-result) .mission-flow__guide-button:is(:hover, :focus-visible) {
   border-color: #8bf6ff;
   background: linear-gradient(180deg, rgba(26, 92, 126, .66), rgba(7, 34, 57, .82));
   box-shadow: inset 0 0 1rem rgba(82, 226, 255, .12), 0 0 1rem rgba(82, 226, 255, .22);
@@ -2277,11 +2268,11 @@ html[lang="en"] .mission-dialog:is([data-phase="guide"], [data-phase="playing"],
   visibility: hidden;
 }
 
-.mission-dialog:is([data-phase="guide"], [data-phase="paused"]) [data-mission-pause] {
+.mission-dialog[data-phase="guide"] [data-mission-pause] {
   display: none;
 }
 
-.mission-dialog[data-phase="completed"] .mission-flow__time {
+.mission-dialog:not([data-phase="playing"]) .mission-flow__time {
   display: none;
 }
 
@@ -2431,6 +2422,7 @@ html[lang="en"] .mission-dialog:is([data-phase="guide"], [data-phase="playing"],
 }
 
 .mission-guide__content {
+  word-break: keep-all;
   align-self: center;
   max-width: 36rem;
   padding-right: 1rem;
@@ -3184,15 +3176,6 @@ html[lang="en"] .rail-repair__branch-terminal small {
   display: none;
 }
 
-.rail-repair__slot-empty {
-  color: rgba(164, 235, 255, .84);
-  font-family: var(--font-numeric);
-  font-size: .78rem;
-  font-weight: 700;
-  letter-spacing: .08em;
-  text-shadow: 0 0 .55rem rgba(82, 226, 255, .28);
-}
-
 .rail-repair__candidates {
   grid-column: 2;
   grid-row: 1 / span 3;
@@ -3620,15 +3603,67 @@ html[lang="en"] .rail-repair__branch-terminal small {
   isolation: isolate;
 }
 
-.mission-result::before {
+
+.mission-dialog.is-result .mission-flow {
+  position: relative;
+  overflow: hidden;
+}
+
+.mission-dialog.is-result .mission-play,
+.mission-dialog.is-result .mission-flow__header {
+  opacity: .24;
+  pointer-events: none;
+}
+
+.mission-dialog.is-result .mission-result,
+.mission-dialog.is-result .mission-testing {
   position: absolute;
-  z-index: -1;
-  width: min(34rem, 70vw);
-  aspect-ratio: 1;
-  border: .0625rem solid rgba(159, 140, 255, .16);
-  border-radius: 50%;
-  background: repeating-radial-gradient(circle, transparent 0 14%, rgba(140, 114, 255, .06) 14.2% 14.5%, transparent 14.7% 23%);
-  content: "";
+  z-index: 2;
+  inset: 1rem;
+  width: min(36rem, calc(100% - 2rem));
+  height: max-content;
+  max-height: calc(100% - 2rem);
+  margin: auto;
+  padding: clamp(1.25rem, 3vw, 2.5rem);
+  place-content: start center;
+  overflow: auto;
+  border: .5rem solid transparent;
+  border-image: url("../images/coaster/game-coaster-frame-workspace.png") 30 fill / .5rem / 0 stretch;
+  background: radial-gradient(circle at 50% 0, rgba(55, 98, 145, .2), transparent 60%), #050c1b;
+  box-shadow: 0 1.5rem 5rem rgba(0, 0, 0, .65);
+}
+
+.mission-dialog.is-result .mission-result h3,
+.mission-dialog.is-result .mission-testing h3 {
+  font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+}
+
+.mission-dialog.is-result .mission-result .ui-button {
+  min-width: 0;
+  border-radius: .2rem;
+  font-size: .875rem;
+}
+
+.mission-result--complete > .ui-button {
+  margin-top: var(--space-6);
+}
+
+.mission-result--complete .mission-result__seal {
+  width: 5rem;
+  border: 0;
+  box-shadow: none;
+}
+
+.mission-result__seal img {
+  width: 100%;
+  height: 100%;
+}
+
+.mission-dialog.is-result .mission-testing ol {
+  flex-direction: column;
+  width: 100%;
+  gap: .75rem;
+  margin-top: var(--space-5);
 }
 
 .mission-result__actions {
@@ -3653,56 +3688,16 @@ html[lang="en"] .rail-repair__branch-terminal small {
 .mission-result__seal {
   display: grid;
   place-items: center;
-  width: 6.5rem;
+  width: 3.5rem;
   aspect-ratio: 1;
   margin-bottom: var(--space-5);
   border: .18rem double #a693ff;
-  border-radius: 50%;
+  border-radius: .35rem;
   color: #c7bcff;
   font-size: 2.6rem;
   box-shadow: 0 0 2rem rgba(140, 114, 255, .4);
 }
 
-.mission-result--paused .mission-result__seal {
-  width: 7.25rem;
-  margin-bottom: var(--space-4);
-  border: .0625rem solid rgba(82, 226, 255, .72);
-  border-radius: 0;
-  background: linear-gradient(145deg, rgba(13, 48, 74, .94), rgba(4, 13, 30, .98));
-  color: #bff8ff;
-  font-family: var(--font-display);
-  font-size: 2.2rem;
-  box-shadow: inset 0 0 1.6rem rgba(82, 226, 255, .14), 0 0 2rem rgba(82, 226, 255, .24);
-  clip-path: polygon(26% 0, 74% 0, 100% 26%, 100% 74%, 74% 100%, 26% 100%, 0 74%, 0 26%);
-}
-
-.mission-result--paused {
-  margin-top: 0;
-  padding: clamp(2.5rem, 5vw, 4.5rem);
-  border: 0;
-  background: radial-gradient(circle at 50% 44%, rgba(35, 133, 176, .15), transparent 23%);
-  box-shadow: none;
-}
-
-.mission-result--paused::before {
-  width: min(25rem, 58vw);
-  aspect-ratio: 1.55;
-  border-color: rgba(82, 226, 255, .16);
-  border-radius: 50%;
-  background: repeating-radial-gradient(ellipse, transparent 0 18%, rgba(82, 226, 255, .055) 18.4% 18.8%, transparent 19.2% 29%);
-  box-shadow: 0 0 3rem rgba(82, 226, 255, .08);
-}
-
-.mission-result--paused::after {
-  position: absolute;
-  z-index: -2;
-  width: min(40rem, 76vw);
-  height: 10rem;
-  border-block: .0625rem solid rgba(82, 226, 255, .1);
-  background: linear-gradient(90deg, transparent, rgba(82, 226, 255, .05) 25% 75%, transparent);
-  content: "";
-  clip-path: polygon(6% 0, 94% 0, 100% 50%, 94% 100%, 6% 100%, 0 50%);
-}
 
 .mission-result--paused > .ui-panel__eyebrow {
   color: #52e2ff;
@@ -3947,70 +3942,61 @@ html[lang="en"] .rail-repair__branch-terminal small {
     width: min(32rem, calc(100% - 2rem));
   }
 
-  .mission-dialog:is([data-phase="guide"], [data-phase="playing"], [data-phase="paused"]) .mission-flow__header {
+  .mission-dialog:is([data-phase="guide"], [data-phase="playing"], .is-result) .mission-flow__header {
     grid-template-columns: minmax(0, 1fr) auto;
     gap: var(--space-2);
     padding: .6rem .8rem;
   }
 
-  .mission-dialog:is([data-phase="guide"], [data-phase="paused"]) .mission-flow {
+  .mission-dialog[data-phase="guide"] .mission-flow {
     padding: .5rem .75rem .75rem;
     border-width: .75rem;
     border-image-width: .75rem;
   }
 
-  .mission-dialog:is([data-phase="guide"], [data-phase="paused"]) .mission-flow__header {
+  .mission-dialog[data-phase="guide"] .mission-flow__header {
     min-height: 4rem;
     padding: .2rem .5rem .6rem;
   }
 
-  .mission-dialog:is([data-phase="guide"], [data-phase="playing"], [data-phase="paused"]) .mission-flow__identity {
+  .mission-dialog:is([data-phase="guide"], [data-phase="playing"], .is-result) .mission-flow__identity {
     grid-column: 1;
     grid-row: 1;
     gap: .45rem;
   }
 
-  .mission-dialog[data-phase="playing"] .mission-flow__identity {
+  .mission-dialog:is([data-phase="playing"], .is-result) .mission-flow__identity {
     grid-column: 1 / -1;
     min-height: 2rem;
   }
 
-  .mission-dialog:is([data-phase="guide"], [data-phase="playing"], [data-phase="paused"]) .mission-flow__identity h2 {
+  .mission-dialog:is([data-phase="guide"], [data-phase="playing"], .is-result) .mission-flow__identity h2 {
     display: none;
   }
 
-  .mission-dialog:is([data-phase="playing"], [data-phase="paused"]) .mission-flow__connection {
+  .mission-dialog:is([data-phase="playing"], .is-result) .mission-flow__connection {
     grid-column: 1 / -1;
-    grid-row: 2;
+    grid-row: 3;
     justify-self: center;
     width: min(18rem, 100%);
     min-width: 0;
   }
 
-  .mission-dialog[data-phase="playing"] .mission-flow__connection {
-    grid-row: 3;
-  }
-
-  .mission-dialog:is([data-phase="guide"], [data-phase="playing"], [data-phase="paused"]) .mission-flow__meta {
+  .mission-dialog:is([data-phase="guide"], [data-phase="playing"], .is-result) .mission-flow__meta {
     grid-column: 2;
     grid-row: 1;
     gap: var(--space-2);
   }
 
-  .mission-dialog[data-phase="playing"] .mission-flow__meta {
+  .mission-dialog:is([data-phase="playing"], .is-result) .mission-flow__meta {
     grid-column: 1 / -1;
     grid-row: 2;
     justify-content: center;
     justify-self: center;
   }
 
-  .mission-dialog:is([data-phase="guide"], [data-phase="paused"]) .mission-flow__meta > [data-mission-status] {
+  .mission-dialog[data-phase="guide"] .mission-flow__meta > [data-mission-status] {
     display: none;
-  }
-
-  .mission-dialog:is([data-phase="guide"], [data-phase="paused"]) .mission-flow__time {
-    grid-column: 2;
-    grid-row: 1;
   }
 
   .mission-guide {
@@ -4037,7 +4023,7 @@ html[lang="en"] .rail-repair__branch-terminal small {
   }
 
   .mission-result--paused .mission-result__seal {
-    width: 5.5rem;
+    width: 3.5rem;
     margin-bottom: .55rem;
     font-size: 1.75rem;
   }
@@ -4137,6 +4123,11 @@ html[lang="en"] .rail-repair__branch-terminal small {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .passport.is-awarding .passport__facility-record > img,
+  .passport.is-awarding .passport__facility-record > dl {
+    animation: none;
+  }
+
   .passport__page-corner::before,
   .passport__page-corner::after,
   .passport__page-corner > span {
@@ -4329,6 +4320,16 @@ html[lang="en"] .rail-repair__branch-terminal small {
     box-shadow: inset 0 0 3rem rgba(0, 5, 14, .12);
   }
 
+  .world-map::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: rgba(2, 8, 19, .65);
+    mask-image: var(--mobile-restoration-mask, linear-gradient(#000, #000));
+    mask-composite: intersect;
+  }
+
   .world-map__heading {
     top: .75rem;
   }
@@ -4400,7 +4401,7 @@ html[lang="en"] .rail-repair__branch-terminal small {
   }
 
   .map-facility-card__content small {
-    display: none;
+    font-size: .6875rem;
   }
 
   .map-facility-card__content i {

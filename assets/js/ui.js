@@ -18,6 +18,10 @@ export function createToast(selector = '#app-toast') {
     }
 
     window.clearTimeout(timer);
+    const host = [...document.querySelectorAll('dialog[open]')].at(-1) || document.body;
+    if (toast.parentElement !== host) {
+      host.append(toast);
+    }
     toast.textContent = message;
     toast.classList.add('is-visible');
 

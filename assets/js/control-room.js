@@ -22,7 +22,7 @@ function getCoasterProgress(progress, isCompleted) {
   }, { connections: 0, steps: 0 });
 }
 
-export function createControlRoomController({ getExplorer, onMapRequest, onShowScreen, showToast } = {}) {
+export function createControlRoomController({ getExplorer, onShowScreen, showToast } = {}) {
   const screen = document.querySelector('[data-screen="control-room"]');
   const title = document.querySelector('#control-room-title');
   const type = document.querySelector('#control-room-type');
@@ -44,7 +44,6 @@ export function createControlRoomController({ getExplorer, onMapRequest, onShowS
   const check = document.querySelector('[data-control-room-check]');
   const missionStart = document.querySelector('[data-mission-open]');
   const operationStatus = document.querySelector('[data-control-room-operation]');
-  const mapButton = document.querySelector('[data-control-room-map]');
   const eve = createEveController(document.querySelector('.eve-panel--control'), {
     persistent: true,
     focusMotion: false,
@@ -115,6 +114,10 @@ export function createControlRoomController({ getExplorer, onMapRequest, onShowS
     }
     if (missionStart) {
       missionStart.hidden = !isCoaster || isCompleted;
+      const label = missionStart.querySelector('strong');
+      const resumable = progress.missions[nextFacility.id]?.checkpoint && ['playing', 'paused', 'testing'].includes(progress.missions[nextFacility.id]?.phase);
+      label.dataset.i18n = resumable ? 'mission.resume' : 'mission.start';
+      label.textContent = t(label.dataset.i18n);
     }
     if (operationStatus) {
       operationStatus.hidden = !isCoaster || !isCompleted;
@@ -139,8 +142,6 @@ export function createControlRoomController({ getExplorer, onMapRequest, onShowS
       render(facility);
     }
   }
-
-  mapButton?.addEventListener('click', () => onMapRequest?.());
 
   return {
     cancel: eve.cancel,

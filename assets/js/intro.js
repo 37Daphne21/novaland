@@ -871,6 +871,11 @@ export function createIntroController({ onComplete, onRouteChange }) {
   function reset() {
     clearExplorer();
     clearIntroState();
+    if (nameInput) {
+      nameInput.value = '';
+    }
+    genderInputs.forEach((input) => { input.checked = false; });
+    saveIntroState(createRoute('register', 'name'));
   }
 
   startButton?.addEventListener('click', handleStart);

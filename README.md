@@ -104,12 +104,12 @@ EVE의 구조 신호에 응답해 이름을 입력하고 여성·남성 Explorer
 
 ### Explorer Archive
 
-완료한 Mission과 시설 복구 기록, Stamp와 보상을 Explorer Log와 Passport에 남깁니다.
+완료한 Mission과 시설 복구 기록을 Explorer Log와 Passport에 남깁니다. NOVA COASTER 복구 후 Passport로 이어지며 NOVA Stamp와 쿠폰 준비 상태를 확인할 수 있습니다. 실제 쿠폰 혜택과 사용 기능은 준비 중입니다.
 
 
 ### Environment & Settings
 
-Intro의 구조 신호 화면부터 오른쪽 위 설정 아이콘에서 한국어와 영어를 선택할 수 있고, 선택한 언어는 Intro부터 World Map까지 즉시 반영되어 재접속 후에도 유지됩니다. World Map 설정에서는 현재 시간·날씨 표시와 전체 화면 기능도 함께 제공합니다. 시간대와 사운드 설정은 공통 시스템 구현 단계에서 연결합니다.
+Intro의 구조 신호 화면부터 오른쪽 위 설정 아이콘에서 한국어와 영어를 선택할 수 있고, 선택한 언어는 Intro부터 World Map까지 즉시 반영되어 재접속 후에도 유지됩니다. World Map 설정에서는 전체 화면 기능도 제공합니다. 시간·날씨 연출은 준비 상태로 표시하며 시간대와 사운드 설정은 공통 시스템 구현 단계에서 연결합니다.
 
 ---
 
@@ -138,7 +138,7 @@ Intro의 구조 신호 화면부터 오른쪽 위 설정 아이콘에서 한국�
 
 ## 제작 현황
 
-현재 최초 방문 Intro, Explorer 등록과 Passport 발급, WORLD MAP에 이어 PC NOVA COASTER의 공통 Mission Flow와 NOVA Stamp 기록 기반을 연결했습니다. NOVA COASTER는 세 고장 구간을 조각 선택, 회전과 조합으로 단계적으로 복구한 뒤 연결 검사, 시운전과 안전 점검을 진행합니다. Explorer Archive의 Log와 Passport는 같은 진행 기록을 사용하며 시설 상태, Mission Checkpoint, Log와 Stamp 기록은 Save Data로 복원됩니다. 한국어·영어 설정은 정적 문구, 동적 EVE 대사와 접근성 라벨에 즉시 반영되고 선택값이 저장됩니다. Intro는 PC·Mobile 반응형과 키보드 흐름까지 검수했으며, Mobile World Map은 기능 검증용 1차 버전입니다.
+현재 최초 방문 Intro, Explorer 등록과 Passport 발급, WORLD MAP에 이어 PC NOVA COASTER의 공통 Mission Flow와 NOVA Stamp 기록 기반을 연결했습니다. NOVA COASTER는 세 고장 구간을 조각 선택, 회전과 조합으로 단계적으로 복구한 뒤 연결 검사, 시운전과 안전 점검을 진행합니다. Explorer Archive의 Log와 Passport는 같은 진행 기록을 사용하며 시설 상태, Mission Checkpoint, Log, Stamp와 쿠폰 준비 상태는 Save Data로 복원됩니다. 한국어·영어 설정은 정적 문구, 동적 EVE 대사와 접근성 라벨에 즉시 반영되고 선택값이 저장됩니다. Intro는 PC·Mobile 반응형과 키보드 흐름까지 검수했으며, Mobile World Map은 기능 검증용 1차 버전입니다.
 
 다음 단계에서 PC NOVA COASTER의 Guide, Play, System Check와 Complete를 한 화면씩 시각적으로 발전시키고 검수한 뒤 Mobile World Map을 전용 HUD로 재설계할 예정입니다.
 
