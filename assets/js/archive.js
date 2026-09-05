@@ -9,6 +9,10 @@ export function createArchiveController({ onTabChange } = {}) {
   const logList = root?.querySelector('[data-archive-log-list]');
   const passportHost = root?.querySelector('[data-archive-passport]');
   const passport = document.querySelector('[data-passport]');
+  const previousPage = root?.querySelector('[data-passport-previous]');
+  const nextPage = root?.querySelector('[data-passport-next]');
+  const pageNumber = root?.querySelector('[data-passport-page-number]');
+  const mobilePassport = window.matchMedia('(max-width: 56rem)');
   let explorer = null;
   let facilityRecord = '';
 
@@ -70,13 +74,15 @@ export function createArchiveController({ onTabChange } = {}) {
       passportHost.append(passport);
     }
     passport.classList.remove('is-closing');
-    passport.classList.add('is-open', 'is-mobile-identity', 'is-writing', 'is-stamped', 'is-archive');
+    passport.classList.add('is-open', 'is-writing', 'is-stamped', 'is-archive');
+    passport.classList.toggle('is-mobile-identity', facilityRecord === 'identity');
     passport.querySelectorAll('[data-passport-edit]').forEach((button) => { button.hidden = false; });
     passport.querySelector('[data-passport-status]')?.replaceChildren('REGISTERED');
     const record = passport.querySelector('[data-passport-facility-record]');
     const authorityContent = passport.querySelector('.passport__page-content--authority');
     const authorityLabel = passport.querySelector('[data-passport-authority-label]');
-    const showCoasterRecord = facilityRecord === 'coaster' && readProgress(explorer).stamps.some((stamp) => stamp.facilityId === 'coaster');
+    const pages = getPassportPages();
+    const showCoasterRecord = facilityRecord === 'coaster' && pages.includes('coaster');
     if (record) {
       record.hidden = !showCoasterRecord;
     }
@@ -86,8 +92,47 @@ export function createArchiveController({ onTabChange } = {}) {
     if (authorityLabel) {
       authorityLabel.textContent = showCoasterRecord ? 'FACILITY RESTORATION 01' : 'NOVA LAND AUTHORITY';
     }
+    const pageIndex = Math.max(0, pages.indexOf(facilityRecord));
+    if (previousPage) {
+      previousPage.disabled = pageIndex === 0;
+    }
+    if (nextPage) {
+      nextPage.disabled = pageIndex === pages.length - 1;
+    }
+    if (pageNumber) {
+      pageNumber.textContent = `${pageIndex + 1} / ${pages.length}`;
+    }
     renderPassportData(passport, explorer);
   }
+
+  function getPassportPages() {
+    const pages = mobilePassport.matches ? ['', 'identity'] : [''];
+    if (explorer && readProgress(explorer).stamps.some((stamp) => stamp.facilityId === 'coaster')) {
+      pages.push('coaster');
+    }
+    return pages;
+  }
+
+  function movePassportPage(direction) {
+    const pages = getPassportPages();
+    const pageIndex = Math.max(0, pages.indexOf(facilityRecord));
+    facilityRecord = pages[Math.max(0, Math.min(pages.length - 1, pageIndex + direction))];
+    preparePassport();
+    if (document.activeElement?.disabled) {
+      (direction > 0 ? previousPage : nextPage)?.focus();
+    }
+  }
+
+  previousPage?.addEventListener('click', () => movePassportPage(-1));
+  nextPage?.addEventListener('click', () => movePassportPage(1));
+  mobilePassport.addEventListener('change', () => {
+    if (!mobilePassport.matches && facilityRecord === 'identity') {
+      facilityRecord = '';
+    }
+    if (passport?.classList.contains('is-archive')) {
+      preparePassport();
+    }
+  });
 
   function handleTabChange(tabName) {
     if (tabName === 'passport') {

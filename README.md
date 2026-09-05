@@ -48,7 +48,7 @@ NOVA COMPASS는 정해진 목적지를 가리키기보다 멈춘 세계에서 �
 
 Movement Facility
 
-전체 Rail Network에서 세 곳의 고장 구간을 찾아 단계적으로 복구하고 열차의 안전 운행을 확인하는 퍼즐입니다.
+서로 다른 세 단계의 Rail Board에서 빈 구간을 복구하고 열차의 안전 운행을 확인하는 퍼즐입니다.
 
 
 ### LUNA LIGHT GARDEN

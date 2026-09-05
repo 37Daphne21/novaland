@@ -160,6 +160,15 @@
 - [x] STEP 1 회전 불가 직선 Rail B의 가로 방향 교정
 - [x] Rail SVG의 금속 베드·침목·체결판·볼트 Detail 보강
 - [x] NOVA Stamp 기록과 Passport 연결
+- [x] 모바일 Rail Board의 PC 여백 계산 제거, 44px 빈 공간과 가로 스크롤 확보
+- [x] 모바일 Play Header·단계 표기 겹침 수정과 콘텐츠 세로 스크롤
+- [x] 낮은 화면 Guide·Pause 내부 스크롤과 하단 버튼 접근 복구
+- [x] Rail 배치·회전·빈 공간 선택 Focus 유지, Fail 재시도 Focus와 Pause Tab 순서 수정
+- [x] 일반 Passport 열람에서 권한·신원·획득한 NOVA 기록으로 이동하는 하단 이전/다음 버튼 연결
+- [x] Passport 본문·항목명·일련번호의 13px 기준 적용과 EVE 안내·역명 가독성 보정
+- [ ] Passport 귀퉁이 이동 표현과 이후 시설의 양면 기록 페이지 구성
+- [ ] 모바일 MAP의 복구 상태별 배경 반영 방식 확정
+- [ ] Guide 조작 예시·문구, Play 정보 중복, 결과 화면과 MAP·관제실 공통 UI 정리
 - [ ] PC 한국어 화면 검수
 - [ ] PC 영어 화면 검수
 - [ ] 반응형·반응형 영어 화면 검수

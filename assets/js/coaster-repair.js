@@ -529,6 +529,9 @@ export function createCoasterRepair(root, { onChange, onStageComplete } = {}) {
   }
 
   function render() {
+    const focusedElement = document.activeElement;
+    const focusAttribute = ['data-repair-slot', 'data-repair-candidate', 'data-repair-candidate-rotate'].find((attribute) => root?.contains(focusedElement) && focusedElement.hasAttribute(attribute));
+    const focusValue = focusAttribute ? focusedElement.getAttribute(focusAttribute) : null;
     const stage = getStage();
     const completedConnections = STAGES.reduce((total, item, index) => total + (state.completed[index] ? item.targets.length : 0), 0);
     const placedCount = state.placements.filter(Boolean).length;
@@ -553,6 +556,12 @@ export function createCoasterRepair(root, { onChange, onStageComplete } = {}) {
     }
     if (confirmButton) {
       confirmButton.disabled = locked || !canConfirm();
+    }
+    if (focusAttribute) {
+      const nextFocus = [...root.querySelectorAll(`[${focusAttribute}]`)].find((element) => element.getAttribute(focusAttribute) === focusValue);
+      if (nextFocus && !nextFocus.disabled) {
+        nextFocus.focus({ preventScroll: true });
+      }
     }
   }
 
@@ -667,7 +676,7 @@ export function createCoasterRepair(root, { onChange, onStageComplete } = {}) {
     render();
     notify();
     startStageDialogue();
-    candidates?.querySelector('button')?.focus();
+    candidates?.querySelector('button')?.focus({ preventScroll: true });
   }
 
   function showTransition(show, stageNumber = state.stage + 1) {
@@ -715,7 +724,7 @@ export function createCoasterRepair(root, { onChange, onStageComplete } = {}) {
     advance,
     focus: () => {
       startStageDialogue();
-      candidates?.querySelector('button')?.focus();
+      candidates?.querySelector('button')?.focus({ preventScroll: true });
     },
     getCheckpoint: () => cloneState(state),
     isComplete: () => state.completed.every(Boolean),

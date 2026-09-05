@@ -1186,11 +1186,37 @@
 }
 
 .explorer-archive__passport .passport__book {
-  width: min(51rem, 74vw, calc((100svh - 13rem) * 1.62));
+  width: min(51rem, 74vw);
 }
 
 .explorer-archive__passport .passport.is-archive .passport__book {
   transform: none;
+}
+
+.passport.is-archive .passport__leaf-front {
+  visibility: hidden;
+}
+
+.explorer-archive__panel--passport {
+  grid-template-rows: max-content max-content;
+  align-content: start;
+  gap: var(--space-3);
+  overflow: auto;
+}
+
+.passport__navigation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  width: 100%;
+  font-size: .8125rem;
+}
+
+.passport__navigation .ui-button {
+  min-width: 0;
+  padding-inline: var(--space-3);
+  font-size: .8125rem;
 }
 
 .settings-list {
@@ -1248,7 +1274,7 @@
   grid-template-rows: minmax(0, 1fr);
   height: 100svh;
   padding: clamp(1rem, 2vw, 2rem);
-  overflow: hidden;
+  overflow: auto;
   background: #02040d;
 }
 
@@ -2047,10 +2073,6 @@ html[lang="en"] .mission-dialog:is([data-phase="guide"], [data-phase="playing"],
   overflow: auto;
 }
 
-.mission-dialog:is([data-phase="guide"], [data-phase="paused"]) .mission-phase {
-  overflow: hidden;
-}
-
 .mission-guide {
   position: relative;
   display: grid;
@@ -2673,26 +2695,26 @@ html[lang="en"] .mission-dialog:is([data-phase="guide"], [data-phase="playing"],
 .rail-repair__endpoint strong {
   position: relative;
   z-index: 1;
-  max-width: calc(var(--rail-label-min-width) + 1rem);
-  font-size: var(--rail-label-title-size);
+  max-width: 100%;
+  font-size: max(.8125rem, var(--rail-label-title-size));
   line-height: 1.15;
   letter-spacing: .08em;
   text-align: center;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 
 .rail-repair__endpoint small {
   position: relative;
   z-index: 1;
-  max-width: calc(var(--rail-label-min-width) + 1rem);
+  max-width: 100%;
   color: rgba(222, 242, 255, .82);
   font-family: var(--font-body);
-  font-size: var(--rail-label-copy-size);
+  font-size: max(.8125rem, var(--rail-label-copy-size));
   font-weight: 600;
   line-height: 1.1;
   letter-spacing: .02em;
   text-align: center;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 
 .rail-repair__endpoint--start {
@@ -2848,7 +2870,7 @@ html[lang="en"] .rail-repair__branch-terminal small {
 }
 
 .rail-repair__eve small {
-  font-size: .72rem;
+  font-size: .8125rem;
   line-height: 1.45;
 }
 
@@ -3494,7 +3516,6 @@ html[lang="en"] .rail-repair__branch-terminal small {
 }
 
 .mission-result--paused .mission-result__actions [data-mission-resume] {
-  order: -2;
   grid-column: 1 / -1;
   min-height: 3.15rem;
   border-color: #52e2ff;
@@ -3506,7 +3527,6 @@ html[lang="en"] .rail-repair__branch-terminal small {
 }
 
 .mission-result--paused .mission-result__actions [data-mission-restart] {
-  order: -1;
   grid-column: 1 / -1;
   border-color: rgba(159, 140, 255, .46);
   background: linear-gradient(180deg, rgba(47, 37, 99, .72), rgba(17, 15, 50, .9));
@@ -3733,6 +3753,11 @@ html[lang="en"] .rail-repair__branch-terminal small {
     gap: .45rem;
   }
 
+  .mission-dialog[data-phase="playing"] .mission-flow__identity {
+    grid-column: 1 / -1;
+    min-height: 2rem;
+  }
+
   .mission-dialog:is([data-phase="guide"], [data-phase="playing"], [data-phase="paused"]) .mission-flow__identity h2 {
     display: none;
   }
@@ -3745,10 +3770,21 @@ html[lang="en"] .rail-repair__branch-terminal small {
     min-width: 0;
   }
 
+  .mission-dialog[data-phase="playing"] .mission-flow__connection {
+    grid-row: 3;
+  }
+
   .mission-dialog:is([data-phase="guide"], [data-phase="playing"], [data-phase="paused"]) .mission-flow__meta {
     grid-column: 2;
     grid-row: 1;
     gap: var(--space-2);
+  }
+
+  .mission-dialog[data-phase="playing"] .mission-flow__meta {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-content: center;
+    justify-self: center;
   }
 
   .mission-dialog:is([data-phase="guide"], [data-phase="paused"]) .mission-flow__meta > [data-mission-status] {
@@ -3814,11 +3850,44 @@ html[lang="en"] .rail-repair__branch-terminal small {
   }
 
   .mission-play {
+    grid-template-rows: max-content max-content;
+    align-content: start;
     overflow: auto;
   }
 
   .rail-repair__network, .rail-repair__workspace {
     padding: var(--space-4);
+  }
+
+  .rail-repair__network {
+    grid-template-rows: auto auto;
+    min-width: 0;
+  }
+
+  .rail-repair__network > header {
+    flex-direction: column;
+  }
+
+  .rail-repair__step {
+    position: static;
+    align-self: center;
+    min-width: 0;
+    transform: none;
+  }
+
+  .rail-repair__route {
+    display: block;
+    place-items: normal;
+    overflow: auto;
+    padding: 2rem 0 3rem;
+  }
+
+  .mission-flow[data-repair-step] .rail-repair__board {
+    --rail-facility-width: 12rem;
+    width: calc(var(--rail-columns) * 2.75rem);
+    max-height: none;
+    margin-inline: 10rem;
+    transform: none;
   }
 
   .rail-repair__workspace {
@@ -4416,6 +4485,16 @@ html[lang="en"] .rail-repair__branch-terminal small {
 
   .explorer-archive__passport .passport__book {
     width: min(21rem, calc(100vw - 2rem));
+  }
+
+  .passport.is-archive .passport__leaf,
+  .passport.is-archive .passport__leaf-back {
+    transform: none;
+  }
+
+  .passport.is-archive.is-mobile-identity .passport__leaf,
+  .passport.is-archive:not(.is-mobile-identity) .passport__page--profile {
+    visibility: hidden;
   }
 }
 

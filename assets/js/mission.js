@@ -99,7 +99,7 @@ export function createMissionController({ createGame, duration = 90, getExplorer
     stopTimer();
     resumeMode = 'playing';
     setPhase('failed', { checkpointMode: 'playing' });
-    dialog?.querySelector('[data-mission-restart]')?.focus();
+    dialog?.querySelector('[data-mission-phase="failed"] [data-mission-restart]')?.focus();
   }
 
   function startTimer() {

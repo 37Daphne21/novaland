@@ -1465,7 +1465,7 @@
   justify-self: start;
   margin-bottom: 2rem;
   font-family: var(--font-display);
-  font-size: .55rem;
+  font-size: .8125rem;
   letter-spacing: .16em;
 }
 
@@ -1514,7 +1514,7 @@
   max-width: 18rem;
   margin-top: .75rem;
   color: rgba(24, 54, 72, .68);
-  font-size: clamp(.5rem, .85vw, .68rem);
+  font-size: .8125rem;
   line-height: 1.75;
   word-break: keep-all;
 }
@@ -1530,7 +1530,7 @@
 .passport__facility-record > span {
   color: rgba(64, 54, 116, .62);
   font-family: var(--font-numeric);
-  font-size: .55rem;
+  font-size: .8125rem;
   letter-spacing: .18em;
 }
 
@@ -1538,7 +1538,7 @@
   margin-top: .45rem;
   color: #3f356f;
   font-family: var(--font-display);
-  font-size: clamp(.8rem, 1.5vw, 1.15rem);
+  font-size: max(.8125rem, clamp(.8rem, 1.5vw, 1.15rem));
   letter-spacing: .08em;
 }
 
@@ -1553,7 +1553,7 @@
 .passport__facility-record p {
   max-width: 17rem;
   color: rgba(25, 54, 69, .62);
-  font-size: clamp(.52rem, .8vw, .68rem);
+  font-size: .8125rem;
   line-height: 1.6;
 }
 
@@ -1572,8 +1572,8 @@
   border-left: .0625rem solid rgba(41, 65, 78, .18);
 }
 
-.passport__facility-record dt { color: rgba(25, 54, 69, .48); font-family: var(--font-numeric); font-size: .42rem; letter-spacing: .12em; }
-.passport__facility-record dd { margin-top: .25rem; color: #51428f; font-family: var(--font-numeric); font-size: .65rem; font-weight: 700; }
+.passport__facility-record dt { color: rgba(25, 54, 69, .48); font-family: var(--font-numeric); font-size: .8125rem; letter-spacing: .12em; }
+.passport__facility-record dd { margin-top: .25rem; color: #51428f; font-family: var(--font-numeric); font-size: .8125rem; font-weight: 700; }
 
 .passport__authority-meta {
   display: grid;
@@ -1601,13 +1601,13 @@
 
 .passport__authority-meta dt {
   color: rgba(25, 54, 69, .52);
-  font-size: clamp(.4rem, .65vw, .52rem);
+  font-size: .8125rem;
 }
 
 .passport__authority-meta dd {
   margin-top: .22rem;
   color: #175d62;
-  font-size: clamp(.55rem, .9vw, .72rem);
+  font-size: .8125rem;
   font-weight: 700;
 }
 
@@ -1667,7 +1667,7 @@
 .passport__page-content--profile dt {
   color: rgba(25, 54, 69, .55);
   font-family: var(--font-numeric);
-  font-size: clamp(.42rem, .7vw, .58rem);
+  font-size: .8125rem;
   letter-spacing: .1em;
 }
 
@@ -1680,7 +1680,7 @@
   padding-bottom: .25rem;
   border-bottom: .0625rem solid rgba(36, 68, 83, .18);
   font-family: var(--font-numeric);
-  font-size: clamp(.65rem, 1.2vw, .92rem);
+  font-size: max(.8125rem, clamp(.65rem, 1.2vw, .92rem));
   font-weight: 600;
   letter-spacing: .04em;
   opacity: 0;
@@ -1746,7 +1746,7 @@
 .passport__seal {
   position: relative;
   grid-row: 1;
-  grid-column: 1 / -1;
+  grid-column: 1;
   align-self: end;
   justify-self: end;
   display: grid;
@@ -1789,7 +1789,7 @@
 .passport__serial {
   color: rgba(20, 51, 68, .55);
   font-family: var(--font-numeric);
-  font-size: .48rem;
+  font-size: .8125rem;
   letter-spacing: .12em;
 }
 
@@ -2087,13 +2087,13 @@
 .passport-route__control small {
   color: rgba(128, 214, 239, .58);
   font-family: var(--font-display);
-  font-size: .44rem;
+  font-size: .8125rem;
   letter-spacing: .14em;
 }
 
 .passport-route__control strong {
   font-family: var(--font-display);
-  font-size: .7rem;
+  font-size: .8125rem;
   font-weight: 600;
   letter-spacing: .09em;
 }
@@ -2108,7 +2108,7 @@
   border-left: .0625rem solid rgba(101, 214, 247, .18);
   color: #80e6ff;
   font-family: var(--font-numeric);
-  font-size: .62rem;
+  font-size: .8125rem;
   font-weight: 600;
   letter-spacing: .08em;
 }
@@ -2514,10 +2514,6 @@
     padding: 1rem;
   }
 
-  .passport__page-label {
-    font-size: .46rem;
-  }
-
   .passport__page--authority {
     border-right: 0;
   }
@@ -2532,19 +2528,11 @@
 
   .passport__authority-copy {
     max-width: 15rem;
-    font-size: .66rem;
+    font-size: .8125rem;
   }
 
   .passport__authority-meta {
     margin-top: 1.35rem;
-  }
-
-  .passport__authority-meta dt {
-    font-size: .42rem;
-  }
-
-  .passport__authority-meta dd {
-    font-size: .62rem;
   }
 
   .passport__page-content--profile {
@@ -2552,27 +2540,15 @@
     gap: .75rem;
   }
 
-  .passport__page-content--profile dt {
-    font-size: .4rem;
-  }
-
-  .passport__page-content--profile dd {
-    font-size: .62rem;
-  }
-
   .passport__seal {
     width: 4.5rem;
-  }
-
-  .passport__serial {
-    font-size: .36rem;
   }
 
   .passport-message {
     min-width: 0;
     width: 100%;
     min-height: 5.8rem;
-    font-size: .75rem;
+    font-size: .8125rem;
   }
 
   .passport-route {
@@ -2585,7 +2561,7 @@
   }
 
   .passport-route__control {
-    grid-template-columns: 2.75rem 1fr auto;
+    grid-template-columns: 2.75rem minmax(0, 1fr) auto;
     min-width: 0;
     width: 100%;
     min-height: 3.5rem;
@@ -2595,9 +2571,6 @@
     width: 2.75rem;
   }
 
-  .passport-route__control strong {
-    font-size: .58rem;
-  }
 }
 
 @media (max-width: 56rem) and (orientation: landscape), (max-height: 35rem) {
@@ -2697,7 +2670,7 @@
 
   .passport__authority-copy {
     margin-top: .45rem;
-    font-size: .5rem;
+    font-size: .8125rem;
   }
 
   .passport__authority-meta {
@@ -2711,14 +2684,6 @@
 
   .passport__page-content--profile dl {
     gap: .18rem;
-  }
-
-  .passport__page-content--profile dt {
-    font-size: .3rem;
-  }
-
-  .passport__page-content--profile dd {
-    font-size: .45rem;
   }
 
   .passport__seal {
