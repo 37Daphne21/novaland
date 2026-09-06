@@ -2,9 +2,11 @@ import { t } from './locales.js';
 import { getMissionRestoreState } from './mission-state.js';
 import { readProgress, updateMissionProgress } from './progress.js';
 import { createModalController } from './ui.js';
+import { renderMissionPause } from './mission-pause.js';
 
 export function createMissionController({ createGame, duration = 90, getExplorer, onComplete, onControlRoom, onExit, onRecord, showToast, testSteps = [] } = {}) {
   const dialog = document.querySelector('#mission-dialog');
+  renderMissionPause(dialog?.querySelector('[data-mission-phase="paused"]'));
   const panels = dialog ? [...dialog.querySelectorAll('[data-mission-phase]')] : [];
   const timer = dialog?.querySelector('[data-mission-timer]');
   const status = dialog?.querySelector('[data-mission-status]');

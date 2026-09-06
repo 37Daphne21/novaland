@@ -96,6 +96,7 @@ function missionFixture({ saved = { phase: 'idle', checkpoint: null, attempts: 0
   dialog.querySelector = element;
   dialog.querySelectorAll = selector => selector === '[data-mission-phase]' ? panels : selector === '[data-mission-restart]' ? [element('[data-mission-restart]')] : [];
   const progress = { facilities: { coaster: { status: 'available' } }, missions: { coaster: saved } };
+  const { renderMissionPause } = load('mission-pause.js', ['renderMissionPause'], { t: key => key });
   let callbacks, modalCallbacks, opened = false, checkpoint, advances = 0;
   const game = {
     reset(value) { checkpoint = value ? JSON.parse(JSON.stringify(value)) : { stage: 0, completed: [false, false, false] }; },
@@ -103,6 +104,7 @@ function missionFixture({ saved = { phase: 'idle', checkpoint: null, attempts: 0
     advance() { checkpoint.stage++; advances++; }, showCompleted() { checkpoint = { stage: 2, completed: [true, true, true] }; }, showTransition() {}, focus() {}, refreshLanguage() {}
   };
   const api = load('mission.js', ['createMissionController'], {
+    renderMissionPause,
     window: timers, document: { querySelector: () => dialog }, t: key => key, ...missionState,
     readProgress: () => progress,
     updateMissionProgress(value, id, updates) { Object.assign(value.missions[id], updates); return value; },

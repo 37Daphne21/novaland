@@ -13,7 +13,7 @@ import { createNavigationController } from './navigation.js';
 import { createProfileEditor } from './profile-editor.js';
 import { clearProgress, isMissionPreview, readProgress } from './progress.js';
 import { createSettingsController } from './settings.js';
-import { createDialogController, createOverlayController, createToast } from './ui.js';
+import { createDialogController, createModalController, createOverlayController, createToast } from './ui.js';
 
 initializeLanguage();
 
@@ -89,6 +89,27 @@ controlRoom = createControlRoomController({
     showScreen(screenName);
   },
   showToast: toast.show
+});
+
+const lunaEntry = document.querySelector('[data-luna-entry]');
+const lunaFrame = document.querySelector('[data-luna-frame]');
+const lunaModal = createModalController(lunaEntry, {
+  onCancel: () => lunaFrame.contentWindow.postMessage({ type: 'novaland:luna-pause' }, window.location.origin),
+  onClose: () => {
+    if (!lunaEntry.open) {
+      lunaFrame.contentWindow.location.replace('about:blank');
+      controlRoom.refreshLanguage();
+    }
+  }
+});
+window.addEventListener('message', (event) => {
+  if (event.origin !== window.location.origin || event.source !== lunaFrame.contentWindow || !lunaEntry.open) return;
+  if (event.data?.type !== 'novaland:luna-exit') return;
+  if (event.data.destination === 'control-room') navigation.back();
+  else if (event.data.destination === 'map') {
+    navigation.replace({ screen: 'map' });
+    map.focusReturnTarget();
+  }
 });
 
 function enterMap(explorer, { focusMap = false } = {}) {
@@ -182,6 +203,7 @@ function applyNavigationRoute(route, { previousRoute, source } = {}) {
   }
 
   overlay.close();
+  if (!route.lunaPlay) lunaModal.close();
   mobileMap.reset();
   if (mission.isOpen()) {
     mission.close();
@@ -228,6 +250,12 @@ function applyNavigationRoute(route, { previousRoute, source } = {}) {
     }
     overlay.open(document.querySelector(`#${route.overlay}`));
   }
+  if (route.screen === 'control-room' && route.facilityId === 'luna' && route.lunaPlay && !lunaEntry.open) {
+    controlRoom.cancel();
+    // Replace the child document without adding an extra browser Back entry.
+    lunaFrame.contentWindow.location.replace(new URL('./luna-sample.html', window.location.href).href);
+    lunaModal.open({ focusTarget: lunaFrame, opener: document.querySelector('[data-mission-open]') });
+  }
 }
 
 navigation = createNavigationController({ button: appBackButton, onNavigate: applyNavigationRoute });
@@ -239,6 +267,10 @@ async function handleDocumentClick(event) {
   const controlFacility = controlRoom.getFacility();
   if (missionOpenButton && controlFacility?.id === 'coaster') {
     mission.open(controlFacility, missionOpenButton);
+    return;
+  }
+  if (missionOpenButton && controlFacility?.id === 'luna') {
+    navigation.push({ screen: 'control-room', facilityId: 'luna', lunaPlay: true });
     return;
   }
 
@@ -384,11 +416,14 @@ function handleKeydown(event) {
 
 settings.render();
 if (shouldPreviewMission) {
-  const facility = getFacility('coaster');
+  const controlPreview = new URLSearchParams(window.location.search).get('control-room');
+  const facility = getFacility(controlPreview === 'luna' ? 'luna' : 'coaster');
   enterMap(previewExplorer);
   controlRoom.show(facility);
   navigation?.push({ screen: 'control-room', facilityId: facility.id }, { applyRoute: false });
-  window.setTimeout(() => mission.open(facility, controlRoom.getFocusTarget(), { previewPhase: missionPreviewPhase }), 120);
+  if (!['luna', 'coaster'].includes(controlPreview)) {
+    window.setTimeout(() => mission.open(facility, controlRoom.getFocusTarget(), { previewPhase: missionPreviewPhase }), 120);
+  }
 } else {
   intro.start();
 }
@@ -397,3 +432,9 @@ document.addEventListener('click', handleDocumentClick);
 document.addEventListener('keydown', handleKeydown);
 document.addEventListener('fullscreenchange', settings.syncFullscreenToggle);
 window.addEventListener('novaland:languagechange', handleLanguageChange);
+window.addEventListener('storage', (event) => {
+  if (event.key === 'novaLandLanguage' && lunaEntry.open) {
+    initializeLanguage();
+    handleLanguageChange();
+  }
+});
