@@ -146,7 +146,7 @@ export function getMissionPreview() {
   const phase = requested;
   const phases = {
     coaster: ['control-room', 'control-room-completed', 'guide', 'countdown', 'play', 'failed', 'testing', 'completed'],
-    luna: ['control-room', 'guide', 'play']
+    luna: ['control-room', 'guide', 'play', 'completed']
   };
   const valid = Boolean(phases[facility]?.includes(phase)) && !params.has('control-room');
   return { facility, phase, valid };

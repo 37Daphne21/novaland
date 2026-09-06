@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
-  <!-- One outlet indicates the direction selected by the crystal rotation. -->
-  <path d="M60 60V8" stroke="#16343a" stroke-opacity=".75" stroke-width="6" stroke-linecap="round"/>
-  <path d="M60 60V8" stroke="#e8fff9" stroke-width="2" stroke-linecap="round"/>
-  <circle cx="60" cy="8" r="4" fill="#9bf3d9" stroke="#f4fff9"/>
-  <circle cx="60" cy="60" r="4" fill="#f6fff9"/>
-</svg>

@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 
 const source = readFileSync(new URL('../assets/js/luna-light.js', import.meta.url), 'utf8').replace(/^export /gm, '');
-const { LUNA_SAMPLE_BOARD, createLightGarden, traceLight, prismDirection, nextLightAction } = vm.runInNewContext(`${source}\n;({ LUNA_SAMPLE_BOARD, createLightGarden, traceLight, prismDirection, nextLightAction })`);
+const { LUNA_GAME_BOARD, createLightGarden, traceLight, prismDirection, nextLightAction } = vm.runInNewContext(`${source}\n;({ LUNA_GAME_BOARD, createLightGarden, traceLight, prismDirection, nextLightAction })`);
 
 function turnTo(game, id, rotation) {
   while (!game.read().complete && game.read().rotations[id] % 4 !== rotation) game.rotate(id);
@@ -23,7 +23,7 @@ test('all 256 board orientations lead only to the four intended optical routes',
   const totals = { moonbell: 0, stardew: 0, aurora: 0, lotus: 0 };
   for (let a = 0; a < 4; a++) for (let b = 0; b < 4; b++) {
     for (let c = 0; c < 4; c++) for (let d = 0; d < 4; d++) {
-      const light = traceLight(LUNA_SAMPLE_BOARD, { a, b, c, d });
+      const light = traceLight(LUNA_GAME_BOARD, { a, b, c, d });
       const expected = a === 1 ? 'lotus' : a !== 2 ? undefined : b === 3 ? 'moonbell' : b !== 1 ? undefined : c === 2 ? 'stardew' : c !== 0 ? undefined : d === 1 ? 'aurora' : d === 3 ? 'lotus' : undefined;
       assert.equal(light.reached[0], expected, `${a},${b},${c},${d}`);
       if (expected) totals[expected]++;
@@ -48,6 +48,13 @@ test('Lotus stays locked before three unique flower fragments; full route comple
   assert.equal(game.read().collected.length, 3);
   assert.equal(game.read().ready, true);
   assert.equal(game.read().complete, false);
+  turnTo(game, 'a', 1);
+  assert.equal(game.read().light.reached[0], 'lotus');
+  assert.equal(game.read().complete, false, 'direct A-to-Lotus shortcut must stay locked after all flowers');
+  assert.equal(game.read().light.litPrisms.join(','), 'a');
+  const guidance = nextLightAction(LUNA_GAME_BOARD, game.read());
+  assert.equal(guidance.prism, 'a');
+  turnTo(game, 'a', 2);
   turnTo(game, 'd', 3);
   assert.equal(game.read().complete, true);
   const previous = JSON.stringify(game.read());
@@ -99,7 +106,7 @@ test('reset and snapshots are isolated; quarter-turn wraparound keeps valid conn
 
 test('next action restores the garden from every initial orientation without a fixed order', () => {
   for (let bits = 0; bits < 256; bits += 1) {
-    const board = { ...LUNA_SAMPLE_BOARD, prisms: LUNA_SAMPLE_BOARD.prisms.map((node, index) => ({ ...node, rotation: (bits >> (index * 2)) & 3 })) };
+    const board = { ...LUNA_GAME_BOARD, prisms: LUNA_GAME_BOARD.prisms.map((node, index) => ({ ...node, rotation: (bits >> (index * 2)) & 3 })) };
     const game = createLightGarden(board);
     let turns = 0;
     while (!game.read().complete && turns < 32) {
@@ -133,8 +140,8 @@ test('every receiving prism uses exactly one selected outlet, including reverse 
   for (let a = 0; a < 4; a += 1) for (let b = 0; b < 4; b += 1) {
     for (let c = 0; c < 4; c += 1) for (let d = 0; d < 4; d += 1) {
       const rotations = { a, b, c, d };
-      const light = traceLight(LUNA_SAMPLE_BOARD, rotations);
-      for (const prism of LUNA_SAMPLE_BOARD.prisms) {
+      const light = traceLight(LUNA_GAME_BOARD, rotations);
+      for (const prism of LUNA_GAME_BOARD.prisms) {
         const outgoing = light.segments.filter(line => line.from[0] === prism.x && line.from[1] === prism.y);
         assert.equal(outgoing.length, light.litPrisms.includes(prism.id) ? 1 : 0);
         if (outgoing.length) {
@@ -145,7 +152,24 @@ test('every receiving prism uses exactly one selected outlet, including reverse 
       }
     }
   }
-  const loop = traceLight(LUNA_SAMPLE_BOARD, { a: 2, b: 0, c: 1, d: 0 });
+  const loop = traceLight(LUNA_GAME_BOARD, { a: 2, b: 0, c: 1, d: 0 });
   assert.equal(loop.stop, 'loop');
   assert.equal(loop.segments.length, 3);
+});
+
+
+test('guidance keeps its destination after unrelated rotations and advances after restoration', () => {
+  const game = createLightGarden();
+  const target = game.read().guidedTarget;
+  for (const id of ['d', 'c', 'd', 'c', 'b']) {
+    const state = game.rotate(id);
+    assert.equal(state.guidedTarget, target);
+    assert.equal(nextLightAction(LUNA_GAME_BOARD, state).target, target);
+  }
+  for (let turns = 0; !game.read().collected.includes(target) && turns < 24; turns += 1) {
+    game.rotate(nextLightAction(LUNA_GAME_BOARD, game.read()).prism);
+  }
+  assert.ok(game.read().collected.includes(target));
+  assert.notEqual(game.read().guidedTarget, target);
+  assert.equal(game.reset().guidedTarget, target);
 });

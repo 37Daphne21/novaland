@@ -270,7 +270,7 @@ test('result dialog uses the visible title and testing exposes pending, active a
 
 test('facility preview routes isolate saves, unlock Luna and reject removed addresses', () => {
   for (const facility of ['coaster', 'luna']) {
-    const phases = facility === 'coaster' ? ['control-room', 'control-room-completed', 'guide', 'countdown', 'play', 'failed', 'testing', 'completed'] : ['control-room', 'guide', 'play'];
+    const phases = facility === 'coaster' ? ['control-room', 'control-room-completed', 'guide', 'countdown', 'play', 'failed', 'testing', 'completed'] : ['control-room', 'guide', 'play', 'completed'];
     for (const phase of phases) {
       const api = progressFixture(`?facility=${facility}&mission-preview=${phase}`);
       api.window.localStorage.setItem('novaLandProgress', 'existing-user-data');

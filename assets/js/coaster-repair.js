@@ -2,9 +2,9 @@ import { t } from './locales.js';
 import { consumeNonInteractiveClick } from './ui.js';
 
 const RAIL_ASSETS = {
-  corner: './assets/images/coaster/rail-corner-hd.svg',
-  straight: './assets/images/coaster/rail-straight-hd.svg',
-  t: './assets/images/coaster/rail-t-hd.svg'
+  corner: './assets/images/coaster/rail-corner.svg',
+  straight: './assets/images/coaster/rail-straight.svg',
+  t: './assets/images/coaster/rail-t.svg'
 };
 
 const STAGES = [

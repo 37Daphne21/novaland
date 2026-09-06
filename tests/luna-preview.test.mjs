@@ -17,7 +17,7 @@ test('local play preview starts with an uncollected garden', () => {
 });
 
 test('public hosts and unknown previews leave the game untouched', () => {
-  for (const [hostname, name] of [['example.com', 'completed'], ['127.example.com', 'completed'], ['localhost', 'flower-1'], ['localhost', 'flower-2'], ['localhost', 'ready'], ['localhost', 'locked'], ['localhost', 'completed'], ['localhost', 'paused'], ['localhost', 'unknown'], ['localhost', '__proto__'], ['localhost', '']]) {
+  for (const [hostname, name] of [['example.com', 'completed'], ['127.example.com', 'completed'], ['localhost', 'flower-1'], ['localhost', 'flower-2'], ['localhost', 'ready'], ['localhost', 'locked'], ['localhost', 'paused'], ['localhost', 'unknown'], ['localhost', '__proto__'], ['localhost', '']]) {
     const game = createLightGarden();
     game.rotate('a');
     const before = JSON.stringify(game.read());
@@ -29,7 +29,7 @@ test('public hosts and unknown previews leave the game untouched', () => {
 
 
 test('hidden tab and manual pause share animation ownership without premature resume', () => {
-  const source = readFileSync(new URL('../assets/js/luna-sample.js', import.meta.url), 'utf8');
+  const source = readFileSync(new URL('../assets/js/luna-game.js', import.meta.url), 'utf8');
   const body = source.slice(source.indexOf('function syncAnimations('), source.indexOf('function setPaused('));
   const animation = { playState: 'running', pauses: 0, plays: 0, pause() { this.playState = 'paused'; this.pauses++; }, play() { this.playState = 'running'; this.plays++; } };
   const document = { hidden: false };
@@ -48,15 +48,27 @@ test('hidden tab and manual pause share animation ownership without premature re
 
 
 test('GitHub Pages Luna play bypasses guide using the same preview rule', () => {
-  assert.equal(applyLunaPreview(createLightGarden(), { hostname: '37daphne21.github.io', protocol: 'https:', pathname: '/novaland/luna-sample.html', search: '?facility=luna&mission-preview=play' }).name, 'play');
+  assert.equal(applyLunaPreview(createLightGarden(), { hostname: '37daphne21.github.io', protocol: 'https:', pathname: '/novaland/luna-game.html', search: '?facility=luna&mission-preview=play' }).name, 'play');
 });
 
 
 test('Luna EVE types the initial line and changed dialogue only', () => {
-  const source = readFileSync(new URL('../assets/js/luna-sample.js', import.meta.url), 'utf8');
+  const source = readFileSync(new URL('../assets/js/luna-game.js', import.meta.url), 'utf8');
   const body = source.slice(source.indexOf('function say('), source.indexOf('function render('));
   const lines = [];
   const say = vm.runInNewContext(`let messageKey = null; ${body}; say`, { t: key => key, eve: { speak: resolve => lines.push(resolve()) } });
   say('initial'); say('initial'); say('adjust'); say('adjust'); say('restored');
   assert.deepEqual(lines, ['initial', 'adjust', 'restored']);
+});
+
+
+test('completed preview collects flowers but replays the real final Lotus rotation', () => {
+  const game = createLightGarden();
+  const preview = applyLunaPreview(game, { hostname: 'localhost', search: '?facility=luna&mission-preview=completed' });
+  assert.equal(preview.name, 'completed');
+  assert.equal(game.read().collected.length, 3);
+  assert.equal(game.read().ready, true);
+  assert.equal(game.read().complete, false);
+  assert.equal(game.read().rotations.d, 2);
+  assert.equal(game.rotate('d').complete, true);
 });

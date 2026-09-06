@@ -3,13 +3,13 @@ import { applyDocumentLanguage, initializeLanguage, t } from './locales.js';
 import { createModalController } from './ui.js';
 import { renderMissionPause } from './mission-pause.js';
 import { applyLunaPreview } from './luna-preview.js';
-import { LUNA_SAMPLE_BOARD, createLightGarden, prismDirection, nextLightAction } from './luna-light.js';
+import { LUNA_GAME_BOARD, createLightGarden, prismDirection, nextLightAction } from './luna-light.js';
 
 initializeLanguage();
 const garden = document.querySelector('[data-luna-garden]');
 const scene = document.querySelector('[data-luna-scene]');
 const rays = document.querySelector('[data-luna-rays]');
-const board = LUNA_SAMPLE_BOARD;
+const board = LUNA_GAME_BOARD;
 // Gold-foot centroids measured in each 543px-wide crystal atlas cell.
 const crystalFootX = [309.85, 296.18, 247.1, 231.68];
 const objects = document.querySelector('[data-luna-objects]');
@@ -32,7 +32,7 @@ board.prisms.forEach(node => {
 board.targets.forEach(node => {
   const region = document.createElement('img');
   region.className = 'luna-garden__restoration';
-  region.src = './assets/images/luna/garden-restored.png';
+  region.src = './assets/images/luna/garden-restored.webp';
   region.alt = '';
   region.dataset.lunaRegion = node.id;
   position(region, { ...node, y: node.regionY ?? node.y });
@@ -52,18 +52,44 @@ const prismButtons = [...document.querySelectorAll('[data-prism]')];
 const dialog = document.querySelector('[data-luna-dialog]');
 const pausePanel = document.querySelector('[data-luna-pause-panel]');
 const guidePanel = document.querySelector('[data-luna-guide-panel]');
-renderMissionPause(pausePanel, { titleId: 'luna-dialog-title', descriptionKey: 'luna.sample.paused' });
+renderMissionPause(pausePanel, { titleId: 'luna-dialog-title', descriptionKey: 'luna.game.paused' });
 const resume = pausePanel.querySelector('[data-mission-resume]');
 const guideResume = document.querySelector('[data-luna-guide-resume]');
 let started = false;
 let focusBoardAfterClose = false;
 const game = createLightGarden();
-const eve = createEveController(document.querySelector('.luna-sample__eve'), { persistent: true, focusMotion: false });
+const evePanel = document.querySelector('.luna-game__eve');
+const eve = createEveController(evePanel, { persistent: true, focusMotion: false });
 let messageKey = null;
 let modalMode = 'guide';
 let paused = false;
 let heldAnimations = [];
 let animationsHeld = false;
+
+// Animate content-driven resizing without retaining a fixed or minimum panel height.
+const eveReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+let eveHeight = evePanel.getBoundingClientRect().height;
+let eveResizeAnimation = null;
+const eveSizeObserver = new ResizeObserver(() => {
+  const style = getComputedStyle(evePanel);
+  const contentHeight = Math.max(...[...evePanel.children].map(child => child.getBoundingClientRect().height));
+  const nextHeight = contentHeight + parseFloat(style.paddingTop) + parseFloat(style.paddingBottom) + parseFloat(style.borderTopWidth) + parseFloat(style.borderBottomWidth);
+  if (Math.abs(nextHeight - eveHeight) < .5) return;
+  const fromHeight = eveResizeAnimation ? evePanel.getBoundingClientRect().height : eveHeight;
+  eveResizeAnimation?.cancel();
+  eveResizeAnimation = null;
+  eveHeight = nextHeight;
+  if (eveReducedMotion.matches || !fromHeight) return;
+  eveResizeAnimation = evePanel.animate([{ height: `${fromHeight}px` }, { height: `${nextHeight}px` }], { duration: 240, easing: 'ease-out' });
+  eveResizeAnimation.onfinish = () => { eveResizeAnimation = null; };
+});
+[...evePanel.children].forEach(child => eveSizeObserver.observe(child));
+eveReducedMotion.addEventListener('change', () => {
+  if (eveReducedMotion.matches) {
+    eveResizeAnimation?.cancel();
+    eveResizeAnimation = null;
+  }
+});
 
 function say(key) {
   if (key === messageKey) return;
@@ -81,33 +107,34 @@ function render(state = game.read()) {
     cluster.classList.toggle('is-connected', state.light.reached.includes(id));
     cluster.classList.toggle('is-ready', lotus && state.ready);
     cluster.classList.toggle('is-next', id === nextAction?.target);
-    cluster.setAttribute('aria-label', `${t(`luna.sample.${id}`)}. ${t(awake ? 'luna.sample.awake' : lotus ? (state.ready ? 'luna.sample.lotusReady' : 'luna.sample.lotusLocked') : 'luna.sample.asleep')}`);
+    cluster.setAttribute('aria-label', `${t(`luna.game.${id}`)}. ${t(awake ? 'luna.game.awake' : lotus ? (state.ready ? 'luna.game.lotusReady' : 'luna.game.lotusLocked') : 'luna.game.asleep')}`);
   });
   regions.forEach(region => region.classList.toggle('is-awake', region.dataset.lunaRegion === 'lotus' ? state.complete : state.collected.includes(region.dataset.lunaRegion)));
   document.querySelector('[data-luna-count]').textContent = `${state.collected.length} / 3`;
-  document.querySelector('.luna-sample__progress').classList.toggle('is-restored', state.complete);
-  document.querySelector('[data-luna-progress-label]').textContent = t(state.complete ? 'luna.sample.progressComplete' : state.ready ? 'luna.sample.progressLotus' : 'luna.sample.fragment');
-  document.querySelectorAll('.luna-sample__milestones i').forEach((mark, index) => mark.classList.toggle('is-filled', index < state.collected.length || (index === 3 && state.complete)));
+  document.querySelector('.luna-game__progress').classList.toggle('is-restored', state.complete);
+  document.querySelector('[data-luna-progress-label]').textContent = t(state.complete ? 'luna.game.progressComplete' : state.ready ? 'luna.game.progressLotus' : 'luna.game.fragment');
+  document.querySelectorAll('.luna-game__milestones i').forEach((mark, index) => mark.classList.toggle('is-filled', index < state.collected.length || (index === 3 && state.complete)));
   document.querySelector('.luna-fragment-mark').textContent = state.complete ? '✧' : '◇';
   document.querySelector('[data-luna-completion]').hidden = !state.complete;
-  document.querySelector('.luna-sample__identity p').textContent = t(state.complete ? 'luna.sample.completeCopy' : state.ready ? 'luna.sample.lotusReadyTitle' : 'luna.sample.title');
+  document.querySelector('.luna-game__identity p').textContent = t(state.complete ? 'luna.game.completeCopy' : state.ready ? 'luna.game.lotusReadyTitle' : 'luna.game.title');
   garden.classList.toggle('is-complete', state.complete);
-  const directions = t('luna.sample.directions').split(',');
+  const directions = t('luna.game.directions').split(',');
   prismButtons.forEach(button => {
     const id = button.dataset.prism;
     const rotation = state.rotations[id];
     button.style.setProperty('--rotation', `${rotation * 90}deg`);
+    button.style.setProperty('--outlet-scale-y', rotation % 4 === 0 ? '2.4' : rotation % 4 === 2 ? '1' : '.65');
     button.style.setProperty('--frame', `${rotation % 4 * 100 / 3}%`);
     button.style.setProperty('--crystal-left', `${13 + (0.5 - crystalFootX[rotation % 4] / 543) * 74}%`);
     button.setAttribute('aria-disabled', String(state.complete));
     button.classList.toggle('is-lit', state.energized.includes(id));
     button.classList.toggle('is-next', id === nextAction?.prism);
-    button.setAttribute('aria-label', t(state.complete ? 'luna.sample.prismComplete' : 'luna.sample.prism', { id: id.toUpperCase(), direction: directions[prismDirection(rotation)], light: t(state.light.litPrisms.includes(id) ? 'luna.sample.receiving' : 'luna.sample.waiting') }));
+    button.setAttribute('aria-label', t(state.complete ? 'luna.game.prismComplete' : 'luna.game.prism', { id: id.toUpperCase(), direction: directions[prismDirection(rotation)], light: t(state.light.litPrisms.includes(id) ? 'luna.game.receiving' : 'luna.game.waiting') }));
   });
   const activeRays = new Set();
   state.light.segments.forEach((segment, index) => {
     const target = board.targets.find(node => node.x === segment.to[0] && node.y === segment.to[1]);
-    const pending = segment.loose || (target?.kind === 'lotus' && !state.ready);
+    const pending = segment.loose || (target?.kind === 'lotus' && !state.complete);
     const path = `M${segment.from.join(' ')} L${segment.to.join(' ')}`;
     const key = `${path}:${Boolean(pending)}`;
     activeRays.add(key);
@@ -153,8 +180,8 @@ function setPaused(value) {
   syncAnimations();
   document.body.classList.toggle('is-paused', value);
   garden.inert = value;
-  document.querySelector('.luna-sample__header').inert = value;
-  document.querySelector('.luna-sample__footer').inert = value;
+  document.querySelector('.luna-game__header').inert = value;
+  document.querySelector('.luna-game__footer').inert = value;
 }
 
 const modal = createModalController(dialog, {
@@ -183,21 +210,23 @@ function openDialog(mode, opener = document.activeElement) {
 prismButtons.forEach(button => button.addEventListener('click', () => {
   if (paused || game.read().complete) return;
   const before = game.read();
+  const expected = nextLightAction(board, before);
   const state = game.rotate(button.dataset.prism);
   render(state);
-  if (state.complete) say('luna.sample.finished');
-  else if (state.ready && !before.ready) say('luna.sample.ready');
-  else if (state.light.reached.includes('lotus')) say('luna.sample.locked');
-  else if (state.collected.length > before.collected.length) say('luna.sample.restored');
-  else if (state.collected.length && !state.light.reached.length) say('luna.sample.retained');
-  else if (state.light.reached.length) say('luna.sample.reconnected');
-  else say('luna.sample.adjust');
+  if (state.complete) say('luna.game.finished');
+  else if (state.ready && !before.ready) say('luna.game.ready');
+  else if (state.collected.length > before.collected.length) say('luna.game.restored');
+  else if (expected && button.dataset.prism !== expected.prism) say(state.ready ? 'luna.game.connectAll' : 'luna.game.followGlow');
+  else if (state.light.reached.includes('lotus')) say(state.ready ? 'luna.game.connectAll' : 'luna.game.locked');
+  else if (state.collected.length && !state.light.reached.length) say('luna.game.retained');
+  else if (state.light.reached.length) say('luna.game.reconnected');
+  else say('luna.game.adjust');
 }));
 
 pausePanel.querySelector('[data-mission-restart]').addEventListener('click', () => {
   setPaused(false);
   render(game.reset());
-  say('luna.sample.initial');
+  say('luna.game.initial');
   focusBoardAfterClose = true;
   modal.close();
 });
@@ -237,7 +266,25 @@ window.addEventListener('novaland:languagechange', () => {
 const preview = applyLunaPreview(game, window.location);
 started = Boolean(preview);
 render();
-say(preview?.messageKey ?? 'luna.sample.initial');
+say(preview?.messageKey ?? 'luna.game.initial');
+
+if (preview?.name === 'completed') {
+  // Decode both states before counting visible, unpaused time for the bloom preview.
+  Promise.all([...scene.querySelectorAll('img')].map(img => img.decode().catch(() => {}))).then(() => {
+    let previous = null;
+    let elapsed = 0;
+    function bloomPreview(now) {
+      const state = game.read();
+      if (!state.ready || state.complete || state.rotations.d !== 2) return;
+      if (previous !== null && !paused && !document.hidden) elapsed += Math.min(now - previous, 100);
+      previous = now;
+      if (elapsed < 3600) { requestAnimationFrame(bloomPreview); return; }
+      render(game.rotate('d'));
+      say('luna.game.finished');
+    }
+    requestAnimationFrame(bloomPreview);
+  });
+}
 
 if (!preview) openDialog('guide', document.querySelector('[data-luna-guide]'));
 window.addEventListener('message', event => {

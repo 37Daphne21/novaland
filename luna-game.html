@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0a1920">
+  <meta name="robots" content="noindex">
+  <title>LUNA LIGHT GARDEN</title>
+  <link rel="stylesheet" href="./assets/css/reset.css">
+  <link rel="stylesheet" href="./assets/css/common.css">
+  <link rel="stylesheet" href="./assets/css/style.css">
+  <link rel="stylesheet" href="./assets/css/luna-game.css">
+  <link rel="preload" href="./assets/images/luna/garden-restored.webp" as="image">
+</head>
+<body class="luna-game">
+  <header class="luna-game__header">
+    <div class="luna-game__identity"><h1>LUNA LIGHT GARDEN</h1><p data-i18n="luna.game.title">세 군락을 깨우고, 중앙 Lotus에 빛을 보내세요.</p></div>
+    <div class="luna-game__progress"><span class="luna-fragment-mark" aria-hidden="true">◇</span><span data-luna-progress-label>꽃 군락 복구</span><b data-luna-count>0 / 3</b><span class="luna-game__milestones" aria-hidden="true"><i></i><i></i><i></i><i></i></span></div>
+    <nav class="luna-game__tools" aria-label="미션 조작" data-i18n-aria-label="luna.game.tools">
+      <button class="ui-button ui-button--secondary" type="button" data-luna-guide data-i18n="mission.guideButton">가이드</button>
+      <button class="ui-button ui-button--icon" type="button" data-luna-pause aria-label="일시정지" data-i18n-aria-label="mission.pause"><span aria-hidden="true">Ⅱ</span></button>
+    </nav>
+  </header>
+  <main class="luna-game__viewport" tabindex="0" aria-label="빛 연결 정원. 작은 화면에서는 가로로 이동할 수 있어요." data-i18n-aria-label="luna.game.viewport">
+    <section class="luna-garden" aria-label="Prism 회전 정원 퍼즐" data-i18n-aria-label="luna.game.board" data-luna-garden>
+      <div class="luna-garden__scene" data-luna-scene>
+        <img class="luna-garden__background" src="./assets/images/luna/garden-dormant.webp" alt="" fetchpriority="high">
+        <div class="luna-garden__ambient" aria-hidden="true"></div>
+        <svg class="luna-garden__light" viewBox="0 0 1672 941" preserveAspectRatio="none" aria-hidden="true"><g data-luna-rays></g></svg>
+        <div class="luna-source" aria-hidden="true"><i></i></div>
+        <div data-luna-objects></div>
+      </div>
+      <div class="luna-garden__completion" role="status" data-luna-completion hidden><span data-i18n="luna.game.completeEyebrow">정원 복구 완료</span><h2 data-i18n="luna.game.completeTitle">정원이 다시 숨 쉬어요</h2><p data-i18n="luna.game.completeCopy">모든 꽃과 중앙 연꽃이 깨어났어요.</p></div>
+    </section>
+  </main>
+  <footer class="luna-game__footer">
+    <aside class="luna-game__eve" aria-label="EVE" aria-live="polite" aria-atomic="true"><span class="luna-game__portrait"><img src="./assets/images/common/eve.webp" alt=""></span><div><b>EVE</b><p data-eve-message>Prism의 두 연결면을 빛의 방향에 맞춰보세요.</p></div></aside>
+  </footer>
+  <dialog class="ui-dialog luna-game__dialog" aria-labelledby="luna-dialog-title" data-luna-dialog>
+    <section class="ui-panel ui-overlay__dialog mission-result mission-result--paused" data-luna-pause-panel></section>
+    <section class="ui-panel ui-overlay__dialog mission-result" data-luna-guide-panel hidden><span class="ui-panel__eyebrow">LUNA LIGHT GARDEN</span><h3 id="luna-guide-title" data-i18n="mission.guideButton">가이드</h3><p data-i18n="luna.game.guide"></p><div class="mission-result__actions"><button class="ui-button ui-button--primary" type="button" data-luna-guide-resume></button><button class="ui-button ui-button--secondary" type="button" data-luna-guide-close data-i18n="mission.toControlRoom">관제실로 돌아가기</button></div></section>
+  </dialog>
+  <noscript><p class="luna-game__noscript">이 정원 게임에는 JavaScript가 필요해요.</p></noscript>
+  <script type="module" src="./assets/js/luna-game.js"></script>
+</body>
+</html>

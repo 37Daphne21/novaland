@@ -3,7 +3,7 @@ const DIRECTIONS = [[0, -1], [1, 0], [0, 1], [-1, 0]];
 
 // Coordinates match the integrated 1672 x 941 conservatory artwork.
 // groundY is the plinth surface; y is the beam height through the crystal.
-export const LUNA_SAMPLE_BOARD = {
+export const LUNA_GAME_BOARD = {
   width: 1672,
   height: 941,
   source: { id: 'source', x: 470, y: 398, direction: 1 },
@@ -65,10 +65,14 @@ export function traceLight(board, rotations) {
   }
 }
 
-// Find the shortest next restoration from the current orientation, not a fixed script.
+// Keep the current destination while finding its shortest route from any orientation.
 export function nextLightAction(board, state) {
   if (state.complete) return null;
   const wanted = new Set(board.targets.filter(node => state.ready ? node.kind === 'lotus' : node.kind !== 'lotus' && !state.collected.includes(node.id)).map(node => node.id));
+  if (wanted.has(state.guidedTarget)) {
+    wanted.clear();
+    wanted.add(state.guidedTarget);
+  }
   const key = rotations => board.prisms.map(node => rotations[node.id] % 4).join(',');
   const queue = [{ rotations: state.rotations, first: null }];
   const visited = new Set([key(state.rotations)]);
@@ -80,7 +84,8 @@ export function nextLightAction(board, state) {
       if (visited.has(signature)) continue;
       visited.add(signature);
       const first = current.first ?? prism.id;
-      const target = traceLight(board, rotations).reached.find(id => wanted.has(id));
+      const light = traceLight(board, rotations);
+      const target = light.reached.find(id => wanted.has(id) && (!state.ready || board.prisms.every(node => light.litPrisms.includes(node.id))));
       if (target) return { prism: first, target };
       queue.push({ rotations, first });
     }
@@ -88,23 +93,26 @@ export function nextLightAction(board, state) {
   return null;
 }
 
-export function createLightGarden(board = LUNA_SAMPLE_BOARD) {
+export function createLightGarden(board = LUNA_GAME_BOARD) {
   let rotations;
   let collected;
   let complete;
   let energized;
+  let guidedTarget;
   const flowers = board.targets.filter(target => target.kind !== 'lotus');
 
   function read() {
     const light = traceLight(board, rotations);
-    return { rotations: { ...rotations }, collected: [...collected], energized: [...energized], light, ready: collected.size === flowers.length, complete };
+    return { rotations: { ...rotations }, collected: [...collected], energized: [...energized], light, ready: collected.size === flowers.length, complete, guidedTarget };
   }
 
   function reset() {
     rotations = Object.fromEntries(board.prisms.map(prism => [prism.id, prism.rotation]));
     collected = new Set();
     complete = false;
+    guidedTarget = null;
     energized = new Set(traceLight(board, rotations).litPrisms);
+    guidedTarget = nextLightAction(board, read())?.target ?? null;
     return read();
   }
 
@@ -115,9 +123,13 @@ export function createLightGarden(board = LUNA_SAMPLE_BOARD) {
     light.litPrisms.forEach(id => energized.add(id));
     light.reached.forEach(id => {
       const target = board.targets.find(item => item.id === id);
-      if (target.kind === 'lotus') complete = collected.size === flowers.length;
+      if (target.kind === 'lotus') complete = collected.size === flowers.length && board.prisms.every(node => light.litPrisms.includes(node.id));
       else collected.add(id);
     });
+    if (complete || collected.has(guidedTarget)) {
+      guidedTarget = null;
+      guidedTarget = nextLightAction(board, read())?.target ?? null;
+    }
     return read();
   }
 

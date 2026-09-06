@@ -6,7 +6,7 @@ import { cosmicVoyage, facilities, getExplorerProfile } from './data.js';
 import { createIntroController } from './intro.js';
 import { initializeLanguage, t } from './locales.js';
 import { createMapController } from './map.js';
-import { createMobileMapController } from './mobile.js';
+import { createMobileMapController } from './map-mobile.js';
 import { createMissionController } from './mission.js';
 import { findRestorableMissionId } from './mission-state.js';
 import { createNavigationController } from './navigation.js';
@@ -253,7 +253,7 @@ function applyNavigationRoute(route, { previousRoute, source } = {}) {
   if (route.screen === 'control-room' && route.facilityId === 'luna' && route.lunaPlay && !lunaEntry.open) {
     controlRoom.cancel();
     // Replace the child document without adding an extra browser Back entry.
-    const frameUrl = new URL('./luna-sample.html', window.location.href);
+    const frameUrl = new URL('./luna-game.html', window.location.href);
     if (route.previewPhase && route.previewPhase !== 'guide') {
       frameUrl.searchParams.set('facility', 'luna');
       frameUrl.searchParams.set('mission-preview', route.previewPhase);
