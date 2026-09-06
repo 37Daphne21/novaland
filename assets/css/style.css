@@ -2087,7 +2087,6 @@
 .mission-flow__meta strong {
   color: #b9acff;
   font-size: 1.4rem;
-  text-align: center;
 }
 
 .mission-flow__connection, .mission-flow__guide-button {
@@ -2098,6 +2097,12 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
+}
+
+.mission-flow__time strong {
+  flex: 0 0 2.5em;
+  width: 2.5em;
+  font-variant-numeric: tabular-nums;
 }
 
 .mission-flow__time.is-urgent strong {
@@ -2118,7 +2123,8 @@
   grid-template-columns: minmax(15rem, 1fr) minmax(22rem, 1.7fr) minmax(15rem, 1fr);
   align-items: center;
   min-height: 5rem;
-  padding: .55rem clamp(var(--space-7), 2vw, 2.5rem);
+  /* The frame artwork includes extra space below its panel faces. */
+  padding: .3rem clamp(var(--space-7), 2vw, 2.5rem) .8rem;
   border: 0;
   background: transparent;
   box-shadow: none;
@@ -2149,6 +2155,7 @@
   z-index: 2;
   display: flex;
   align-items: center;
+  align-self: stretch;
   gap: 1rem;
   min-width: 0;
   min-height: 3.65rem;
@@ -2159,6 +2166,11 @@
   clip-path: none;
 }
 
+/* Optical centering inside the image frame, independent of the other panels. */
+.mission-dialog[data-phase="playing"] .mission-flow__identity {
+  translate: 0 .125rem;
+}
+
 .mission-dialog:is([data-phase="guide"], [data-phase="playing"], .is-result) .mission-flow__identity::after {
   content: none;
 }
@@ -2167,6 +2179,7 @@
   margin-bottom: 0;
   color: #f4f8ff;
   font-size: 1rem;
+  line-height: 1.2;
   letter-spacing: .08em;
   text-shadow: 0 0 .7rem rgba(82, 226, 255, .3);
   white-space: nowrap;
@@ -2208,7 +2221,8 @@ html[lang="en"] .mission-dialog:is([data-phase="guide"], [data-phase="playing"],
   grid-column: 2;
   justify-items: center;
   gap: .22rem;
-  padding: .38rem 3.4rem .52rem;
+  /* The central frame face extends lower than the two side panels. */
+  padding: .6rem 3.4rem .3rem;
   background: transparent;
   box-shadow: none;
   clip-path: polygon(7% 0, 93% 0, 100% 100%, 0 100%);
@@ -2230,7 +2244,7 @@ html[lang="en"] .mission-dialog:is([data-phase="guide"], [data-phase="playing"],
 
 .mission-dialog:is([data-phase="playing"], .is-result) .mission-flow__connection i {
   flex: 0 0 1.35rem;
-  height: .46rem;
+  height: .4375rem;
   border: .0625rem solid rgba(69, 100, 137, .7);
   border-radius: .15rem;
   background: linear-gradient(180deg, #0a1930, #050c1a);
@@ -2249,13 +2263,11 @@ html[lang="en"] .mission-dialog:is([data-phase="guide"], [data-phase="playing"],
   align-self: stretch;
   justify-self: end;
   gap: var(--space-3);
-  min-height: 0;
   padding: 0;
   border: 0;
   background: transparent;
   box-shadow: none;
   clip-path: none;
-  transform: translateY(-.15rem);
 }
 
 .mission-dialog:is([data-phase="guide"], [data-phase="playing"], .is-result) .mission-flow__meta::before {
@@ -2291,7 +2303,6 @@ html[lang="en"] .mission-dialog:is([data-phase="guide"], [data-phase="playing"],
 
 .mission-dialog[data-phase="guide"] .mission-flow__meta {
   display: contents;
-  transform: none;
 }
 
 .mission-dialog[data-phase="guide"] .mission-flow__meta > [data-mission-status] {
