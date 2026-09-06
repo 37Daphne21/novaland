@@ -3,17 +3,22 @@ import { applyDocumentLanguage, initializeLanguage, t } from './locales.js';
 import { createModalController } from './ui.js';
 import { renderMissionPause } from './mission-pause.js';
 import { applyLunaPreview } from './luna-preview.js';
-import { LUNA_SAMPLE_BOARD, createLightGarden, prismSockets } from './luna-light.js';
+import { LUNA_SAMPLE_BOARD, createLightGarden, prismDirection, nextLightAction } from './luna-light.js';
 
 initializeLanguage();
 const garden = document.querySelector('[data-luna-garden]');
+const scene = document.querySelector('[data-luna-scene]');
 const rays = document.querySelector('[data-luna-rays]');
 const board = LUNA_SAMPLE_BOARD;
+// Gold-foot centroids measured in each 543px-wide crystal atlas cell.
+const crystalFootX = [309.85, 296.18, 247.1, 231.68];
 const objects = document.querySelector('[data-luna-objects]');
 // Art and ray endpoints share the board data rather than duplicate CSS coordinates.
 function position(element, node) {
   element.style.setProperty('--x', `${node.x / board.width * 100}%`);
   element.style.setProperty('--y', `${node.y / board.height * 100}%`);
+  if (node.groundY !== undefined) element.style.setProperty('--ground-offset', `${(node.groundY - node.y) / board.height * 100}cqh`);
+  if (node.markerY !== undefined) element.style.setProperty('--marker-offset', `${(node.markerY - node.y) / board.height * 100}cqh`);
 }
 board.prisms.forEach(node => {
   const button = document.createElement('button');
@@ -21,23 +26,23 @@ board.prisms.forEach(node => {
   button.className = 'luna-prism';
   button.dataset.prism = node.id;
   position(button, node);
-  button.innerHTML = `<span class="luna-prism__base" aria-hidden="true"></span><span class="luna-prism__sockets" aria-hidden="true"></span><span class="luna-prism__crystal" aria-hidden="true"></span><b class="luna-prism__label" aria-hidden="true">${node.id.toUpperCase()}</b><span class="luna-prism__turn" aria-hidden="true">↻ 90°</span>`;
+  button.innerHTML = `<span class="luna-prism__outlet" aria-hidden="true"></span><span class="luna-prism__crystal" aria-hidden="true"></span>`;
   objects.append(button);
 });
 board.targets.forEach(node => {
   const region = document.createElement('img');
   region.className = 'luna-garden__restoration';
-  region.src = './assets/images/luna/garden-restored-fresh-v3.png';
+  region.src = './assets/images/luna/garden-integrated-restored-v6.png';
   region.alt = '';
   region.dataset.lunaRegion = node.id;
-  position(region, node);
-  garden.append(region);
+  position(region, { ...node, y: node.regionY ?? node.y });
+  scene.append(region);
   const figure = document.createElement('figure');
   figure.className = `luna-cluster${node.kind === 'lotus' ? ' luna-cluster--lotus' : ''}`;
   figure.dataset.lunaCluster = node.id;
-  position(figure, node);
+  position(figure, { ...node, markerY: node.y });
   figure.style.setProperty('--size', `${node.width / board.width * 100}%`);
-  figure.innerHTML = `<span class="luna-cluster__halo" aria-hidden="true"></span><span class="luna-cluster__bud" aria-hidden="true"></span><span class="luna-cluster__bloom" aria-hidden="true"></span><span class="luna-cluster__fragment" aria-hidden="true">◇</span><figcaption><span data-luna-flower-name></span><b data-luna-flower-state></b></figcaption>`;
+  figure.innerHTML = `<span class="luna-cluster__halo" aria-hidden="true"></span><span class="luna-cluster__fragment" aria-hidden="true">◇</span>`;
   objects.append(figure);
 });
 position(document.querySelector('.luna-source'), board.source);
@@ -67,6 +72,7 @@ function say(key) {
 }
 
 function render(state = game.read()) {
+  const nextAction = nextLightAction(board, state);
   clusters.forEach(cluster => {
     const id = cluster.dataset.lunaCluster;
     const lotus = id === 'lotus';
@@ -74,8 +80,8 @@ function render(state = game.read()) {
     cluster.classList.toggle('is-awake', awake);
     cluster.classList.toggle('is-connected', state.light.reached.includes(id));
     cluster.classList.toggle('is-ready', lotus && state.ready);
-    cluster.querySelector('[data-luna-flower-name]').textContent = t(`luna.sample.${id}`);
-    cluster.querySelector('[data-luna-flower-state]').textContent = t(awake ? 'luna.sample.awake' : lotus ? (state.ready ? 'luna.sample.lotusReady' : 'luna.sample.lotusLocked') : 'luna.sample.asleep');
+    cluster.classList.toggle('is-next', id === nextAction?.target);
+    cluster.setAttribute('aria-label', `${t(`luna.sample.${id}`)}. ${t(awake ? 'luna.sample.awake' : lotus ? (state.ready ? 'luna.sample.lotusReady' : 'luna.sample.lotusLocked') : 'luna.sample.asleep')}`);
   });
   regions.forEach(region => region.classList.toggle('is-awake', region.dataset.lunaRegion === 'lotus' ? state.complete : state.collected.includes(region.dataset.lunaRegion)));
   document.querySelector('[data-luna-count]').textContent = `${state.collected.length} / 3`;
@@ -84,7 +90,6 @@ function render(state = game.read()) {
   document.querySelectorAll('.luna-sample__milestones i').forEach((mark, index) => mark.classList.toggle('is-filled', index < state.collected.length || (index === 3 && state.complete)));
   document.querySelector('.luna-fragment-mark').textContent = state.complete ? '✧' : '◇';
   document.querySelector('[data-luna-completion]').hidden = !state.complete;
-  document.querySelector('.luna-garden__hint').hidden = state.complete;
   document.querySelector('.luna-sample__identity p').textContent = t(state.complete ? 'luna.sample.completeCopy' : state.ready ? 'luna.sample.lotusReadyTitle' : 'luna.sample.title');
   garden.classList.toggle('is-complete', state.complete);
   const directions = t('luna.sample.directions').split(',');
@@ -93,22 +98,25 @@ function render(state = game.read()) {
     const rotation = state.rotations[id];
     button.style.setProperty('--rotation', `${rotation * 90}deg`);
     button.style.setProperty('--frame', `${rotation % 4 * 100 / 3}%`);
+    button.style.setProperty('--crystal-left', `${13 + (0.5 - crystalFootX[rotation % 4] / 543) * 74}%`);
     button.setAttribute('aria-disabled', String(state.complete));
-    button.classList.toggle('is-lit', state.light.litPrisms.includes(id));
-    button.setAttribute('aria-label', t(state.complete ? 'luna.sample.prismComplete' : 'luna.sample.prism', { id: id.toUpperCase(), sockets: prismSockets(rotation).map(value => directions[value]).join(' · '), light: t(state.light.litPrisms.includes(id) ? 'luna.sample.receiving' : 'luna.sample.waiting') }));
+    button.classList.toggle('is-lit', state.energized.includes(id));
+    button.classList.toggle('is-next', id === nextAction?.prism);
+    button.setAttribute('aria-label', t(state.complete ? 'luna.sample.prismComplete' : 'luna.sample.prism', { id: id.toUpperCase(), direction: directions[prismDirection(rotation)], light: t(state.light.litPrisms.includes(id) ? 'luna.sample.receiving' : 'luna.sample.waiting') }));
   });
   const activeRays = new Set();
   state.light.segments.forEach((segment, index) => {
+    const target = board.targets.find(node => node.x === segment.to[0] && node.y === segment.to[1]);
+    const pending = segment.loose || (target?.kind === 'lotus' && !state.ready);
     const path = `M${segment.from.join(' ')} L${segment.to.join(' ')}`;
-    const key = `${path}:${Boolean(segment.loose)}`;
+    const key = `${path}:${Boolean(pending)}`;
     activeRays.add(key);
     if ([...rays.children].some(line => line.dataset.ray === key)) return;
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     line.dataset.ray = key;
     line.style.setProperty('--ray-delay', `${index * 70}ms`);
-    line.setAttribute('pathLength', '1');
     line.setAttribute('d', path);
-    line.setAttribute('class', `luna-garden__ray${segment.loose ? ' is-loose' : ''}`);
+    line.setAttribute('class', `luna-garden__ray${pending ? ' is-loose' : ''}`);
     rays.append(line);
   });
   [...rays.children].forEach(line => { if (!activeRays.has(line.dataset.ray)) line.remove(); });

@@ -2,17 +2,20 @@
 .luna-sample { position: relative; min-height: 100svh; background: #0a1822; }
 .luna-sample__viewport { width: 100%; overflow-x: auto; }
 .luna-sample__viewport:focus-visible { outline: 2px solid var(--color-luna); outline-offset: -3px; }
-.luna-garden { position: relative; isolation: isolate; width: 100%; height: 100svh; min-height: 40rem; overflow: hidden; }
+.luna-garden { position: relative; isolation: isolate; container-type: size; width: 100%; height: 100svh; min-height: 40rem; overflow: hidden; }
+.luna-garden__scene { position: absolute; isolation: isolate; container-type: size; left: 50%; top: 35%; width: max(100cqw, 177.6833cqh); height: max(100cqh, 56.2799cqw); transform: translate(-50%, -35%); }
 .luna-garden__background, .luna-garden__restoration { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 36.67%; z-index: -3; }
-.luna-garden__background { filter: brightness(1.1) saturate(1.03); }
-.luna-garden__restoration { z-index: -2; opacity: 0; filter: saturate(.88); mask-image: radial-gradient(ellipse 38% 52% at var(--x) var(--y), #000 15%, transparent 80%); transition: opacity 3s ease .35s; pointer-events: none; }
+.luna-garden__background { filter: none; }
+.luna-garden__restoration { z-index: -2; opacity: 0; filter: brightness(1.16); mask-image: radial-gradient(ellipse 21% 27% at var(--x) var(--y), #000 38%, transparent 88%); transition: opacity 3s ease .35s; pointer-events: none; }
 .luna-garden__restoration.is-awake { opacity: 1; }
 .luna-garden__restoration[data-luna-region="lotus"] { mask-image: none; transition-duration: 4s; transition-delay: .6s; }
 .luna-garden__ambient { position: absolute; inset: 0; z-index: -1; background: radial-gradient(ellipse at 51% 37%, #ddf9dc00, transparent 50%); pointer-events: none; transition: background 2s ease; }
-.luna-garden__light { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 3; }
-.luna-garden__ray { fill: none; stroke: #edfff3; stroke-width: 2; stroke-linecap: round; filter: drop-shadow(0 0 3px #89e8cc) drop-shadow(0 0 8px #92dac870); stroke-dasharray: 1; animation: luna-ray-arrive .32s ease both; animation-delay: var(--ray-delay); }
-.luna-garden__ray.is-loose { stroke-dasharray: .035 .05; opacity: .45; }
-@keyframes luna-ray-arrive { from { stroke-dashoffset: 1; opacity: 0; } to { stroke-dashoffset: 0; } }
+.luna-garden__light { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 3; opacity: 1; transition: opacity 1.2s ease; }
+.luna-garden__ray { fill: none; stroke: #edfff3; stroke-width: 2; stroke-linecap: round; filter: drop-shadow(0 0 3px #89e8cc) drop-shadow(0 0 8px #92dac870); animation: luna-ray-arrive .32s ease both; animation-delay: var(--ray-delay); }
+.luna-garden__ray.is-loose { stroke-dasharray: 3 15; opacity: .55; animation: luna-ray-arrive .32s ease both, luna-ray-flow .9s linear infinite; }
+@keyframes luna-ray-arrive { from { opacity: 0; } }
+@keyframes luna-ray-flow { to { stroke-dashoffset: -18; } }
+.luna-garden.is-complete .luna-garden__ray { animation: none; stroke-dasharray: none; }
 
 
 /* Shared HUD hierarchy, with a restrained botanical glass surface. */
@@ -33,55 +36,44 @@
 .luna-sample__milestones i:last-child.is-filled { background: #f1dfab; }
 
 
-/* Fixed stone bases sit beneath the optical junction, never rotate. */
-.luna-source { position: absolute; left: var(--x); top: var(--y); width: 7%; aspect-ratio: 1; transform: translate(-50%, -40%); display: grid; place-items: center; background: url("../images/luna/prism-pedestal.png") center / 100% 100% no-repeat; filter: drop-shadow(0 8px 5px #03101880); }
-.luna-source i { width: 25%; aspect-ratio: 1; transform: translateY(-40%); border-radius: 50%; background: radial-gradient(circle at 38% 28%, #fffde9, #ecf4d7 35%, #9bc7b5 75%); box-shadow: 0 0 18px #e5ffdaa1, 0 0 38px #b8eddb60; }
-.luna-prism { position: absolute; left: var(--x); top: var(--y); z-index: 4; width: clamp(5rem, 8.5vw, 10rem); aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; touch-action: manipulation; }
-.luna-prism::before { position: absolute; content: ""; inset: 55% -12% -10%; border-radius: 50%; background: radial-gradient(ellipse, #07121191, transparent 70%); pointer-events: none; }
-.luna-prism__base { position: absolute; inset: 10% -5% -10%; background: url("../images/luna/prism-pedestal.png") center / 100% 100% no-repeat; filter: saturate(.9); }
-.luna-prism__crystal { position: absolute; left: 13%; top: -35%; width: 74%; height: 100%; background: url("../images/luna/prism-turns.png") var(--frame) center / 400% 100% no-repeat; filter: drop-shadow(0 4px 2px #09232d70); transition: filter .36s ease; pointer-events: none; }
-.luna-prism__sockets { position: absolute; inset: 13% 2% 9%; background: url("../images/luna/prism.svg") center / contain no-repeat; transform: scaleY(.65) rotate(var(--rotation)); transition: transform .36s cubic-bezier(.2, .7, .2, 1); opacity: .75; }
-.luna-prism__label { position: absolute; right: -5%; top: 8%; display: grid; place-items: center; width: 1.35rem; height: 1.35rem; border: 1px solid #cbd6cb70; border-radius: 50%; background: #112b34db; color: #eef0d9; font: 500 .6875rem var(--font-display); }
-.luna-prism__turn { position: absolute; top: 97%; left: 50%; transform: translateX(-50%); padding: .2rem .55rem; border: 1px solid #c6ddc830; border-radius: 1rem; color: #e2ecdd; background: #10232cd9; white-space: nowrap; font: 500 .6875rem var(--font-numeric); opacity: .8; }
-.luna-prism:hover .luna-prism__crystal, .luna-prism:focus-visible .luna-prism__crystal { filter: brightness(1) drop-shadow(0 0 6px #c2f5df80); }
-.luna-prism:focus-visible { outline: 2px solid #edffe1; outline-offset: 6px; }
+/* Fixed plinths belong to the backdrop; crystal feet meet their ground plane. */
+.luna-source { position: absolute; left: var(--x); top: var(--y); width: 2%; aspect-ratio: 1; transform: translate(-50%, -50%); display: grid; place-items: center; pointer-events: none; }
+.luna-source i { width: 30%; aspect-ratio: 1; border-radius: 50%; background: #fff4ce; box-shadow: 0 0 12px #f4e9b680, 0 0 25px #e7e2c340; }
+.luna-prism { position: absolute; left: var(--x); top: var(--y); z-index: 4; width: 8.5%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; touch-action: manipulation; }
+.luna-prism[data-prism="a"], .luna-prism[data-prism="d"] { width: 7.5%; }
+/* Receiving crystals pulse more strongly while their bases stay fixed. */
+.luna-prism::after { content: ""; position: absolute; left: var(--crystal-left); top: calc(-44.6% + var(--ground-offset)); width: 74%; height: 100%; background: url("../images/luna/prism-turns.png") var(--frame) center / 400% 100% no-repeat; filter: blur(3px) brightness(1.2); mix-blend-mode: screen; opacity: 0; transition: opacity .35s ease; pointer-events: none; }
+.luna-prism.is-lit::after { opacity: .3; }
+.luna-prism.is-next::after { opacity: .3; animation: luna-prism-active 2.4s ease-in-out infinite; }
+@keyframes luna-prism-active { 0%, 100% { opacity: .16; filter: blur(3px) brightness(1.2); } 45% { opacity: .7; filter: blur(6px) brightness(1.8); } 65% { opacity: .3; filter: blur(3px) brightness(1.3); } }
+.luna-prism:not(.is-next):hover::after, .luna-prism:not(.is-next):focus-visible::after { animation: none; opacity: .28; }
+.luna-prism[aria-disabled="true"]::after { animation: none; }
+.luna-prism::before { position: absolute; content: ""; left: 50%; top: calc(50% + var(--ground-offset)); width: 43%; height: 10%; transform: translate(-50%, -35%); border-radius: 50%; background: radial-gradient(ellipse, #14201dcc, #1e29236e 38%, transparent 72%); pointer-events: none; }
+.luna-prism__crystal { position: absolute; left: var(--crystal-left); top: calc(-44.6% + var(--ground-offset)); width: 74%; height: 100%; background: url("../images/luna/prism-turns.png") var(--frame) center / 400% 100% no-repeat; filter: drop-shadow(0 4px 2px #09232d70); transition: filter .36s ease; pointer-events: none; }
+.luna-prism__outlet { position: absolute; inset: 11% 2% 11%; background: url("../images/luna/prism.svg") center / contain no-repeat; transform: scaleY(.65) rotate(var(--rotation)); transition: transform .36s cubic-bezier(.2, .7, .2, 1), opacity 1.2s ease; opacity: .75; }
+.luna-prism:hover .luna-prism__crystal { filter: brightness(1) drop-shadow(0 0 6px #c2f5df80); }
+.luna-prism:focus-visible { outline: none; }
 .luna-prism.is-lit .luna-prism__crystal { filter: brightness(1.08) drop-shadow(0 0 4px #b3f6e170); }
-.luna-prism.is-lit .luna-prism__sockets { opacity: 1; filter: drop-shadow(0 0 3px #a8e8ce); }
+.luna-prism:focus-visible .luna-prism__crystal { filter: brightness(1.12) drop-shadow(0 0 2px #f6ffde) drop-shadow(0 0 10px #b7f1dc99); }
+.luna-prism.is-lit .luna-prism__outlet { opacity: 1; filter: drop-shadow(0 0 3px #a8e8ce); }
 .luna-prism[aria-disabled="true"] { cursor: default; }
-.luna-prism[aria-disabled="true"] .luna-prism__turn { visibility: hidden; }
+.luna-garden.is-complete .luna-garden__light, .luna-garden.is-complete .luna-prism__outlet { opacity: 0; transition-delay: 4.6s; }
 
 
-/* Three distinct plants, aligned dormant and flowering atlas cells. */
-.luna-cluster { position: absolute; left: var(--x); top: var(--y); z-index: 2; width: min(var(--size), 30svh); aspect-ratio: 1; margin: 0; transform: translate(-50%, -79%); pointer-events: none; }
-.luna-cluster::before { content: ""; position: absolute; inset: 72% 7% -6%; border-radius: 50%; background: radial-gradient(ellipse, #051810aa, #0b221b66 35%, transparent 72%); }
-.luna-cluster__bud, .luna-cluster__bloom { position: absolute; inset: 0; background-image: url("../images/luna/botanical-states-v2.png"); background-size: 300% 200%; background-repeat: no-repeat; transform-origin: 50% 90%; filter: saturate(.85) brightness(.92); }
-.luna-cluster__bud { background-position: 0 0; opacity: 1; transition: opacity 1.9s ease .18s; }
-.luna-cluster__bloom { background-position: 0 100%; opacity: 0; transform: scale(.96); transition: opacity 2.3s ease .18s, transform 2.6s ease .18s, filter 2.5s ease; }
-.luna-cluster[data-luna-cluster="stardew"] .luna-cluster__bud { background-position: 50% 0; }
-.luna-cluster[data-luna-cluster="stardew"] .luna-cluster__bloom { background-position: 50% 100%; }
-.luna-cluster[data-luna-cluster="aurora"] .luna-cluster__bud { background-position: 100% 0; }
-.luna-cluster[data-luna-cluster="aurora"] .luna-cluster__bloom { background-position: 100% 100%; }
+/* Flowers and Lotus restore inside the same photographed garden. */
+.luna-cluster { position: absolute; left: var(--x); top: var(--y); z-index: 2; width: var(--size); aspect-ratio: 1; margin: 0; transform: translate(-50%, -79%); pointer-events: none; }
 .luna-cluster__halo { position: absolute; inset: 35% -40% -35%; opacity: 0; border-radius: 50%; background: radial-gradient(ellipse, #d3eac536, #a6dcc00e 45%, transparent 70%); transition: opacity 2.5s ease .2s; mix-blend-mode: screen; }
-.luna-cluster.is-awake .luna-cluster__bud { opacity: 0; }
-.luna-cluster.is-awake .luna-cluster__bloom { opacity: 1; transform: scale(1); filter: saturate(1) brightness(1.05); }
 .luna-cluster.is-awake .luna-cluster__halo { opacity: .8; }
 .luna-cluster.is-connected .luna-cluster__halo { opacity: 1; }
-.luna-cluster__fragment { position: absolute; left: 48%; top: -3%; color: #e2ecdb; font-size: 1.1rem; line-height: 1; text-shadow: 0 0 8px #b2ead4; transition: opacity .8s ease .3s, transform 1.4s ease .3s; }
-.luna-cluster.is-awake .luna-cluster__fragment { opacity: 0; transform: translateY(-1.5rem) scale(.5); }
-.luna-cluster figcaption { position: absolute; top: 98%; left: 50%; display: grid; gap: .15rem; transform: translateX(-50%); padding: .3rem .65rem; border-radius: .35rem; background: #0b2028c9; text-align: center; white-space: nowrap; }
-.luna-cluster figcaption span { color: #e4ebdd; font-size: .6875rem; }
-.luna-cluster figcaption b { color: #bed0cd; font-size: .625rem; font-weight: 400; }
-.luna-cluster.is-awake figcaption b { color: #d9eac2; }
-.luna-cluster--lotus { z-index: 3; width: min(calc(var(--size) * .9), 26svh); transform: translate(-50%, -66%); }
-.luna-cluster--lotus::before { inset: 55% -10% -12%; background: radial-gradient(ellipse, #07181d61, transparent 70%); border: 1px solid #cbe9d522; }
-.luna-cluster--lotus .luna-cluster__bud, .luna-cluster--lotus .luna-cluster__bloom { background-image: url("../images/luna/lotus-states-v2.png"); background-size: 200% 100%; filter: brightness(.88) saturate(.65); }
-.luna-cluster--lotus .luna-cluster__bud { background-position: 0 center; }
-.luna-cluster--lotus .luna-cluster__bloom { background-position: 100% center; transition-duration: 3s, 3.3s, 3s; }
-.luna-cluster--lotus.is-awake .luna-cluster__bloom { filter: brightness(1.06) saturate(.95); }
-.luna-cluster--lotus .luna-cluster__fragment { visibility: hidden; }
+.luna-cluster__fragment { visibility: hidden; position: absolute; left: 50%; top: calc(79% + var(--marker-offset, 0px)); display: grid; place-items: center; width: 2.5rem; aspect-ratio: 1; translate: -50% -50%; color: #fff2c6; font-size: 1.8rem; line-height: 1; background: radial-gradient(ellipse, #0a232bc9, #0a232b70 42%, transparent 72%); text-shadow: 0 0 5px #e9ffda, 0 0 14px #a6f4d9; transition: opacity .6s ease, transform .9s ease; }
+.luna-cluster.is-next .luna-cluster__fragment { visibility: visible; animation: luna-target-beacon 2.8s ease-in-out infinite; }
+@keyframes luna-target-beacon { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.5); } }
+.luna-cluster.is-awake .luna-cluster__fragment { animation: none; opacity: 0; transform: translateY(-1.5rem) scale(.5); }
+.luna-cluster--lotus { z-index: 3; width: var(--size); transform: translate(-50%, -52%); }
+.luna-cluster--lotus .luna-cluster__fragment { visibility: hidden; top: calc(52% + var(--marker-offset, 0px)); }
+
 .luna-cluster--lotus.is-ready .luna-cluster__halo { opacity: 1; }
-.luna-cluster--lotus.is-ready figcaption b { color: #f2e6b8; }
-.luna-garden__completion { position: absolute; left: 50%; top: 46%; z-index: 5; width: 35%; transform: translateX(-50%); padding: 1rem; text-align: center; background: radial-gradient(ellipse, #102832cc, #10283200 72%); animation: luna-complete-in 1.6s 2.4s ease both; pointer-events: none; }
+.luna-garden__completion { position: absolute; left: 50%; top: 57%; z-index: 5; width: 35%; transform: translateX(-50%); padding: 1rem; text-align: center; background: radial-gradient(ellipse, #102832cc, #10283200 72%); animation: luna-complete-in 1.6s 2.4s ease both; pointer-events: none; }
 .luna-garden__completion > span { color: #e5edcb; font: 400 .625rem var(--font-display); letter-spacing: .2em; }
 .luna-garden__completion h2 { margin: .5rem 0; color: #f9f5df; font-size: clamp(1rem, 1.6vw, 1.5rem); font-weight: 400; }
 .luna-garden__completion p { color: #d9e8dd; font-size: .75rem; }
@@ -89,14 +81,13 @@
 @keyframes luna-complete-in { from { opacity: 0; translate: 0 .6rem; } to { opacity: 1; translate: 0 0; } }
 
 
-/* EVE and a quiet instruction share the lower safe area. */
+/* EVE retains contextual guidance outside the garden. */
 .luna-sample__footer { position: absolute; inset: auto 2rem 1.5rem; z-index: 5; pointer-events: none; }
 .luna-sample__eve { display: flex; align-items: center; gap: .8rem; width: min(35rem, 100%); padding: .65rem 1rem; border: 1px solid #b8d2c43d; border-radius: .8rem; background: #10232cdd; box-shadow: inset 0 1px 0 #eef4db16; }
 .luna-sample__portrait { position: relative; flex: 0 0 auto; width: 3.25rem; height: 3.25rem; overflow: hidden; border: 1px solid #bddac96b; border-radius: 50%; background: #113345; }
 .luna-sample__portrait img { position: absolute; top: -5%; left: -45%; width: 190%; max-width: none; }
 .luna-sample__eve b { font: 500 .75rem var(--font-display); color: #b5e5d4; }
 .luna-sample__eve p { margin-top: .3rem; min-height: 2.8em; color: #dfebe6; font-size: .8125rem; line-height: 1.5; }
-.luna-garden__hint { position: absolute; right: 2rem; bottom: 2rem; padding: .45rem .75rem; border-radius: .4rem; background: #0c202bbf; color: #d4e4dc; font-size: .75rem; }
 .luna-sample__noscript { position: fixed; inset: 40% 10% auto; z-index: 10; padding: 2rem; background: var(--color-surface-strong); }
 
 
@@ -116,8 +107,6 @@
   .luna-sample__tools { gap: .4rem; }
   .luna-sample__tools .ui-button { padding-inline: .65rem; }
   .luna-garden { width: max(100%, 56rem); height: 35rem; min-height: 0; }
-  .luna-prism { width: 5.5rem; }
-  .luna-garden__hint { display: none; }
   .luna-sample__footer { position: relative; inset: auto; margin: .75rem; }
   .luna-sample__eve { width: 100%; }
   .luna-sample__eve p { font-size: .75rem; }
@@ -130,4 +119,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .luna-sample *, .luna-sample *::before, .luna-sample *::after { animation: none !important; transition: none !important; }
+}
+
+@media (forced-colors: active) {
+  .luna-prism:focus-visible { outline: 2px solid Highlight; outline-offset: 2px; }
 }

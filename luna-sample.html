@@ -10,8 +10,7 @@
   <link rel="stylesheet" href="./assets/css/common.css">
   <link rel="stylesheet" href="./assets/css/style.css">
   <link rel="stylesheet" href="./assets/css/luna-sample.css">
-  <link rel="preload" href="./assets/images/luna/botanical-states-v2.png" as="image">
-  <link rel="preload" href="./assets/images/luna/garden-restored-fresh-v3.png" as="image">
+  <link rel="preload" href="./assets/images/luna/garden-integrated-restored-v6.png" as="image">
 </head>
 <body class="luna-sample">
   <header class="luna-sample__header">
@@ -24,13 +23,14 @@
   </header>
   <main class="luna-sample__viewport" tabindex="0" aria-label="빛 연결 정원. 작은 화면에서는 가로로 이동할 수 있어요." data-i18n-aria-label="luna.sample.viewport">
     <section class="luna-garden" aria-label="Prism 회전 조작 샘플" data-i18n-aria-label="luna.sample.board" data-luna-garden>
-      <img class="luna-garden__background" src="./assets/images/luna/garden-dormant-v3.png" alt="" fetchpriority="high">
-      <div class="luna-garden__ambient" aria-hidden="true"></div>
-      <svg class="luna-garden__light" viewBox="0 0 1600 900" preserveAspectRatio="none" aria-hidden="true"><g data-luna-rays></g></svg>
-      <div class="luna-source" aria-hidden="true"><i></i></div>
-      <div data-luna-objects></div>
+      <div class="luna-garden__scene" data-luna-scene>
+        <img class="luna-garden__background" src="./assets/images/luna/garden-integrated-dormant-v6.png" alt="" fetchpriority="high">
+        <div class="luna-garden__ambient" aria-hidden="true"></div>
+        <svg class="luna-garden__light" viewBox="0 0 1672 941" preserveAspectRatio="none" aria-hidden="true"><g data-luna-rays></g></svg>
+        <div class="luna-source" aria-hidden="true"><i></i></div>
+        <div data-luna-objects></div>
+      </div>
       <div class="luna-garden__completion" role="status" data-luna-completion hidden><span>GARDEN RESTORED</span><h2 data-i18n="luna.sample.completeTitle">정원이 다시 숨 쉬어요</h2><p data-i18n="luna.sample.completeCopy">모든 꽃과 중앙 Lotus가 깨어났어요.</p></div>
-      <p class="luna-garden__hint" data-i18n="luna.sample.rotateHint">Prism을 누르면 90°씩 돌아가요.</p>
     </section>
   </main>
   <footer class="luna-sample__footer">
