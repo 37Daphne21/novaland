@@ -13,9 +13,9 @@ export const LUNA_SAMPLE_BOARD = {
   ],
   targets: [
     { id: 'moonbell', x: 260, y: 550, kind: 'flower', width: 250 },
-    { id: 'stardew', x: 1050, y: 735, kind: 'flower', width: 215 },
-    { id: 'aurora', x: 1320, y: 330, kind: 'flower', width: 280 },
-    { id: 'lotus', x: 820, y: 330, kind: 'lotus', width: 235 }
+    { id: 'stardew', x: 1050, y: 735, kind: 'flower', width: 240 },
+    { id: 'aurora', x: 1320, y: 330, kind: 'flower', width: 220 },
+    { id: 'lotus', x: 880, y: 330, kind: 'lotus', width: 235 }
   ]
 };
 

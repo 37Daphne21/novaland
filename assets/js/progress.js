@@ -1,3 +1,4 @@
+import { isPreviewLocation } from './preview-location.js';
 import { facilities } from './data.js';
 import { getLanguage, t } from './locales.js';
 import { MISSION_PHASES } from './mission-state.js';
@@ -130,16 +131,29 @@ function normalizeProgress(value, explorer) {
 }
 
 export function isRestoredPreview() {
-  const hostname = window.location.hostname;
-  return (hostname === 'localhost' || hostname.startsWith('127.'))
+  return isPreviewLocation(window.location)
     && new URLSearchParams(window.location.search).get('map-state') === 'restored';
 }
 
+// One address contract for facility-specific preview entry and storage isolation.
+export function getMissionPreview() {
+  const { search } = window.location;
+  if (!isPreviewLocation(window.location)) return null;
+  const params = new URLSearchParams(search);
+  const requested = params.get('mission-preview');
+  if (!requested) return null;
+  const facility = params.get('facility');
+  const phase = requested;
+  const phases = {
+    coaster: ['control-room', 'control-room-completed', 'guide', 'countdown', 'play', 'failed', 'testing', 'completed'],
+    luna: ['control-room', 'guide', 'play']
+  };
+  const valid = Boolean(phases[facility]?.includes(phase)) && !params.has('control-room');
+  return { facility, phase, valid };
+}
+
 export function isMissionPreview() {
-  const hostname = window.location.hostname;
-  const previewPhase = new URLSearchParams(window.location.search).get('mission-preview');
-  return (hostname === 'localhost' || hostname.startsWith('127.'))
-    && ['guide', 'countdown', 'testing', 'completed'].includes(previewPhase);
+  return Boolean(getMissionPreview());
 }
 
 function createRestoredPreview(progress) {
@@ -176,8 +190,12 @@ export function saveProgress(progress) {
 }
 
 export function readProgress(explorer = null) {
-  if (isMissionPreview() && new URLSearchParams(window.location.search).get('mission-preview') === 'completed') {
-    return recordFacilityCompletion(createProgress(explorer), facilities.find((facility) => facility.id === 'coaster'));
+  const preview = getMissionPreview();
+  if (preview) {
+    const initial = createProgress(explorer);
+    return preview.valid && (preview.facility === 'luna' || ['completed', 'control-room-completed'].includes(preview.phase))
+      ? recordFacilityCompletion(initial, facilities.find((facility) => facility.id === 'coaster'))
+      : initial;
   }
   let progress = null;
   let shouldSave = false;

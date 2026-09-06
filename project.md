@@ -1098,6 +1098,9 @@ Control Room, Guide, Countdown, Play, Pause, Fail과 Complete는 공통 Mission 
 - 네 시설 중 정원의 심미적인 매력을 가장 강하게 표현한다. MAP의 온실과 이어지는 유리 구조·식재·꽃이 중심이며 물은 작은 Lotus 연못과 수로로 제한한다.
 - 빛 연결을 하나씩 해결할 때마다 꽃 군락이 깨어나고, 빛길을 바꿔도 이미 피어난 꽃은 유지한다. 최종 중앙 Lotus 개화로 정원 복구를 마무리한다.
 - 네온·반짝임을 늘리는 대신 꽃잎·잎·유리의 재질과 명암을 구분한다. EVE를 포함해 반복 가공으로 어두워지거나 디테일이 뭉개지는 표현을 피한다.
+- 게임은 양옆 빈 띠 없이 온실 배경을 화면 전체에 표시하고 중앙에 빛 퍼즐과 작은 Lotus 연못을 배치한다. 배경은 비율을 유지해 채우며 상단 HUD·하단 EVE 안전 영역을 확보한다. 세 군락은 백합·낮은 별꽃·살구빛 꽃의 서로 다른 식재로 구분하고 받침의 이끼·접촉 그림자와 주변 반사광으로 배경에 연결한다.
+- 제목·진행·Guide/Pause·EVE의 위계는 공통 UX를 따른다. 루나 헤더 전체와 좌우 영역에는 배경·테두리를 두지 않고 중앙 군락 복구 표시만 독립된 유리 패널로 표현한다. Guide/Pause 버튼 자체의 조작 표면은 유지한다. 군락 3개와 Lotus의 진행 표시를 분리하며 완료 문구는 Lotus 개화 이후 등장한다. 빛은 새로 연결되는 구간만 도착 연출하고 이미 연결된 구간은 유지한다.
+- 복구 전은 차분한 달빛 온실, 복구 후는 밝은 민트·싱그러운 녹색 잎·아이보리와 연보라 꽃이 살아나는 산뜻한 NOVA LAND 분위기로 구분한다. 군락 개화에 맞춰 주변 화단도 점진적으로 복구하고 Lotus 완료에서 전체 정원으로 이어진다. 짙은 청흑색과 과도한 안개로 몽환성을 표현하지 않는다. Prism은 기존의 가늘고 비대칭인 투명 결정과 아이보리 석재 받침 형태를 유지한다.
 - 실제 웹에서는 배경·Prism·봉오리·개화 요소를 분리한다. NOVA COASTER의 승인된 디자인과 동작은 유지하며 단계 수·제한 시간·기계 UI를 그대로 가져오지 않는다.
 
 **확정된 한 화면 퍼즐 구성**
@@ -1108,6 +1111,8 @@ Control Room, Guide, Countdown, Play, Pause, Fail과 Complete는 공통 Mission 
 - 세 군락의 Fragment를 모두 모은 뒤 Lotus에 빛을 연결해야 완료된다. 먼저 Lotus에 도달하면 부족한 조건을 안내하고 조작은 계속 가능하다. 완료 후 회전을 잠그고 정원과 Lotus 개화, 완료 문구를 유지한다.
 - 다시 체험하기는 샘플의 회전·수집·개화·완료만 초기화한다. Guide·Pause는 현재 상태와 개화 모션을 유지하고 닫으면 이어간다.
 - Prism은 두께·절단면이 보이는 결정과 윗면·옆면·밑면이 보이는 석재 받침으로 구성한다. 받침은 고정하고 결정의 방향별 이미지와 연결면이 90° 회전을 표현한다. 군락은 낮은 식재·이끼·작은 동반 꽃을 포함하며 밑동을 배경과 연결한다.
+- 루나 EVE는 안내 대사가 변경될 때만 타이핑한다. 같은 대사를 반복하는 조작은 기존 표시를 유지한다. 최초 안내는 한 번 타이핑한다.
+- 루나는 탭 이동·창 비활성으로 문서가 숨겨져도 Pause 팝업을 자동으로 열지 않는다. 진행 중인 빛·개화 연출만 멈추고 다시 보이면 이어간다. 직접 연 Guide·Pause는 복귀 후에도 유지하며 버튼·Escape의 기존 동작은 유지한다. 시간 제한이 있는 NOVA COASTER의 자동 Pause는 변경하지 않는다.
 - 정원 게임 주소는 `luna-sample.html`이며 MAP에서 개방된 LUNA 선택 → 공통 관제실 → MISSION START로 진입한다. 현재 관제실 안의 전체 화면 Dialog에서 독립 게임을 열며 실제 탐험 진행·Checkpoint·Stamp에 연결하지 않는다. 언어는 기존 공통 설정을 따르며 게임 안에 별도 언어 전환 버튼을 두지 않는다.
 - 관제실은 원본 배경 `assets/images/control-room/bg-control-room-luna-v1.png`와 원본 EVE를 사용한다. 온실·왼쪽 구체와 깊이 있는 관제 테이블을 유지한다. 배경을 축소하거나 테이블을 납작하게 바꾸기보다 루나 시작 버튼의 폭·패딩을 줄여 하단에 배치한다. 꽃 문양 노출을 우선하며 테이블 앞쪽 받침 일부와 버튼의 겹침은 허용한다. 배경 색상 레이어 없이 공통 `::after` Box Shadow만 사용한다. 왼쪽 제목·EVE, 오른쪽 정원 상태·복구 목표 구성을 유지하고 레일 수·STEP·운행 점검 대신 고정 Prism·세 군락·Lotus의 휴면 상태를 안내한다.
 - 타이틀과 EVE 사이 여백은 모든 관제실의 공통 규칙을 따른다. 루나의 오른쪽 정원 상태·복구 목표 묶음은 시작 버튼 위 콘텐츠 영역의 하단에 정렬해 위쪽 온실 배경을 드러낸다. 좁은 화면에서는 기존 한 열 흐름을 유지한다.
@@ -1117,8 +1122,9 @@ Control Room, Guide, Countdown, Play, Pause, Fail과 Complete는 공통 Mission 
 **미정·보류**
 
 - 현재 배치의 최종 난이도는 사용자 플레이 후 조정한다. 추가 색 혼합·분기와 별도 보드 확대는 현재 범위가 아니다.
+- Guide는 현재 텍스트 임시 화면이며 NOVA와 같은 직접 조작 연습·설명·시작 버튼 구조로 후속 제작한다. LUNA 연습은 Prism 90° 회전으로 꽃에 빛을 연결하는 방식이다.
 - 완료 저장·Checkpoint 복원·완료 결과의 MAP/Passport 반영, 모바일 전용 게임 HUD는 후속 범위다. 실제 기기·Safari·운영체제 모션 감소 검증도 별도 진행한다.
-- 현재 결정은 4방향 이미지, 개화는 같은 시트의 봉오리·꽃 교차 전환으로 표현한다. 연속 3D 회전과 꽃잎별 골격 애니메이션은 구현하지 않는다. 배경은 기존 원본, EVE는 공통 원본을 유지한다.
+- 현재 결정은 4방향 이미지, 개화는 같은 시트의 봉오리·꽃 교차 전환으로 표현한다. 연속 3D 회전과 꽃잎별 골격 애니메이션은 구현하지 않는다. EVE는 공통 원본을 유지한다.
 
 
 ### SPARK ENERGY TOWER
@@ -1192,15 +1198,32 @@ Control Room, Guide, Countdown, Play, Pause, Fail과 Complete는 공통 Mission 
 
 ### 화면 검수용 진입
 
-Mission Preview는 게임을 완료하지 않고 동일한 실제 화면을 확인하는 용도이며, 기존 Explorer와 진행 데이터를 덮어쓰지 않는다. 복구 완료 Preview에서는 NOVA COASTER 완료·Stamp와 LUNA 해금 상태를 임시로 구성하고 완성된 마지막 Rail Board를 배경으로 표시한다. 결과 창을 검수할 수 있도록 자동 이동하지 않으며, 기록 보기 Button으로 Passport 획득 연출까지 연결한다.
+공유 주소는 `index.html?facility={시설}&mission-preview={단계}`로 통일한다. 시설과 단계를 분리하고 현재 구현된 화면만 연결한다. 로컬 서버(localhost·127.*)와 `https://37daphne21.github.io/novaland/`에서 동작하며 기존 Explorer·진행 데이터를 읽거나 덮어쓰지 않는 임시 상태를 사용한다. 알 수 없는 시설·단계는 저장 격리 MAP에서 안내하고 다른 시설 게임을 대신 열지 않는다.
 
-| 주소 쿼리 | 진입 화면 | 조건 |
+| 시설 | 단계 | 진입 화면 |
 | --- | --- | --- |
-| `?mission-preview=guide` | NOVA COASTER Guide | localhost 또는 127.* |
-| `?mission-preview=countdown` | NOVA COASTER Countdown 이후 게임 진행 | localhost 또는 127.* |
-| `?mission-preview=testing` | 최종 시스템 점검 고정 화면 (시운전 단계·열차 모션) | localhost 또는 127.*; 자동 완료·진행 저장 없음 |
-| `?mission-preview=completed` | NOVA COASTER 시설 복구 완료 창 → Passport 기록 | localhost 또는 127.* |
-| `?map-state=restored` | 전체 시설 복구 상태의 MAP | localhost 또는 127.*; Explorer 등록 필요 |
-| `?intro=1` | 저장된 Explorer가 있어도 Intro 진입 | 테스트 전용 저장 격리가 없는 실제 Intro 흐름 |
+| coaster | control-room | 복구 전 관제실 |
+| coaster | guide | 조작 연습 Guide |
+| coaster | countdown | 카운트다운 → 실제 게임 |
+| coaster | play | 초기 게임 직접 진입 |
+| coaster | failed | 시간 초과 → 재시도 |
+| coaster | testing | 최종점검 고정 화면 |
+| coaster | completed | 복구 완료 → Passport 기록 |
+| coaster | control-room-completed | 정상 운행 중 관제실 |
+| luna | control-room | 복구 전 관제실 |
+| luna | guide | 임시 텍스트 Guide |
+| luna | play | 초기 정원 0/3 |
 
-각 쿼리는 단독으로 사용한다. Mission Preview와 MAP 복구 Preview는 진행 데이터를 저장하지 않으며, `intro=1`은 저장 데이터 초기화 기능이 아니다.
+일시정지는 게임에서 여는 공통 UI를 유지하며 직접 진입 Preview는 제공하지 않는다. 최종점검(`testing`)은 모든 시설에 필요한 공통 UX 단계이고 점검 항목·연출은 시설별로 구성한다. 코스터의 시운전은 최종점검 안의 전용 항목이다. 현재 최종점검 Preview는 코스터만 구현됐으며 LUNA·SPARK·WONDER는 후속 구현 대상이다. 루나에는 카운트다운·시간 초과가 없으며 실제 결과 저장·Stamp와 복구 후 관제실도 아직 연결하지 않는다.
+
+예전 시설 없는 `mission-preview`, `control-room` 호환 조합과 `luna-preview` 상태 진입을 제거했다. 공유 Preview는 위의 `index.html?facility=...&mission-preview=...`만 사용한다. 미지원 주소는 정상 Preview로 연결하지 않는다. `luna-sample.html` 자체는 실제 게임을 담는 내부 문서이므로 유지한다. 루나 게임 Preview는 초기 시작(`play`)만 제공한다. 군락별 복구·Lotus 대기·조건 부족·개화 완료는 실제 게임 조작으로 검수하며 해당 상태의 직접 진입 주소는 제공하지 않는다. 관제실·Guide 테스트 진입은 유지한다.
+
+기타 기존 주소:
+
+- `index.html?map-state=restored`: 전체 시설 복구 MAP. 로컬 서버 또는 위 GitHub Pages, Explorer 등록 필요. 진행 저장 격리.
+- `index.html?intro=1`: 저장된 Explorer가 있어도 Intro 진입. 저장 격리 없는 실제 흐름이며 초기화 기능이 아니다.
+
+자동 검증은 `node --test tests/regression.test.mjs tests/luna-light.test.mjs tests/luna-preview.test.mjs tests/control-room.test.mjs`로 실행한다. 브라우저 실제 렌더링·사용자 흐름 검수를 대체하지 않는다.
+
+
+테스트 주소 기준 경로는 로컬 `http://127.0.0.1:5500/novaland/index.html`, 배포 `https://37daphne21.github.io/novaland/index.html`이다. 동일한 `facility`·`mission-preview` 쿼리를 붙인다. 부모와 내부 루나 게임의 Preview 허용 조건은 `preview-location.js`에서 공유한다. 배포 전에는 GitHub Pages에서 새 코드를 검증했다고 간주하지 않는다.

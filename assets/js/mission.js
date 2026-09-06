@@ -393,7 +393,7 @@ export function createMissionController({ createGame, duration = 90, getExplorer
     stopActivity();
     awardPending = previewPhase === 'completed';
     facility = nextFacility;
-    isPreviewMode = ['guide', 'countdown', 'testing', 'completed'].includes(previewPhase);
+    isPreviewMode = ['guide', 'countdown', 'play', 'failed', 'testing', 'completed'].includes(previewPhase);
     if (startButton) {
       startButton.hidden = false;
     }
@@ -434,6 +434,15 @@ export function createMissionController({ createGame, duration = 90, getExplorer
       resumeMode = 'playing';
       game.reset();
       renderTimer();
+      const directPhase = { play: 'playing', failed: 'failed' }[previewPhase];
+      if (directPhase) {
+        if (directPhase === 'failed') { remaining = 0; renderTimer(); }
+        setPhase(directPhase, { saveState: false });
+        const focusTarget = directPhase === 'failed' ? dialog.querySelector('[data-mission-phase="failed"] [data-mission-restart]') : dialog;
+        modal.open({ focusTarget, opener });
+        if (directPhase === 'playing') { startTimer(); game.focus(); }
+        return;
+      }
       setPhase('guide', { saveState: false });
       modal.open({ focusTarget: guideCloseButton, opener });
       if (previewPhase === 'countdown') {

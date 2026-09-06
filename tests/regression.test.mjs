@@ -44,11 +44,12 @@ function node() {
   };
 }
 const facilities = ['coaster', 'luna', 'spark', 'wonder'].map(id => ({ id, name: id }));
+const { isPreviewLocation } = load('preview-location.js', ['isPreviewLocation']);
 const missionState = load('mission-state.js', ['MISSION_PHASES', 'getMissionRestoreState', 'findRestorableMissionId']);
 function progressFixture(search = '') {
   const localStorage = storage();
   const window = { location: { hostname: 'localhost', search }, localStorage };
-  const api = load('progress.js', ['createProgress', 'readProgress', 'saveProgress', 'recordFacilityCompletion', 'updateMissionProgress', 'getRestorationState'], { facilities, window, ...missionState, getLanguage: () => 'ko', t: key => key });
+  const api = load('progress.js', ['getMissionPreview', 'createProgress', 'readProgress', 'saveProgress', 'recordFacilityCompletion', 'updateMissionProgress', 'getRestorationState'], { facilities, window, isPreviewLocation, ...missionState, getLanguage: () => 'ko', t: key => key });
   return { ...api, window, explorer: { id: 'regression', issuedAt: '2026-09-05T00:00:00Z' } };
 }
 test('completion counts 0..4, sequential unlock, one stamp/coupon and no duplicate rewards', () => {
@@ -264,4 +265,51 @@ test('result dialog uses the visible title and testing exposes pending, active a
   assert.equal(fixture.element('[data-test-step="safety"] [data-test-state]').textContent, 'mission.testingState.pending');
   assert.equal(fixture.element('[data-test-step="connection"] [aria-hidden]').textContent, '✓');
   assert.equal(fixture.element('[data-test-step="safety"] [aria-hidden]').textContent, '');
+});
+
+
+test('facility preview routes isolate saves, unlock Luna and reject removed addresses', () => {
+  for (const facility of ['coaster', 'luna']) {
+    const phases = facility === 'coaster' ? ['control-room', 'control-room-completed', 'guide', 'countdown', 'play', 'failed', 'testing', 'completed'] : ['control-room', 'guide', 'play'];
+    for (const phase of phases) {
+      const api = progressFixture(`?facility=${facility}&mission-preview=${phase}`);
+      api.window.localStorage.setItem('novaLandProgress', 'existing-user-data');
+      assert.equal(api.getMissionPreview().valid, true);
+      const progress = api.readProgress(api.explorer);
+      assert.equal(progress.facilities.coaster.status, facility === 'luna' || ['completed', 'control-room-completed'].includes(phase) ? 'completed' : 'available');
+      api.saveProgress(progress);
+      assert.equal(api.window.localStorage.getItem('novaLandProgress'), 'existing-user-data');
+    }
+  }
+  for (const query of ['?facility=spark&mission-preview=guide', '?facility=luna&mission-preview=testing', '?facility=coaster&mission-preview=unknown', '?facility=coaster&mission-preview=paused', '?facility=luna&mission-preview=paused', '?mission-preview=guide']) {
+    assert.equal(progressFixture(query).getMissionPreview().valid, false);
+  }
+  assert.equal(progressFixture('?mission-preview=completed&control-room=luna').getMissionPreview().valid, false);
+  assert.equal(progressFixture('?mission-preview=completed&control-room=coaster').getMissionPreview().valid, false);
+  const remote = progressFixture('?facility=luna&mission-preview=completed');
+  remote.window.location.hostname = 'example.com';
+  assert.equal(remote.getMissionPreview(), null);
+});
+
+test('direct coaster play and failure previews use real phases without saving', () => {
+  for (const [previewPhase, phase] of [['play', 'playing'], ['failed', 'failed']]) {
+    const fixture = missionFixture();
+    const before = JSON.stringify(fixture.progress);
+    fixture.controller.open(facilities[0], null, { previewPhase });
+    fixture.timers.tick(1000);
+    assert.equal(fixture.dialog.dataset.phase, phase);
+    assert.equal(JSON.stringify(fixture.progress), before);
+  }
+});
+
+
+test('GitHub Pages previews are isolated while other projects remain excluded', () => {
+  for (const search of ['?facility=coaster&mission-preview=countdown', '?facility=luna&mission-preview=play', '?map-state=restored']) {
+    const api = progressFixture(search);
+    Object.assign(api.window.location, { hostname: '37daphne21.github.io', protocol: 'https:', pathname: '/novaland/index.html' });
+    api.window.localStorage.setItem('novaLandProgress', 'existing-user-data');
+    api.saveProgress(api.readProgress(api.explorer));
+    assert.equal(api.window.localStorage.getItem('novaLandProgress'), 'existing-user-data');
+  }
+  assert.equal(isPreviewLocation({ hostname: '37daphne21.github.io', protocol: 'https:', pathname: '/another/' }), false);
 });

@@ -11,13 +11,13 @@ import { createMissionController } from './mission.js';
 import { findRestorableMissionId } from './mission-state.js';
 import { createNavigationController } from './navigation.js';
 import { createProfileEditor } from './profile-editor.js';
-import { clearProgress, isMissionPreview, readProgress } from './progress.js';
+import { clearProgress, getMissionPreview, isMissionPreview, readProgress } from './progress.js';
 import { createSettingsController } from './settings.js';
 import { createDialogController, createModalController, createOverlayController, createToast } from './ui.js';
 
 initializeLanguage();
 
-const missionPreviewPhase = new URLSearchParams(window.location.search).get('mission-preview');
+const missionPreview = getMissionPreview();
 const shouldPreviewMission = isMissionPreview();
 const previewIssuedAt = new Date(Date.now() - 60000);
 const previewExplorer = { name: 'TEST EXPLORER', gender: 'female', id: 'NL-TEST-0000', introCompleted: true, issuedAt: previewIssuedAt.toISOString(), issueDate: new Intl.DateTimeFormat('en-CA').format(previewIssuedAt).replaceAll('-', '.') };
@@ -253,7 +253,12 @@ function applyNavigationRoute(route, { previousRoute, source } = {}) {
   if (route.screen === 'control-room' && route.facilityId === 'luna' && route.lunaPlay && !lunaEntry.open) {
     controlRoom.cancel();
     // Replace the child document without adding an extra browser Back entry.
-    lunaFrame.contentWindow.location.replace(new URL('./luna-sample.html', window.location.href).href);
+    const frameUrl = new URL('./luna-sample.html', window.location.href);
+    if (route.previewPhase && route.previewPhase !== 'guide') {
+      frameUrl.searchParams.set('facility', 'luna');
+      frameUrl.searchParams.set('mission-preview', route.previewPhase);
+    }
+    lunaFrame.contentWindow.location.replace(frameUrl.href);
     lunaModal.open({ focusTarget: lunaFrame, opener: document.querySelector('[data-mission-open]') });
   }
 }
@@ -416,13 +421,20 @@ function handleKeydown(event) {
 
 settings.render();
 if (shouldPreviewMission) {
-  const controlPreview = new URLSearchParams(window.location.search).get('control-room');
-  const facility = getFacility(controlPreview === 'luna' ? 'luna' : 'coaster');
   enterMap(previewExplorer);
-  controlRoom.show(facility);
-  navigation?.push({ screen: 'control-room', facilityId: facility.id }, { applyRoute: false });
-  if (!['luna', 'coaster'].includes(controlPreview)) {
-    window.setTimeout(() => mission.open(facility, controlRoom.getFocusTarget(), { previewPhase: missionPreviewPhase }), 120);
+  if (!missionPreview.valid) {
+    toast.show('지원하지 않는 시설 또는 테스트 단계야. 테스트 주소를 확인해줘.');
+  } else {
+    const facility = getFacility(missionPreview.facility);
+    controlRoom.show(facility);
+    navigation?.push({ screen: 'control-room', facilityId: facility.id }, { applyRoute: false });
+    if (!['control-room', 'control-room-completed'].includes(missionPreview.phase)) {
+      if (facility.id === 'luna') {
+        navigation.push({ screen: 'control-room', facilityId: 'luna', lunaPlay: true, previewPhase: missionPreview.phase });
+      } else {
+        window.setTimeout(() => mission.open(facility, controlRoom.getFocusTarget(), { previewPhase: missionPreview.phase }), 120);
+      }
+    }
   }
 } else {
   intro.start();
