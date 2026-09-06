@@ -32,7 +32,7 @@ board.prisms.forEach(node => {
 board.targets.forEach(node => {
   const region = document.createElement('img');
   region.className = 'luna-garden__restoration';
-  region.src = './assets/images/luna/garden-integrated-restored-v6.png';
+  region.src = './assets/images/luna/garden-restored.png';
   region.alt = '';
   region.dataset.lunaRegion = node.id;
   position(region, { ...node, y: node.regionY ?? node.y });

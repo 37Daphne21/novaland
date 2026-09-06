@@ -1527,7 +1527,7 @@
 .control-room__backdrop {
   position: absolute;
   inset: 0;
-  background: #02040d url("../images/control-room/bg-control-room-coaster-final.webp") center / cover no-repeat;
+  background: #02040d url("../images/control-room/bg-control-room-coaster.webp") center / cover no-repeat;
 }
 
 .control-room__backdrop::after {
@@ -1908,7 +1908,7 @@
 
 .control-room[data-facility="luna"] .control-room__backdrop {
   position: fixed;
-  background-image: url("../images/control-room/bg-control-room-luna-v1.png");
+  background-image: url("../images/control-room/bg-control-room-luna.webp");
 }
 
 .control-room[data-facility="luna"] .control-room__title h1 {
@@ -2586,7 +2586,7 @@ html[lang="en"] .mission-dialog:is([data-phase="guide"], [data-phase="playing"],
 }
 
 .mission-dialog[data-phase="countdown"] .mission-flow::before {
-  background: url("../images/control-room/bg-control-room-coaster-final.webp") center / cover no-repeat;
+  background: url("../images/control-room/bg-control-room-coaster.webp") center / cover no-repeat;
   filter: brightness(.48) saturate(.82);
   transform: scale(1.025);
 }
@@ -3021,7 +3021,7 @@ html[lang="en"] .rail-repair__endpoint small {
   left: var(--rail-anchor-x);
   width: var(--rail-facility-width);
   aspect-ratio: 1181 / 1331;
-  background: url("../images/coaster/station-start-v4.webp") center / 100% 100% no-repeat;
+  background: url("../images/coaster/station-start.webp") center / 100% 100% no-repeat;
   filter: drop-shadow(0 .42rem .48rem rgba(0, 3, 12, .9)) drop-shadow(0 0 .95rem rgba(82, 226, 255, .25));
   pointer-events: none;
   transform: translate(-97.3%, -50.53%);
@@ -3034,7 +3034,7 @@ html[lang="en"] .rail-repair__endpoint small {
   left: 5%;
   width: 76%;
   aspect-ratio: 8 / 3;
-  background: url("../images/coaster/train-start-v2.webp") center / contain no-repeat;
+  background: url("../images/coaster/train-start.webp") center / contain no-repeat;
   filter: drop-shadow(0 .22rem .28rem rgba(0, 4, 14, .72)) drop-shadow(0 0 .5rem rgba(82, 226, 255, .28));
   pointer-events: none;
   transform: translateY(-50%);
@@ -3047,7 +3047,7 @@ html[lang="en"] .rail-repair__endpoint small {
   left: var(--rail-anchor-x);
   width: var(--rail-facility-width);
   aspect-ratio: 1181 / 1331;
-  background: url("../images/coaster/station-goal-v3.webp") center / 100% 100% no-repeat;
+  background: url("../images/coaster/station-goal.webp") center / 100% 100% no-repeat;
   filter: drop-shadow(0 .42rem .48rem rgba(0, 3, 12, .9)) drop-shadow(0 0 1rem rgba(189, 102, 255, .34));
   pointer-events: none;
   transform: translateY(-59.9%);
