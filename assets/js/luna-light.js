@@ -133,6 +133,18 @@ export function createLightGarden(board = LUNA_GAME_BOARD) {
     return read();
   }
 
+  function restore(checkpoint) {
+    if (!checkpoint || !board.prisms.every(node => Number.isInteger(checkpoint.rotations?.[node.id]) && checkpoint.rotations[node.id] >= 0) || !Array.isArray(checkpoint.collected)) return reset();
+    rotations = Object.fromEntries(board.prisms.map(node => [node.id, prismDirection(checkpoint.rotations[node.id])]));
+    collected = new Set(checkpoint.collected.filter(id => flowers.some(node => node.id === id)));
+    const light = traceLight(board, rotations);
+    energized = new Set([...(Array.isArray(checkpoint.energized) ? checkpoint.energized.filter(id => board.prisms.some(node => node.id === id)) : []), ...light.litPrisms]);
+    complete = collected.size === flowers.length && light.reached.some(id => board.targets.find(node => node.id === id)?.kind === 'lotus') && board.prisms.every(node => light.litPrisms.includes(node.id));
+    guidedTarget = board.targets.some(node => node.id === checkpoint.guidedTarget) ? checkpoint.guidedTarget : null;
+    if (!guidedTarget || collected.has(guidedTarget)) guidedTarget = nextLightAction(board, read())?.target ?? null;
+    return read();
+  }
+
   reset();
-  return { read, reset, rotate };
+  return { read, reset, rotate, restore };
 }

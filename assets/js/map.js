@@ -1,5 +1,5 @@
 import { cosmicVoyage as cosmicVoyageDefinition, facilities as facilityDefinitions, getFacilityState, getFacilityText } from './data.js';
-import { uiCopy } from './locales.js';
+import { t, uiCopy } from './locales.js';
 import { getProgressLogs, readProgress, recordFacilityCompletion } from './progress.js';
 import { getIcon } from './ui.js';
 
@@ -81,6 +81,10 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, speak
     };
   }
 
+  function hasEnteredMission() {
+    return Object.values(progress?.missions ?? {}).some(mission => mission.phase !== 'idle');
+  }
+
   function clearFacilityGuide() {
     facilityGlow?.classList.remove('is-visible');
     mapCardList?.querySelectorAll('.map-facility-card.is-guided').forEach((card) => {
@@ -89,6 +93,7 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, speak
   }
 
   function syncMapState() {
+    state.facilities.forEach(facility => { facility.state = progress?.facilities[facility.id]?.status ?? facility.state; });
     const restored = isRestored();
 
     state.cosmicVoyage.state = restored ? 'open' : 'sealed';
@@ -298,11 +303,11 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, speak
     const facilityCards = state.facilities.map((facility, index) => {
       const view = getFacilityView(facility);
       const marker = view.isDisabled ? getIcon('lock') : String(index + 1).padStart(2, '0');
-      const isEntryEnabled = state.guidedFacilityId === facility.id && !view.isDisabled;
+      const isEntryEnabled = (hasEnteredMission() || state.guidedFacilityId === facility.id) && !view.isDisabled;
       const isAwaitingGuide = !view.isDisabled && !isEntryEnabled;
 
       return `
-        <button class="map-facility-card is-state-${facility.state}${view.isSelected ? ' is-selected' : ''}${isEntryEnabled ? ' is-guided' : ''}${isAwaitingGuide ? ' is-awaiting-guide' : ''}" type="button" data-facility="${facility.id}" data-control-room-entry aria-pressed="${view.isSelected}"${isEntryEnabled ? '' : ' aria-disabled="true" tabindex="-1"'} style="--marker-x: ${facility.position.x}%; --marker-y: ${facility.position.y}%; --mobile-marker-x: ${facility.mobilePosition.x}%; --mobile-marker-y: ${facility.mobilePosition.y}%; --facility-color: var(--color-${facility.id});">
+        <button class="map-facility-card is-state-${facility.state}${view.isSelected ? ' is-selected' : ''}${isEntryEnabled && view.isSelected ? ' is-guided' : ''}${isAwaitingGuide ? ' is-awaiting-guide' : ''}" type="button" data-facility="${facility.id}" data-control-room-entry aria-pressed="${view.isSelected}"${isEntryEnabled ? '' : ' aria-disabled="true" tabindex="-1"'} style="--marker-x: ${facility.position.x}%; --marker-y: ${facility.position.y}%; --mobile-marker-x: ${facility.mobilePosition.x}%; --mobile-marker-y: ${facility.mobilePosition.y}%; --facility-color: var(--color-${facility.id});">
           <span class="map-facility-card__number">${marker}</span>
           <span class="map-facility-card__content"><strong>${facility.name}</strong><small>${getFacilityText(facility, 'type')}</small><i>${getIcon(view.state.icon)}${view.state.label}</i></span>
           <span class="map-facility-card__enter" aria-hidden="true">${getIcon('arrow-right')}</span>
@@ -316,7 +321,7 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, speak
     const cosmicPosition = isCosmicSealed ? state.cosmicVoyage.position : state.cosmicVoyage.openPosition;
     const cosmicMobilePosition = isCosmicSealed ? state.cosmicVoyage.mobilePosition : state.cosmicVoyage.openMobilePosition;
     const isCosmicSelected = state.selectedFacilityId === 'cosmic';
-    const isCosmicEntryEnabled = !isCosmicSealed && state.guidedFacilityId === 'cosmic';
+    const isCosmicEntryEnabled = !isCosmicSealed && (hasEnteredMission() || state.guidedFacilityId === 'cosmic');
     const cosmicCard = `
       <button class="map-facility-card map-facility-card--cosmic is-state-${state.cosmicVoyage.state}${isCosmicSelected ? ' is-selected' : ''}${isCosmicEntryEnabled ? ' is-guided' : ''}${!isCosmicSealed && !isCosmicEntryEnabled ? ' is-awaiting-guide' : ''}" type="button" data-facility="cosmic" data-control-room-entry aria-pressed="${isCosmicSelected}"${isCosmicEntryEnabled ? '' : ' aria-disabled="true" tabindex="-1"'} style="--marker-x: ${cosmicPosition.x}%; --marker-y: ${cosmicPosition.y}%; --mobile-marker-x: ${cosmicMobilePosition.x}%; --mobile-marker-y: ${cosmicMobilePosition.y}%;">
         <span class="map-facility-card__number">${getIcon(cosmicState.icon)}</span>
@@ -411,7 +416,9 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, speak
   }
 
   function render() {
+    progress = readProgress();
     syncMapState();
+    if (hasEnteredMission()) state.selectedFacilityId = state.facilities.find(facility => facility.state === 'available')?.id ?? 'cosmic';
     const completed = state.facilities.filter((facility) => facility.state === 'completed');
     const lighting = completed.map((facility) => `radial-gradient(ellipse 25% 18% at ${facility.mobileGlow.x}% ${facility.mobileGlow.y}%, transparent 30%, #000 100%)`);
     screen.style.setProperty('--mobile-restoration-mask', isRestored() ? 'linear-gradient(transparent, transparent)' : lighting.join(', ') || 'linear-gradient(#000, #000)');
@@ -444,7 +451,7 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, speak
       transitionMapVisual('wonder');
     }
 
-    speakEve(() => getFacilityText(facility, 'completionMessage'), () => {
+    if (!screen.hidden) speakEve(() => getFacilityText(facility, 'completionMessage'), () => {
       transitionMapVisual(nextFacility ? facility.id : 'cosmic');
       if (!nextFacility) {
         state.selectedFacilityId = 'cosmic';
@@ -475,7 +482,7 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, speak
       return;
     }
 
-    if (isMapEntry && state.guidedFacilityId !== facility.id) {
+    if (isMapEntry && !hasEnteredMission() && state.guidedFacilityId !== facility.id) {
       return;
     }
 
@@ -490,6 +497,12 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, speak
       return;
     }
 
+    const messageField = facility.state === 'completed' ? 'restoredMessage' : progress.missions[facility.id]?.checkpoint && facility.resumeMessageKey ? 'resumeMessage' : 'message';
+    if (hasEnteredMission() || state.guidedFacilityId === facility.id) {
+      speakEve(() => getFacilityText(facility, messageField));
+      return;
+    }
+
     state.selectedFacilityId = facility.id;
     state.guidedFacilityId = null;
     clearFacilityGuide();
@@ -501,7 +514,6 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, speak
       transitionMapVisual(progressVisual);
     }
 
-    const messageField = facility.state === 'completed' ? 'completionMessage' : 'message';
     speakEve(() => getFacilityText(facility, messageField), () => guideFacility(facility));
   }
 
@@ -563,7 +575,15 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, speak
   }
 
   function getStartupMessage(defaultMessage) {
-    return isRestored() ? () => uiCopy.mapRestored : defaultMessage;
+    if (!hasEnteredMission()) return defaultMessage ?? (() => t('map.initialEve'));
+    const next = state.facilities.find(facility => facility.state === 'available');
+    return isRestored() ? () => uiCopy.mapRestored : next ? () => getFacilityText(next, progress.missions[next.id]?.checkpoint && next.resumeMessageKey ? 'resumeMessage' : 'message') : defaultMessage;
+  }
+
+  function announceReturn() {
+    transitionMapVisual(getProgressVisual());
+    const next = state.facilities.find(facility => facility.state === 'available');
+    speakEve(getStartupMessage(), () => { if (next) guideFacility(next); });
   }
 
   function start(defaultMessage, explorer) {
@@ -586,9 +606,11 @@ export function createMapController({ cancelEveSpeech, onEnterControlRoom, speak
   desktopMapMedia.addEventListener('change', handleMapVisualMediaChange);
 
   return {
+    announceReturn,
     completeCosmicVoyage,
     completeFacility,
     focusReturnTarget,
+    hasEnteredMission,
     playIntro,
     render,
     selectFacility,

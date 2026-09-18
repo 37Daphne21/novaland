@@ -302,6 +302,42 @@ test('direct coaster play and failure previews use real phases without saving', 
   }
 });
 
+test('repeating the same EVE line reveals it statically without restarting speech', () => {
+  const timers = clock();
+  const panel = node(), message = node(), control = node(), wave = node();
+  panel.querySelector = selector => ({ '[data-eve-message]': message, '[data-eve-skip]': control, '[data-eve-signal-wave]': wave })[selector];
+  const { createEveController } = load('eve.js', ['createEveController'], { window: { ...timers, matchMedia: () => ({ matches: false }) }, document: { addEventListener() {} }, t: key => key });
+  const eve = createEveController(panel);
+  let finished = 0;
+  eve.speak('같은 안내', () => finished++);
+  timers.tick(34);
+  eve.speak('같은 안내');
+  assert.equal(message.textContent, '같은 안내');
+  assert.equal(panel.classList.contains('is-static'), true);
+  assert.equal(panel.classList.contains('is-typing'), false);
+  assert.equal(wave.classList.contains('is-paused'), true);
+  assert.equal(finished, 1);
+  timers.tick(5000);
+  eve.speak('같은 안내');
+  assert.equal(message.textContent, '같은 안내');
+  assert.equal(finished, 1);
+  eve.speak('다른 안내');
+  assert.equal(panel.classList.contains('is-static'), false);
+  assert.equal(panel.classList.contains('is-typing'), true);
+});
+
+test('preview checkpoints survive same-page navigation without writing real storage', () => {
+  const api = progressFixture('?facility=luna&mission-preview=play');
+  api.window.localStorage.setItem('novaLandProgress', 'existing-user-data');
+  const progress = api.readProgress(api.explorer);
+  api.updateMissionProgress(progress, 'luna', { phase: 'paused', checkpoint: { collected: ['moonbell'] } });
+  const restored = api.readProgress(api.explorer);
+  assert.equal(restored.missions.luna.checkpoint.collected[0], 'moonbell');
+  restored.missions.luna.checkpoint.collected.length = 0;
+  assert.equal(api.readProgress(api.explorer).missions.luna.checkpoint.collected.length, 1);
+  assert.equal(api.window.localStorage.getItem('novaLandProgress'), 'existing-user-data');
+});
+
 
 test('GitHub Pages previews are isolated while other projects remain excluded', () => {
   for (const search of ['?facility=coaster&mission-preview=countdown', '?facility=luna&mission-preview=play', '?map-state=restored']) {

@@ -53,8 +53,9 @@ export function createControlRoomController({ getExplorer, onShowScreen, showToa
 
   function getMessage(nextFacility, isCompleted) {
     if (isCompleted) {
-      return t('control.restoredEve', { facility: nextFacility.name });
+      return t(nextFacility.id === 'luna' ? 'control.lunaRestoredEve' : 'control.restoredEve', { facility: nextFacility.name });
     }
+    if (readProgress(getExplorer?.()).missions[nextFacility.id]?.checkpoint) return t(nextFacility.id === 'luna' ? 'control.lunaResumeEve' : 'control.resumeEve');
     return nextFacility.id === 'coaster' ? t('control.coasterEve') : nextFacility.id === 'luna' ? t('control.lunaEve') : getFacilityText(nextFacility, 'controlRoomMessage');
   }
 
@@ -64,6 +65,8 @@ export function createControlRoomController({ getExplorer, onShowScreen, showToa
     const isCompleted = progress.facilities[nextFacility.id]?.status === 'completed';
     const isCoaster = nextFacility.id === 'coaster';
     const isLuna = nextFacility.id === 'luna';
+    const checkpoint = progress.missions[nextFacility.id]?.checkpoint;
+    const restoredPrefix = isLuna ? 'control.lunaRestored' : 'control.restored';
     const detail = document.querySelector('[data-control-room-detail]');
     const objectivePanel = document.querySelector('.control-room__objective');
     const statusPanel = document.querySelector('.control-room__status');
@@ -89,26 +92,26 @@ export function createControlRoomController({ getExplorer, onShowScreen, showToa
       type.textContent = getFacilityText(nextFacility, 'type');
     }
     if (alert) {
-      alert.textContent = t(isCompleted ? 'control.restoredAlert' : isLuna ? 'control.lunaAlert' : 'control.systemAlert');
+      alert.textContent = t(isCompleted ? `${restoredPrefix}Alert` : isLuna ? 'control.lunaAlert' : 'control.systemAlert');
     }
     if (status) {
-      status.textContent = t(isCompleted ? 'control.restoredStatus' : isLuna ? 'control.lunaStatus' : isCoaster ? 'control.coasterStatus' : 'control.pendingStatus');
+      status.textContent = t(isCompleted ? `${restoredPrefix}Status` : checkpoint ? 'control.inProgress' : isLuna ? 'control.lunaStatus' : isCoaster ? 'control.coasterStatus' : 'control.pendingStatus');
     }
     if (objectiveEyebrow) {
       objectiveEyebrow.textContent = t(isCompleted ? 'control.restoredObjectiveEyebrow' : 'control.objectiveEyebrow');
     }
     if (objectiveTitle) {
-      objectiveTitle.textContent = t(isCompleted ? 'control.restoredObjectiveTitle' : isLuna ? 'control.lunaObjectiveTitle' : 'control.objectiveTitle');
+      objectiveTitle.textContent = t(isCompleted ? `${restoredPrefix}ObjectiveTitle` : isLuna ? 'control.lunaObjectiveTitle' : 'control.objectiveTitle');
     }
     if (objective) {
-      objective.textContent = t(isCompleted ? 'control.restoredObjective' : isLuna ? 'control.lunaObjective' : isCoaster ? 'control.coasterObjective' : 'control.pendingObjective');
+      objective.textContent = t(isCompleted ? `${restoredPrefix}Objective` : isLuna ? 'control.lunaObjective' : isCoaster ? 'control.coasterObjective' : 'control.pendingObjective');
     }
     objectiveSteps.forEach((step) => {
       if (step.title) {
-        step.title.textContent = t(`control.${isCompleted ? 'restoredObjective' : isLuna ? 'lunaObjective' : 'objective'}${step.key}`);
+        step.title.textContent = t(`control.${isCompleted ? (isLuna ? 'lunaRestoredObjective' : 'restoredObjective') : isLuna ? 'lunaObjective' : 'objective'}${step.key}`);
       }
       if (step.description) {
-        step.description.textContent = t(`control.${isCompleted ? 'restoredObjective' : isLuna ? 'lunaObjective' : 'objective'}${step.key}Help`);
+        step.description.textContent = t(`control.${isCompleted ? (isLuna ? 'lunaRestoredObjective' : 'restoredObjective') : isLuna ? 'lunaObjective' : 'objective'}${step.key}Help`);
       }
     });
     if (service) {
@@ -131,20 +134,25 @@ export function createControlRoomController({ getExplorer, onShowScreen, showToa
       icon.setAttribute('href', isLuna ? original.replace('#icon-rail', '#icon-signal').replace('#icon-shield', '#icon-mission') : original);
     });
     if (step) {
-      step.textContent = isLuna ? t('control.lunaBeds') : `${coasterProgress.steps} / 3`;
+      step.textContent = isLuna ? `${isCompleted ? 3 : checkpoint?.collected?.length ?? 0} / 3` : `${coasterProgress.steps} / 3`;
     }
     checkItem?.classList.toggle('is-warning', !isCompleted);
     if (check) {
-      check.textContent = t(isLuna ? (isCompleted ? 'control.lunaBloom' : 'control.lunaSleeping') : isCompleted ? 'control.inspectionComplete' : 'control.inspectionRequired');
+      check.textContent = t(isLuna ? (isCompleted ? 'control.lunaBloom' : checkpoint?.collected?.length === 3 ? 'control.lunaReady' : 'control.lunaSleeping') : isCompleted ? 'control.inspectionComplete' : 'control.inspectionRequired');
     }
     if (missionStart) {
       missionStart.hidden = (!isCoaster && !isLuna) || isCompleted;
       const label = missionStart.querySelector('strong');
-      label.dataset.i18n = 'mission.start';
+      label.dataset.i18n = checkpoint && !isCompleted ? 'mission.resume' : 'mission.start';
       label.textContent = t(label.dataset.i18n);
     }
     if (operationStatus) {
-      operationStatus.hidden = !isCoaster || !isCompleted;
+      operationStatus.hidden = (!isCoaster && !isLuna) || !isCompleted;
+      ['Title', 'Description'].forEach(suffix => {
+        const label = operationStatus.querySelector(suffix === 'Title' ? 'strong' : '.control-room__start-copy > span');
+        label.dataset.i18n = 'control.' + (isLuna ? 'lunaOperation' : 'operation') + suffix;
+        label.textContent = t(label.dataset.i18n);
+      });
     }
 
     return { isCompleted };
@@ -172,7 +180,12 @@ export function createControlRoomController({ getExplorer, onShowScreen, showToa
     cancel: eve.cancel,
     getFacility: () => facility,
     getFocusTarget: () => title,
-    refreshState: () => facility ? render(facility) : null,
+    refreshState: () => {
+      if (!facility) return null;
+      const state = render(facility);
+      eve.speak(() => getMessage(facility, state.isCompleted));
+      return state;
+    },
     refreshLanguage,
     show
   };

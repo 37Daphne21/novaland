@@ -173,3 +173,19 @@ test('guidance keeps its destination after unrelated rotations and advances afte
   assert.notEqual(game.read().guidedTarget, target);
   assert.equal(game.reset().guidedTarget, target);
 });
+
+test('saved garden restores rotations, flowers and guidance without accepting a forged completion', () => {
+  const original = createLightGarden();
+  connect(original, { a: 2, b: 3 });
+  const saved = JSON.parse(JSON.stringify(original.read()));
+  const resumed = createLightGarden();
+  const state = resumed.restore(saved);
+  assert.equal(state.collected.join(','), saved.collected.join(','));
+  for (const node of LUNA_GAME_BOARD.prisms) assert.equal(state.rotations[node.id], saved.rotations[node.id] % 4);
+  assert.equal(state.guidedTarget, saved.guidedTarget);
+  saved.collected.length = 0;
+  assert.equal(resumed.read().collected.length, 1);
+  const shortcut = resumed.restore({ rotations: { a: 1, b: 1, c: 0, d: 3 }, collected: ['moonbell', 'stardew', 'aurora'], complete: true });
+  assert.equal(shortcut.complete, false);
+  assert.equal(resumed.restore({ rotations: {} }).collected.length, 0);
+});

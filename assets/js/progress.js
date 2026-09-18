@@ -6,6 +6,7 @@ import { MISSION_PHASES } from './mission-state.js';
 const STORAGE_KEY = 'novaLandProgress';
 const SCHEMA_VERSION = 1;
 const LOG_LIMIT = 100;
+let previewProgress = null;
 const FACILITY_STATUSES = new Set(['available', 'locked', 'completed']);
 const facilityIds = facilities.map((facility) => facility.id);
 
@@ -179,6 +180,7 @@ export function saveProgress(progress) {
     return createRestoredPreview(normalized);
   }
   if (isMissionPreview()) {
+    previewProgress = normalized;
     return normalized;
   }
   try {
@@ -192,10 +194,12 @@ export function saveProgress(progress) {
 export function readProgress(explorer = null) {
   const preview = getMissionPreview();
   if (preview) {
+    if (previewProgress) return cloneProgress(previewProgress);
     const initial = createProgress(explorer);
-    return preview.valid && (preview.facility === 'luna' || ['completed', 'control-room-completed'].includes(preview.phase))
+    previewProgress = preview.valid && (preview.facility === 'luna' || ['completed', 'control-room-completed'].includes(preview.phase))
       ? recordFacilityCompletion(initial, facilities.find((facility) => facility.id === 'coaster'))
       : initial;
+    return cloneProgress(previewProgress);
   }
   let progress = null;
   let shouldSave = false;

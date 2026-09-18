@@ -664,16 +664,68 @@
   overflow-y: auto;
 }
 
+.luna-game__dialog[data-phase="guide"] {
+  width: min(68rem, calc(100% - 2rem));
+}
+
 .luna-game__dialog .ui-overlay__dialog {
   width: 100%;
 }
 
-.luna-game__dialog [data-luna-guide-panel] > p {
-  white-space: pre-line;
-  text-align: left;
-  color: var(--color-text-subtle);
+.luna-guide__board {
+  position: relative;
+  aspect-ratio: 2 / 1;
 }
 
+.luna-guide__board svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.luna-guide__beam {
+  fill: none;
+  stroke: #caffef;
+  stroke-width: 3;
+  filter: drop-shadow(0 0 4px #93e5d5);
+}
+
+.luna-guide__beam.is-loose {
+  stroke-dasharray: 8 9;
+  opacity: .55;
+}
+
+.luna-guide__crystal {
+  position: absolute;
+  left: 24%;
+  top: 21%;
+  width: 19%;
+  height: 54%;
+  border: 0;
+  background: url("../images/luna/prism-turns.png") 0 center / 400% 100% no-repeat;
+  cursor: pointer;
+  filter: drop-shadow(0 0 7px #aaffdd);
+}
+
+.luna-guide__crystal:focus-visible {
+  outline: 2px solid #edfff3;
+  outline-offset: 3px;
+}
+
+.luna-guide__petals {
+  transform: scale(.35, .7);
+  opacity: .5;
+  transition: transform .35s ease, opacity .35s ease;
+}
+
+.luna-guide.is-awake .luna-guide__petals {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.luna-guide.is-awake .luna-guide__diamond {
+  opacity: 0;
+}
 
 /* Preserve optical alignment on small screens with an explicit scrollable garden. */
 @media (max-width: 56rem), (max-height: 34rem) {

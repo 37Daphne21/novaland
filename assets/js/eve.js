@@ -15,6 +15,7 @@ export function createEveController(panel = document.querySelector('.screen--map
   let activeMessage = '';
   let activeMessageSource = null;
   let lastMessageSource = initialMessage;
+  let lastMessage = '';
 
   function resolveMessage(messageSource) {
     return typeof messageSource === 'function' ? messageSource() : messageSource;
@@ -85,7 +86,29 @@ export function createEveController(panel = document.querySelector('.screen--map
       return;
     }
 
+    if (message === lastMessage) {
+      const callback = onComplete ?? onSpeechComplete;
+      window.clearInterval(typingTimer);
+      window.clearTimeout(visibilityTimer);
+      typingTimer = null;
+      visibilityTimer = null;
+      onSpeechComplete = null;
+      activeMessage = '';
+      activeMessageSource = null;
+      lastMessageSource = messageSource;
+      messageElement.textContent = message;
+      panel?.classList.add('is-static', 'is-visible');
+      panel?.classList.remove('is-typing');
+      panel?.setAttribute('aria-busy', 'false');
+      signalWave?.classList.add('is-paused');
+      speechControl?.setAttribute('disabled', '');
+      callback?.();
+      return;
+    }
+
     cancel();
+    panel?.classList.remove('is-static');
+    lastMessage = message;
     activeMessage = message;
     activeMessageSource = messageSource;
     lastMessageSource = messageSource;
@@ -126,11 +149,13 @@ export function createEveController(panel = document.querySelector('.screen--map
 
     if (typingTimer && activeMessageSource) {
       activeMessage = resolveMessage(activeMessageSource);
+      lastMessage = activeMessage;
       finish({ reveal: true });
       return;
     }
 
     messageElement.textContent = resolveMessage(lastMessageSource);
+    lastMessage = messageElement.textContent;
   }
 
   document.addEventListener('click', handleGlobalReveal, true);

@@ -43,3 +43,20 @@ test('completed coaster keeps its original operation status and hides mission st
   assert.equal(element('[data-mission-open]').hidden, true);
   assert.equal(element('[data-control-room-operation]').hidden, false);
 });
+
+test('Luna resumes a saved garden and uses garden results after completion', () => {
+  const { room, element, progress } = fixture();
+  progress.missions.luna = { checkpoint: { collected: ['moonbell', 'stardew', 'aurora'] } };
+  room.show({ id: 'luna', name: 'LUNA LIGHT GARDEN' });
+  assert.equal(element('[data-control-room-step]').textContent, '3 / 3');
+  assert.equal(element('[data-control-room-check]').textContent, 'control.lunaReady');
+  assert.equal(element('[data-mission-open] strong').textContent, 'mission.resume');
+  progress.facilities.luna.status = 'completed';
+  room.refreshState();
+  assert.equal(element('[data-control-room-objective]').textContent, 'control.lunaRestoredObjective');
+  assert.equal(element('[data-control-room-objective-test]').textContent, 'control.lunaRestoredObjectiveTest');
+  assert.equal(element('[data-mission-open]').hidden, true);
+  assert.equal(element('[data-control-room-operation]').hidden, false);
+  assert.equal(element('[data-control-room-operation] strong').textContent, 'control.lunaOperationTitle');
+  assert.equal(element('[data-control-room-operation] .control-room__start-copy > span').textContent, 'control.lunaOperationDescription');
+});

@@ -56,11 +56,44 @@ renderMissionPause(pausePanel, { titleId: 'luna-dialog-title', descriptionKey: '
 const resume = pausePanel.querySelector('[data-mission-resume]');
 const guideResume = document.querySelector('[data-luna-guide-resume]');
 let started = false;
+const embedded = window.parent !== window && new URLSearchParams(window.location.search).has('embedded');
+let restoredFromParent = false;
 let focusBoardAfterClose = false;
 const game = createLightGarden();
 const evePanel = document.querySelector('.luna-game__eve');
 const eve = createEveController(evePanel, { persistent: true, focusMotion: false });
 let messageKey = null;
+const practice = document.querySelector('[data-luna-practice]');
+let practiceRotation = 0;
+let practiceBloomed = false;
+
+function renderPractice() {
+  const connected = practiceRotation === 1;
+  practiceBloomed ||= connected;
+  const paths = ['M 200 170 V 35', 'M 200 170 H 480', 'M 200 170 V 285', 'M 200 170 H 25'];
+  practice.classList.toggle('is-connected', connected);
+  practice.classList.toggle('is-awake', practiceBloomed);
+  practice.querySelector('[data-luna-practice-reset]').hidden = !practiceBloomed;
+  const ray = practice.querySelector('[data-luna-practice-ray]');
+  ray.setAttribute('d', paths[practiceRotation]);
+  ray.classList.toggle('is-loose', !connected);
+  const crystal = practice.querySelector('[data-luna-practice-rotate]');
+  crystal.style.backgroundPositionX = (practiceRotation / 3 * 100) + '%';
+  crystal.setAttribute('aria-label', t('luna.guide.rotate') + '. ' + t('luna.game.directions').split(',')[practiceRotation]);
+  practice.querySelector('[data-luna-practice-feedback]').textContent = t(connected ? 'luna.guide.success' : practiceBloomed ? 'luna.guide.redirected' : 'luna.guide.hint');
+}
+
+practice.querySelector('[data-luna-practice-rotate]').addEventListener('click', () => {
+  practiceRotation = (practiceRotation + 1) % 4;
+  renderPractice();
+});
+practice.querySelector('[data-luna-practice-reset]').addEventListener('click', () => {
+  practiceRotation = 0;
+  practiceBloomed = false;
+  renderPractice();
+  practice.querySelector('[data-luna-practice-rotate]').focus();
+});
+
 let modalMode = 'guide';
 let paused = false;
 let heldAnimations = [];
@@ -147,15 +180,22 @@ function render(state = game.read()) {
     rays.append(line);
   });
   [...rays.children].forEach(line => { if (!activeRays.has(line.dataset.ray)) line.remove(); });
+  publishState();
+}
+
+function publishState() {
+  if (embedded && !restoredFromParent) return;
+  if (started && window.parent !== window) window.parent.postMessage({ type: 'novaland:luna-state', checkpoint: game.read(), started, paused }, window.location.origin);
 }
 
 function renderDialog() {
+  renderPractice();
   const guide = modalMode === 'guide';
   pausePanel.hidden = guide;
   guidePanel.hidden = !guide;
   dialog.setAttribute('aria-labelledby', guide ? 'luna-guide-title' : 'luna-dialog-title');
-  guideResume.textContent = t(started ? 'mission.resume' : 'mission.start');
-  document.querySelector('[data-luna-guide-close]').hidden = started;
+  guideResume.textContent = t(started ? 'mission.guideReturn' : 'mission.begin');
+  dialog.dataset.phase = guide ? 'guide' : 'paused';
 }
 
 function leaveGame(destination) {
@@ -182,6 +222,7 @@ function setPaused(value) {
   garden.inert = value;
   document.querySelector('.luna-game__header').inert = value;
   document.querySelector('.luna-game__footer').inert = value;
+  publishState();
 }
 
 const modal = createModalController(dialog, {
@@ -204,23 +245,21 @@ function openDialog(mode, opener = document.activeElement) {
   eve.cancel();
   renderDialog();
   setPaused(true);
-  modal.open({ focusTarget: mode === 'guide' ? guideResume : resume, opener });
+  modal.open({ focusTarget: mode === 'guide' ? document.querySelector('[data-luna-guide-close]') : resume, opener });
+  if (mode === 'guide') dialog.scrollTop = 0;
 }
 
 prismButtons.forEach(button => button.addEventListener('click', () => {
   if (paused || game.read().complete) return;
   const before = game.read();
-  const expected = nextLightAction(board, before);
   const state = game.rotate(button.dataset.prism);
   render(state);
   if (state.complete) say('luna.game.finished');
   else if (state.ready && !before.ready) say('luna.game.ready');
   else if (state.collected.length > before.collected.length) say('luna.game.restored');
-  else if (expected && button.dataset.prism !== expected.prism) say(state.ready ? 'luna.game.connectAll' : 'luna.game.followGlow');
-  else if (state.light.reached.includes('lotus')) say(state.ready ? 'luna.game.connectAll' : 'luna.game.locked');
-  else if (state.collected.length && !state.light.reached.length) say('luna.game.retained');
-  else if (state.light.reached.length) say('luna.game.reconnected');
-  else say('luna.game.adjust');
+  else if (state.ready) say('luna.game.connectAll');
+  else if (state.light.reached.includes('lotus')) say('luna.game.locked');
+  else say('luna.game.followGlow');
 }));
 
 pausePanel.querySelector('[data-mission-restart]').addEventListener('click', () => {
@@ -232,7 +271,7 @@ pausePanel.querySelector('[data-mission-restart]').addEventListener('click', () 
 });
 pausePanel.querySelector('[data-mission-control-room]').addEventListener('click', () => leaveGame('control-room'));
 pausePanel.querySelector('[data-mission-exit]').addEventListener('click', () => leaveGame('map'));
-document.querySelector('[data-luna-guide-close]').addEventListener('click', () => leaveGame('control-room'));
+document.querySelector('[data-luna-guide-close]').addEventListener('click', () => started ? modal.close() : leaveGame('control-room'));
 guideResume.addEventListener('click', () => {
   focusBoardAfterClose = !started;
   started = true;
@@ -286,7 +325,18 @@ if (preview?.name === 'completed') {
   });
 }
 
-if (!preview) openDialog('guide', document.querySelector('[data-luna-guide]'));
+if (!preview && !embedded) openDialog('guide', document.querySelector('[data-luna-guide]'));
 window.addEventListener('message', event => {
-  if (event.origin === window.location.origin && event.source === window.parent && event.data?.type === 'novaland:luna-pause') openDialog('pause');
+  if (event.origin !== window.location.origin || event.source !== window.parent) return;
+  if (event.data?.type === 'novaland:luna-pause') openDialog('pause');
+  if (event.data?.type === 'novaland:luna-restore' && !restoredFromParent) {
+    restoredFromParent = true;
+    if (event.data.checkpoint) {
+      started = true;
+      render(game.restore(event.data.checkpoint));
+      say(game.read().ready ? 'luna.game.ready' : 'luna.game.resumed');
+    } else if (!preview) openDialog('guide', document.querySelector('[data-luna-guide]'));
+    else publishState();
+  }
 });
+if (embedded) window.parent.postMessage({ type: 'novaland:luna-ready' }, window.location.origin);

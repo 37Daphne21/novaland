@@ -36,9 +36,23 @@
   <footer class="luna-game__footer">
     <aside class="luna-game__eve" aria-label="EVE" aria-live="polite" aria-atomic="true"><span class="luna-game__portrait"><img src="./assets/images/common/eve.webp" alt=""></span><div><b>EVE</b><p data-eve-message>Prism의 두 연결면을 빛의 방향에 맞춰보세요.</p></div></aside>
   </footer>
-  <dialog class="ui-dialog luna-game__dialog" aria-labelledby="luna-dialog-title" data-luna-dialog>
+  <dialog class="ui-dialog mission-dialog luna-game__dialog" aria-labelledby="luna-dialog-title" data-luna-dialog>
     <section class="ui-panel ui-overlay__dialog mission-result mission-result--paused" data-luna-pause-panel></section>
-    <section class="ui-panel ui-overlay__dialog mission-result" data-luna-guide-panel hidden><span class="ui-panel__eyebrow">LUNA LIGHT GARDEN</span><h3 id="luna-guide-title" data-i18n="mission.guideButton">가이드</h3><p data-i18n="luna.game.guide"></p><div class="mission-result__actions"><button class="ui-button ui-button--primary" type="button" data-luna-guide-resume></button><button class="ui-button ui-button--secondary" type="button" data-luna-guide-close data-i18n="mission.toControlRoom">관제실로 돌아가기</button></div></section>
+    <section class="mission-flow ui-panel" data-luna-guide-panel hidden>
+      <header class="mission-flow__header"><div class="mission-flow__identity"><span class="ui-panel__eyebrow">LUNA LIGHT GARDEN</span><h2 data-i18n="mission.guideButton">가이드</h2></div><button class="ui-button ui-button--icon mission-guide__close" type="button" data-luna-guide-close data-i18n-aria-label="mission.guideClose" aria-label="미션 가이드 닫기"><svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-close"></use></svg></button></header>
+      <div class="mission-phase mission-guide">
+        <div class="mission-guide__visual luna-guide" data-luna-practice>
+          <span class="ui-panel__eyebrow" data-i18n="mission.demoTitle">미션 미리 해보기</span>
+          <div class="luna-guide__board">
+            <svg viewBox="0 0 600 300" aria-hidden="true"><circle cx="70" cy="170" r="12" fill="#edfff3"/><path d="M 82 170 H 200" class="luna-guide__beam"/><path d="M 200 170 V 35" class="luna-guide__beam is-loose" data-luna-practice-ray/><g class="luna-guide__flower" transform="translate(480 170)"><ellipse cy="24" rx="45" ry="12" fill="#476654"/><g class="luna-guide__petals" fill="#f7dfb3"><ellipse cy="-16" rx="13" ry="29"/><ellipse cy="-16" rx="13" ry="29" transform="rotate(60)"/><ellipse cy="-16" rx="13" ry="29" transform="rotate(120)"/><ellipse cy="-16" rx="13" ry="29" transform="rotate(180)"/><ellipse cy="-16" rx="13" ry="29" transform="rotate(240)"/><ellipse cy="-16" rx="13" ry="29" transform="rotate(300)"/></g><circle r="9" fill="#efbd60"/></g><path class="luna-guide__diamond" d="M 480 60 l 13 16 -13 16 -13 -16 Z" fill="none" stroke="#edfff3" stroke-width="3"/></svg>
+            <button class="luna-guide__crystal" type="button" data-luna-practice-rotate data-i18n-aria-label="luna.guide.rotate" aria-label="크리스탈 돌리기"></button>
+          </div>
+          <p role="status" aria-live="polite"><span data-luna-practice-feedback></span></p>
+          <div class="mission-guide__demo-actions"><button class="ui-button ui-button--secondary" type="button" data-luna-practice-reset data-i18n="mission.demoReset" hidden>다시 연습</button></div>
+        </div>
+        <div class="mission-guide__content"><span class="ui-panel__eyebrow">LUNA LIGHT GARDEN</span><h3 id="luna-guide-title" data-i18n="luna.guide.title"></h3><p data-i18n="luna.guide.description"></p><ol class="ui-info-list ui-info-list--boxed ui-info-list--angular"><li class="ui-info-list__item"><b>01</b><span class="ui-info-list__content"><strong data-i18n="luna.guide.step1Title"></strong><small data-i18n="luna.guide.step1"></small></span></li><li class="ui-info-list__item"><b>02</b><span class="ui-info-list__content"><strong data-i18n="luna.guide.step2Title"></strong><small data-i18n="luna.guide.step2"></small></span></li><li class="ui-info-list__item"><b>03</b><span class="ui-info-list__content"><strong data-i18n="luna.guide.step3Title"></strong><small data-i18n="luna.guide.step3"></small></span></li></ol><button class="ui-button ui-button--primary" type="button" data-luna-guide-resume></button></div>
+      </div>
+    </section>
   </dialog>
   <noscript><p class="luna-game__noscript">이 정원 게임에는 JavaScript가 필요해요.</p></noscript>
   <script type="module" src="./assets/js/luna-game.js"></script>

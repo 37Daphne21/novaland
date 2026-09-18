@@ -8,10 +8,11 @@ import { initializeLanguage, t } from './locales.js';
 import { createMapController } from './map.js';
 import { createMobileMapController } from './map-mobile.js';
 import { createMissionController } from './mission.js';
+import { createLightGarden } from './luna-light.js';
 import { findRestorableMissionId } from './mission-state.js';
 import { createNavigationController } from './navigation.js';
 import { createProfileEditor } from './profile-editor.js';
-import { clearProgress, getMissionPreview, isMissionPreview, readProgress } from './progress.js';
+import { clearProgress, getMissionPreview, isMissionPreview, readProgress, updateMissionProgress } from './progress.js';
 import { createSettingsController } from './settings.js';
 import { createDialogController, createModalController, createOverlayController, createToast } from './ui.js';
 
@@ -79,6 +80,7 @@ function showScreen(screenName) {
   if (screenName === 'map' && mapStarted) {
     map.render();
     map.playIntro();
+    map.announceReturn();
   }
 }
 
@@ -104,6 +106,19 @@ const lunaModal = createModalController(lunaEntry, {
 });
 window.addEventListener('message', (event) => {
   if (event.origin !== window.location.origin || event.source !== lunaFrame.contentWindow || !lunaEntry.open) return;
+  if (event.data?.type === 'novaland:luna-ready') {
+    const progress = readProgress(currentExplorer);
+    lunaFrame.contentWindow.postMessage({ type: 'novaland:luna-restore', checkpoint: progress.missions.luna.checkpoint }, window.location.origin);
+    return;
+  }
+  if (event.data?.type === 'novaland:luna-state') {
+    const progress = readProgress(currentExplorer);
+    if (progress.facilities.luna.status !== 'available' || !event.data.started) return;
+    const checkpoint = createLightGarden().restore(event.data.checkpoint);
+    updateMissionProgress(progress, 'luna', { phase: event.data.paused ? 'paused' : 'playing', checkpoint });
+    if (checkpoint.complete) map.completeFacility('luna');
+    return;
+  }
   if (event.data?.type !== 'novaland:luna-exit') return;
   if (event.data.destination === 'control-room') navigation.back();
   else if (event.data.destination === 'map') {
@@ -132,7 +147,7 @@ function enterMap(explorer, { focusMap = false } = {}) {
     if (resumableFacility) {
       controlRoom.show(resumableFacility);
       navigation?.push({ screen: 'control-room', facilityId: resumableFacility.id }, { applyRoute: false });
-      window.setTimeout(() => mission.open(resumableFacility, controlRoom.getFocusTarget()), 120);
+      if (resumableFacility.id === 'coaster') window.setTimeout(() => mission.open(resumableFacility, controlRoom.getFocusTarget()), 120);
       return;
     }
   }
@@ -254,6 +269,7 @@ function applyNavigationRoute(route, { previousRoute, source } = {}) {
     controlRoom.cancel();
     // Replace the child document without adding an extra browser Back entry.
     const frameUrl = new URL('./luna-game.html', window.location.href);
+    frameUrl.searchParams.set('embedded', '1');
     if (route.previewPhase && route.previewPhase !== 'guide') {
       frameUrl.searchParams.set('facility', 'luna');
       frameUrl.searchParams.set('mission-preview', route.previewPhase);
@@ -292,7 +308,7 @@ async function handleDocumentClick(event) {
 
   const facilityButton = event.target.closest('button[data-facility]');
   if (facilityButton) {
-    if (facilityButton.closest('.mission-panel')) {
+    if (facilityButton.closest('.mission-panel') && !map.hasEnteredMission()) {
       if (navigation.current()?.panel) {
         navigation.back();
       } else {

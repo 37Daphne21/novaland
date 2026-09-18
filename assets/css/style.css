@@ -312,6 +312,10 @@
   background: linear-gradient(105deg, color-mix(in srgb, var(--facility-color) 18%, transparent), rgba(7, 18, 32, .9) 72%);
 }
 
+.screen--map .facility-card:hover:not([aria-disabled="true"]) {
+  transform: none;
+}
+
 .facility-card__number {
   align-self: start;
   padding-top: .0625rem;
@@ -672,14 +676,13 @@
   box-shadow: inset 0 0 1.25rem color-mix(in srgb, var(--facility-color) 8%, transparent), 0 .75rem 2rem rgba(0, 0, 0, .35);
   backdrop-filter: blur(.75rem);
   transform: translate(-50%, -50%);
-  transition: border-color .6s ease, box-shadow .8s ease, opacity var(--motion-base) ease, transform var(--motion-base) var(--ease-out);
+  transition: border-color .6s ease, box-shadow .8s ease, opacity var(--motion-base) ease;
   pointer-events: auto;
 }
 
 .map-facility-card:hover:not([aria-disabled="true"]),
 .map-facility-card:focus-visible {
   border-color: var(--facility-color);
-  transform: translate(-50%, calc(-50% - .125rem));
 }
 
 .map-facility-card.is-selected {
@@ -906,6 +909,13 @@
 
 .eve-panel.is-typing .eve-panel__body {
   cursor: pointer;
+}
+
+.eve-panel.is-static,
+.screen--map .eve-panel.is-static,
+.eve-panel.is-static .eve-panel__body,
+.eve-panel.is-static .eve-panel__body img {
+  transition: none;
 }
 
 .eve-panel__body:focus-visible {

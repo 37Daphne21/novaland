@@ -34,9 +34,11 @@ export const facilities = [
     glow: { x: 23, y: 31 },
     mobileGlow: { x: 25, y: 43 },
     messageKey: 'facility.coaster.message',
+    resumeMessageKey: 'facility.coaster.resume',
     lockedMessageKey: '',
     controlRoomMessageKey: 'facility.coaster.control',
-    completionMessageKey: 'facility.coaster.complete'
+    completionMessageKey: 'facility.coaster.complete',
+    restoredMessageKey: 'facility.coaster.restored'
   },
   {
     id: 'luna',
@@ -48,9 +50,11 @@ export const facilities = [
     glow: { x: 64, y: 30 },
     mobileGlow: { x: 75, y: 43 },
     messageKey: 'facility.luna.message',
+    resumeMessageKey: 'facility.luna.resume',
     lockedMessageKey: 'facility.luna.locked',
     controlRoomMessageKey: 'facility.luna.control',
-    completionMessageKey: 'facility.luna.complete'
+    completionMessageKey: 'facility.luna.complete',
+    restoredMessageKey: 'facility.luna.restored'
   },
   {
     id: 'spark',
@@ -64,7 +68,8 @@ export const facilities = [
     messageKey: 'facility.spark.message',
     lockedMessageKey: 'facility.spark.locked',
     controlRoomMessageKey: 'facility.spark.control',
-    completionMessageKey: 'facility.spark.complete'
+    completionMessageKey: 'facility.spark.complete',
+    restoredMessageKey: 'facility.spark.restored'
   },
   {
     id: 'wonder',
@@ -78,7 +83,8 @@ export const facilities = [
     messageKey: 'facility.wonder.message',
     lockedMessageKey: 'facility.wonder.locked',
     controlRoomMessageKey: 'facility.wonder.control',
-    completionMessageKey: 'facility.wonder.complete'
+    completionMessageKey: 'facility.wonder.complete',
+    restoredMessageKey: 'facility.wonder.restored'
   }
 ];
 
