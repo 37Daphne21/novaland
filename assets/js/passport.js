@@ -16,17 +16,21 @@ export function renderPassportData(root, explorer) {
   const profile = getExplorerProfile(explorer.gender);
   const progress = readProgress(explorer);
   const restoration = getRestorationState(progress);
-  const coupon = progress.coupons.find((item) => item.facilityId === 'coaster');
+  const coasterCoupon = progress.coupons.find((item) => item.facilityId === 'coaster');
+  const lunaCoupon = progress.coupons.find((item) => item.facilityId === 'luna');
   const passport = root.matches?.('[data-passport]') ? root : root.querySelector('[data-passport]');
   passport?.classList.toggle('is-restored', restoration.completed > 0);
-  setText(root, '[data-passport-coaster-coupon]', coupon ? t('passport.couponPending') : '—');
+  setText(root, '[data-passport-coaster-coupon]', coasterCoupon ? t('passport.couponPending') : '—');
+  setText(root, '[data-passport-luna-coupon]', lunaCoupon ? t('passport.couponPending') : '—');
   const coasterStamp = restoration.stamps.find((stamp) => stamp.facilityId === 'coaster');
+  const lunaStamp = restoration.stamps.find((stamp) => stamp.facilityId === 'luna');
   setText(root, '[data-passport-name]', explorer.name);
   setText(root, '[data-passport-id]', explorer.id);
   setText(root, '[data-passport-date]', explorer.issueDate);
   setText(root, '[data-passport-gender]', profile.label);
   setText(root, '[data-passport-restoration]', `${restoration.completed} / ${restoration.total}`);
   setText(root, '[data-passport-coaster-date]', coasterStamp ? new Intl.DateTimeFormat('en-CA').format(new Date(coasterStamp.earnedAt)).replaceAll('-', '.') : '—');
+  setText(root, '[data-passport-luna-date]', lunaStamp ? new Intl.DateTimeFormat('en-CA').format(new Date(lunaStamp.earnedAt)).replaceAll('-', '.') : '—');
   setText(root, '[data-passport-cover-name]', explorer.name);
   setText(root, '[data-passport-serial]', `${explorer.id} · INITIAL ISSUE`);
   root.querySelectorAll('[data-passport-portrait]').forEach((element) => {

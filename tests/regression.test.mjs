@@ -66,6 +66,40 @@ test('completion counts 0..4, sequential unlock, one stamp/coupon and no duplica
   });
   assert.equal(api.getRestorationState(api.readProgress(api.explorer)).completed, 4);
 });
+
+test('Passport renders the Luna restoration date and reward beside the coaster record', () => {
+  const fields = new Map();
+  const passport = node();
+  const portrait = node();
+  const root = {
+    classList: passport.classList,
+    matches: selector => selector === '[data-passport]',
+    querySelector: selector => selector === '[data-passport]' ? passport : null,
+    querySelectorAll(selector) {
+      if (selector === '[data-passport-portrait]') return [portrait];
+      if (!fields.has(selector)) fields.set(selector, [node()]);
+      return fields.get(selector);
+    }
+  };
+  const progress = {
+    coupons: [{ facilityId: 'coaster' }, { facilityId: 'luna' }],
+    stamps: [
+      { facilityId: 'coaster', earnedAt: '2026-09-17T12:00:00Z' },
+      { facilityId: 'luna', earnedAt: '2026-09-18T12:00:00Z' }
+    ]
+  };
+  const { renderPassportData } = load('passport.js', ['renderPassportData'], {
+    getExplorerProfile: () => ({ image: 'explorer.webp', alt: 'Explorer' }),
+    getRestorationState: () => ({ completed: 2, total: 4, stamps: progress.stamps }),
+    readProgress: () => progress,
+    t: key => key
+  });
+  renderPassportData(root, { name: 'TEST', id: 'NL-TEST', issueDate: '2026.09.16', gender: 'female' });
+  assert.equal(fields.get('[data-passport-luna-date]')[0].textContent, '2026.09.18');
+  assert.equal(fields.get('[data-passport-luna-coupon]')[0].textContent, 'passport.couponPending');
+  assert.equal(fields.get('[data-passport-coaster-date]')[0].textContent, '2026.09.17');
+});
+
 test('all supported previews leave existing progress storage untouched', () => {
   for (const search of ['?mission-preview=guide', '?mission-preview=countdown', '?mission-preview=testing', '?mission-preview=completed', '?map-state=restored']) {
     const api = progressFixture(search); const before = JSON.stringify(api.createProgress(api.explorer));

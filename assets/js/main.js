@@ -116,7 +116,15 @@ window.addEventListener('message', (event) => {
     if (progress.facilities.luna.status !== 'available' || !event.data.started) return;
     const checkpoint = createLightGarden().restore(event.data.checkpoint);
     updateMissionProgress(progress, 'luna', { phase: event.data.paused ? 'paused' : 'playing', checkpoint });
-    if (checkpoint.complete) map.completeFacility('luna');
+    if (checkpoint.complete) {
+      if (map.completeFacility('luna')) pendingStampAward = true;
+      controlRoom.refreshState();
+    }
+    return;
+  }
+  if (event.data?.type === 'novaland:luna-record') {
+    navigation.replace({ screen: 'map' });
+    navigation.push({ screen: 'map', overlay: 'explorer-archive-overlay', archiveTab: 'passport', archiveStamp: 'luna' });
     return;
   }
   if (event.data?.type !== 'novaland:luna-exit') return;

@@ -7,7 +7,9 @@ import { LUNA_GAME_BOARD, createLightGarden, prismDirection, nextLightAction } f
 
 initializeLanguage();
 const garden = document.querySelector('[data-luna-garden]');
+const viewport = document.querySelector('.luna-game__viewport');
 const scene = document.querySelector('[data-luna-scene]');
+const completion = document.querySelector('[data-luna-completion]');
 const rays = document.querySelector('[data-luna-rays]');
 const board = LUNA_GAME_BOARD;
 // Gold-foot centroids measured in each 543px-wide crystal atlas cell.
@@ -63,6 +65,7 @@ const game = createLightGarden();
 const evePanel = document.querySelector('.luna-game__eve');
 const eve = createEveController(evePanel, { persistent: true, focusMotion: false });
 let messageKey = null;
+let completionShown = false;
 const practice = document.querySelector('[data-luna-practice]');
 let practiceRotation = 0;
 let practiceBloomed = false;
@@ -148,7 +151,17 @@ function render(state = game.read()) {
   document.querySelector('[data-luna-progress-label]').textContent = t(state.complete ? 'luna.game.progressComplete' : state.ready ? 'luna.game.progressLotus' : 'luna.game.fragment');
   document.querySelectorAll('.luna-game__milestones i').forEach((mark, index) => mark.classList.toggle('is-filled', index < state.collected.length || (index === 3 && state.complete)));
   document.querySelector('.luna-fragment-mark').textContent = state.complete ? '✧' : '◇';
-  document.querySelector('[data-luna-completion]').hidden = !state.complete;
+  completion.hidden = !state.complete;
+  if (state.complete && !completionShown) {
+    completionShown = true;
+    window.requestAnimationFrame(() => {
+      if (viewport.scrollWidth > viewport.clientWidth) {
+        completion.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'nearest', inline: 'center' });
+      }
+    });
+  } else if (!state.complete) {
+    completionShown = false;
+  }
   document.querySelector('.luna-game__identity p').textContent = t(state.complete ? 'luna.game.completeCopy' : state.ready ? 'luna.game.lotusReadyTitle' : 'luna.game.title');
   garden.classList.toggle('is-complete', state.complete);
   const directions = t('luna.game.directions').split(',');
@@ -200,6 +213,11 @@ function renderDialog() {
 
 function leaveGame(destination) {
   if (window.parent !== window) window.parent.postMessage({ type: 'novaland:luna-exit', destination }, window.location.origin);
+  else window.location.assign('./index.html');
+}
+
+function openPassportRecord() {
+  if (window.parent !== window) window.parent.postMessage({ type: 'novaland:luna-record' }, window.location.origin);
   else window.location.assign('./index.html');
 }
 
@@ -271,6 +289,7 @@ pausePanel.querySelector('[data-mission-restart]').addEventListener('click', () 
 });
 pausePanel.querySelector('[data-mission-control-room]').addEventListener('click', () => leaveGame('control-room'));
 pausePanel.querySelector('[data-mission-exit]').addEventListener('click', () => leaveGame('map'));
+document.querySelector('[data-luna-record]').addEventListener('click', openPassportRecord);
 document.querySelector('[data-luna-guide-close]').addEventListener('click', () => started ? modal.close() : leaveGame('control-room'));
 guideResume.addEventListener('click', () => {
   focusBoardAfterClose = !started;

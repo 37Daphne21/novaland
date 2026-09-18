@@ -86,26 +86,25 @@ export function createArchiveController({ onTabChange, showToast } = {}) {
     passport.classList.toggle('is-mobile-identity', facilityRecord === 'identity');
     passport.querySelectorAll('[data-passport-edit]').forEach((button) => { button.hidden = false; });
     passport.querySelector('[data-passport-status]')?.replaceChildren('REGISTERED');
-    const record = passport.querySelector('[data-passport-facility-record]');
+    const records = passport.querySelectorAll('[data-passport-facility-record]');
     const authorityContent = passport.querySelector('.passport__page-content--authority');
     const authorityLabel = passport.querySelector('[data-passport-authority-label]');
     const pages = getPassportPages();
-    const showCoasterRecord = facilityRecord === 'coaster' && pages.includes('coaster');
+    const showFacilityRecord = pages.includes(facilityRecord) && facilityRecord !== '' && facilityRecord !== 'identity';
     const identityPage = passport.querySelector('.passport__page--profile');
-    identityPage?.classList.toggle('is-blank', showCoasterRecord);
-    if (showCoasterRecord) {
+    identityPage?.classList.toggle('is-blank', showFacilityRecord);
+    if (showFacilityRecord) {
       identityPage?.setAttribute('aria-hidden', 'true');
     } else {
       identityPage?.removeAttribute('aria-hidden');
     }
-    if (record) {
-      record.hidden = !showCoasterRecord;
-    }
+    records.forEach((record) => { record.hidden = record.dataset.passportFacilityRecord !== facilityRecord; });
     if (authorityContent) {
-      authorityContent.hidden = showCoasterRecord;
+      authorityContent.hidden = showFacilityRecord;
     }
     if (authorityLabel) {
-      authorityLabel.textContent = showCoasterRecord ? 'FACILITY RESTORATION 01' : 'NOVA LAND AUTHORITY';
+      const facilityNumber = facilityRecord === 'coaster' ? '01' : facilityRecord === 'luna' ? '02' : '';
+      authorityLabel.textContent = showFacilityRecord ? `FACILITY RESTORATION ${facilityNumber}` : 'NOVA LAND AUTHORITY';
     }
     const pageIndex = Math.max(0, pages.indexOf(facilityRecord));
     if (previousPage) {
@@ -122,8 +121,13 @@ export function createArchiveController({ onTabChange, showToast } = {}) {
 
   function getPassportPages() {
     const pages = mobilePassport.matches ? ['', 'identity'] : [''];
-    if (explorer && readProgress(explorer).stamps.some((stamp) => stamp.facilityId === 'coaster')) {
-      pages.push('coaster');
+    if (explorer) {
+      const stamps = readProgress(explorer).stamps;
+      ['coaster', 'luna'].forEach((facilityId) => {
+        if (stamps.some((stamp) => stamp.facilityId === facilityId)) {
+          pages.push(facilityId);
+        }
+      });
     }
     return pages;
   }
@@ -238,7 +242,7 @@ export function createArchiveController({ onTabChange, showToast } = {}) {
     renderLogs();
     if (tabName === 'passport') {
       preparePassport();
-      if (award && stamp === 'coaster') {
+      if (award && ['coaster', 'luna'].includes(stamp)) {
         passport.classList.add('is-awarding');
       } else {
         showPageHint();
