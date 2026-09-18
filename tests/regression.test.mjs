@@ -315,6 +315,7 @@ test('facility preview routes isolate saves, unlock Luna and reject removed addr
       assert.equal(api.window.localStorage.getItem('novaLandProgress'), 'existing-user-data');
     }
   }
+  assert.equal(progressFixture('?facility=spark&mission-preview=control-room').getMissionPreview().valid, true);
   for (const query of ['?facility=spark&mission-preview=guide', '?facility=luna&mission-preview=testing', '?facility=coaster&mission-preview=unknown', '?facility=coaster&mission-preview=paused', '?facility=luna&mission-preview=paused', '?mission-preview=guide']) {
     assert.equal(progressFixture(query).getMissionPreview().valid, false);
   }

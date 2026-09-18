@@ -357,9 +357,10 @@
 
 ## Phase 3. SPARK ENERGY TOWER
 
-상태: 예정
+상태: 관제실 1차 완료, 게임 화면 제작 예정
 
-- [ ] 시설 배경과 Orange Theme
+- [x] 관제실 배경과 Orange Theme 1차 적용
+- [ ] 게임 화면 배경과 Core·Slot HUD
 - [ ] Core 정보 공개와 기억 단계
 - [ ] Core Drag와 Slot 배치
 - [ ] Charge 100%

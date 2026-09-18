@@ -1155,6 +1155,8 @@ Control Room, Guide, Countdown, Play, Pause, Fail과 Complete는 공통 Mission 
 - 완료: 모든 Core 위치 일치와 Charge 100%
 - 난이도: Core와 Slot 수, 유사한 형태·색, 공개 시간과 제한 시간으로 상승
 - 복구 결과: Core 활성화, 전력 공급과 도시 조명 복구
+- 관제실은 2560×1440 WebP 배경 `assets/images/control-room/bg-control-room-spark.webp`를 사용한다. MAP 왼쪽 아래 에너지 타워 내부에서 도시 전력망과 중앙 에너지 Core를 조망하는 구도이며, 코스터·루나와 같은 금속·유리 재질과 야간 도시 분위기를 유지한다. 청록 야경 위에 Amber Orange 에너지 조명을 사용하고 좌우 정보 Panel과 하단 미션 Button이 배경의 Core·관제 Table을 가리지 않도록 구성한다.
+- SPARK 관제실은 공통 Control Room 구조를 재사용하고 시설 고유 문구·상태·아이콘·Amber Theme만 분리한다. 미션 연결 전에는 `미션 준비 중` 상태를 표시하고 조작은 비활성화한다. 관제실의 추가 시각 디벨롭은 게임 화면과 전체 SPARK Flow를 완성한 뒤 진행한다.
 
 
 ### WONDER PARADE HALL

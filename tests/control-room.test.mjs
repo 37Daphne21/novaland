@@ -44,6 +44,22 @@ test('completed coaster keeps its original operation status and hides mission st
   assert.equal(element('[data-control-room-operation]').hidden, false);
 });
 
+test('SPARK uses energy objectives and keeps the unfinished mission entry disabled', () => {
+  const { room, element } = fixture();
+  room.show({ id: 'spark', name: 'SPARK ENERGY TOWER' });
+  assert.equal(element('[data-control-room-alert]').textContent, 'control.sparkAlert');
+  assert.equal(element('[data-control-room-objective-title]').textContent, 'control.sparkObjectiveTitle');
+  assert.equal(element('[data-control-room-objective-repair]').textContent, 'control.sparkObjectiveRepair');
+  assert.equal(element('[data-control-room-rail]').textContent, 'control.sparkCoreUnstable');
+  assert.equal(element('[data-control-room-check]').textContent, 'control.sparkChargeEmpty');
+  assert.equal(element('.control-room__segments').hidden, true);
+  assert.equal(element('[data-mission-open]').hidden, false);
+  assert.equal(element('[data-mission-open]').disabled, true);
+  assert.equal(element('[data-mission-open] strong').textContent, 'control.sparkPreparing');
+  room.show({ id: 'luna', name: 'LUNA LIGHT GARDEN' });
+  assert.equal(element('[data-mission-open]').disabled, false);
+});
+
 test('Luna resumes a saved garden and uses garden results after completion', () => {
   const { room, element, progress } = fixture();
   progress.missions.luna = { checkpoint: { collected: ['moonbell', 'stardew', 'aurora'] } };

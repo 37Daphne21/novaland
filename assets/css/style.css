@@ -1521,7 +1521,7 @@
 
 .screen--control-room[data-facility="spark"] {
   --facility-accent: var(--color-spark);
-  --facility-eve-image-filter: hue-rotate(224deg) saturate(1.35);
+  --facility-eve-image-filter: hue-rotate(175deg) saturate(1.35) brightness(1.05);
 }
 
 .screen--control-room[data-facility="wonder"] {
@@ -2009,6 +2009,115 @@
 .control-room[data-facility="luna"] .control-room__start small,
 .control-room[data-facility="luna"] .control-room__start-copy > span {
   color: #d5e6d9;
+}
+
+/* SPARK keeps the shared Control Room structure with an amber energy treatment. */
+.control-room[data-facility="spark"] .control-room__backdrop {
+  position: fixed;
+  background-image: url("../images/control-room/bg-control-room-spark.webp");
+}
+
+.control-room[data-facility="spark"] .control-room__title h1 {
+  max-width: 11ch;
+  font-size: clamp(2rem, 2.9vw, 3.5rem);
+  line-height: 1.05;
+  text-shadow: 0 3px 12px #150b02, 0 0 1.5rem rgba(255, 184, 74, .28);
+}
+
+.control-room[data-facility="spark"] .control-room__title > span,
+.control-room[data-facility="spark"] .control-room__title p {
+  color: #ffe1a6;
+}
+
+.control-room[data-facility="spark"] .control-room__title small,
+.control-room[data-facility="spark"] .control-room__status > header strong,
+.control-room[data-facility="spark"] .control-room__status .ui-info-list__item.is-warning .ui-info-list__value {
+  color: #ffc06a;
+}
+
+.control-room[data-facility="spark"] .ui-panel {
+  border-color: rgba(255, 184, 74, .3);
+  background: rgba(8, 15, 24, .84);
+}
+
+.control-room[data-facility="spark"] .control-room__objective {
+  --ui-panel-padding: 1rem;
+}
+
+.control-room[data-facility="spark"] .control-room__objective .ui-info-list {
+  --ui-info-padding: .4rem;
+}
+
+.control-room[data-facility="spark"] .eve-panel__body {
+  grid-template-columns: 4rem minmax(0, 1fr);
+  gap: .65rem;
+  min-height: 0;
+  padding-block: .35rem;
+}
+
+.control-room[data-facility="spark"] .eve-panel__body img {
+  width: 4rem;
+  height: 5.5rem;
+}
+
+.control-room[data-facility="spark"] .control-room__status .ui-info-list__icon {
+  color: #ffd38a;
+  filter: drop-shadow(0 0 .5rem rgba(255, 184, 74, .28));
+}
+
+.control-room[data-facility="spark"] .control-room__start {
+  width: min(36rem, calc(100% - 2rem));
+  min-height: 0;
+  padding: .75rem 2.5rem;
+  overflow: hidden;
+  border: 1px solid rgba(255, 196, 99, .7);
+  border-radius: .6rem;
+  background: linear-gradient(180deg, rgba(255, 184, 74, .18), transparent 48%), rgba(15, 21, 29, .92);
+  box-shadow: 0 .5rem 2rem rgba(1, 6, 12, .45), inset 0 1px 0 rgba(255, 225, 166, .5), inset 0 -1px 0 rgba(255, 151, 54, .28);
+}
+
+.control-room[data-facility="spark"] .control-room__start::before {
+  z-index: 0;
+  inset: .32rem;
+  border: 1px solid rgba(255, 208, 128, .22);
+  border-radius: .35rem;
+  background: none;
+  filter: none;
+}
+
+.control-room[data-facility="spark"] .control-room__start::after {
+  inset: 0;
+  border: 0;
+  clip-path: none;
+  background: linear-gradient(110deg, transparent 28%, rgba(255, 184, 74, .04) 40%, rgba(255, 232, 185, .28) 49%, rgba(255, 184, 74, .1) 55%, transparent 68%);
+  background-size: 300% 100%;
+  filter: none;
+  animation: control-room-start-light 4s ease-in-out infinite;
+}
+
+.control-room[data-facility="spark"] .control-room__start:disabled {
+  cursor: default;
+}
+
+.control-room[data-facility="spark"] .control-room__start:disabled::after {
+  animation: none;
+  background-position: 50% 0;
+  opacity: .45;
+}
+
+.control-room[data-facility="spark"] .control-room__start-mark {
+  border-left-color: #ffd38a;
+  filter: drop-shadow(0 0 .5rem rgba(255, 184, 74, .45));
+}
+
+.control-room[data-facility="spark"] .control-room__start small,
+.control-room[data-facility="spark"] .control-room__start-copy > span {
+  color: #f1d9ae;
+}
+
+.control-room[data-facility="spark"] .control-room__start strong {
+  color: #fff5df;
+  text-shadow: 0 1px 3px #1a0d02, 0 0 1rem rgba(255, 184, 74, .34);
 }
 
 .luna-entry {
@@ -3796,6 +3905,14 @@ html[lang="en"] .rail-repair__branch-terminal small {
 
   .control-room__objective > .ui-panel__description {
     margin: .25rem 0 .5rem;
+  }
+
+  .control-room[data-facility="spark"] .control-room__objective {
+    --ui-panel-padding: .75rem;
+  }
+
+  .control-room[data-facility="spark"] .control-room__objective .ui-info-list {
+    --ui-info-padding: .15rem;
   }
 
   .control-room__start {
