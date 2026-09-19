@@ -104,8 +104,24 @@ const lunaModal = createModalController(lunaEntry, {
     }
   }
 });
+const sparkEntry = document.querySelector('[data-spark-entry]');
+const sparkFrame = document.querySelector('[data-spark-frame]');
+const sparkModal = createModalController(sparkEntry, {
+  onCancel: () => sparkFrame.contentWindow.postMessage({ type: 'novaland:spark-pause' }, window.location.origin),
+  onClose: () => {
+    if (!sparkEntry.open) {
+      sparkFrame.contentWindow.location.replace('about:blank');
+      controlRoom.refreshLanguage();
+    }
+  }
+});
 window.addEventListener('message', (event) => {
-  if (event.origin !== window.location.origin || event.source !== lunaFrame.contentWindow || !lunaEntry.open) return;
+  if (event.origin !== window.location.origin) return;
+  if (event.source === sparkFrame.contentWindow && sparkEntry.open) {
+    if (event.data?.type === 'novaland:spark-exit') navigation.back();
+    return;
+  }
+  if (event.source !== lunaFrame.contentWindow || !lunaEntry.open) return;
   if (event.data?.type === 'novaland:luna-ready') {
     const progress = readProgress(currentExplorer);
     lunaFrame.contentWindow.postMessage({ type: 'novaland:luna-restore', checkpoint: progress.missions.luna.checkpoint }, window.location.origin);
@@ -227,6 +243,7 @@ function applyNavigationRoute(route, { previousRoute, source } = {}) {
 
   overlay.close();
   if (!route.lunaPlay) lunaModal.close();
+  if (!route.sparkPlay) sparkModal.close();
   mobileMap.reset();
   if (mission.isOpen()) {
     mission.close();
@@ -285,6 +302,17 @@ function applyNavigationRoute(route, { previousRoute, source } = {}) {
     lunaFrame.contentWindow.location.replace(frameUrl.href);
     lunaModal.open({ focusTarget: lunaFrame, opener: document.querySelector('[data-mission-open]') });
   }
+  if (route.screen === 'control-room' && route.facilityId === 'spark' && route.sparkPlay && !sparkEntry.open) {
+    controlRoom.cancel();
+    const frameUrl = new URL('./spark-game.html', window.location.href);
+    frameUrl.searchParams.set('embedded', '1');
+    if (route.previewPhase && route.previewPhase !== 'guide') {
+      frameUrl.searchParams.set('facility', 'spark');
+      frameUrl.searchParams.set('mission-preview', route.previewPhase);
+    }
+    sparkFrame.contentWindow.location.replace(frameUrl.href);
+    sparkModal.open({ focusTarget: sparkFrame, opener: document.querySelector('[data-mission-open]') });
+  }
 }
 
 navigation = createNavigationController({ button: appBackButton, onNavigate: applyNavigationRoute });
@@ -300,6 +328,10 @@ async function handleDocumentClick(event) {
   }
   if (missionOpenButton && controlFacility?.id === 'luna') {
     navigation.push({ screen: 'control-room', facilityId: 'luna', lunaPlay: true });
+    return;
+  }
+  if (missionOpenButton && controlFacility?.id === 'spark') {
+    navigation.push({ screen: 'control-room', facilityId: 'spark', sparkPlay: true });
     return;
   }
 
@@ -453,8 +485,8 @@ if (shouldPreviewMission) {
     controlRoom.show(facility);
     navigation?.push({ screen: 'control-room', facilityId: facility.id }, { applyRoute: false });
     if (!['control-room', 'control-room-completed'].includes(missionPreview.phase)) {
-      if (facility.id === 'luna') {
-        navigation.push({ screen: 'control-room', facilityId: 'luna', lunaPlay: true, previewPhase: missionPreview.phase });
+      if (facility.id === 'luna' || facility.id === 'spark') {
+        navigation.push({ screen: 'control-room', facilityId: facility.id, [`${facility.id}Play`]: true, previewPhase: missionPreview.phase });
       } else {
         window.setTimeout(() => mission.open(facility, controlRoom.getFocusTarget(), { previewPhase: missionPreview.phase }), 120);
       }
@@ -469,7 +501,7 @@ document.addEventListener('keydown', handleKeydown);
 document.addEventListener('fullscreenchange', settings.syncFullscreenToggle);
 window.addEventListener('novaland:languagechange', handleLanguageChange);
 window.addEventListener('storage', (event) => {
-  if (event.key === 'novaLandLanguage' && lunaEntry.open) {
+  if (event.key === 'novaLandLanguage' && (lunaEntry.open || sparkEntry.open)) {
     initializeLanguage();
     handleLanguageChange();
   }

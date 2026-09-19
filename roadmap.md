@@ -357,14 +357,15 @@
 
 ## Phase 3. SPARK ENERGY TOWER
 
-상태: 관제실 1차 완료, 게임 화면 제작 예정
+상태: 관제실과 Core 기억 퍼즐 1차 구현·검수 완료
 
 - [x] 관제실 배경과 Orange Theme 1차 적용
-- [ ] 게임 화면 배경과 Core·Slot HUD
-- [ ] Core 정보 공개와 기억 단계
-- [ ] Core Drag와 Slot 배치
-- [ ] Charge 100%
-- [ ] 난이도별 Core 수와 공개 시간
+- [x] 게임 화면 배경과 Core·Slot HUD
+- [x] Guide·카운트다운·4초 Core 배열 공개
+- [x] 3·4·5·6 Core의 4단계 구성과 단계별 0·2·3·4개 90도 회전
+- [x] 3초 정답 잔상 Hint와 자동 배열 검사
+- [x] 단계 완료 버튼, Charge 25%·50%·75%·100%와 발사 테스트
+- [x] 1908×925 전체 4단계 실제 플레이와 1366×768 HUD·원형 Slot 정렬 검수
 - [ ] MAP과 Archive 갱신
 
 ---

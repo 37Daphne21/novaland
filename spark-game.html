@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#100b06">
+  <meta name="robots" content="noindex">
+  <title>SPARK ENERGY TOWER</title>
+  <link rel="stylesheet" href="./assets/css/reset.css">
+  <link rel="stylesheet" href="./assets/css/common.css">
+  <link rel="stylesheet" href="./assets/css/style.css">
+  <link rel="stylesheet" href="./assets/css/spark-game.css">
+  <link rel="preload" href="./assets/images/spark/core-chamber.webp" as="image">
+</head>
+<body class="spark-game" data-spark-phase="guide">
+  <header class="spark-game__header">
+    <div class="spark-game__identity"><h1>SPARK ENERGY TOWER</h1><p data-spark-subtitle>에너지 Core 배열을 복구하세요.</p></div>
+    <div class="spark-game__progress" aria-live="polite"><span><small>STAGE</small><b><span data-spark-stage>1</span> / 4</b></span><span><small>CORE</small><b><span data-spark-core-count>0</span> / <span data-spark-core-total>3</span></b></span><span><small>CHARGE</small><b data-spark-charge>0%</b><i aria-hidden="true"><em data-spark-charge-bar></em></i></span></div>
+    <nav class="spark-game__tools" aria-label="미션 조작"><button class="ui-button ui-button--secondary" type="button" data-spark-guide-open>가이드</button><button class="ui-button ui-button--icon" type="button" data-spark-pause aria-label="일시정지"><span aria-hidden="true">Ⅱ</span></button></nav>
+  </header>
+  <main class="spark-game__viewport" tabindex="0" aria-label="에너지 Core 정렬 퍼즐">
+    <section class="spark-chamber" aria-label="SPARK Core 복구 보드">
+      <img class="spark-chamber__background" src="./assets/images/spark/core-chamber.webp" alt="" fetchpriority="high">
+      <div class="spark-chamber__ambient" aria-hidden="true"></div>
+      <section class="spark-core-bank" aria-labelledby="spark-bank-title">
+        <header><span>CORE STORAGE</span><h2 id="spark-bank-title">Core 보관함</h2></header>
+        <div class="spark-core-bank__items" data-spark-bank>
+          <button class="spark-core spark-core--circle" type="button" draggable="true" data-core="circle" aria-label="원형 Core"><i></i><span>원</span></button>
+          <button class="spark-core spark-core--triangle" type="button" draggable="true" data-core="triangle" aria-label="삼각 Core"><i></i><span>삼각</span></button>
+          <button class="spark-core spark-core--hex" type="button" draggable="true" data-core="hex" aria-label="육각 Core"><i></i><span>육각</span></button>
+          <button class="spark-core spark-core--bolt" type="button" draggable="true" data-core="bolt" aria-label="번개 Core"><i></i><span>번개</span></button>
+          <button class="spark-core spark-core--arrow" type="button" draggable="true" data-core="arrow" aria-label="화살 Core"><i></i><span>화살</span></button>
+          <button class="spark-core spark-core--star" type="button" draggable="true" data-core="star" aria-label="별 Core"><i></i><span>별</span></button>
+        </div>
+      </section>
+      <div class="spark-tower" data-spark-board aria-label="타워 Core Slot">
+        <button class="spark-slot" type="button" data-slot="0" aria-label="Core Slot 1"></button>
+        <button class="spark-slot" type="button" data-slot="1" aria-label="Core Slot 2"></button>
+        <button class="spark-slot" type="button" data-slot="2" aria-label="Core Slot 3"></button>
+        <button class="spark-slot" type="button" data-slot="3" aria-label="Core Slot 4"></button>
+        <button class="spark-slot" type="button" data-slot="4" aria-label="Core Slot 5"></button>
+        <button class="spark-slot" type="button" data-slot="5" aria-label="Core Slot 6"></button>
+      </div>
+      <section class="spark-game__status" aria-live="polite"><span data-spark-status-eyebrow>CORE SCAN</span><h2 data-spark-status-title>정답 배열을 기억하세요</h2><p data-spark-status-copy>Core의 위치와 방향이 잠시 공개됩니다.</p></section>
+      <aside class="spark-game__controls"><button class="ui-button ui-button--secondary" type="button" data-spark-hint>힌트 보기</button><button class="ui-button ui-button--secondary" type="button" data-spark-rotate disabled><span aria-hidden="true">↻</span> 선택 Core 회전</button><button class="ui-button ui-button--secondary" type="button" data-spark-reset>배치 초기화</button></aside>
+      <button class="spark-game__launch" type="button" data-spark-launch hidden><span>LAUNCH</span><small>에너지 빔 발사 테스트</small></button>
+      <section class="spark-game__complete" data-spark-complete hidden><span>MISSION COMPLETE</span><h2>에너지 타워가 정상 가동돼요</h2><p>Core 정렬과 발사 테스트가 완료됐어요.</p><button class="ui-button ui-button--primary" type="button" data-spark-exit>관제실로 돌아가기</button></section>
+    </section>
+  </main>
+  <footer class="spark-game__footer"><aside class="spark-game__eve" aria-label="EVE" aria-live="polite" aria-atomic="true"><span><img src="./assets/images/common/eve.webp" alt=""></span><div><b>EVE</b><p data-spark-eve>정답 배열에서 Core의 위치와 방향을 기억해 주세요.</p></div></aside></footer>
+  <section class="spark-game__countdown" data-spark-countdown hidden role="status" aria-live="assertive"><span>CORE ARRAY SCAN</span><strong data-spark-countdown-number>3</strong><p>에너지 Core를 공개합니다.</p></section>
+  <dialog class="spark-guide" data-spark-guide aria-labelledby="spark-guide-title">
+    <div class="spark-guide__visual" aria-hidden="true"><span class="spark-guide__core">◇</span><span>→</span><span class="spark-guide__slot">○</span></div>
+    <div class="spark-guide__content"><span class="ui-panel__eyebrow">SPARK ENERGY TOWER</span><h2 id="spark-guide-title">Core 배열을 복구하세요</h2><p>4단계에 걸쳐 공개된 위치와 방향을 기억한 뒤 Core를 타워의 빈 Slot에 배치하세요.</p><ol><li><b>01</b><span><strong>배열 기억</strong><small>4초 동안 Core의 위치와 방향을 확인해요.</small></span></li><li><b>02</b><span><strong>배치와 회전</strong><small>단계마다 늘어나는 Core를 옮기고 방향을 맞춰요.</small></span></li><li><b>03</b><span><strong>힌트와 충전</strong><small>단계마다 25%를 충전하고 필요하면 정답 잔상을 확인해요.</small></span></li></ol><button class="ui-button ui-button--primary" type="button" data-spark-guide-start>게임 시작</button><button class="ui-button ui-button--secondary" type="button" data-spark-guide-return hidden>게임으로 돌아가기</button></div>
+  </dialog>
+  <dialog class="spark-pause" data-spark-pause-panel aria-labelledby="spark-pause-title"><span class="ui-panel__eyebrow">MISSION PAUSED</span><h2 id="spark-pause-title">미션을 잠시 멈췄어요</h2><button class="ui-button ui-button--primary" type="button" data-spark-resume>계속하기</button><button class="ui-button ui-button--secondary" type="button" data-spark-exit>관제실로 돌아가기</button></dialog>
+  <script type="module" src="./assets/js/spark-game.js"></script>
+</body>
+</html>

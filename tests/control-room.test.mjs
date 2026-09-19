@@ -44,7 +44,7 @@ test('completed coaster keeps its original operation status and hides mission st
   assert.equal(element('[data-control-room-operation]').hidden, false);
 });
 
-test('SPARK uses energy objectives and keeps the unfinished mission entry disabled', () => {
+test('SPARK uses energy objectives and enables the Core mission entry', () => {
   const { room, element } = fixture();
   room.show({ id: 'spark', name: 'SPARK ENERGY TOWER' });
   assert.equal(element('[data-control-room-alert]').textContent, 'control.sparkAlert');
@@ -54,8 +54,8 @@ test('SPARK uses energy objectives and keeps the unfinished mission entry disabl
   assert.equal(element('[data-control-room-check]').textContent, 'control.sparkChargeEmpty');
   assert.equal(element('.control-room__segments').hidden, true);
   assert.equal(element('[data-mission-open]').hidden, false);
-  assert.equal(element('[data-mission-open]').disabled, true);
-  assert.equal(element('[data-mission-open] strong').textContent, 'control.sparkPreparing');
+  assert.equal(element('[data-mission-open]').disabled, false);
+  assert.equal(element('[data-mission-open] strong').textContent, 'mission.start');
   room.show({ id: 'luna', name: 'LUNA LIGHT GARDEN' });
   assert.equal(element('[data-mission-open]').disabled, false);
 });

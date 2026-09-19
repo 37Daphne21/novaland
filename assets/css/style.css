@@ -2066,61 +2066,64 @@
 }
 
 .control-room[data-facility="spark"] .control-room__start {
-  width: min(36rem, calc(100% - 2rem));
-  min-height: 0;
-  padding: .75rem 2.5rem;
-  overflow: hidden;
-  border: 1px solid rgba(255, 196, 99, .7);
-  border-radius: .6rem;
-  background: linear-gradient(180deg, rgba(255, 184, 74, .18), transparent 48%), rgba(15, 21, 29, .92);
-  box-shadow: 0 .5rem 2rem rgba(1, 6, 12, .45), inset 0 1px 0 rgba(255, 225, 166, .5), inset 0 -1px 0 rgba(255, 151, 54, .28);
+  grid-template-columns: 1fr;
+  width: min(40rem, calc(100% - 2rem));
+  min-height: 8rem;
+  padding: 1rem 5rem;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  color: #1b0c00;
+  background: none;
+  box-shadow: none;
 }
 
 .control-room[data-facility="spark"] .control-room__start::before {
-  z-index: 0;
-  inset: .32rem;
-  border: 1px solid rgba(255, 208, 128, .22);
-  border-radius: .35rem;
-  background: none;
-  filter: none;
+  z-index: -1;
+  inset: -.4rem -.75rem;
+  background: url("../images/control-room/mission-start-frame-spark.png") center / 100% 100% no-repeat;
+  filter: drop-shadow(0 0 .85rem rgba(255, 174, 45, .58));
 }
 
 .control-room[data-facility="spark"] .control-room__start::after {
-  inset: 0;
-  border: 0;
-  clip-path: none;
-  background: linear-gradient(110deg, transparent 28%, rgba(255, 184, 74, .04) 40%, rgba(255, 232, 185, .28) 49%, rgba(255, 184, 74, .1) 55%, transparent 68%);
-  background-size: 300% 100%;
-  filter: none;
-  animation: control-room-start-light 4s ease-in-out infinite;
+  display: none;
 }
 
 .control-room[data-facility="spark"] .control-room__start:disabled {
   cursor: default;
 }
 
-.control-room[data-facility="spark"] .control-room__start:disabled::after {
-  animation: none;
-  background-position: 50% 0;
-  opacity: .45;
+.control-room[data-facility="spark"] .control-room__start:not(:disabled):hover {
+  background: none;
+  filter: brightness(1.06);
+  transform: translateY(-.12rem);
+}
+
+.control-room[data-facility="spark"] .control-room__start:not(:disabled):hover::before {
+  filter: drop-shadow(0 0 1.1rem rgba(255, 185, 55, .7));
 }
 
 .control-room[data-facility="spark"] .control-room__start-mark {
-  border-left-color: #ffd38a;
-  filter: drop-shadow(0 0 .5rem rgba(255, 184, 74, .45));
+  display: none;
 }
 
 .control-room[data-facility="spark"] .control-room__start small,
 .control-room[data-facility="spark"] .control-room__start-copy > span {
-  color: #f1d9ae;
+  color: #6c3300;
 }
 
 .control-room[data-facility="spark"] .control-room__start strong {
-  color: #fff5df;
-  text-shadow: 0 1px 3px #1a0d02, 0 0 1rem rgba(255, 184, 74, .34);
+  color: #1a0b00;
+  font-size: 1.8rem;
+  text-shadow: 0 1px 0 rgba(255, 247, 186, .75);
 }
 
-.luna-entry {
+.control-room[data-facility="spark"] .control-room__start-copy {
+  grid-column: 1;
+}
+
+.luna-entry,
+.spark-entry {
   width: 100%;
   height: 100svh;
   max-width: none;
@@ -2132,8 +2135,19 @@
   color: var(--color-text);
 }
 
-.luna-entry[open] { display: grid; grid-template-rows: minmax(0, 1fr); }
-.luna-entry iframe { width: 100%; height: 100%; min-height: 0; border: 0; }
+.luna-entry[open],
+.spark-entry[open] {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr);
+}
+
+.luna-entry iframe,
+.spark-entry iframe {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  border: 0;
+}
 
 
 .mission-dialog {
@@ -3928,6 +3942,15 @@ html[lang="en"] .rail-repair__branch-terminal small {
     font-size: .625rem;
   }
 
+  .control-room[data-facility="spark"] .control-room__start {
+    min-height: 6rem;
+    padding: .75rem 5rem;
+  }
+
+  .control-room[data-facility="spark"] .control-room__start strong {
+    font-size: 1.45rem;
+  }
+
   .mission-flow {
     padding: var(--space-4);
   }
@@ -4141,6 +4164,15 @@ html[lang="en"] .rail-repair__branch-terminal small {
 
   .control-room__start {
     width: min(32rem, calc(100% - 2rem));
+  }
+
+  .control-room[data-facility="spark"] .control-room__start {
+    min-height: 5rem;
+    padding: .65rem 4rem;
+  }
+
+  .control-room[data-facility="spark"] .control-room__start strong {
+    font-size: 1.2rem;
   }
 
   .mission-dialog:is([data-phase="guide"], [data-phase="playing"], .is-result) .mission-flow__header {

@@ -144,7 +144,7 @@ export function createControlRoomController({ getExplorer, onShowScreen, showToa
       icon.setAttribute('href', facilityIcon);
     });
     if (step) {
-      step.textContent = isLuna ? `${isCompleted ? 3 : checkpoint?.collected?.length ?? 0} / 3` : isSpark ? `${isCompleted ? 3 : 0} / 3` : `${coasterProgress.steps} / 3`;
+      step.textContent = isLuna ? `${isCompleted ? 3 : checkpoint?.collected?.length ?? 0} / 3` : isSpark ? `${isCompleted ? 4 : 0} / 4` : `${coasterProgress.steps} / 3`;
     }
     checkItem?.classList.toggle('is-warning', !isCompleted);
     if (check) {
@@ -152,10 +152,10 @@ export function createControlRoomController({ getExplorer, onShowScreen, showToa
     }
     if (missionStart) {
       missionStart.hidden = (!isCoaster && !isLuna && !isSpark) || isCompleted;
-      missionStart.disabled = isSpark;
-      missionStart.classList.toggle('is-pending', isSpark);
+      missionStart.disabled = false;
+      missionStart.classList.toggle('is-pending', false);
       const label = missionStart.querySelector('strong');
-      label.dataset.i18n = isSpark ? 'control.sparkPreparing' : checkpoint && !isCompleted ? 'mission.resume' : 'mission.start';
+      label.dataset.i18n = checkpoint && !isCompleted ? 'mission.resume' : 'mission.start';
       label.textContent = t(label.dataset.i18n);
     }
     if (operationStatus) {

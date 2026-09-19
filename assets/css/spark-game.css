@@ -1,0 +1,831 @@
+.spark-game {
+  position: relative;
+  height: 100svh;
+  overflow: hidden;
+  background: #07090d;
+}
+
+.spark-game__viewport {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.spark-chamber {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.spark-chamber__background {
+  position: absolute;
+  inset: 0;
+  z-index: -3;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.spark-chamber__ambient {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 45%, rgba(255, 186, 74, .08), transparent 32%), linear-gradient(180deg, rgba(2, 7, 14, .12), transparent 35%, rgba(3, 6, 10, .22));
+}
+
+.spark-game__header {
+  position: absolute;
+  inset: 1.5rem 2rem auto;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: start;
+  gap: 1.5rem;
+  pointer-events: none;
+}
+
+.spark-game__identity,
+.spark-game__progress,
+.spark-game__tools {
+  pointer-events: auto;
+}
+
+.spark-game__identity {
+  text-shadow: 0 2px 6px #050b13, 0 0 20px #050b13;
+}
+
+.spark-game__identity h1 {
+  color: #fff3d4;
+  font: 500 clamp(1rem, 1.35vw, 1.35rem)/1.3 var(--font-display);
+  letter-spacing: .025em;
+}
+
+.spark-game__identity p {
+  margin-top: .25rem;
+  color: #f0d7ac;
+  font-size: .75rem;
+}
+
+.spark-game__progress {
+  display: grid;
+  grid-template-columns: auto auto minmax(10rem, 13rem);
+  gap: 1.2rem;
+  min-width: 28rem;
+  padding: .65rem 1rem;
+  border: 1px solid rgba(255, 188, 76, .42);
+  border-radius: .6rem;
+  background: linear-gradient(110deg, rgba(36, 25, 13, .94), rgba(7, 13, 21, .94));
+  box-shadow: inset 0 1px 0 rgba(255, 231, 179, .18), 0 .5rem 2rem rgba(1, 5, 10, .38);
+}
+
+.spark-game__progress > span {
+  display: grid;
+  align-content: center;
+  gap: .15rem;
+}
+
+.spark-game__progress small {
+  color: #d8aa59;
+  font: 600 .5625rem var(--font-numeric);
+  letter-spacing: .1em;
+}
+
+.spark-game__progress b {
+  color: #fff1d1;
+  font: 600 1rem var(--font-numeric);
+}
+
+.spark-game__progress i {
+  display: block;
+  width: 100%;
+  height: .3rem;
+  margin-top: .2rem;
+  overflow: hidden;
+  border: 1px solid rgba(255, 186, 70, .42);
+  border-radius: 1rem;
+  background: rgba(255, 184, 74, .08);
+}
+
+.spark-game__progress em {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #ff922f, #ffe288);
+  box-shadow: 0 0 .8rem rgba(255, 184, 74, .7);
+  transition: width .55s var(--ease-out);
+}
+
+.spark-game__tools {
+  display: flex;
+  justify-content: end;
+  gap: .6rem;
+}
+
+.spark-game__tools .ui-button {
+  min-height: 2.75rem;
+  border-color: rgba(255, 184, 74, .35);
+  color: #f5dfb8;
+  background: rgba(7, 13, 21, .82);
+}
+
+.spark-core-bank {
+  position: absolute;
+  left: 2.2rem;
+  top: 50%;
+  z-index: 7;
+  width: 9.5rem;
+  padding: .85rem;
+  border: 1px solid rgba(255, 190, 84, .42);
+  border-radius: .5rem;
+  background: linear-gradient(180deg, rgba(15, 22, 31, .94), rgba(27, 18, 9, .92));
+  box-shadow: inset 0 1px 0 rgba(255, 225, 171, .16), 0 .75rem 2rem rgba(1, 4, 8, .42);
+  transform: translateY(-50%);
+}
+
+.spark-core-bank header {
+  padding-bottom: .65rem;
+  border-bottom: 1px solid rgba(255, 184, 74, .2);
+  text-align: center;
+}
+
+.spark-core-bank header span,
+.spark-game__status > span {
+  color: #e3af54;
+  font: 600 .5625rem var(--font-numeric);
+  letter-spacing: .1em;
+}
+
+.spark-core-bank h2 {
+  margin-top: .15rem;
+  color: #fff0ce;
+  font: 500 .8rem var(--font-display);
+}
+
+.spark-core-bank__items {
+  display: grid;
+  gap: .5rem;
+  padding-top: .7rem;
+}
+
+.spark-core {
+  --core-rotation: 0deg;
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 4.65rem;
+  aspect-ratio: 1;
+  margin-inline: auto;
+  border: 1px solid rgba(255, 214, 137, .5);
+  border-radius: 50%;
+  color: #ffd36f;
+  background: radial-gradient(circle, rgba(255, 200, 91, .2), rgba(8, 14, 22, .9) 66%);
+  box-shadow: inset 0 0 1rem rgba(255, 176, 54, .16), 0 0 .8rem rgba(255, 184, 74, .18);
+  cursor: grab;
+  transition: border-color .18s ease, box-shadow .18s ease, opacity .25s ease, transform .25s ease;
+}
+
+.spark-core:hover,
+.spark-core:focus-visible,
+.spark-core.is-selected {
+  border-color: #ffe099;
+  box-shadow: inset 0 0 1rem rgba(255, 176, 54, .3), 0 0 1.2rem rgba(255, 184, 74, .58);
+}
+
+.spark-core.is-selected {
+  transform: scale(1.08);
+}
+
+.spark-core > i {
+  position: relative;
+  display: block;
+  width: 2.25rem;
+  aspect-ratio: 1;
+  transform: rotate(var(--core-rotation));
+  filter: drop-shadow(0 0 .45rem currentColor);
+  transition: transform .28s var(--ease-out);
+}
+
+.spark-core > i::after {
+  position: absolute;
+  left: 50%;
+  top: -.35rem;
+  width: .32rem;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  content: "";
+  background: #fff7d5;
+  box-shadow: 0 0 .45rem currentColor;
+  transform: translateX(-50%);
+}
+
+.spark-core > span {
+  position: absolute;
+  bottom: .25rem;
+  color: #d7b879;
+  font-size: .5625rem;
+}
+
+.spark-core--circle > i {
+  border: .28rem solid #ffd34f;
+  border-radius: 50%;
+}
+
+.spark-core--triangle {
+  color: #69dcff;
+}
+
+.spark-core--triangle > i {
+  background: #69dcff;
+  clip-path: polygon(50% 3%, 98% 94%, 2% 94%);
+}
+
+.spark-core--triangle > i::before {
+  position: absolute;
+  inset: .35rem;
+  content: "";
+  background: #101821;
+  clip-path: inherit;
+}
+
+.spark-core--hex {
+  color: #93ed6c;
+}
+
+.spark-core--hex > i {
+  background: #93ed6c;
+  clip-path: polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0 50%);
+}
+
+.spark-core--hex > i::before {
+  position: absolute;
+  inset: .35rem;
+  content: "";
+  background: #101821;
+  clip-path: inherit;
+}
+
+.spark-core--bolt {
+  color: #e9b8ff;
+}
+
+.spark-core--bolt > i {
+  background: #e9b8ff;
+  clip-path: polygon(52% 0, 18% 53%, 46% 53%, 34% 100%, 84% 39%, 55% 39%);
+}
+
+.spark-core--arrow {
+  color: #ff8d6d;
+}
+
+.spark-core--arrow > i {
+  background: #ff8d6d;
+  clip-path: polygon(0 35%, 58% 35%, 58% 5%, 100% 50%, 58% 95%, 58% 65%, 0 65%);
+}
+
+.spark-core--star {
+  color: #fff18a;
+}
+
+.spark-core--star > i {
+  background: #fff18a;
+  clip-path: polygon(50% 0, 62% 35%, 100% 38%, 70% 60%, 80% 100%, 50% 76%, 20% 100%, 30% 60%, 0 38%, 38% 35%);
+}
+
+.spark-core--circle > i::after,
+.spark-core--hex > i::after {
+  display: none;
+}
+
+.spark-core[hidden] {
+  display: none;
+}
+
+.spark-tower {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 4;
+  width: max(100%, calc(100svh * 16 / 9));
+  height: max(100%, calc(100vw * 9 / 16));
+  transform: translate(-50%, -50%);
+}
+
+.spark-slot {
+  position: absolute;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 7.03125%;
+  aspect-ratio: 1;
+  border: 1px solid rgba(255, 202, 112, .18);
+  border-radius: 50%;
+  background: rgba(3, 8, 13, .12);
+  transform: translate(-50%, -50%);
+}
+
+.spark-slot:nth-child(1) {
+  left: 44.84375%;
+  top: 24.86111%;
+}
+
+.spark-slot:nth-child(2) {
+  left: 55.15625%;
+  top: 24.72222%;
+}
+
+.spark-slot:nth-child(3) {
+  left: 44.84375%;
+  top: 40.69444%;
+}
+
+.spark-slot:nth-child(4) {
+  left: 55.15625%;
+  top: 40.69444%;
+}
+
+.spark-slot:nth-child(5) {
+  left: 44.76563%;
+  top: 56.80556%;
+}
+
+.spark-slot:nth-child(6) {
+  left: 55.15625%;
+  top: 56.80556%;
+}
+
+.spark-slot:hover,
+.spark-slot:focus-visible,
+.spark-slot.is-drop-target {
+  border-color: rgba(255, 217, 147, .72);
+  box-shadow: inset 0 0 1.25rem rgba(255, 184, 74, .18), 0 0 1rem rgba(255, 184, 74, .28);
+}
+
+.spark-slot > .spark-core {
+  width: 78%;
+  margin: 0;
+}
+
+.spark-slot > .spark-core > span {
+  display: none;
+}
+
+.spark-slot.is-charged {
+  border-color: #ffe09a;
+  box-shadow: inset 0 0 1.5rem rgba(255, 184, 74, .4), 0 0 1.7rem rgba(255, 174, 54, .68);
+}
+
+.spark-hint-core {
+  position: absolute;
+  inset: 10%;
+  display: grid;
+  place-items: center;
+  border: 1px dashed rgba(255, 235, 181, .72);
+  border-radius: 50%;
+  opacity: .58;
+  pointer-events: none;
+  animation: spark-hint-pulse 1s ease-in-out infinite alternate;
+}
+
+.spark-hint-core::before {
+  color: #fff0bd;
+  content: attr(data-symbol);
+  font-size: 2.2rem;
+  filter: drop-shadow(0 0 .6rem #ffb84a);
+  transform: rotate(var(--hint-rotation));
+}
+
+.spark-game__status {
+  position: absolute;
+  left: 50%;
+  bottom: 8rem;
+  z-index: 7;
+  width: min(28rem, 34vw);
+  padding: .65rem 1rem;
+  border: 1px solid rgba(255, 184, 74, .3);
+  border-radius: .5rem;
+  text-align: center;
+  background: rgba(7, 13, 21, .88);
+  box-shadow: inset 0 1px 0 rgba(255, 230, 180, .12), 0 .5rem 1.5rem rgba(1, 5, 10, .32);
+  transform: translateX(-50%);
+}
+
+.spark-game__status h2 {
+  margin-top: .12rem;
+  color: #fff0cb;
+  font: 500 .95rem var(--font-display);
+}
+
+.spark-game__status p {
+  margin-top: .18rem;
+  color: #dbc9aa;
+  font-size: .6875rem;
+}
+
+.spark-game__controls {
+  position: absolute;
+  right: 2.2rem;
+  top: 50%;
+  z-index: 7;
+  display: grid;
+  gap: .55rem;
+  width: 11.5rem;
+  padding: .8rem;
+  border: 1px solid rgba(255, 184, 74, .3);
+  border-radius: .5rem;
+  background: rgba(7, 13, 21, .9);
+  transform: translateY(-50%);
+}
+
+.spark-game__controls .ui-button {
+  min-height: 2.75rem;
+  border-color: rgba(255, 184, 74, .32);
+  color: #f6dfb5;
+  font-size: .7rem;
+  background: rgba(255, 184, 74, .07);
+}
+
+.spark-game:not([data-spark-phase="play"]) .spark-game__controls {
+  opacity: .52;
+}
+
+.spark-game[data-spark-phase="charged"] .spark-game__controls {
+  opacity: .3;
+}
+
+.spark-game:not([data-spark-phase="play"]) .spark-core,
+.spark-game:not([data-spark-phase="play"]) .spark-slot {
+  cursor: default;
+}
+
+.spark-game__launch {
+  position: absolute;
+  left: 50%;
+  bottom: 2.5rem;
+  z-index: 8;
+  display: grid;
+  width: min(25rem, 32vw);
+  padding: .75rem 3rem;
+  border: 1px solid #ffe07a;
+  clip-path: polygon(5% 0, 95% 0, 100% 50%, 95% 100%, 5% 100%, 0 50%);
+  color: #1c0c00;
+  background: linear-gradient(180deg, #ffe76a, #ffae0c);
+  box-shadow: 0 0 1.4rem rgba(255, 177, 45, .62);
+  transform: translateX(-50%);
+}
+
+.spark-game__launch[hidden] {
+  display: none;
+}
+
+.spark-game__launch span {
+  font: 700 1.5rem var(--font-display);
+  letter-spacing: .08em;
+}
+
+.spark-game__launch small {
+  margin-top: .1rem;
+  font-size: .625rem;
+}
+
+.spark-game__footer {
+  position: absolute;
+  left: 2rem;
+  bottom: 1.5rem;
+  z-index: 9;
+  pointer-events: none;
+}
+
+.spark-game__eve {
+  display: grid;
+  grid-template-columns: 3.5rem minmax(0, 1fr);
+  align-items: center;
+  gap: .7rem;
+  width: min(30rem, 34vw);
+  padding: .6rem .9rem;
+  border: 1px solid rgba(255, 184, 74, .3);
+  border-radius: .55rem;
+  background: rgba(6, 12, 20, .88);
+  box-shadow: inset 0 1px 0 rgba(255, 225, 169, .12), 0 .5rem 2rem rgba(1, 5, 10, .4);
+}
+
+.spark-game__eve > span {
+  width: 3.5rem;
+  height: 4.5rem;
+  overflow: hidden;
+}
+
+.spark-game__eve img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: hue-rotate(175deg) saturate(1.35) brightness(1.05);
+}
+
+.spark-game__eve b {
+  color: #ffc96d;
+  font: 600 .75rem var(--font-display);
+}
+
+.spark-game__eve p {
+  margin-top: .3rem;
+  color: #e3d6be;
+  font-size: .72rem;
+  line-height: 1.55;
+}
+
+.spark-game__countdown {
+  position: fixed;
+  z-index: 30;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  color: #ffe4a0;
+  background: radial-gradient(circle, rgba(255, 166, 38, .18), rgba(2, 6, 11, .9) 34%, rgba(2, 6, 11, .98));
+}
+
+.spark-game__countdown[hidden] {
+  display: none;
+}
+
+.spark-game__countdown span {
+  font: 600 .75rem var(--font-numeric);
+  letter-spacing: .18em;
+}
+
+.spark-game__countdown strong {
+  margin-block: .5rem;
+  font: 700 clamp(6rem, 14vw, 11rem)/1 var(--font-display);
+  text-shadow: 0 0 2rem rgba(255, 176, 54, .7);
+}
+
+.spark-guide,
+.spark-pause {
+  z-index: 40;
+  width: min(52rem, calc(100% - 2rem));
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgba(255, 190, 82, .55);
+  border-radius: .7rem;
+  color: #f8ead0;
+  background: linear-gradient(130deg, rgba(24, 17, 9, .98), rgba(5, 12, 21, .98));
+  box-shadow: 0 1rem 4rem rgba(0, 0, 0, .65), inset 0 1px 0 rgba(255, 228, 172, .16);
+}
+
+.spark-guide[open] {
+  display: grid;
+  grid-template-columns: .85fr 1.15fr;
+}
+
+.spark-guide::backdrop,
+.spark-pause::backdrop {
+  background: rgba(1, 5, 10, .78);
+  backdrop-filter: blur(.25rem);
+}
+
+.spark-guide__visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  min-height: 24rem;
+  color: #ffc14d;
+  font-size: 2rem;
+  background: radial-gradient(circle, rgba(255, 184, 74, .2), transparent 52%), url("../images/spark/core-chamber.webp") center / cover;
+}
+
+.spark-guide__core,
+.spark-guide__slot {
+  display: grid;
+  place-items: center;
+  width: 5rem;
+  aspect-ratio: 1;
+  border: 1px solid #ffc14d;
+  border-radius: 50%;
+  background: rgba(4, 9, 15, .82);
+}
+
+.spark-guide__content {
+  padding: 2rem;
+}
+
+.spark-guide__content h2,
+.spark-pause h2 {
+  margin-top: .3rem;
+  color: #fff1d2;
+  font: 500 1.5rem var(--font-display);
+}
+
+.spark-guide__content > p {
+  margin-top: .65rem;
+  color: #d9c6a7;
+  font-size: .82rem;
+  line-height: 1.7;
+}
+
+.spark-guide__content ol {
+  display: grid;
+  gap: .55rem;
+  margin-block: 1rem;
+}
+
+.spark-guide__content li {
+  display: grid;
+  grid-template-columns: 2.2rem 1fr;
+  align-items: center;
+  gap: .65rem;
+  padding: .6rem .75rem;
+  border: 1px solid rgba(255, 184, 74, .18);
+  background: rgba(255, 184, 74, .04);
+}
+
+.spark-guide__content li > b {
+  color: #ffbe4a;
+  font: 600 .8rem var(--font-numeric);
+}
+
+.spark-guide__content li span {
+  display: grid;
+  gap: .15rem;
+}
+
+.spark-guide__content li strong {
+  color: #f8e2b9;
+  font-size: .75rem;
+}
+
+.spark-guide__content li small {
+  color: #bda98a;
+  font-size: .68rem;
+}
+
+.spark-guide__content > .ui-button {
+  width: 100%;
+  margin-top: .5rem;
+}
+
+.spark-pause[open] {
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+  width: min(30rem, calc(100% - 2rem));
+  padding: 2rem;
+  text-align: center;
+}
+
+.spark-pause .ui-button {
+  width: 100%;
+}
+
+.spark-game__complete {
+  position: absolute;
+  z-index: 20;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  text-align: center;
+  background: radial-gradient(circle at 50% 42%, rgba(255, 193, 72, .18), rgba(1, 6, 12, .72) 36%, rgba(1, 6, 12, .9));
+}
+
+.spark-game__complete[hidden] {
+  display: none;
+}
+
+.spark-game__complete > span {
+  color: #ffc34e;
+  font: 600 .8rem var(--font-numeric);
+  letter-spacing: .16em;
+}
+
+.spark-game__complete h2 {
+  margin-top: .45rem;
+  color: #fff0c8;
+  font: 500 2rem var(--font-display);
+}
+
+.spark-game__complete p {
+  margin-block: .6rem 1.25rem;
+  color: #d8c4a3;
+}
+
+.spark-game.is-launching .spark-chamber::after {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  z-index: 12;
+  width: 1.2rem;
+  height: 100%;
+  content: "";
+  background: linear-gradient(90deg, transparent, #fff4b6, transparent);
+  box-shadow: 0 0 2rem #ffb436, 0 0 5rem rgba(255, 171, 45, .78);
+  transform: translateX(-50%) scaleY(0);
+  transform-origin: bottom;
+  animation: spark-launch 1.5s var(--ease-out) forwards;
+}
+
+@keyframes spark-hint-pulse {
+  to {
+    opacity: .9;
+  }
+}
+
+@keyframes spark-launch {
+  55%,
+  100% {
+    transform: translateX(-50%) scaleY(1);
+  }
+}
+
+@media (max-height: 48rem) and (min-width: 56.0625rem) {
+  .spark-game__header {
+    inset: .8rem 1.5rem auto;
+  }
+
+  .spark-game__status {
+    bottom: 6.5rem;
+    padding-block: .5rem;
+  }
+
+  .spark-core-bank {
+    left: 1.5rem;
+    width: 8rem;
+  }
+
+  .spark-core {
+    width: 3.65rem;
+  }
+
+  .spark-game__controls {
+    right: 1.5rem;
+  }
+
+  .spark-game__footer {
+    left: 1.5rem;
+    bottom: 1rem;
+  }
+}
+
+@media (max-width: 56rem) {
+  .spark-game__viewport {
+    overflow-x: auto;
+  }
+
+  .spark-chamber {
+    width: 80rem;
+  }
+
+  .spark-game__header {
+    inset: .75rem;
+    grid-template-columns: 1fr auto;
+    gap: .5rem;
+  }
+
+  .spark-game__identity p {
+    display: none;
+  }
+
+  .spark-game__progress {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: center;
+    min-width: min(20rem, 100%);
+  }
+
+  .spark-game__tools {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .spark-game__footer {
+    left: 1rem;
+    bottom: 1rem;
+  }
+
+  .spark-game__eve {
+    width: min(28rem, calc(100vw - 2rem));
+  }
+
+  .spark-guide[open] {
+    grid-template-columns: 1fr;
+    max-height: calc(100svh - 2rem);
+    overflow-y: auto;
+  }
+
+  .spark-guide__visual {
+    min-height: 10rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spark-core,
+  .spark-core > i,
+  .spark-game__progress em,
+  .spark-hint-core {
+    transition: none;
+    animation: none;
+  }
+}

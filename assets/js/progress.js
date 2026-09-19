@@ -148,7 +148,7 @@ export function getMissionPreview() {
   const phases = {
     coaster: ['control-room', 'control-room-completed', 'guide', 'countdown', 'play', 'failed', 'testing', 'completed'],
     luna: ['control-room', 'guide', 'play', 'completed'],
-    spark: ['control-room']
+    spark: ['control-room', 'guide', 'play']
   };
   const valid = Boolean(phases[facility]?.includes(phase)) && !params.has('control-room');
   return { facility, phase, valid };
