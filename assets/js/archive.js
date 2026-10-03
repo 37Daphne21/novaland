@@ -103,7 +103,7 @@ export function createArchiveController({ onTabChange, showToast } = {}) {
       authorityContent.hidden = showFacilityRecord;
     }
     if (authorityLabel) {
-      const facilityNumber = facilityRecord === 'coaster' ? '01' : facilityRecord === 'luna' ? '02' : '';
+      const facilityNumber = facilityRecord === 'coaster' ? '01' : facilityRecord === 'luna' ? '02' : facilityRecord === 'spark' ? '03' : '';
       authorityLabel.textContent = showFacilityRecord ? `FACILITY RESTORATION ${facilityNumber}` : 'NOVA LAND AUTHORITY';
     }
     const pageIndex = Math.max(0, pages.indexOf(facilityRecord));
@@ -123,7 +123,7 @@ export function createArchiveController({ onTabChange, showToast } = {}) {
     const pages = mobilePassport.matches ? ['', 'identity'] : [''];
     if (explorer) {
       const stamps = readProgress(explorer).stamps;
-      ['coaster', 'luna'].forEach((facilityId) => {
+      ['coaster', 'luna', 'spark'].forEach((facilityId) => {
         if (stamps.some((stamp) => stamp.facilityId === facilityId)) {
           pages.push(facilityId);
         }
@@ -242,7 +242,7 @@ export function createArchiveController({ onTabChange, showToast } = {}) {
     renderLogs();
     if (tabName === 'passport') {
       preparePassport();
-      if (award && ['coaster', 'luna'].includes(stamp)) {
+      if (award && ['coaster', 'luna', 'spark'].includes(stamp)) {
         passport.classList.add('is-awarding');
       } else {
         showPageHint();

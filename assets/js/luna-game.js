@@ -76,7 +76,8 @@ function renderPractice() {
   const paths = ['M 200 170 V 35', 'M 200 170 H 480', 'M 200 170 V 285', 'M 200 170 H 25'];
   practice.classList.toggle('is-connected', connected);
   practice.classList.toggle('is-awake', practiceBloomed);
-  practice.querySelector('[data-luna-practice-reset]').hidden = !practiceBloomed;
+  practice.querySelector('[data-luna-practice-reset]').disabled = !practiceBloomed;
+  practice.querySelector('p').dataset.sizingText = ['luna.guide.hint', 'luna.guide.success', 'luna.guide.redirected'].map(key => t(key)).sort((first, second) => second.length - first.length)[0];
   const ray = practice.querySelector('[data-luna-practice-ray]');
   ray.setAttribute('d', paths[practiceRotation]);
   ray.classList.toggle('is-loose', !connected);

@@ -1,7 +1,12 @@
+import { isSparkRotatableCore, normalizeSparkCheckpoint, sparkStages } from './spark-game-state.js';
+import { initializeLanguage } from './locales.js';
+
+initializeLanguage();
+
 const game = document.querySelector('.spark-game');
 const viewport = document.querySelector('.spark-game__viewport');
-const bank = document.querySelector('[data-spark-bank]');
 const cores = [...document.querySelectorAll('[data-core]')];
+const storageSlots = new Map(cores.map(core => [core.dataset.core, core.parentElement]));
 const slots = [...document.querySelectorAll('[data-slot]')];
 const guide = document.querySelector('[data-spark-guide]');
 const pausePanel = document.querySelector('[data-spark-pause-panel]');
@@ -10,6 +15,7 @@ const rotateButton = document.querySelector('[data-spark-rotate]');
 const resetButton = document.querySelector('[data-spark-reset]');
 const launchButton = document.querySelector('[data-spark-launch]');
 const pauseButton = document.querySelector('[data-spark-pause]');
+const guideOpenButton = document.querySelector('[data-spark-guide-open]');
 const completion = document.querySelector('[data-spark-complete]');
 const countdown = document.querySelector('[data-spark-countdown]');
 const statusEyebrow = document.querySelector('[data-spark-status-eyebrow]');
@@ -23,66 +29,27 @@ const charge = document.querySelector('[data-spark-charge]');
 const chargeBar = document.querySelector('[data-spark-charge-bar]');
 const embedded = new URLSearchParams(window.location.search).get('embedded') === '1';
 
-const coreSymbols = {
-  circle: '○',
-  triangle: '△',
-  hex: '⬡',
-  bolt: 'ϟ',
-  arrow: '➜',
-  star: '★'
-};
-const stages = [
-  {
-    answers: {
-      circle: { slot: 0, rotation: 0 },
-      triangle: { slot: 3, rotation: 0 },
-      hex: { slot: 4, rotation: 0 }
-    },
-    copy: '첫 단계는 방향을 돌리지 않고 위치만 맞추면 돼요.'
-  },
-  {
-    answers: {
-      circle: { slot: 1, rotation: 0 },
-      triangle: { slot: 3, rotation: 1 },
-      hex: { slot: 4, rotation: 0 },
-      bolt: { slot: 2, rotation: 1 }
-    },
-    copy: '두 Core는 방향까지 기억해 주세요.'
-  },
-  {
-    answers: {
-      circle: { slot: 0, rotation: 0 },
-      triangle: { slot: 3, rotation: 1 },
-      hex: { slot: 4, rotation: 0 },
-      bolt: { slot: 1, rotation: 3 },
-      arrow: { slot: 5, rotation: 2 }
-    },
-    copy: '다섯 Core 중 세 Core는 방향도 맞아야 해요.'
-  },
-  {
-    answers: {
-      circle: { slot: 0, rotation: 0 },
-      triangle: { slot: 3, rotation: 2 },
-      hex: { slot: 4, rotation: 0 },
-      bolt: { slot: 2, rotation: 3 },
-      arrow: { slot: 1, rotation: 1 },
-      star: { slot: 5, rotation: 1 }
-    },
-    copy: '마지막은 여섯 Core의 위치와 네 Core의 방향을 모두 복구해 주세요.'
-  }
-];
 let phase = 'guide';
 let stageIndex = 0;
 let selectedCore = null;
 let hintTimer = null;
 let started = false;
+let pausedPhase = 'play';
+let sequenceId = 0;
+let restoredFromParent = !embedded;
 
-function wait(duration) {
-  return new Promise(resolve => window.setTimeout(resolve, duration));
+async function wait(duration, sequence = sequenceId) {
+  let elapsed = 0;
+  while (elapsed < duration) {
+    await new Promise(resolve => window.setTimeout(resolve, 50));
+    if (sequence !== sequenceId) return false;
+    if (phase !== 'paused' && !document.hidden) elapsed += 50;
+  }
+  return true;
 }
 
 function getStage() {
-  return stages[stageIndex];
+  return sparkStages[stageIndex];
 }
 
 function getActiveCoreIds() {
@@ -95,7 +62,7 @@ function getActiveCores() {
 }
 
 function isRotatableCore(core) {
-  return ['triangle', 'bolt', 'arrow', 'star'].includes(core?.dataset.core);
+  return isSparkRotatableCore(core?.dataset.core);
 }
 
 function setPhase(nextPhase) {
@@ -105,7 +72,33 @@ function setPhase(nextPhase) {
   hintButton.disabled = !playing || Boolean(hintTimer);
   resetButton.disabled = !playing;
   rotateButton.disabled = !playing || !isRotatableCore(selectedCore);
-  pauseButton.disabled = !['play', 'charged'].includes(nextPhase);
+  pauseButton.disabled = ['guide', 'paused', 'complete'].includes(nextPhase);
+  guideOpenButton.disabled = !['play', 'charged'].includes(nextPhase);
+  launchButton.disabled = nextPhase !== 'charged';
+  publishState();
+}
+
+function createCheckpoint(checkpointPhase = phase) {
+  const placements = {};
+  getActiveCores().forEach((core) => {
+    const slot = slots.indexOf(core.parentElement);
+    placements[core.dataset.core] = {
+      slot: slot >= 0 ? slot : null,
+      rotation: Number(core.dataset.rotation)
+    };
+  });
+  return normalizeSparkCheckpoint({ stageIndex, phase: checkpointPhase, placements });
+}
+
+function publishState({ paused = false, complete = false } = {}) {
+  if (!embedded || !restoredFromParent || !started || window.parent === window) return;
+  window.parent.postMessage({
+    type: 'novaland:spark-state',
+    checkpoint: createCheckpoint(phase === 'paused' ? pausedPhase : phase),
+    started,
+    paused: paused || phase === 'paused',
+    complete
+  }, window.location.origin);
 }
 
 function setStatus(eyebrow, title, copy, message = copy) {
@@ -156,9 +149,9 @@ function renderHints() {
   clearHints();
   Object.entries(getStage().answers).forEach(([id, answer]) => {
     const ghost = document.createElement('span');
-    ghost.className = 'spark-hint-core';
-    ghost.dataset.symbol = coreSymbols[id];
-    ghost.style.setProperty('--hint-rotation', `${answer.rotation * 90}deg`);
+    ghost.className = `spark-hint-core spark-core--${id}`;
+    ghost.append(document.createElement('i'));
+    ghost.style.setProperty('--core-rotation', `${answer.rotation * 90}deg`);
     slots[answer.slot].append(ghost);
   });
   hintButton.disabled = true;
@@ -198,18 +191,23 @@ async function completeStage() {
   setStatus('CIRCUIT ONLINE', `${stageIndex + 1}단계 배열이 일치했어요`, '에너지 회로를 충전합니다.', 'Core의 위치와 방향이 모두 일치했어요.');
   const activeSlots = Object.values(getStage().answers).map(answer => slots[answer.slot]);
   for (const slot of activeSlots) {
-    await wait(120);
+    if (!await wait(120)) return;
     slot.classList.add('is-charged');
   }
   const value = (stageIndex + 1) * 25;
   charge.textContent = `${value}%`;
   chargeBar.style.width = `${value}%`;
-  await wait(350);
+  if (!await wait(350)) return;
   setPhase('charged');
+  showChargedStatus();
+}
+
+function showChargedStatus() {
+  const value = (stageIndex + 1) * 25;
   launchButton.hidden = false;
   const label = launchButton.querySelector('span');
   const description = launchButton.querySelector('small');
-  if (stageIndex < stages.length - 1) {
+  if (stageIndex < sparkStages.length - 1) {
     label.textContent = 'NEXT STAGE';
     description.textContent = `${stageIndex + 2}단계 배열 확인`;
     setStatus('STAGE COMPLETE', `${stageIndex + 1}단계 완료 · 충전율 ${value}%`, '다음 단계로 진행해 주세요.', `충전율 ${value}%예요. 다음 배열을 확인해 주세요.`);
@@ -222,6 +220,7 @@ async function completeStage() {
 
 function validatePlacement() {
   updateProgress();
+  publishState();
   if (countPlacedCores() < getActiveCoreIds().length || phase !== 'play') return;
   if (isCorrect()) {
     completeStage();
@@ -236,7 +235,7 @@ function resetPlacement() {
   clearSelection();
   const activeIds = getActiveCoreIds();
   cores.forEach(core => {
-    moveCore(core, bank);
+    moveCore(core, storageSlots.get(core.dataset.core));
     setRotation(core, 0);
     core.hidden = !activeIds.includes(core.dataset.core);
   });
@@ -262,7 +261,7 @@ async function revealArray() {
   });
   updateProgress();
   setStatus('CORE SCAN', `${stageIndex + 1}단계 배열을 기억하세요`, '4초 뒤 Core가 보관함으로 이동합니다.', getStage().copy);
-  await wait(4000);
+  if (!await wait(4000)) return;
   if (phase === 'reveal') preparePlay();
 }
 
@@ -273,7 +272,7 @@ async function startCountdown() {
   countdown.hidden = false;
   for (const number of [3, 2, 1]) {
     document.querySelector('[data-spark-countdown-number]').textContent = String(number);
-    await wait(700);
+    if (!await wait(700)) return;
   }
   countdown.hidden = true;
   revealArray();
@@ -339,24 +338,63 @@ resetButton.addEventListener('click', () => {
 });
 document.querySelector('[data-spark-guide-start]').addEventListener('click', startCountdown);
 document.querySelector('[data-spark-guide-return]').addEventListener('click', () => guide.close());
-document.querySelector('[data-spark-guide-open]').addEventListener('click', () => {
+guideOpenButton.addEventListener('click', () => {
+  pauseGame();
   document.querySelector('[data-spark-guide-start]').hidden = started;
   document.querySelector('[data-spark-guide-return]').hidden = !started;
   guide.showModal();
 });
 pauseButton.addEventListener('click', () => {
   if (pauseButton.disabled) return;
+  pauseGame();
   pausePanel.showModal();
 });
-document.querySelector('[data-spark-resume]').addEventListener('click', () => pausePanel.close());
-document.querySelectorAll('[data-spark-exit]').forEach(button => button.addEventListener('click', () => {
+guide.addEventListener('close', resumeGame);
+pausePanel.addEventListener('close', resumeGame);
+guide.addEventListener('cancel', event => {
+  event.preventDefault();
+  if (started) guide.close();
+  else leaveGame();
+});
+pausePanel.addEventListener('cancel', event => { event.preventDefault(); pausePanel.close(); });
+document.addEventListener('keydown', event => {
+  if (event.key !== 'Escape' || event.repeat || guide.open || pausePanel.open) return;
+  event.preventDefault();
+  event.stopPropagation();
+  if (!pauseButton.disabled) { pauseGame(); pausePanel.showModal(); }
+});
+
+function pauseGame() {
+  if (phase === 'paused' || phase === 'guide' || phase === 'complete') return;
+  pausedPhase = phase;
+  clearHints();
+  setPhase('paused');
+}
+
+function resumeGame() {
+  if (phase === 'paused' && !guide.open && !pausePanel.open) setPhase(pausedPhase);
+}
+
+function leaveGame() {
+  publishState({ paused: true });
+  sequenceId += 1;
+  clearHints();
   if (embedded && window.parent !== window) window.parent.postMessage({ type: 'novaland:spark-exit', destination: 'control-room' }, window.location.origin);
   else window.location.assign('./index.html?facility=spark&mission-preview=control-room');
-}));
+}
+document.querySelector('[data-spark-resume]').addEventListener('click', () => pausePanel.close());
+document.querySelectorAll('[data-spark-exit]').forEach(button => button.addEventListener('click', leaveGame));
+document.querySelector('[data-spark-record]').addEventListener('click', () => {
+  if (phase !== 'complete') return;
+  if (embedded) window.parent.postMessage({ type: 'novaland:spark-record' }, window.location.origin);
+  else leaveGame();
+});
 launchButton.addEventListener('click', async () => {
+  if (phase !== 'charged') return;
   launchButton.hidden = true;
-  if (stageIndex < stages.length - 1) {
+  if (stageIndex < sparkStages.length - 1) {
     stageIndex += 1;
+    resetPlacement();
     updateProgress();
     startCountdown();
     return;
@@ -364,9 +402,10 @@ launchButton.addEventListener('click', async () => {
   setPhase('launching');
   game.classList.add('is-launching');
   setStatus('LAUNCH TEST', '에너지 빔을 발사합니다', '타워 출력 상태를 확인하고 있어요.', '에너지 빔 발사를 시작할게요.');
-  await wait(1700);
+  if (!await wait(1700)) return;
   setPhase('complete');
   completion.hidden = false;
+  publishState({ complete: true });
 });
 
 function centerBoard() {
@@ -375,9 +414,44 @@ function centerBoard() {
 
 const preview = new URLSearchParams(window.location.search).get('mission-preview');
 window.addEventListener('message', event => {
-  if (event.origin === window.location.origin && event.data?.type === 'novaland:spark-pause' && !pauseButton.disabled) pausePanel.showModal();
+  if (event.origin !== window.location.origin || event.source !== window.parent) return;
+  if (event.data?.type === 'novaland:spark-pause' && !pauseButton.disabled) { pauseGame(); pausePanel.showModal(); }
+  if (event.data?.type === 'novaland:spark-restore' && !restoredFromParent) {
+    restoredFromParent = true;
+    if (event.data.checkpoint) restoreCheckpoint(event.data.checkpoint);
+    else if (preview === 'play') preparePlay();
+    else guide.showModal();
+  }
 });
+function restoreCheckpoint(value) {
+  const checkpoint = normalizeSparkCheckpoint(value);
+  sequenceId += 1;
+  stageIndex = checkpoint.stageIndex;
+  started = true;
+  resetPlacement();
+  getActiveCores().forEach(core => {
+    const placement = checkpoint.placements[core.dataset.core];
+    if (placement.slot !== null) moveCore(core, slots[placement.slot]);
+    setRotation(core, placement.rotation);
+  });
+  const valueCharged = (stageIndex + (checkpoint.phase === 'charged' ? 1 : 0)) * 25;
+  charge.textContent = `${valueCharged}%`;
+  chargeBar.style.width = `${valueCharged}%`;
+  updateProgress();
+  if (checkpoint.phase === 'countdown') { startCountdown(); return; }
+  if (checkpoint.phase === 'reveal') { revealArray(); return; }
+  setPhase(checkpoint.phase);
+  if (phase === 'charged') {
+    Object.values(getStage().answers).forEach(answer => slots[answer.slot].classList.add('is-charged'));
+    showChargedStatus();
+  } else {
+    showPlayStatus();
+    validatePlacement();
+  }
+}
+window.addEventListener('pagehide', () => { sequenceId += 1; clearHints(); });
 window.addEventListener('load', centerBoard, { once: true });
-if (preview === 'play') preparePlay();
+if (embedded) window.parent.postMessage({ type: 'novaland:spark-ready' }, window.location.origin);
+else if (preview === 'play') preparePlay();
 else if (preview === 'reveal') revealArray();
 else guide.showModal();

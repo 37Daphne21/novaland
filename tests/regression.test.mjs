@@ -67,6 +67,36 @@ test('completion counts 0..4, sequential unlock, one stamp/coupon and no duplica
   assert.equal(api.getRestorationState(api.readProgress(api.explorer)).completed, 4);
 });
 
+test('SPARK preview unlocks its prerequisites and keeps checkpoints out of real storage', () => {
+  const api = progressFixture('?facility=spark&mission-preview=play');
+  let progress = api.readProgress(api.explorer);
+  assert.equal(progress.facilities.spark.status, 'available');
+  assert.equal(progress.facilities.luna.status, 'completed');
+  const checkpoint = { stageIndex: 1, phase: 'play', placements: { triangle: { slot: 3, rotation: 1 } } };
+  api.updateMissionProgress(progress, 'spark', { phase: 'paused', checkpoint });
+  assert.equal(api.readProgress(api.explorer).missions.spark.checkpoint.placements.triangle.rotation, 1);
+  assert.equal(api.window.localStorage.getItem('novaLandProgress'), null);
+});
+
+test('SPARK saves resume state and persists one completion, stamp and WONDER unlock', () => {
+  const api = progressFixture();
+  let progress = api.createProgress(api.explorer);
+  for (const facility of facilities.slice(0, 2)) progress = api.recordFacilityCompletion(progress, facility);
+  const checkpoint = { stageIndex: 2, phase: 'charged', placements: {} };
+  api.updateMissionProgress(progress, 'spark', { phase: 'paused', checkpoint });
+  progress = api.readProgress(api.explorer);
+  assert.equal(missionState.findRestorableMissionId(progress), 'spark');
+  assert.equal(progress.missions.spark.checkpoint.stageIndex, 2);
+  progress = api.recordFacilityCompletion(progress, facilities[2]);
+  api.recordFacilityCompletion(progress, facilities[2]);
+  const restored = api.readProgress(api.explorer);
+  assert.equal(restored.facilities.wonder.status, 'available');
+  assert.equal(restored.missions.spark.checkpoint, null);
+  assert.equal(restored.stamps.filter(stamp => stamp.facilityId === 'spark').length, 1);
+  assert.equal(restored.coupons.filter(coupon => coupon.facilityId === 'spark').length, 1);
+  assert.equal(missionState.findRestorableMissionId(restored), '');
+});
+
 test('Passport renders the Luna restoration date and reward beside the coaster record', () => {
   const fields = new Map();
   const passport = node();

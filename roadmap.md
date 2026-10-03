@@ -8,6 +8,8 @@
 
 ## 새 채팅에서 이어가기
 
+SPARK ENERGY TOWER의 4단계 Core 게임은 공통 Checkpoint에 위치·회전·충전 상태를 저장하며 관제실·MAP 왕복과 새로고침 후 이어진다. 발사 완료 시 MAP 복구 현황·Log·Explorer Passport의 SPARK Stamp·WONDER 해금을 연결했다. 관제실은 진행 단계와 충전율을 표시하고 완료 후 재시작을 막는다. 루나 Guide 연습은 점선·다이아몬드 모션과 보드 높이 고정으로 보강했고, SPARK 보관함은 여섯 자리를 유지하며 번개 실루엣을 구분했다. 다음 제작은 WONDER PARADE HALL이다.
+
 루나 게임 화면은 사용자 승인으로 마무리하고 dee8322에 커밋했다. 크리스탈 선명도 개선은 보류한다. 다른 Prism 회전 차단은 제안만 했고 미승인·미적용이다.
 
 이후 코스터 → 루나 전체 흐름 검수와 수정을 진행했다. 루나 조작 상태를 공통 Checkpoint에 저장하고 관제실·MAP 왕복 및 새로고침 후 계속하기에서 복원한다. 최초 Guide와 진행 중 복귀를 구분하며 완료는 MAP 현황·탐험 여권 Stamp·다음 시설 해제에 반영한다. Preview는 같은 페이지에서 임시 진행을 유지하지만 실제 저장소에 쓰지 않는다.
@@ -357,7 +359,7 @@
 
 ## Phase 3. SPARK ENERGY TOWER
 
-상태: 관제실과 Core 기억 퍼즐 1차 구현·검수 완료
+상태: 게임 저장·복원·MAP·Archive 완료 기록까지 연결. 모바일 전용 HUD와 전체 QA는 후속 범위
 
 - [x] 관제실 배경과 Orange Theme 1차 적용
 - [x] 게임 화면 배경과 Core·Slot HUD
@@ -366,7 +368,8 @@
 - [x] 3초 정답 잔상 Hint와 자동 배열 검사
 - [x] 단계 완료 버튼, Charge 25%·50%·75%·100%와 발사 테스트
 - [x] 1908×925 전체 4단계 실제 플레이와 1366×768 HUD·원형 Slot 정렬 검수
-- [ ] MAP과 Archive 갱신
+- [x] Checkpoint 저장·관제실·MAP 복귀·새로고침 복원
+- [x] MAP과 Archive의 완료 기록·SPARK Stamp·WONDER 해금 갱신
 
 ---
 

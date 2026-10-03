@@ -14,6 +14,7 @@ import { createNavigationController } from './navigation.js';
 import { createProfileEditor } from './profile-editor.js';
 import { clearProgress, getMissionPreview, isMissionPreview, readProgress, updateMissionProgress } from './progress.js';
 import { createSettingsController } from './settings.js';
+import { isSparkStageCorrect, normalizeSparkCheckpoint, sparkStages } from './spark-game-state.js';
 import { createDialogController, createModalController, createOverlayController, createToast } from './ui.js';
 
 initializeLanguage();
@@ -118,6 +119,24 @@ const sparkModal = createModalController(sparkEntry, {
 window.addEventListener('message', (event) => {
   if (event.origin !== window.location.origin) return;
   if (event.source === sparkFrame.contentWindow && sparkEntry.open) {
+    if (event.data?.type === 'novaland:spark-ready') {
+      const progress = readProgress(currentExplorer);
+      sparkFrame.contentWindow.postMessage({ type: 'novaland:spark-restore', checkpoint: progress.missions.spark.checkpoint }, window.location.origin);
+    }
+    if (event.data?.type === 'novaland:spark-state') {
+      const progress = readProgress(currentExplorer);
+      if (progress.facilities.spark.status !== 'available' || !event.data.started) return;
+      const checkpoint = normalizeSparkCheckpoint(event.data.checkpoint);
+      updateMissionProgress(progress, 'spark', { phase: event.data.paused ? 'paused' : 'playing', checkpoint });
+      if (event.data.complete && checkpoint.stageIndex === sparkStages.length - 1 && isSparkStageCorrect(checkpoint.stageIndex, checkpoint.placements)) {
+        if (map.completeFacility('spark')) pendingStampAward = true;
+        controlRoom.refreshState();
+      }
+    }
+    if (event.data?.type === 'novaland:spark-record' && readProgress(currentExplorer).facilities.spark.status === 'completed') {
+      navigation.replace({ screen: 'map' });
+      navigation.push({ screen: 'map', overlay: 'explorer-archive-overlay', archiveTab: 'passport', archiveStamp: 'spark' });
+    }
     if (event.data?.type === 'novaland:spark-exit') navigation.back();
     return;
   }

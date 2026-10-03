@@ -51,7 +51,7 @@ test('SPARK uses energy objectives and enables the Core mission entry', () => {
   assert.equal(element('[data-control-room-objective-title]').textContent, 'control.sparkObjectiveTitle');
   assert.equal(element('[data-control-room-objective-repair]').textContent, 'control.sparkObjectiveRepair');
   assert.equal(element('[data-control-room-rail]').textContent, 'control.sparkCoreUnstable');
-  assert.equal(element('[data-control-room-check]').textContent, 'control.sparkChargeEmpty');
+  assert.equal(element('[data-control-room-check]').textContent, '0%');
   assert.equal(element('.control-room__segments').hidden, true);
   assert.equal(element('[data-mission-open]').hidden, false);
   assert.equal(element('[data-mission-open]').disabled, false);
@@ -75,4 +75,21 @@ test('Luna resumes a saved garden and uses garden results after completion', () 
   assert.equal(element('[data-control-room-operation]').hidden, false);
   assert.equal(element('[data-control-room-operation] strong').textContent, 'control.lunaOperationTitle');
   assert.equal(element('[data-control-room-operation] .control-room__start-copy > span').textContent, 'control.lunaOperationDescription');
+});
+
+test('SPARK shows saved charge and completed operation without allowing a restart', () => {
+  const { room, element, progress } = fixture();
+  progress.facilities.spark = { status: 'available' };
+  progress.missions.spark = { checkpoint: { stageIndex: 2, phase: 'charged' } };
+  room.show({ id: 'spark', name: 'SPARK ENERGY TOWER' });
+  assert.equal(element('[data-control-room-step]').textContent, '3 / 4');
+  assert.equal(element('[data-control-room-check]').textContent, '75%');
+  assert.equal(element('[data-mission-open] strong').textContent, 'mission.resume');
+  progress.facilities.spark.status = 'completed';
+  room.refreshState();
+  assert.equal(element('[data-control-room-step]').textContent, '4 / 4');
+  assert.equal(element('[data-control-room-check]').textContent, '100%');
+  assert.equal(element('[data-mission-open]').hidden, true);
+  assert.equal(element('[data-control-room-operation]').hidden, false);
+  assert.equal(element('[data-control-room-operation] strong').textContent, 'control.sparkOperationTitle');
 });

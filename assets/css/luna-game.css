@@ -707,6 +707,26 @@
 .luna-guide__beam.is-loose {
   stroke-dasharray: 8 9;
   opacity: .55;
+  animation: luna-guide-beam-flow .9s linear infinite;
+}
+
+@keyframes luna-guide-beam-flow {
+  to {
+    stroke-dashoffset: -34;
+  }
+}
+
+.luna-guide__diamond {
+  animation: luna-guide-diamond-float 1.8s ease-in-out infinite;
+}
+
+@keyframes luna-guide-diamond-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
 }
 
 .luna-guide__crystal {
@@ -739,6 +759,7 @@
 
 .luna-guide.is-awake .luna-guide__diamond {
   opacity: 0;
+  animation: none;
 }
 
 /* Preserve optical alignment on small screens with an explicit scrollable garden. */

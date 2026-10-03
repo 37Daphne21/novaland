@@ -74,6 +74,7 @@ export function createControlRoomController({ getExplorer, onShowScreen, showToa
     const isLuna = nextFacility.id === 'luna';
     const isSpark = nextFacility.id === 'spark';
     const checkpoint = progress.missions[nextFacility.id]?.checkpoint;
+    const sparkSteps = isCompleted ? 4 : checkpoint ? checkpoint.stageIndex + (checkpoint.phase === 'charged' ? 1 : 0) : 0;
     const restoredPrefix = isLuna ? 'control.lunaRestored' : isSpark ? 'control.sparkRestored' : 'control.restored';
     const objectivePrefix = isCompleted ? (isLuna ? 'lunaRestoredObjective' : isSpark ? 'sparkRestoredObjective' : 'restoredObjective') : isLuna ? 'lunaObjective' : isSpark ? 'sparkObjective' : 'objective';
     const detail = document.querySelector('[data-control-room-detail]');
@@ -144,11 +145,12 @@ export function createControlRoomController({ getExplorer, onShowScreen, showToa
       icon.setAttribute('href', facilityIcon);
     });
     if (step) {
-      step.textContent = isLuna ? `${isCompleted ? 3 : checkpoint?.collected?.length ?? 0} / 3` : isSpark ? `${isCompleted ? 4 : 0} / 4` : `${coasterProgress.steps} / 3`;
+      step.textContent = isLuna ? `${isCompleted ? 3 : checkpoint?.collected?.length ?? 0} / 3` : isSpark ? `${sparkSteps} / 4` : `${coasterProgress.steps} / 3`;
     }
     checkItem?.classList.toggle('is-warning', !isCompleted);
     if (check) {
       check.textContent = t(isLuna ? (isCompleted ? 'control.lunaBloom' : checkpoint?.collected?.length === 3 ? 'control.lunaReady' : 'control.lunaSleeping') : isSpark ? (isCompleted ? 'control.sparkChargeComplete' : 'control.sparkChargeEmpty') : isCompleted ? 'control.inspectionComplete' : 'control.inspectionRequired');
+      if (isSpark) check.textContent = `${sparkSteps * 25}%`;
     }
     if (missionStart) {
       missionStart.hidden = (!isCoaster && !isLuna && !isSpark) || isCompleted;
@@ -159,10 +161,10 @@ export function createControlRoomController({ getExplorer, onShowScreen, showToa
       label.textContent = t(label.dataset.i18n);
     }
     if (operationStatus) {
-      operationStatus.hidden = (!isCoaster && !isLuna) || !isCompleted;
+      operationStatus.hidden = (!isCoaster && !isLuna && !isSpark) || !isCompleted;
       ['Title', 'Description'].forEach(suffix => {
         const label = operationStatus.querySelector(suffix === 'Title' ? 'strong' : '.control-room__start-copy > span');
-        label.dataset.i18n = 'control.' + (isLuna ? 'lunaOperation' : 'operation') + suffix;
+        label.dataset.i18n = 'control.' + (isLuna ? 'lunaOperation' : isSpark ? 'sparkOperation' : 'operation') + suffix;
         label.textContent = t(label.dataset.i18n);
       });
     }

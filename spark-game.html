@@ -25,12 +25,12 @@
       <section class="spark-core-bank" aria-labelledby="spark-bank-title">
         <header><span>CORE STORAGE</span><h2 id="spark-bank-title">Core 보관함</h2></header>
         <div class="spark-core-bank__items" data-spark-bank>
-          <button class="spark-core spark-core--circle" type="button" draggable="true" data-core="circle" aria-label="원형 Core"><i></i><span>원</span></button>
-          <button class="spark-core spark-core--triangle" type="button" draggable="true" data-core="triangle" aria-label="삼각 Core"><i></i><span>삼각</span></button>
-          <button class="spark-core spark-core--hex" type="button" draggable="true" data-core="hex" aria-label="육각 Core"><i></i><span>육각</span></button>
-          <button class="spark-core spark-core--bolt" type="button" draggable="true" data-core="bolt" aria-label="번개 Core"><i></i><span>번개</span></button>
-          <button class="spark-core spark-core--arrow" type="button" draggable="true" data-core="arrow" aria-label="화살 Core"><i></i><span>화살</span></button>
-          <button class="spark-core spark-core--star" type="button" draggable="true" data-core="star" aria-label="별 Core"><i></i><span>별</span></button>
+          <div class="spark-core-bank__slot"><button class="spark-core spark-core--circle" type="button" draggable="true" data-core="circle" aria-label="원형 Core"><i></i><span>원</span></button></div>
+          <div class="spark-core-bank__slot"><button class="spark-core spark-core--triangle" type="button" draggable="true" data-core="triangle" aria-label="삼각 Core"><i></i><span>삼각</span></button></div>
+          <div class="spark-core-bank__slot"><button class="spark-core spark-core--hex" type="button" draggable="true" data-core="hex" aria-label="육각 Core"><i></i><span>육각</span></button></div>
+          <div class="spark-core-bank__slot"><button class="spark-core spark-core--bolt" type="button" draggable="true" data-core="bolt" aria-label="번개 Core" hidden><i></i><span>번개</span></button></div>
+          <div class="spark-core-bank__slot"><button class="spark-core spark-core--arrow" type="button" draggable="true" data-core="arrow" aria-label="화살 Core" hidden><i></i><span>화살</span></button></div>
+          <div class="spark-core-bank__slot"><button class="spark-core spark-core--star" type="button" draggable="true" data-core="star" aria-label="별 Core" hidden><i></i><span>별</span></button></div>
         </div>
       </section>
       <div class="spark-tower" data-spark-board aria-label="타워 Core Slot">
@@ -44,7 +44,7 @@
       <section class="spark-game__status" aria-live="polite"><span data-spark-status-eyebrow>CORE SCAN</span><h2 data-spark-status-title>정답 배열을 기억하세요</h2><p data-spark-status-copy>Core의 위치와 방향이 잠시 공개됩니다.</p></section>
       <aside class="spark-game__controls"><button class="ui-button ui-button--secondary" type="button" data-spark-hint>힌트 보기</button><button class="ui-button ui-button--secondary" type="button" data-spark-rotate disabled><span aria-hidden="true">↻</span> 선택 Core 회전</button><button class="ui-button ui-button--secondary" type="button" data-spark-reset>배치 초기화</button></aside>
       <button class="spark-game__launch" type="button" data-spark-launch hidden><span>LAUNCH</span><small>에너지 빔 발사 테스트</small></button>
-      <section class="spark-game__complete" data-spark-complete hidden><span>MISSION COMPLETE</span><h2>에너지 타워가 정상 가동돼요</h2><p>Core 정렬과 발사 테스트가 완료됐어요.</p><button class="ui-button ui-button--primary" type="button" data-spark-exit>관제실로 돌아가기</button></section>
+      <section class="spark-game__complete" data-spark-complete hidden><span>MISSION COMPLETE</span><h2>에너지 타워가 정상 가동돼요</h2><p>Core 정렬과 발사 테스트가 완료됐어요.</p><button class="ui-button ui-button--primary" type="button" data-spark-record data-i18n="mission.viewRecord">Passport 기록 확인</button></section>
     </section>
   </main>
   <footer class="spark-game__footer"><aside class="spark-game__eve" aria-label="EVE" aria-live="polite" aria-atomic="true"><span><img src="./assets/images/common/eve.webp" alt=""></span><div><b>EVE</b><p data-spark-eve>정답 배열에서 Core의 위치와 방향을 기억해 주세요.</p></div></aside></footer>

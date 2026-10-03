@@ -197,9 +197,10 @@ export function readProgress(explorer = null) {
   if (preview) {
     if (previewProgress) return cloneProgress(previewProgress);
     const initial = createProgress(explorer);
-    previewProgress = preview.valid && (preview.facility === 'luna' || ['completed', 'control-room-completed'].includes(preview.phase))
+    previewProgress = preview.valid && (['luna', 'spark'].includes(preview.facility) || ['completed', 'control-room-completed'].includes(preview.phase))
       ? recordFacilityCompletion(initial, facilities.find((facility) => facility.id === 'coaster'))
       : initial;
+    if (preview.valid && preview.facility === 'spark') previewProgress = recordFacilityCompletion(previewProgress, facilities.find((facility) => facility.id === 'luna'));
     return cloneProgress(previewProgress);
   }
   let progress = null;

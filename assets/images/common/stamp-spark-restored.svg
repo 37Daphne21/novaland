@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" fill="none">
+  <defs><filter id="rough"><feTurbulence baseFrequency=".7" numOctaves="2" seed="11" result="noise"/><feDisplacementMap in="SourceGraphic" in2="noise" scale="1.5"/></filter></defs>
+  <g stroke="#ad6a24" stroke-linecap="round" stroke-linejoin="round" filter="url(#rough)" opacity=".82">
+    <circle cx="120" cy="120" r="98" stroke-width="5" stroke-dasharray="18 3 7 2"/>
+    <circle cx="120" cy="120" r="83" stroke-width="2" stroke-dasharray="3 3"/>
+    <path d="m120 78 36 21v42l-36 21-36-21V99Z" fill="#ad6a24" fill-opacity=".1" stroke-width="3"/>
+    <path d="m125 96-22 29h17l-5 20 23-30h-18ZM120 58v12M120 170v12M58 120h14M168 120h14M76 76l10 10M154 154l10 10M76 164l10-10M154 86l10-10" stroke-width="3"/>
+    <path d="M83 55c22-11 52-11 74 0M76 185c27 14 61 14 88 0" stroke-width="2"/>
+  </g>
+  <g fill="#ad6a24" font-family="Arial, sans-serif" text-anchor="middle"><text x="120" y="40" font-size="11" font-weight="700" letter-spacing="2">SPARK ENERGY</text><text x="120" y="211" font-size="11" font-weight="700" letter-spacing="4">RESTORED</text></g>
+</svg>
