@@ -286,7 +286,6 @@ function placeSelectedCore(slot) {
     return;
   }
   moveCore(selectedCore, slot);
-  clearSelection();
   validatePlacement();
 }
 

@@ -370,6 +370,7 @@ SPARK ENERGY TOWER의 4단계 Core 게임은 공통 Checkpoint에 위치·회전
 - [x] 1908×925 전체 4단계 실제 플레이와 1366×768 HUD·원형 Slot 정렬 검수
 - [x] Checkpoint 저장·관제실·MAP 복귀·새로고침 복원
 - [x] MAP과 Archive의 완료 기록·SPARK Stamp·WONDER 해금 갱신
+- [x] SPARK 단계별 배치·발사 테스트 직전·복구 관제실의 저장 격리 Preview 주소
 
 ---
 

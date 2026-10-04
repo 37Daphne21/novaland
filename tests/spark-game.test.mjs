@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 
 const read = name => readFileSync(new URL(`../assets/js/${name}.js`, import.meta.url), 'utf8').replace(/^import .*;\r?$/gm, '').replace(/^export /gm, '');
-const state = vm.runInNewContext(`${read('spark-game-state')}; ({ sparkStages, normalizeSparkCheckpoint, isSparkStageCorrect, isSparkRotatableCore })`);
+const state = vm.runInNewContext(`${read('spark-game-state')}; ({ sparkStages, normalizeSparkCheckpoint, isSparkStageCorrect, isSparkRotatableCore, createSparkPreviewCheckpoint })`);
 
 function fixture(checkpoint = null) {
   const elements = new Map();
@@ -16,10 +16,11 @@ function fixture(checkpoint = null) {
     if (elements.has(key)) return elements.get(key);
     const events = new Map();
     const classes = new Set();
+    const attributes = new Map();
     const node = {
       dataset: {}, style: { setProperty() {} }, children: [], hidden: false, disabled: false, open: false,
-      classList: { add: name => classes.add(name), remove: name => classes.delete(name), toggle(name, value) { if (value) classes.add(name); else classes.delete(name); } },
-      setAttribute() {}, addEventListener: (name, handler) => events.set(name, handler),
+      classList: { add: name => classes.add(name), remove: name => classes.delete(name), contains: name => classes.has(name), toggle(name, value) { if (value) classes.add(name); else classes.delete(name); } },
+      setAttribute: (name, value) => attributes.set(name, value), getAttribute: name => attributes.get(name), addEventListener: (name, handler) => events.set(name, handler),
       dispatch(name, event = {}) { return events.get(name)?.({ stopPropagation() {}, preventDefault() {}, ...event }); },
       append(child) {
         if (child.parentElement) child.parentElement.children = child.parentElement.children.filter(item => item !== child);
@@ -84,6 +85,55 @@ test('SPARK checkpoints reject invalid slots, duplicate placements and unearned 
   assert.equal(normalized.placements.hex.slot, null);
   assert.equal(state.normalizeSparkCheckpoint(null).stageIndex, 0);
   assert.equal(state.normalizeSparkCheckpoint({ stageIndex: 99 }).stageIndex, 0);
+});
+
+test('SPARK preview checkpoints enter each play stage and the final launch test', () => {
+  for (let stageIndex = 0; stageIndex < 4; stageIndex += 1) {
+    const checkpoint = state.createSparkPreviewCheckpoint('play', stageIndex);
+    assert.equal(checkpoint.stageIndex, stageIndex);
+    assert.equal(checkpoint.phase, 'play');
+    assert.equal(state.isSparkStageCorrect(stageIndex, checkpoint.placements), false);
+  }
+  const testing = state.createSparkPreviewCheckpoint('testing');
+  assert.equal(testing.stageIndex, 3);
+  assert.equal(testing.phase, 'charged');
+  assert.equal(state.isSparkStageCorrect(3, testing.placements), true);
+  assert.equal(state.createSparkPreviewCheckpoint('completed'), null);
+});
+
+test('SPARK launch-test preview reaches completion through the launch button', async () => {
+  const game = fixture(state.createSparkPreviewCheckpoint('testing'));
+  assert.equal(game.phase(), 'charged');
+  assert.equal(game.element('[data-spark-launch]').hidden, false);
+  game.element('[data-spark-launch]').dispatch('click');
+  await game.tick(1800);
+  assert.equal(game.phase(), 'complete');
+  assert.equal(game.element('[data-spark-complete]').hidden, false);
+  assert.equal(game.messages.filter(message => message.complete).length, 1);
+});
+
+test('SPARK keeps a placed Core selected for immediate rotation and clears it on stage completion', async () => {
+  const game = fixture({ stageIndex: 1, phase: 'play' });
+  const triangle = game.element('[data-core="triangle"]');
+  const bolt = game.element('[data-core="bolt"]');
+  game.place('triangle', 0);
+  assert.equal(triangle.classList.contains('is-selected'), true);
+  assert.equal(triangle.getAttribute('aria-pressed'), 'true');
+  assert.equal(game.element('[data-spark-rotate]').disabled, false);
+  game.element('[data-spark-rotate]').dispatch('click');
+  assert.equal(triangle.dataset.rotation, '1');
+  bolt.dispatch('click');
+  assert.equal(triangle.getAttribute('aria-pressed'), 'false');
+  assert.equal(bolt.getAttribute('aria-pressed'), 'true');
+
+  game.element('[data-spark-reset]').dispatch('click');
+  assert.equal(bolt.getAttribute('aria-pressed'), 'false');
+  assert.equal(game.element('[data-spark-rotate]').disabled, true);
+  for (const [id, answer] of Object.entries(state.sparkStages[1].answers)) game.place(id, answer.slot, answer.rotation);
+  await game.tick(1600);
+  assert.equal(game.phase(), 'charged');
+  assert.equal(game.element('[data-spark-rotate]').disabled, true);
+  assert.equal(game.element('[data-core="bolt"]').getAttribute('aria-pressed'), 'false');
 });
 
 test('SPARK plays all four stages and publishes completion only after the launch test', async () => {

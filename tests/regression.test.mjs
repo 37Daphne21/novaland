@@ -332,21 +332,31 @@ test('result dialog uses the visible title and testing exposes pending, active a
 });
 
 
-test('facility preview routes isolate saves, unlock Luna and reject removed addresses', () => {
-  for (const facility of ['coaster', 'luna']) {
-    const phases = facility === 'coaster' ? ['control-room', 'control-room-completed', 'guide', 'countdown', 'play', 'failed', 'testing', 'completed'] : ['control-room', 'guide', 'play', 'completed'];
+test('facility preview routes isolate saves, unlock prerequisites and reject unsupported addresses', () => {
+  for (const facility of ['coaster', 'luna', 'spark']) {
+    const phases = facility === 'coaster' ? ['control-room', 'control-room-completed', 'guide', 'countdown', 'play', 'failed', 'testing', 'completed']
+      : facility === 'luna' ? ['control-room', 'guide', 'play', 'completed']
+      : ['control-room', 'control-room-completed', 'guide', 'play', 'testing'];
     for (const phase of phases) {
       const api = progressFixture(`?facility=${facility}&mission-preview=${phase}`);
       api.window.localStorage.setItem('novaLandProgress', 'existing-user-data');
       assert.equal(api.getMissionPreview().valid, true);
       const progress = api.readProgress(api.explorer);
-      assert.equal(progress.facilities.coaster.status, facility === 'luna' || ['completed', 'control-room-completed'].includes(phase) ? 'completed' : 'available');
+      assert.equal(progress.facilities.coaster.status, facility !== 'coaster' || ['completed', 'control-room-completed'].includes(phase) ? 'completed' : 'available');
+      if (facility === 'spark') {
+        assert.equal(progress.facilities.luna.status, 'completed');
+        assert.equal(progress.facilities.spark.status, phase === 'control-room-completed' ? 'completed' : 'available');
+      }
       api.saveProgress(progress);
       assert.equal(api.window.localStorage.getItem('novaLandProgress'), 'existing-user-data');
     }
   }
-  assert.equal(progressFixture('?facility=spark&mission-preview=control-room').getMissionPreview().valid, true);
-  for (const query of ['?facility=spark&mission-preview=completed', '?facility=luna&mission-preview=testing', '?facility=coaster&mission-preview=unknown', '?facility=coaster&mission-preview=paused', '?facility=luna&mission-preview=paused', '?mission-preview=guide']) {
+  for (let stage = 1; stage <= 4; stage += 1) {
+    const preview = progressFixture('?facility=spark&mission-preview=play&stage=' + stage).getMissionPreview();
+    assert.equal(preview.valid, true);
+    assert.equal(preview.stageIndex, stage - 1);
+  }
+  for (const query of ['?facility=spark&mission-preview=countdown', '?facility=spark&mission-preview=reveal', '?facility=spark&mission-preview=charging', '?facility=spark&mission-preview=charged', '?facility=spark&mission-preview=completed', '?facility=spark&mission-preview=failed', '?facility=spark&mission-preview=paused', '?facility=spark&mission-preview=play&stage=0', '?facility=spark&mission-preview=play&stage=5', '?facility=spark&mission-preview=testing&stage=2', '?facility=luna&mission-preview=testing', '?facility=coaster&mission-preview=unknown', '?facility=coaster&mission-preview=paused', '?facility=luna&mission-preview=paused', '?mission-preview=guide']) {
     assert.equal(progressFixture(query).getMissionPreview().valid, false);
   }
   assert.equal(progressFixture('?mission-preview=completed&control-room=luna').getMissionPreview().valid, false);

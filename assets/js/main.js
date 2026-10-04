@@ -14,7 +14,7 @@ import { createNavigationController } from './navigation.js';
 import { createProfileEditor } from './profile-editor.js';
 import { clearProgress, getMissionPreview, isMissionPreview, readProgress, updateMissionProgress } from './progress.js';
 import { createSettingsController } from './settings.js';
-import { isSparkStageCorrect, normalizeSparkCheckpoint, sparkStages } from './spark-game-state.js';
+import { createSparkPreviewCheckpoint, isSparkStageCorrect, normalizeSparkCheckpoint, sparkStages } from './spark-game-state.js';
 import { createDialogController, createModalController, createOverlayController, createToast } from './ui.js';
 
 initializeLanguage();
@@ -121,7 +121,8 @@ window.addEventListener('message', (event) => {
   if (event.source === sparkFrame.contentWindow && sparkEntry.open) {
     if (event.data?.type === 'novaland:spark-ready') {
       const progress = readProgress(currentExplorer);
-      sparkFrame.contentWindow.postMessage({ type: 'novaland:spark-restore', checkpoint: progress.missions.spark.checkpoint }, window.location.origin);
+      const checkpoint = progress.missions.spark.checkpoint ?? (missionPreview?.valid && missionPreview.facility === 'spark' ? createSparkPreviewCheckpoint(missionPreview.phase, missionPreview.stageIndex) : null);
+      sparkFrame.contentWindow.postMessage({ type: 'novaland:spark-restore', checkpoint }, window.location.origin);
     }
     if (event.data?.type === 'novaland:spark-state') {
       const progress = readProgress(currentExplorer);

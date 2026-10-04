@@ -148,10 +148,13 @@ export function getMissionPreview() {
   const phases = {
     coaster: ['control-room', 'control-room-completed', 'guide', 'countdown', 'play', 'failed', 'testing', 'completed'],
     luna: ['control-room', 'guide', 'play', 'completed'],
-    spark: ['control-room', 'guide', 'play']
+    spark: ['control-room', 'control-room-completed', 'guide', 'play', 'testing']
   };
-  const valid = Boolean(phases[facility]?.includes(phase)) && !params.has('control-room');
-  return { facility, phase, valid };
+  const stage = params.get('stage');
+  const stagedSparkPhase = facility === 'spark' && phase === 'play';
+  const stageIndex = stage === null ? 0 : /^[1-4]$/.test(stage) ? Number(stage) - 1 : -1;
+  const valid = Boolean(phases[facility]?.includes(phase)) && !params.has('control-room') && (stage === null || stagedSparkPhase && stageIndex >= 0);
+  return { facility, phase, stageIndex, valid };
 }
 
 export function isMissionPreview() {
@@ -201,6 +204,7 @@ export function readProgress(explorer = null) {
       ? recordFacilityCompletion(initial, facilities.find((facility) => facility.id === 'coaster'))
       : initial;
     if (preview.valid && preview.facility === 'spark') previewProgress = recordFacilityCompletion(previewProgress, facilities.find((facility) => facility.id === 'luna'));
+    if (preview.valid && preview.facility === 'spark' && preview.phase === 'control-room-completed') previewProgress = recordFacilityCompletion(previewProgress, facilities.find((facility) => facility.id === 'spark'));
     return cloneProgress(previewProgress);
   }
   let progress = null;

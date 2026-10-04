@@ -50,6 +50,14 @@ export function isSparkStageCorrect(stageIndex, placements) {
   return Object.entries(sparkStages[stageIndex].answers).every(([coreId, answer]) => placements[coreId]?.slot === answer.slot && placements[coreId]?.rotation === answer.rotation);
 }
 
+export function createSparkPreviewCheckpoint(phase, stageIndex = 0) {
+  if (!sparkStages[stageIndex] || !['play', 'testing'].includes(phase)) return null;
+  const testing = phase === 'testing';
+  const previewStageIndex = testing ? sparkStages.length - 1 : stageIndex;
+  const placements = Object.fromEntries(Object.entries(sparkStages[previewStageIndex].answers).map(([id, answer]) => [id, testing ? answer : { slot: null, rotation: 0 }]));
+  return normalizeSparkCheckpoint({ stageIndex: previewStageIndex, phase: testing ? 'charged' : 'play', placements });
+}
+
 export function normalizeSparkCheckpoint(value = {}) {
   value = value && typeof value === 'object' ? value : {};
   const stageIndex = Number.isInteger(value.stageIndex) && value.stageIndex >= 0 && value.stageIndex < sparkStages.length ? value.stageIndex : 0;
