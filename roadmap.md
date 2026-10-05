@@ -8,7 +8,7 @@
 
 ## 새 채팅에서 이어가기
 
-SPARK ENERGY TOWER의 4단계 Core 게임은 공통 Checkpoint에 위치·회전·충전 상태를 저장하며 관제실·MAP 왕복과 새로고침 후 이어진다. 발사 완료 시 MAP 복구 현황·Log·Explorer Passport의 SPARK Stamp·WONDER 해금을 연결했다. 관제실은 진행 단계와 충전율을 표시하고 완료 후 재시작을 막는다. 루나 Guide 연습은 점선·다이아몬드 모션과 보드 높이 고정으로 보강했고, SPARK 보관함은 여섯 자리를 유지하며 번개 실루엣을 구분했다. 다음 제작은 WONDER PARADE HALL이다.
+SPARK ENERGY TOWER의 4단계 Core 게임은 공통 Checkpoint에 위치·회전·충전 상태를 저장하며 관제실·MAP 왕복과 새로고침 후 이어진다. 발사 완료 시 MAP 복구 현황·Log·Explorer Passport의 SPARK Stamp·WONDER 해금을 연결했다. 관제실은 진행 단계와 충전율을 표시하고 완료 후 재시작을 막는다. 루나 Guide 연습은 점선·다이아몬드 모션과 보드 높이 고정으로 보강했고, SPARK 보관함은 여섯 자리를 유지하며 번개 실루엣을 구분했다. SPARK 보완 1·2단계는 완료했고 다음 작업은 3단계 전체 회귀 검수와 문서 정리다. WONDER PARADE HALL 제작은 이후 진행한다.
 
 루나 게임 화면은 사용자 승인으로 마무리하고 dee8322에 커밋했다. 크리스탈 선명도 개선은 보류한다. 다른 Prism 회전 차단은 제안만 했고 미승인·미적용이다.
 
@@ -373,7 +373,9 @@ SPARK ENERGY TOWER의 4단계 Core 게임은 공통 Checkpoint에 위치·회전
 - [x] SPARK 단계별 배치·발사 테스트 직전·복구 관제실의 저장 격리 Preview 주소
 - [x] SPARK 보완 1단계: 모바일 헤더 겹침 수정, 한영 정적·동적 안내와 접근 가능한 이름, 작은 글자 13px 이상 보완
 - [x] 1단계 검증: 55개 회귀 테스트, 한영 전환 시 배치·회전·카운트다운 유지, 390×844와 낮은 PC 화면의 Guide 검수
-- [ ] SPARK 보완 2단계: 공통 Pause·Guide 동작, Core·Slot 중첩 버튼, MAP 복귀 안내와 관련 오탈자
+- [x] SPARK 보완 2단계: 공통 Pause·Guide 동작, Core·Slot 중첩 버튼, MAP 복귀 안내와 관련 오탈자
+- [x] 2단계 검증: 저장 격리 Preview에서 57개 회귀 테스트, 한영 Guide 독립 연습·키보드 배치·회전·중첩 버튼 0개·Pause Escape·재시작·관제실과 MAP 왕복, 390×844·1280×480의 패널과 버튼 접근 확인
+- Preview Console의 출처 URL 없는 `MutationObserver.observe` 오류는 이전 검수와 동일하게 기록됐다. 프로젝트 소스에는 해당 API 호출이 없으며 발생 원인은 미확정으로, 3단계에서 재확인한다.
 - [ ] SPARK 보완 3단계: 전체 흐름·반응형·접근성 재검수와 진행 문서 정리
 
 ---

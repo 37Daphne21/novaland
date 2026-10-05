@@ -1,4 +1,6 @@
 import { isSparkRotatableCore, normalizeSparkCheckpoint, sparkStages } from './spark-game-state.js';
+import { createModalController } from './ui.js';
+import { renderMissionPause } from './mission-pause.js';
 import { applyDocumentLanguage, initializeLanguage, t } from './locales.js';
 
 initializeLanguage();
@@ -9,7 +11,9 @@ const cores = [...document.querySelectorAll('[data-core]')];
 const storageSlots = new Map(cores.map(core => [core.dataset.core, core.parentElement]));
 const slots = [...document.querySelectorAll('[data-slot]')];
 const guide = document.querySelector('[data-spark-guide]');
-const pausePanel = document.querySelector('[data-spark-pause-panel]');
+const pausePanel = document.querySelector('[data-spark-pause-dialog]');
+const pauseContent = document.querySelector('[data-spark-pause-panel]');
+renderMissionPause(pauseContent, { titleId: 'spark-pause-title', descriptionKey: 'spark.game.pausedCopy' });
 const hintButton = document.querySelector('[data-spark-hint]');
 const rotateButton = document.querySelector('[data-spark-rotate]');
 const resetButton = document.querySelector('[data-spark-reset]');
@@ -27,6 +31,10 @@ const coreCount = document.querySelector('[data-spark-core-count]');
 const coreTotal = document.querySelector('[data-spark-core-total]');
 const charge = document.querySelector('[data-spark-charge]');
 const chargeBar = document.querySelector('[data-spark-charge-bar]');
+const practice = document.querySelector('[data-spark-practice]');
+const practiceCore = document.querySelector('[data-spark-practice-core]');
+const practiceRotate = document.querySelector('[data-spark-practice-rotate]');
+const practiceReset = document.querySelector('[data-spark-practice-reset]');
 const embedded = new URLSearchParams(window.location.search).get('embedded') === '1';
 
 let phase = 'guide';
@@ -38,6 +46,9 @@ let pausedPhase = 'play';
 let sequenceId = 0;
 let restoredFromParent = !embedded;
 let currentStatus = null;
+let practiceSelected = false;
+let practicePlaced = false;
+let practiceRotation = 0;
 
 async function wait(duration, sequence = sequenceId) {
   let elapsed = 0;
@@ -70,6 +81,8 @@ function setPhase(nextPhase) {
   phase = nextPhase;
   game.dataset.sparkPhase = nextPhase;
   const playing = nextPhase === 'play';
+  cores.forEach(core => { core.disabled = !playing; });
+  slots.forEach(slot => { slot.querySelector('.spark-slot__target').disabled = !playing; });
   hintButton.disabled = !playing || Boolean(hintTimer);
   resetButton.disabled = !playing;
   rotateButton.disabled = !playing || !isRotatableCore(selectedCore);
@@ -343,32 +356,33 @@ resetButton.addEventListener('click', () => {
   preparePlay();
   setStatus('CORE RESET', 'spark.game.resetTitle', 'spark.game.resetCopy', 'spark.game.resetCopy', { stage: stageIndex + 1 });
 });
-document.querySelector('[data-spark-guide-start]').addEventListener('click', startCountdown);
-document.querySelector('[data-spark-guide-return]').addEventListener('click', () => guide.close());
-guideOpenButton.addEventListener('click', () => {
+const guideModal = createModalController(guide, { onClose: resumeGame, onCancel: () => started ? guideModal.close() : leaveGame() });
+const pauseModal = createModalController(pausePanel, { onClose: resumeGame, onCancel: () => leaveGame() });
+
+function openGuide() {
   pauseGame();
   document.querySelector('[data-spark-guide-start]').hidden = started;
   document.querySelector('[data-spark-guide-return]').hidden = !started;
-  guide.showModal();
-});
-pauseButton.addEventListener('click', () => {
+  guideModal.open({ focusTarget: document.querySelector('[data-spark-guide-close]') });
+  guide.scrollTop = 0;
+}
+
+function openPause() {
   if (pauseButton.disabled) return;
   pauseGame();
-  pausePanel.showModal();
-});
-guide.addEventListener('close', resumeGame);
-pausePanel.addEventListener('close', resumeGame);
-guide.addEventListener('cancel', event => {
-  event.preventDefault();
-  if (started) guide.close();
-  else leaveGame();
-});
-pausePanel.addEventListener('cancel', event => { event.preventDefault(); pausePanel.close(); });
+  pauseModal.open({ focusTarget: pauseContent.querySelector('[data-mission-resume]') });
+}
+
+document.querySelector('[data-spark-guide-start]').addEventListener('click', startCountdown);
+document.querySelector('[data-spark-guide-return]').addEventListener('click', () => guideModal.close());
+document.querySelector('[data-spark-guide-close]').addEventListener('click', () => started ? guideModal.close() : leaveGame());
+guideOpenButton.addEventListener('click', openGuide);
+pauseButton.addEventListener('click', openPause);
 document.addEventListener('keydown', event => {
   if (event.key !== 'Escape' || event.repeat || guide.open || pausePanel.open) return;
   event.preventDefault();
   event.stopPropagation();
-  if (!pauseButton.disabled) { pauseGame(); pausePanel.showModal(); }
+  openPause();
 });
 
 function pauseGame() {
@@ -382,15 +396,28 @@ function resumeGame() {
   if (phase === 'paused' && !guide.open && !pausePanel.open) setPhase(pausedPhase);
 }
 
-function leaveGame() {
+function leaveGame(destination = 'control-room') {
   publishState({ paused: true });
   sequenceId += 1;
   clearHints();
-  if (embedded && window.parent !== window) window.parent.postMessage({ type: 'novaland:spark-exit', destination: 'control-room' }, window.location.origin);
-  else window.location.assign('./index.html?facility=spark&mission-preview=control-room');
+  if (embedded && window.parent !== window) window.parent.postMessage({ type: 'novaland:spark-exit', destination }, window.location.origin);
+  else window.location.assign(destination === 'map' ? './index.html' : './index.html?facility=spark&mission-preview=control-room');
 }
-document.querySelector('[data-spark-resume]').addEventListener('click', () => pausePanel.close());
-document.querySelectorAll('[data-spark-exit]').forEach(button => button.addEventListener('click', leaveGame));
+pauseContent.querySelector('[data-mission-resume]').addEventListener('click', () => pauseModal.close());
+pauseContent.querySelector('[data-mission-restart]').addEventListener('click', () => {
+  sequenceId += 1;
+  stageIndex = 0;
+  charge.textContent = '0%';
+  chargeBar.style.width = '0%';
+  countdown.hidden = true;
+  game.classList.remove('is-launching');
+  resetPlacement();
+  pauseModal.close();
+  startCountdown();
+});
+pauseContent.querySelector('[data-mission-control-room]').addEventListener('click', () => leaveGame());
+pauseContent.querySelector('[data-mission-exit]').addEventListener('click', () => leaveGame('map'));
+
 document.querySelector('[data-spark-record]').addEventListener('click', () => {
   if (phase !== 'complete') return;
   if (embedded) window.parent.postMessage({ type: 'novaland:spark-record' }, window.location.origin);
@@ -422,12 +449,12 @@ function centerBoard() {
 const preview = new URLSearchParams(window.location.search).get('mission-preview');
 window.addEventListener('message', event => {
   if (event.origin !== window.location.origin || event.source !== window.parent) return;
-  if (event.data?.type === 'novaland:spark-pause' && !pauseButton.disabled) { pauseGame(); pausePanel.showModal(); }
+  if (event.data?.type === 'novaland:spark-pause' && !pauseButton.disabled) openPause();
   if (event.data?.type === 'novaland:spark-restore' && !restoredFromParent) {
     restoredFromParent = true;
     if (event.data.checkpoint) restoreCheckpoint(event.data.checkpoint);
     else if (preview === 'play') preparePlay();
-    else guide.showModal();
+    else openGuide();
   }
 });
 function restoreCheckpoint(value) {
@@ -456,9 +483,36 @@ function restoreCheckpoint(value) {
     validatePlacement();
   }
 }
+
+function renderPractice() {
+  const connected = practicePlaced && practiceRotation === 1;
+  practice.classList.toggle('is-placed', practicePlaced);
+  practice.classList.toggle('is-connected', connected);
+  practiceCore.classList.toggle('is-selected', practiceSelected);
+  practiceCore.setAttribute('aria-pressed', String(practiceSelected));
+  setRotation(practiceCore, practiceRotation);
+  practiceCore.setAttribute('aria-label', t('spark.game.triangleLabel') + '. ' + t('spark.game.directions').split(',')[practiceRotation]);
+  practiceRotate.disabled = !practiceSelected;
+  practiceReset.disabled = !practiceSelected && !practicePlaced;
+  document.querySelector('[data-spark-practice-feedback]').textContent = t(connected ? 'spark.game.practiceSuccess' : practicePlaced ? 'spark.game.practiceRotate' : 'spark.game.practiceHint');
+  practice.querySelector('p').dataset.sizingText = ['spark.game.practiceHint', 'spark.game.practiceRotate', 'spark.game.practiceSuccess'].map(key => t(key)).sort((first, second) => second.length - first.length)[0];
+}
+practiceCore.addEventListener('click', () => { practiceSelected = true; renderPractice(); });
+document.querySelector('[data-spark-practice-slot]').addEventListener('click', () => { if (practiceSelected) { practicePlaced = true; renderPractice(); } });
+practiceRotate.addEventListener('click', () => { if (practiceSelected) { practiceRotation = (practiceRotation + 1) % 4; renderPractice(); } });
+practiceReset.addEventListener('click', () => {
+  practiceSelected = false;
+  practicePlaced = false;
+  practiceRotation = 0;
+  renderPractice();
+  practiceCore.focus();
+});
+renderPractice();
+
 function refreshLanguage() {
   applyDocumentLanguage();
-  slots.forEach((slot, index) => slot.setAttribute('aria-label', t('spark.game.slot', { number: index + 1 })));
+  renderPractice();
+  slots.forEach((slot, index) => slot.querySelector('.spark-slot__target').setAttribute('aria-label', t('spark.game.slot', { number: index + 1 })));
   if (phase === 'charged' || phase === 'paused' && pausedPhase === 'charged') showChargedStatus();
   else renderStatus();
 }
@@ -468,10 +522,10 @@ window.addEventListener('storage', event => {
   initializeLanguage();
   refreshLanguage();
 });
-slots.forEach((slot, index) => slot.setAttribute('aria-label', t('spark.game.slot', { number: index + 1 })));
+slots.forEach((slot, index) => slot.querySelector('.spark-slot__target').setAttribute('aria-label', t('spark.game.slot', { number: index + 1 })));
 window.addEventListener('pagehide', () => { sequenceId += 1; clearHints(); });
 window.addEventListener('load', centerBoard, { once: true });
 if (embedded) window.parent.postMessage({ type: 'novaland:spark-ready' }, window.location.origin);
 else if (preview === 'play') preparePlay();
 else if (preview === 'reveal') revealArray();
-else guide.showModal();
+else openGuide();

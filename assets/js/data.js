@@ -66,6 +66,7 @@ export const facilities = [
     glow: { x: 27, y: 58 },
     mobileGlow: { x: 24, y: 61 },
     messageKey: 'facility.spark.message',
+    resumeMessageKey: 'facility.spark.resume',
     lockedMessageKey: 'facility.spark.locked',
     controlRoomMessageKey: 'facility.spark.control',
     completionMessageKey: 'facility.spark.complete',

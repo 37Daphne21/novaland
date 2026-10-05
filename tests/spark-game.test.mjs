@@ -31,7 +31,7 @@ function fixture(checkpoint = null, language = 'ko') {
         if (selector === '.spark-hint-core') return null;
         return element(`${key} ${selector}`);
       },
-      showModal() { node.open = true; }, close() { node.open = false; node.dispatch('close'); }
+      focus() {}, showModal() { node.open = true; }, close() { node.open = false; node.dispatch('close'); }
     };
     elements.set(key, node);
     return node;
@@ -44,20 +44,20 @@ function fixture(checkpoint = null, language = 'ko') {
   });
   const slots = Array.from({ length: 6 }, (_, index) => element(`[data-slot="${index}"]`));
   const document = {
-    hidden: false, documentElement: {},
-    querySelector: element,
+    hidden: false, documentElement: {}, body: element("body"),
+    querySelector: selector => selector === "dialog[open]" ? [...elements.values()].find(node => node.open) ?? null : element(selector),
     querySelectorAll: selector => selector === '[data-core]' ? cores : selector === '[data-slot]' ? slots : [],
     addEventListener: (name, handler) => listeners.set(name, handler)
   };
   const parent = { postMessage: message => messages.push(JSON.parse(JSON.stringify(message))) };
   const window = {
-    localStorage: { getItem: () => language },
+    requestAnimationFrame: callback => callback(), localStorage: { getItem: () => language },
     parent, location: { search: '?embedded=1', origin: 'http://localhost', assign() {} },
     addEventListener: (name, handler) => listeners.set(name, handler),
     setTimeout: (callback, duration) => { timers.set(++timerId, { callback, remaining: duration }); return timerId; },
     clearTimeout: id => timers.delete(id)
   };
-  vm.runInNewContext(read('locales') + '\n' + read('spark-game'), { ...state, document, window, URLSearchParams });
+  vm.runInNewContext(read('locales') + '\n' + read('ui') + '\n' + read('mission-pause') + '\n' + read('spark-game'), { ...state, document, window, URLSearchParams, HTMLElement: class {} });
   const restore = value => listeners.get('message')({ source: parent, origin: window.location.origin, data: { type: 'novaland:spark-restore', checkpoint: value } });
   restore(checkpoint);
   async function tick(duration) {
@@ -184,7 +184,7 @@ test('SPARK pause and hidden documents freeze countdown and charging transitions
   game.element('[data-spark-pause]').dispatch('click');
   await game.tick(8000);
   assert.equal(game.phase(), 'paused');
-  game.element('[data-spark-resume]').dispatch('click');
+  game.element('[data-spark-pause-panel] [data-mission-resume]').dispatch('click');
   game.document.hidden = true;
   await game.tick(8000);
   assert.equal(game.phase(), 'countdown');
@@ -195,7 +195,7 @@ test('SPARK pause and hidden documents freeze countdown and charging transitions
   game.element('[data-spark-pause]').dispatch('click');
   await game.tick(4000);
   assert.equal(game.phase(), 'paused');
-  game.element('[data-spark-resume]').dispatch('click');
+  game.element('[data-spark-pause-panel] [data-mission-resume]').dispatch('click');
   await game.tick(1600);
   assert.equal(game.phase(), 'charged');
 });
@@ -233,4 +233,40 @@ test('SPARK translates charged-stage actions and freezes the current countdown d
   assert.equal(game.element('[data-spark-countdown-number]').textContent, '2');
   await game.tick(650);
   assert.equal(game.element('[data-spark-countdown-number]').textContent, '1');
+});
+
+
+test('SPARK guide practice preserves the live checkpoint and pause exits use explicit destinations', () => {
+  const game = fixture({ stageIndex: 1, phase: 'play' });
+  game.place('triangle', 3, 1);
+  game.element('[data-spark-guide-open]').dispatch('click');
+  const before = JSON.stringify(game.messages.at(-1).checkpoint);
+  game.element('[data-spark-practice-core]').dispatch('click');
+  game.element('[data-spark-practice-slot]').dispatch('click');
+  game.element('[data-spark-practice-rotate]').dispatch('click');
+  assert.equal(game.element('[data-spark-practice]').classList.contains('is-connected'), true);
+  game.element('[data-spark-practice-reset]').dispatch('click');
+  assert.equal(JSON.stringify(game.messages.at(-1).checkpoint), before);
+  game.element('[data-spark-guide]').dispatch('cancel');
+  assert.equal(game.phase(), 'play');
+  game.element('[data-spark-pause]').dispatch('click');
+  game.element('[data-spark-pause-dialog]').dispatch('cancel');
+  assert.equal(game.messages.at(-1).destination, 'control-room');
+  game.element('[data-spark-pause-panel] [data-mission-exit]').dispatch('click');
+  assert.equal(game.messages.at(-1).destination, 'map');
+});
+
+test('SPARK restart clears all stages and cancels a suspended charge transition', async () => {
+  const game = fixture({ stageIndex: 2, phase: 'play' });
+  Object.entries(state.sparkStages[2].answers).forEach(([id, answer]) => game.place(id, answer.slot, answer.rotation));
+  assert.equal(game.phase(), 'charging');
+  game.element('[data-spark-pause]').dispatch('click');
+  game.element('[data-spark-pause-panel] [data-mission-restart]').dispatch('click');
+  assert.equal(game.phase(), 'countdown');
+  assert.equal(game.messages.at(-1).checkpoint.stageIndex, 0);
+  assert.equal(game.element('[data-spark-charge]').textContent, '0%');
+  assert.equal(game.element('[data-core="triangle"]').parentElement, game.element('storage-triangle'));
+  await game.tick(6500);
+  assert.equal(game.phase(), 'play');
+  assert.equal(game.messages.at(-1).checkpoint.stageIndex, 0);
 });

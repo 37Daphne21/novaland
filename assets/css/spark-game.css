@@ -341,6 +341,14 @@
   transform: translate(-50%, -50%);
 }
 
+.spark-slot__target {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  border-radius: inherit;
+  background: transparent;
+}
+
 .spark-slot:nth-child(1) {
   left: 44.84375%;
   top: 24.86111%;
@@ -372,7 +380,7 @@
 }
 
 .spark-slot:hover,
-.spark-slot:focus-visible,
+.spark-slot:focus-within,
 .spark-slot.is-drop-target {
   border-color: rgba(255, 217, 147, .72);
   box-shadow: inset 0 0 1.25rem rgba(255, 184, 74, .18), 0 0 1rem rgba(255, 184, 74, .28);
@@ -569,124 +577,69 @@
   text-shadow: 0 0 2rem rgba(255, 176, 54, .7);
 }
 
-.spark-guide,
-.spark-pause {
-  z-index: 40;
-  width: min(52rem, calc(100% - 2rem));
-  padding: 0;
-  overflow: hidden;
-  border: 1px solid rgba(255, 190, 82, .55);
-  border-radius: .7rem;
-  color: #f8ead0;
-  background: linear-gradient(130deg, rgba(24, 17, 9, .98), rgba(5, 12, 21, .98));
-  box-shadow: 0 1rem 4rem rgba(0, 0, 0, .65), inset 0 1px 0 rgba(255, 228, 172, .16);
-}
-
-.spark-guide[open] {
-  display: grid;
-  grid-template-columns: .85fr 1.15fr;
+.spark-game__dialog {
+  width: min(36rem, calc(100% - 2rem));
   max-height: calc(100svh - 2rem);
   overflow-y: auto;
 }
 
-.spark-guide::backdrop,
-.spark-pause::backdrop {
-  background: rgba(1, 5, 10, .78);
-  backdrop-filter: blur(.25rem);
+.spark-game__dialog[data-phase="guide"] {
+  width: min(68rem, calc(100% - 2rem));
 }
 
-.spark-guide__visual {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  min-height: 24rem;
-  color: #ffc14d;
-  font-size: 2rem;
-  background: radial-gradient(circle, rgba(255, 184, 74, .2), transparent 52%), url("../images/spark/core-chamber.webp") center / cover;
+.spark-game__dialog .ui-overlay__dialog {
+  width: 100%;
 }
 
-.spark-guide__core,
-.spark-guide__slot {
+.spark-guide__board {
+  position: relative;
   display: grid;
   place-items: center;
+  height: 10rem;
+}
+
+.spark-guide__board .spark-core {
+  position: absolute;
+  left: 25%;
+  transform: translateX(-50%);
+  width: 5rem;
+  flex: none;
+}
+
+.spark-guide__target {
+  position: absolute;
+  left: 75%;
+  transform: translateX(-50%);
   width: 5rem;
   aspect-ratio: 1;
-  border: 1px solid #ffc14d;
+  border: 2px dashed #ffc14d;
   border-radius: 50%;
-  background: rgba(4, 9, 15, .82);
+  background: rgba(255, 184, 74, .08);
 }
 
-.spark-guide__content {
-  padding: 2rem;
+.spark-guide__target::after {
+  position: absolute;
+  right: -.5rem;
+  top: calc(50% - .125rem);
+  width: .75rem;
+  height: .25rem;
+  background: #ffc14d;
+  content: "";
 }
 
-.spark-guide__content h2,
-.spark-pause h2 {
-  margin-top: .3rem;
-  color: #fff1d2;
-  font: 500 1.5rem var(--font-display);
+.spark-game__dialog .mission-guide__content h3 {
+  font-size: 1rem;
 }
 
-.spark-guide__content > p {
-  margin-top: .65rem;
-  color: #d9c6a7;
-  font-size: .82rem;
-  line-height: 1.7;
+.spark-guide.is-placed .spark-guide__board .spark-core {
+  position: absolute;
+  left: 75%;
+  transform: translateX(-50%);
 }
 
-.spark-guide__content ol {
-  display: grid;
-  gap: .55rem;
-  margin-block: 1rem;
-}
-
-.spark-guide__content li {
-  display: grid;
-  grid-template-columns: 2.2rem 1fr;
-  align-items: center;
-  gap: .65rem;
-  padding: .6rem .75rem;
-  border: 1px solid rgba(255, 184, 74, .18);
-  background: rgba(255, 184, 74, .04);
-}
-
-.spark-guide__content li > b {
-  color: #ffbe4a;
-  font: 600 .8125rem var(--font-numeric);
-}
-
-.spark-guide__content li span {
-  display: grid;
-  gap: .15rem;
-}
-
-.spark-guide__content li strong {
-  color: #f8e2b9;
-  font-size: .8125rem;
-}
-
-.spark-guide__content li small {
-  color: #bda98a;
-  font-size: .8125rem;
-}
-
-.spark-guide__content > .ui-button {
-  width: 100%;
-  margin-top: .5rem;
-}
-
-.spark-pause[open] {
-  display: grid;
-  justify-items: center;
-  gap: 1rem;
-  width: min(30rem, calc(100% - 2rem));
-  padding: 2rem;
-  text-align: center;
-}
-
-.spark-pause .ui-button {
-  width: 100%;
+.spark-guide.is-connected .spark-guide__target {
+  border-style: solid;
+  box-shadow: 0 0 1.5rem rgba(255, 184, 74, .5);
 }
 
 .spark-game__complete {
@@ -821,14 +774,6 @@
 
   .spark-game__eve {
     width: min(28rem, calc(100vw - 2rem));
-  }
-
-  .spark-guide[open] {
-    grid-template-columns: 1fr;
-  }
-
-  .spark-guide__visual {
-    min-height: 10rem;
   }
 }
 

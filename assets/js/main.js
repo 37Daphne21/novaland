@@ -138,7 +138,12 @@ window.addEventListener('message', (event) => {
       navigation.replace({ screen: 'map' });
       navigation.push({ screen: 'map', overlay: 'explorer-archive-overlay', archiveTab: 'passport', archiveStamp: 'spark' });
     }
-    if (event.data?.type === 'novaland:spark-exit') navigation.back();
+    if (event.data?.type === 'novaland:spark-exit') {
+      if (event.data.destination === 'map') {
+        navigation.replace({ screen: 'map' });
+        map.focusReturnTarget();
+      } else if (event.data.destination === 'control-room') navigation.back();
+    }
     return;
   }
   if (event.source !== lunaFrame.contentWindow || !lunaEntry.open) return;
