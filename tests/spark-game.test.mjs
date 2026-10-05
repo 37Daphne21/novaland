@@ -6,7 +6,7 @@ import vm from 'node:vm';
 const read = name => readFileSync(new URL(`../assets/js/${name}.js`, import.meta.url), 'utf8').replace(/^import .*;\r?$/gm, '').replace(/^export /gm, '');
 const state = vm.runInNewContext(`${read('spark-game-state')}; ({ sparkStages, normalizeSparkCheckpoint, isSparkStageCorrect, isSparkRotatableCore, createSparkPreviewCheckpoint })`);
 
-function fixture(checkpoint = null) {
+function fixture(checkpoint = null, language = 'ko') {
   const elements = new Map();
   const messages = [];
   const listeners = new Map();
@@ -44,19 +44,20 @@ function fixture(checkpoint = null) {
   });
   const slots = Array.from({ length: 6 }, (_, index) => element(`[data-slot="${index}"]`));
   const document = {
-    hidden: false,
+    hidden: false, documentElement: {},
     querySelector: element,
     querySelectorAll: selector => selector === '[data-core]' ? cores : selector === '[data-slot]' ? slots : [],
     addEventListener: (name, handler) => listeners.set(name, handler)
   };
   const parent = { postMessage: message => messages.push(JSON.parse(JSON.stringify(message))) };
   const window = {
+    localStorage: { getItem: () => language },
     parent, location: { search: '?embedded=1', origin: 'http://localhost', assign() {} },
     addEventListener: (name, handler) => listeners.set(name, handler),
     setTimeout: (callback, duration) => { timers.set(++timerId, { callback, remaining: duration }); return timerId; },
     clearTimeout: id => timers.delete(id)
   };
-  vm.runInNewContext(read('spark-game'), { ...state, document, window, URLSearchParams, initializeLanguage() {} });
+  vm.runInNewContext(read('locales') + '\n' + read('spark-game'), { ...state, document, window, URLSearchParams });
   const restore = value => listeners.get('message')({ source: parent, origin: window.location.origin, data: { type: 'novaland:spark-restore', checkpoint: value } });
   restore(checkpoint);
   async function tick(duration) {
@@ -73,7 +74,7 @@ function fixture(checkpoint = null) {
     for (let index = 0; index < rotation; index += 1) element('[data-spark-rotate]').dispatch('click');
     slots[slot].dispatch('click');
   }
-  return { element, messages, tick, place, document, restore, phase: () => element('.spark-game').dataset.sparkPhase };
+  return { element, messages, tick, place, document, restore, changeLanguage(value) { language = value; listeners.get('storage')({ key: 'novaLandLanguage' }); }, phase: () => element('.spark-game').dataset.sparkPhase };
 }
 
 test('SPARK checkpoints reject invalid slots, duplicate placements and unearned charge', () => {
@@ -197,4 +198,39 @@ test('SPARK pause and hidden documents freeze countdown and charging transitions
   game.element('[data-spark-resume]').dispatch('click');
   await game.tick(1600);
   assert.equal(game.phase(), 'charged');
+});
+
+test('SPARK live language changes preserve placements, rotations and the active error message', () => {
+  const game = fixture({ stageIndex: 1, phase: 'play' });
+  game.place('triangle', 3, 1);
+  game.element('[data-core="bolt"]').dispatch('click');
+  game.element('[data-slot="3"]').dispatch('click');
+  assert.equal(game.element('[data-spark-status-title]').textContent, '이미 Core가 배치된 Slot이에요');
+  game.changeLanguage('en');
+  assert.equal(game.element('[data-spark-status-title]').textContent, 'This Slot already contains a Core');
+  assert.equal(game.element('[data-spark-status-copy]').textContent, 'Choose another empty Slot.');
+  assert.equal(game.element('[data-core="triangle"]').parentElement, game.element('[data-slot="3"]'));
+  assert.equal(game.element('[data-core="triangle"]').dataset.rotation, '1');
+  assert.equal(game.element('[data-core="bolt"]').getAttribute('aria-pressed'), 'true');
+  assert.equal(game.phase(), 'play');
+  game.changeLanguage('ko');
+  assert.equal(game.element('[data-spark-status-title]').textContent, '이미 Core가 배치된 Slot이에요');
+});
+
+test('SPARK translates charged-stage actions and freezes the current countdown during a language change', async () => {
+  const charged = fixture({ stageIndex: 1, phase: 'charged', placements: state.sparkStages[1].answers }, 'en');
+  assert.equal(charged.element('[data-spark-launch] small').textContent, 'Review stage 3 array');
+  assert.equal(charged.element('[data-spark-status-title]').textContent, 'Stage 2 complete · 50% charge');
+  charged.changeLanguage('ko');
+  assert.equal(charged.element('[data-spark-launch] small').textContent, '3단계 배열 확인');
+  assert.equal(charged.phase(), 'charged');
+  assert.equal(charged.element('[data-spark-charge]').textContent, '50%');
+  const game = fixture(null, 'en');
+  game.element('[data-spark-guide-start]').dispatch('click');
+  await game.tick(750);
+  assert.equal(game.element('[data-spark-countdown-number]').textContent, '2');
+  game.changeLanguage('ko');
+  assert.equal(game.element('[data-spark-countdown-number]').textContent, '2');
+  await game.tick(650);
+  assert.equal(game.element('[data-spark-countdown-number]').textContent, '1');
 });

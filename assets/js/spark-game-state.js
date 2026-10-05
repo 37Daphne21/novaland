@@ -5,7 +5,7 @@ export const sparkStages = [
       triangle: { slot: 3, rotation: 0 },
       hex: { slot: 4, rotation: 0 }
     },
-    copy: '첫 단계는 방향을 돌리지 않고 위치만 맞추면 돼요.'
+    copyKey: 'spark.game.stageCopy1'
   },
   {
     answers: {
@@ -14,7 +14,7 @@ export const sparkStages = [
       hex: { slot: 4, rotation: 0 },
       bolt: { slot: 2, rotation: 1 }
     },
-    copy: '두 Core는 방향까지 기억해 주세요.'
+    copyKey: 'spark.game.stageCopy2'
   },
   {
     answers: {
@@ -24,7 +24,7 @@ export const sparkStages = [
       bolt: { slot: 1, rotation: 3 },
       arrow: { slot: 5, rotation: 2 }
     },
-    copy: '다섯 Core 중 세 Core는 방향도 맞아야 해요.'
+    copyKey: 'spark.game.stageCopy3'
   },
   {
     answers: {
@@ -35,7 +35,7 @@ export const sparkStages = [
       arrow: { slot: 1, rotation: 1 },
       star: { slot: 5, rotation: 1 }
     },
-    copy: '마지막은 여섯 Core의 위치와 네 Core의 방향을 모두 복구해 주세요.'
+    copyKey: 'spark.game.stageCopy4'
   }
 ];
 

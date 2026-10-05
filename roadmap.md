@@ -371,6 +371,10 @@ SPARK ENERGY TOWER의 4단계 Core 게임은 공통 Checkpoint에 위치·회전
 - [x] Checkpoint 저장·관제실·MAP 복귀·새로고침 복원
 - [x] MAP과 Archive의 완료 기록·SPARK Stamp·WONDER 해금 갱신
 - [x] SPARK 단계별 배치·발사 테스트 직전·복구 관제실의 저장 격리 Preview 주소
+- [x] SPARK 보완 1단계: 모바일 헤더 겹침 수정, 한영 정적·동적 안내와 접근 가능한 이름, 작은 글자 13px 이상 보완
+- [x] 1단계 검증: 55개 회귀 테스트, 한영 전환 시 배치·회전·카운트다운 유지, 390×844와 낮은 PC 화면의 Guide 검수
+- [ ] SPARK 보완 2단계: 공통 Pause·Guide 동작, Core·Slot 중첩 버튼, MAP 복귀 안내와 관련 오탈자
+- [ ] SPARK 보완 3단계: 전체 흐름·반응형·접근성 재검수와 진행 문서 정리
 
 ---
 

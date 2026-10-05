@@ -67,7 +67,7 @@
 .spark-game__identity p {
   margin-top: .25rem;
   color: #f0d7ac;
-  font-size: .75rem;
+  font-size: .8125rem;
 }
 
 .spark-game__progress {
@@ -90,7 +90,7 @@
 
 .spark-game__progress small {
   color: #d8aa59;
-  font: 600 .5625rem var(--font-numeric);
+  font: 600 .8125rem var(--font-numeric);
   letter-spacing: .1em;
 }
 
@@ -155,14 +155,14 @@
 .spark-core-bank header span,
 .spark-game__status > span {
   color: #e3af54;
-  font: 600 .5625rem var(--font-numeric);
+  font: 600 .8125rem var(--font-numeric);
   letter-spacing: .1em;
 }
 
 .spark-core-bank h2 {
   margin-top: .15rem;
   color: #fff0ce;
-  font: 500 .8rem var(--font-display);
+  font: 500 .8125rem var(--font-display);
 }
 
 .spark-core-bank__items {
@@ -237,7 +237,7 @@
   position: absolute;
   bottom: .25rem;
   color: #d7b879;
-  font-size: .5625rem;
+  font-size: .8125rem;
 }
 
 .spark-core--circle > i {
@@ -428,7 +428,7 @@
 .spark-game__status p {
   margin-top: .18rem;
   color: #dbc9aa;
-  font-size: .6875rem;
+  font-size: .8125rem;
 }
 
 .spark-game__controls {
@@ -450,7 +450,7 @@
   min-height: 2.75rem;
   border-color: rgba(255, 184, 74, .32);
   color: #f6dfb5;
-  font-size: .7rem;
+  font-size: .8125rem;
   background: rgba(255, 184, 74, .07);
 }
 
@@ -494,7 +494,7 @@
 
 .spark-game__launch small {
   margin-top: .1rem;
-  font-size: .625rem;
+  font-size: .8125rem;
 }
 
 .spark-game__footer {
@@ -533,13 +533,13 @@
 
 .spark-game__eve b {
   color: #ffc96d;
-  font: 600 .75rem var(--font-display);
+  font: 600 .8125rem var(--font-display);
 }
 
 .spark-game__eve p {
   margin-top: .3rem;
   color: #e3d6be;
-  font-size: .72rem;
+  font-size: .8125rem;
   line-height: 1.55;
 }
 
@@ -559,7 +559,7 @@
 }
 
 .spark-game__countdown span {
-  font: 600 .75rem var(--font-numeric);
+  font: 600 .8125rem var(--font-numeric);
   letter-spacing: .18em;
 }
 
@@ -585,6 +585,8 @@
 .spark-guide[open] {
   display: grid;
   grid-template-columns: .85fr 1.15fr;
+  max-height: calc(100svh - 2rem);
+  overflow-y: auto;
 }
 
 .spark-guide::backdrop,
@@ -651,7 +653,7 @@
 
 .spark-guide__content li > b {
   color: #ffbe4a;
-  font: 600 .8rem var(--font-numeric);
+  font: 600 .8125rem var(--font-numeric);
 }
 
 .spark-guide__content li span {
@@ -661,12 +663,12 @@
 
 .spark-guide__content li strong {
   color: #f8e2b9;
-  font-size: .75rem;
+  font-size: .8125rem;
 }
 
 .spark-guide__content li small {
   color: #bda98a;
-  font-size: .68rem;
+  font-size: .8125rem;
 }
 
 .spark-guide__content > .ui-button {
@@ -704,7 +706,7 @@
 
 .spark-game__complete > span {
   color: #ffc34e;
-  font: 600 .8rem var(--font-numeric);
+  font: 600 .8125rem var(--font-numeric);
   letter-spacing: .16em;
 }
 
@@ -791,7 +793,7 @@
   }
 
   .spark-game__header {
-    inset: .75rem;
+    inset: .75rem .75rem auto;
     grid-template-columns: 1fr auto;
     gap: .5rem;
   }
@@ -823,8 +825,6 @@
 
   .spark-guide[open] {
     grid-template-columns: 1fr;
-    max-height: calc(100svh - 2rem);
-    overflow-y: auto;
   }
 
   .spark-guide__visual {

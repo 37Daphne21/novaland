@@ -1,5 +1,5 @@
 import { isSparkRotatableCore, normalizeSparkCheckpoint, sparkStages } from './spark-game-state.js';
-import { initializeLanguage } from './locales.js';
+import { applyDocumentLanguage, initializeLanguage, t } from './locales.js';
 
 initializeLanguage();
 
@@ -37,6 +37,7 @@ let started = false;
 let pausedPhase = 'play';
 let sequenceId = 0;
 let restoredFromParent = !embedded;
+let currentStatus = null;
 
 async function wait(duration, sequence = sequenceId) {
   let elapsed = 0;
@@ -101,11 +102,18 @@ function publishState({ paused = false, complete = false } = {}) {
   }, window.location.origin);
 }
 
-function setStatus(eyebrow, title, copy, message = copy) {
+function setStatus(eyebrow, titleKey, copyKey, messageKey = copyKey, values = {}) {
+  currentStatus = { eyebrow, titleKey, copyKey, messageKey, values };
+  renderStatus();
+}
+
+function renderStatus() {
+  if (!currentStatus) return;
+  const { eyebrow, titleKey, copyKey, messageKey, values } = currentStatus;
   statusEyebrow.textContent = eyebrow;
-  statusTitle.textContent = title;
-  statusCopy.textContent = copy;
-  eve.textContent = message;
+  statusTitle.textContent = t(titleKey, values);
+  statusCopy.textContent = t(copyKey, values);
+  eve.textContent = t(messageKey, values);
 }
 
 function setRotation(core, rotation) {
@@ -155,7 +163,7 @@ function renderHints() {
     slots[answer.slot].append(ghost);
   });
   hintButton.disabled = true;
-  setStatus('HINT SCAN', `${stageIndex + 1}단계 정답 배열을 잠시 표시해요`, 'Core의 위치와 방향을 확인해 보세요.', '정답 배열을 3초 동안 다시 보여드릴게요.');
+  setStatus('HINT SCAN', 'spark.game.hintTitle', 'spark.game.hintCopy', 'spark.game.hintEve', { stage: stageIndex + 1 });
   hintTimer = window.setTimeout(() => {
     clearHints();
     showPlayStatus();
@@ -181,14 +189,14 @@ function isCorrect() {
 
 function showPlayStatus() {
   const stage = getStage();
-  setStatus('CORE ALIGNMENT', `${stageIndex + 1}단계 Core를 배치하세요`, stage.copy, stage.copy);
+  setStatus('CORE ALIGNMENT', 'spark.game.playTitle', stage.copyKey, stage.copyKey, { stage: stageIndex + 1 });
 }
 
 async function completeStage() {
   setPhase('charging');
   clearSelection();
   clearHints();
-  setStatus('CIRCUIT ONLINE', `${stageIndex + 1}단계 배열이 일치했어요`, '에너지 회로를 충전합니다.', 'Core의 위치와 방향이 모두 일치했어요.');
+  setStatus('CIRCUIT ONLINE', 'spark.game.matchedTitle', 'spark.game.chargingCopy', 'spark.game.matchedEve', { stage: stageIndex + 1 });
   const activeSlots = Object.values(getStage().answers).map(answer => slots[answer.slot]);
   for (const slot of activeSlots) {
     if (!await wait(120)) return;
@@ -208,14 +216,14 @@ function showChargedStatus() {
   const label = launchButton.querySelector('span');
   const description = launchButton.querySelector('small');
   if (stageIndex < sparkStages.length - 1) {
-    label.textContent = 'NEXT STAGE';
-    description.textContent = `${stageIndex + 2}단계 배열 확인`;
-    setStatus('STAGE COMPLETE', `${stageIndex + 1}단계 완료 · 충전율 ${value}%`, '다음 단계로 진행해 주세요.', `충전율 ${value}%예요. 다음 배열을 확인해 주세요.`);
+    label.textContent = t('spark.game.nextStage');
+    description.textContent = t('spark.game.nextDescription', { stage: stageIndex + 2 });
+    setStatus('STAGE COMPLETE', 'spark.game.chargedTitle', 'spark.game.chargedCopy', 'spark.game.chargedEve', { stage: stageIndex + 1, charge: value });
     return;
   }
-  label.textContent = 'LAUNCH';
-  description.textContent = '에너지 빔 발사 테스트';
-  setStatus('CHARGE COMPLETE', '4단계 완료 · 충전율 100%', '발사 테스트를 진행해 주세요.', '전체 충전이 완료됐어요. 발사 테스트를 진행해 주세요.');
+  label.textContent = t('spark.game.launch');
+  description.textContent = t('spark.game.launchDescription');
+  setStatus('CHARGE COMPLETE', 'spark.game.chargedTitle', 'spark.game.readyCopy', 'spark.game.readyEve', { stage: stageIndex + 1, charge: value });
 }
 
 function validatePlacement() {
@@ -226,8 +234,8 @@ function validatePlacement() {
     completeStage();
     return;
   }
-  const copy = stageIndex === 0 ? '세 Core의 위치를 다시 확인해 주세요.' : 'Core의 위치가 맞아도 표시 방향이 다르면 충전되지 않아요.';
-  setStatus('ARRAY MISMATCH', `${stageIndex + 1}단계 배열 일부가 맞지 않아요`, copy, copy);
+  const copyKey = stageIndex === 0 ? 'spark.game.mismatchCopy1' : 'spark.game.mismatchCopy';
+  setStatus('ARRAY MISMATCH', 'spark.game.mismatchTitle', copyKey, copyKey, { stage: stageIndex + 1 });
 }
 
 function resetPlacement() {
@@ -260,7 +268,7 @@ async function revealArray() {
     setRotation(core, answer.rotation);
   });
   updateProgress();
-  setStatus('CORE SCAN', `${stageIndex + 1}단계 배열을 기억하세요`, '4초 뒤 Core가 보관함으로 이동합니다.', getStage().copy);
+  setStatus('CORE SCAN', 'spark.game.revealTitle', 'spark.game.revealCopy', getStage().copyKey, { stage: stageIndex + 1 });
   if (!await wait(4000)) return;
   if (phase === 'reveal') preparePlay();
 }
@@ -282,7 +290,7 @@ function placeSelectedCore(slot) {
   if (phase !== 'play' || !selectedCore) return;
   const occupied = slot.querySelector('[data-core]');
   if (occupied && occupied !== selectedCore) {
-    setStatus('SLOT OCCUPIED', '이미 Core가 배치된 Slot이에요', '다른 빈 Slot을 선택해 주세요.', '이 Slot에는 이미 Core가 있어요.');
+    setStatus('SLOT OCCUPIED', 'spark.game.occupiedTitle', 'spark.game.occupiedCopy', 'spark.game.occupiedEve');
     return;
   }
   moveCore(selectedCore, slot);
@@ -333,7 +341,7 @@ rotateButton.addEventListener('click', () => {
 hintButton.addEventListener('click', renderHints);
 resetButton.addEventListener('click', () => {
   preparePlay();
-  setStatus('CORE RESET', `${stageIndex + 1}단계 Core를 보관함으로 되돌렸어요`, '정답 배열을 떠올리며 다시 배치해 보세요.');
+  setStatus('CORE RESET', 'spark.game.resetTitle', 'spark.game.resetCopy', 'spark.game.resetCopy', { stage: stageIndex + 1 });
 });
 document.querySelector('[data-spark-guide-start]').addEventListener('click', startCountdown);
 document.querySelector('[data-spark-guide-return]').addEventListener('click', () => guide.close());
@@ -400,7 +408,7 @@ launchButton.addEventListener('click', async () => {
   }
   setPhase('launching');
   game.classList.add('is-launching');
-  setStatus('LAUNCH TEST', '에너지 빔을 발사합니다', '타워 출력 상태를 확인하고 있어요.', '에너지 빔 발사를 시작할게요.');
+  setStatus('LAUNCH TEST', 'spark.game.launchTitle', 'spark.game.launchCopy', 'spark.game.launchEve');
   if (!await wait(1700)) return;
   setPhase('complete');
   completion.hidden = false;
@@ -448,6 +456,19 @@ function restoreCheckpoint(value) {
     validatePlacement();
   }
 }
+function refreshLanguage() {
+  applyDocumentLanguage();
+  slots.forEach((slot, index) => slot.setAttribute('aria-label', t('spark.game.slot', { number: index + 1 })));
+  if (phase === 'charged' || phase === 'paused' && pausedPhase === 'charged') showChargedStatus();
+  else renderStatus();
+}
+window.addEventListener('novaland:languagechange', refreshLanguage);
+window.addEventListener('storage', event => {
+  if (event.key !== 'novaLandLanguage') return;
+  initializeLanguage();
+  refreshLanguage();
+});
+slots.forEach((slot, index) => slot.setAttribute('aria-label', t('spark.game.slot', { number: index + 1 })));
 window.addEventListener('pagehide', () => { sequenceId += 1; clearHints(); });
 window.addEventListener('load', centerBoard, { once: true });
 if (embedded) window.parent.postMessage({ type: 'novaland:spark-ready' }, window.location.origin);
