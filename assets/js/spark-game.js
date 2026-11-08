@@ -16,6 +16,7 @@ const pauseContent = document.querySelector('[data-spark-pause-panel]');
 renderMissionPause(pauseContent, { titleId: 'spark-pause-title', descriptionKey: 'spark.game.pausedCopy' });
 const hintButton = document.querySelector('[data-spark-hint]');
 const rotateButton = document.querySelector('[data-spark-rotate]');
+const returnButton = document.querySelector('[data-spark-return]');
 const resetButton = document.querySelector('[data-spark-reset]');
 const launchButton = document.querySelector('[data-spark-launch]');
 const pauseButton = document.querySelector('[data-spark-pause]');
@@ -91,6 +92,7 @@ function setPhase(nextPhase) {
   hintButton.disabled = !playing || Boolean(hintTimer);
   resetButton.disabled = !playing;
   rotateButton.disabled = !playing || !isRotatableCore(selectedCore);
+  returnButton.disabled = !playing || !selectedCore || !slots.includes(selectedCore.parentElement);
   pauseButton.disabled = ['guide', 'paused', 'complete'].includes(nextPhase);
   guideOpenButton.disabled = !['play', 'charged'].includes(nextPhase);
   launchButton.disabled = nextPhase !== 'charged';
@@ -148,6 +150,7 @@ function selectCore(core) {
   });
   selectedCore = core;
   rotateButton.disabled = phase !== 'play' || !isRotatableCore(selectedCore);
+  returnButton.disabled = phase !== 'play' || !slots.includes(core.parentElement);
 }
 
 function clearSelection() {
@@ -157,6 +160,7 @@ function clearSelection() {
   });
   selectedCore = null;
   rotateButton.disabled = true;
+  returnButton.disabled = true;
 }
 
 function moveCore(core, destination) {
@@ -309,10 +313,11 @@ function placeSelectedCore(slot) {
   if (phase !== 'play' || !selectedCore) return;
   const occupied = slot.querySelector('[data-core]');
   if (occupied && occupied !== selectedCore) {
-    setStatus('SLOT OCCUPIED', 'spark.game.occupiedTitle', 'spark.game.occupiedCopy', 'spark.game.occupiedEve');
-    return;
+    const origin = selectedCore.parentElement;
+    moveCore(occupied, slots.includes(origin) ? origin : storageSlots.get(occupied.dataset.core));
   }
   moveCore(selectedCore, slot);
+  returnButton.disabled = false;
   validatePlacement();
 }
 
@@ -356,6 +361,15 @@ rotateButton.addEventListener('click', () => {
   if (!selectedCore || phase !== 'play' || !isRotatableCore(selectedCore)) return;
   setRotation(selectedCore, Number(selectedCore.dataset.rotation) + 1);
   validatePlacement();
+});
+returnButton.addEventListener('click', () => {
+  if (phase !== 'play' || !selectedCore || !slots.includes(selectedCore.parentElement)) return;
+  moveCore(selectedCore, storageSlots.get(selectedCore.dataset.core));
+  returnButton.disabled = true;
+  clearHints();
+  setStatus('CORE STORAGE', 'spark.game.returnTitle', 'spark.game.returnCopy');
+  validatePlacement();
+  selectedCore.focus();
 });
 hintButton.addEventListener('click', renderHints);
 resetButton.addEventListener('click', () => {
@@ -527,7 +541,7 @@ function renderPractice() {
   practiceReset.disabled = false;
   practiceReveal.textContent = t('spark.game.practiceShow');
   practiceReveal.setAttribute('aria-expanded', String(practiceRevealed));
-  practice.querySelector('p').dataset.sizingText = ['spark.game.practiceObserve', 'spark.game.practiceHint', 'spark.game.practiceMismatch', 'spark.game.practiceSuccess', 'spark.game.occupiedCopy'].map(key => t(key)).sort((first, second) => second.length - first.length)[0];
+  practice.querySelector('p').dataset.sizingText = ['spark.game.practiceObserve', 'spark.game.practiceHint', 'spark.game.practiceMismatch', 'spark.game.practiceSuccess'].map(key => t(key)).sort((first, second) => second.length - first.length)[0];
   document.querySelector('[data-spark-practice-feedback]').textContent = t(practiceRevealed ? 'spark.game.practiceObserve' : connected ? 'spark.game.practiceSuccess' : practiceMessage || 'spark.game.practiceHint');
 }
 function selectPracticeCore(core) {
@@ -540,12 +554,13 @@ function selectPracticeCore(core) {
 function placePracticeCore(slot) {
   if (!practiceSelected) return;
   practiceRevealed = false;
-  if (practiceCores.some(core => core !== practiceSelected && core.parentElement === slot)) {
-    practiceMessage = 'spark.game.occupiedCopy';
-  } else {
-    moveCore(practiceSelected, slot);
-    practiceMessage = practiceCores.every(core => practiceSlots.includes(core.parentElement)) ? 'spark.game.practiceMismatch' : 'spark.game.practiceHint';
+  const occupied = practiceCores.find(core => core !== practiceSelected && core.parentElement === slot);
+  if (occupied) {
+    const origin = practiceSelected.parentElement;
+    moveCore(occupied, practiceSlots.includes(origin) ? origin : practiceHomes.get(occupied));
   }
+  moveCore(practiceSelected, slot);
+  practiceMessage = practiceCores.every(core => practiceSlots.includes(core.parentElement)) ? 'spark.game.practiceMismatch' : 'spark.game.practiceHint';
   renderPractice();
   practiceSelected.focus();
 }

@@ -144,6 +144,67 @@ test('SPARK keeps a placed Core selected for immediate rotation and clears it on
   assert.equal(game.element('[data-core="bolt"]').getAttribute('aria-pressed'), 'false');
 });
 
+test('SPARK corrects a full final array by returning one Core without resetting other placements', async () => {
+  const game = fixture({ stageIndex: 3, phase: 'play' });
+  const answers = state.sparkStages[3].answers;
+  assert.equal(game.element('[data-spark-return]').disabled, true);
+  for (const [id, answer] of Object.entries(answers)) {
+    const slot = id === 'circle' ? answers.triangle.slot : id === 'triangle' ? answers.circle.slot : answer.slot;
+    game.place(id, slot, answer.rotation);
+  }
+  assert.equal(game.phase(), 'play');
+  const triangle = game.element('[data-core="triangle"]');
+  triangle.dispatch('click');
+  game.element('[data-spark-pause]').dispatch('click');
+  assert.equal(game.element('[data-spark-return]').disabled, true);
+  game.element('[data-spark-return]').dispatch('click');
+  assert.equal(triangle.parentElement, game.element(`[data-slot="${answers.circle.slot}"]`));
+  game.element('[data-spark-pause-dialog]').close();
+  assert.equal(game.element('[data-spark-return]').disabled, false);
+  game.element('[data-spark-return]').dispatch('click');
+  assert.equal(triangle.parentElement, game.element('storage-triangle'));
+  assert.equal(Number(triangle.dataset.rotation), answers.triangle.rotation);
+  assert.equal(game.element('[data-spark-core-count]').textContent, '5');
+  assert.equal(game.element('[data-spark-return]').disabled, true);
+  const saved = game.messages.at(-1).checkpoint;
+  assert.equal(saved.placements.triangle.slot, null);
+  assert.equal(saved.placements.star.slot, answers.star.slot);
+  const restored = fixture(saved);
+  assert.equal(restored.element('[data-core="triangle"]').parentElement, restored.element('storage-triangle'));
+  assert.equal(Number(restored.element('[data-core="triangle"]').dataset.rotation), answers.triangle.rotation);
+  game.place('circle', answers.circle.slot);
+  game.place('triangle', answers.triangle.slot);
+  await game.tick(1600);
+  assert.equal(game.phase(), 'charged');
+  assert.equal(game.element('[data-spark-charge]').textContent, '100%');
+  assert.equal(game.element('[data-spark-return]').disabled, true);
+  game.element('[data-spark-return]').dispatch('click');
+  assert.equal(triangle.parentElement, game.element(`[data-slot="${answers.triangle.slot}"]`));
+});
+
+test('SPARK swaps occupied Slots with rotations intact and saves only the final arrangement', async () => {
+  const game = fixture({ stageIndex: 3, phase: 'play' });
+  const answers = state.sparkStages[3].answers;
+  for (const [id, answer] of Object.entries(answers)) {
+    game.place(id, id === 'circle' ? answers.triangle.slot : id === 'triangle' ? answers.circle.slot : answer.slot, answer.rotation);
+  }
+  const circle = game.element('[data-core="circle"]');
+  circle.dispatch('dragstart', { dataTransfer: { setData() {} } });
+  game.element(`[data-slot="${answers.circle.slot}"]`).dispatch('drop', { dataTransfer: { getData: () => 'circle' } });
+  assert.equal(game.messages.some(message => message.checkpoint?.placements.circle.slot === answers.circle.slot && message.checkpoint?.placements.triangle.slot === answers.triangle.slot), true);
+  assert.equal(Number(game.element('[data-core="triangle"]').dataset.rotation), answers.triangle.rotation);
+  await game.tick(1600);
+  assert.equal(game.phase(), 'charged');
+  assert.equal(game.element('[data-spark-charge]').textContent, '100%');
+
+  const partial = fixture({ stageIndex: 1, phase: 'play' });
+  partial.place('triangle', 0, 1);
+  partial.place('circle', 0);
+  assert.equal(partial.element('[data-core="triangle"]').parentElement, partial.element('storage-triangle'));
+  assert.equal(partial.element('[data-core="triangle"]').dataset.rotation, '1');
+  assert.equal(partial.messages.at(-1).checkpoint.placements.triangle.slot, null);
+});
+
 test('SPARK plays all four stages and publishes completion only after the launch test', async () => {
   const game = fixture({ stageIndex: 0, phase: 'play' });
   for (let stageIndex = 0; stageIndex < 4; stageIndex += 1) {
@@ -210,18 +271,19 @@ test('SPARK pause and hidden documents freeze countdown and charging transitions
 test('SPARK live language changes preserve placements, rotations and the active error message', () => {
   const game = fixture({ stageIndex: 1, phase: 'play' });
   game.place('triangle', 3, 1);
-  game.element('[data-core="bolt"]').dispatch('click');
-  game.element('[data-slot="3"]').dispatch('click');
-  assert.equal(game.element('[data-spark-status-title]').textContent, '이미 Core가 배치된 Slot이에요');
+  game.place('circle', 0);
+  game.place('hex', 4);
+  game.place('bolt', 2, 1);
+  assert.equal(game.element('[data-spark-status-title]').textContent, '2단계 배열 일부가 맞지 않아요');
   game.changeLanguage('en');
-  assert.equal(game.element('[data-spark-status-title]').textContent, 'This Slot already contains a Core');
-  assert.equal(game.element('[data-spark-status-copy]').textContent, 'Choose another empty Slot.');
+  assert.equal(game.element('[data-spark-status-title]').textContent, 'Part of the stage 2 array does not match');
+  assert.equal(game.element('[data-spark-status-copy]').textContent, 'Cores will not charge if their orientations differ, even when their positions match.');
   assert.equal(game.element('[data-core="triangle"]').parentElement, game.element('[data-slot="3"]'));
   assert.equal(game.element('[data-core="triangle"]').dataset.rotation, '1');
   assert.equal(game.element('[data-core="bolt"]').getAttribute('aria-pressed'), 'true');
   assert.equal(game.phase(), 'play');
   game.changeLanguage('ko');
-  assert.equal(game.element('[data-spark-status-title]').textContent, '이미 Core가 배치된 Slot이에요');
+  assert.equal(game.element('[data-spark-status-title]').textContent, '2단계 배열 일부가 맞지 않아요');
 });
 
 test('SPARK translates charged-stage actions and freezes the current countdown during a language change', async () => {
@@ -305,9 +367,10 @@ test('SPARK guide reveals an isolated two-Core four-Slot array and supports corr
   place(0);
   assert.equal(game.element('[data-spark-practice]').classList.contains('is-revealing'), false);
   select('triangle'); place(0);
-  assert.equal(game.element('[data-spark-practice-feedback]').textContent, '다른 빈 Slot을 선택해 주세요.');
+  assert.equal(game.element('[data-spark-practice-core="circle"]').parentElement, game.element('practice-home-circle'));
   place(2);
   assert.equal(game.element('[data-spark-practice]').classList.contains('is-connected'), false);
+  select('circle'); place(0);
   select('triangle'); place(3); game.element('[data-spark-practice-rotate]').dispatch('click');
   assert.equal(game.element('[data-spark-practice]').classList.contains('is-connected'), true);
   game.element('[data-spark-practice-reveal]').dispatch('click');
@@ -321,7 +384,7 @@ test('SPARK guide reveals an isolated two-Core four-Slot array and supports corr
 });
 
 
-test('SPARK guide drag and drop stays isolated and rejects occupied Slots and foreign payloads', () => {
+test('SPARK guide drag and drop swaps occupied Slots, stays isolated and rejects foreign payloads', () => {
   const game = fixture({ stageIndex: 1, phase: 'play' });
   const before = JSON.stringify(game.messages);
   const payload = new Map();
@@ -341,10 +404,10 @@ test('SPARK guide drag and drop stays isolated and rejects occupied Slots and fo
   assert.equal(slot.classList.contains('is-drop-target'), false);
   triangle.dispatch('dragstart', { dataTransfer });
   slot.dispatch('drop', { dataTransfer });
-  assert.equal(triangle.parentElement, game.element('practice-home-triangle'));
-  assert.equal(game.element('[data-spark-practice-feedback]').textContent, '다른 빈 Slot을 선택해 주세요.');
+  assert.equal(triangle.parentElement, slot);
+  assert.equal(game.element('[data-spark-practice-core="circle"]').parentElement, game.element('practice-home-circle'));
   payload.clear(); payload.set('text/plain', 'triangle');
   game.element('[data-spark-practice-slot="3"]').dispatch('drop', { dataTransfer });
-  assert.equal(triangle.parentElement, game.element('practice-home-triangle'));
+  assert.equal(triangle.parentElement, slot);
   assert.equal(JSON.stringify(game.messages), before);
 });
