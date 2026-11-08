@@ -32,7 +32,11 @@ const coreTotal = document.querySelector('[data-spark-core-total]');
 const charge = document.querySelector('[data-spark-charge]');
 const chargeBar = document.querySelector('[data-spark-charge-bar]');
 const practice = document.querySelector('[data-spark-practice]');
-const practiceCore = document.querySelector('[data-spark-practice-core]');
+const practiceCores = [...document.querySelectorAll('[data-spark-practice-core]')];
+const practiceSlots = [...document.querySelectorAll('[data-spark-practice-slot]')];
+const practiceHomes = new Map(practiceCores.map(core => [core, core.parentElement]));
+const practiceReveal = document.querySelector('[data-spark-practice-reveal]');
+const practiceAnswers = { circle: { slot: 0, rotation: 0 }, triangle: { slot: 3, rotation: 1 } };
 const practiceRotate = document.querySelector('[data-spark-practice-rotate]');
 const practiceReset = document.querySelector('[data-spark-practice-reset]');
 const embedded = new URLSearchParams(window.location.search).get('embedded') === '1';
@@ -46,8 +50,9 @@ let pausedPhase = 'play';
 let sequenceId = 0;
 let restoredFromParent = !embedded;
 let currentStatus = null;
-let practiceSelected = false;
-let practicePlaced = false;
+let practiceSelected = null;
+let practiceRevealed = true;
+let practiceMessage = '';
 let practiceRotation = 0;
 
 async function wait(duration, sequence = sequenceId) {
@@ -236,6 +241,7 @@ function showChargedStatus() {
   }
   label.textContent = t('spark.game.launch');
   description.textContent = t('spark.game.launchDescription');
+  launchButton.focus();
   setStatus('CHARGE COMPLETE', 'spark.game.chargedTitle', 'spark.game.readyCopy', 'spark.game.readyEve', { stage: stageIndex + 1, charge: value });
 }
 
@@ -437,10 +443,18 @@ launchButton.addEventListener('click', async () => {
   game.classList.add('is-launching');
   setStatus('LAUNCH TEST', 'spark.game.launchTitle', 'spark.game.launchCopy', 'spark.game.launchEve');
   if (!await wait(1700)) return;
-  setPhase('complete');
-  completion.hidden = false;
-  publishState({ complete: true });
+  finishMission();
 });
+
+function finishMission() {
+  launchButton.hidden = true;
+  setPhase('complete');
+  game.classList.remove('is-launching');
+  completion.hidden = false;
+  setStatus('MISSION COMPLETE', 'spark.game.completeTitle', 'spark.game.completeCopy');
+  document.querySelector('[data-spark-record]').focus();
+  publishState({ complete: true });
+}
 
 function centerBoard() {
   if (viewport.scrollWidth > viewport.clientWidth) viewport.scrollLeft = (viewport.scrollWidth - viewport.clientWidth) / 2;
@@ -478,34 +492,110 @@ function restoreCheckpoint(value) {
   if (phase === 'charged') {
     Object.values(getStage().answers).forEach(answer => slots[answer.slot].classList.add('is-charged'));
     showChargedStatus();
+    if (preview === 'completed') finishMission();
   } else {
     showPlayStatus();
     validatePlacement();
   }
 }
 
-function renderPractice() {
-  const connected = practicePlaced && practiceRotation === 1;
-  practice.classList.toggle('is-placed', practicePlaced);
-  practice.classList.toggle('is-connected', connected);
-  practiceCore.classList.toggle('is-selected', practiceSelected);
-  practiceCore.setAttribute('aria-pressed', String(practiceSelected));
-  setRotation(practiceCore, practiceRotation);
-  practiceCore.setAttribute('aria-label', t('spark.game.triangleLabel') + '. ' + t('spark.game.directions').split(',')[practiceRotation]);
-  practiceRotate.disabled = !practiceSelected;
-  practiceReset.disabled = !practiceSelected && !practicePlaced;
-  document.querySelector('[data-spark-practice-feedback]').textContent = t(connected ? 'spark.game.practiceSuccess' : practicePlaced ? 'spark.game.practiceRotate' : 'spark.game.practiceHint');
-  practice.querySelector('p').dataset.sizingText = ['spark.game.practiceHint', 'spark.game.practiceRotate', 'spark.game.practiceSuccess'].map(key => t(key)).sort((first, second) => second.length - first.length)[0];
+function isPracticeCorrect() {
+  return practiceCores.every(core => {
+    const answer = practiceAnswers[core.dataset.sparkPracticeCore];
+    return core.parentElement === practiceSlots[answer.slot] && Number(core.dataset.rotation) === answer.rotation;
+  });
 }
-practiceCore.addEventListener('click', () => { practiceSelected = true; renderPractice(); });
-document.querySelector('[data-spark-practice-slot]').addEventListener('click', () => { if (practiceSelected) { practicePlaced = true; renderPractice(); } });
-practiceRotate.addEventListener('click', () => { if (practiceSelected) { practiceRotation = (practiceRotation + 1) % 4; renderPractice(); } });
-practiceReset.addEventListener('click', () => {
-  practiceSelected = false;
-  practicePlaced = false;
-  practiceRotation = 0;
+
+function renderPractice() {
+  const connected = isPracticeCorrect();
+  practice.classList.toggle('is-connected', connected);
+  practice.classList.toggle('is-revealing', practiceRevealed);
+  practiceCores.forEach(core => {
+    const id = core.dataset.sparkPracticeCore;
+    core.disabled = false;
+    core.classList.toggle('is-selected', core === practiceSelected);
+    core.setAttribute('aria-pressed', String(core === practiceSelected));
+    core.setAttribute('aria-label', t(`spark.game.${id}Label`) + (id === 'triangle' ? '. ' + t('spark.game.directions').split(',')[practiceRotation] : ''));
+  });
+  practiceSlots.forEach((slot, index) => {
+    const target = slot.querySelector('.spark-slot__target');
+    target.disabled = false;
+    target.setAttribute('aria-label', t('spark.game.slot', { number: index + 1 }));
+    slot.classList.toggle('is-charged', connected && Object.values(practiceAnswers).some(answer => answer.slot === index));
+  });
+  practiceRotate.disabled = practiceSelected?.dataset.sparkPracticeCore !== 'triangle';
+  practiceReset.disabled = false;
+  practiceReveal.textContent = t('spark.game.practiceShow');
+  practiceReveal.setAttribute('aria-expanded', String(practiceRevealed));
+  practice.querySelector('p').dataset.sizingText = ['spark.game.practiceObserve', 'spark.game.practiceHint', 'spark.game.practiceMismatch', 'spark.game.practiceSuccess', 'spark.game.occupiedCopy'].map(key => t(key)).sort((first, second) => second.length - first.length)[0];
+  document.querySelector('[data-spark-practice-feedback]').textContent = t(practiceRevealed ? 'spark.game.practiceObserve' : connected ? 'spark.game.practiceSuccess' : practiceMessage || 'spark.game.practiceHint');
+}
+function selectPracticeCore(core) {
+  practiceRevealed = false;
+  practiceSelected = core;
+  practiceMessage = '';
   renderPractice();
-  practiceCore.focus();
+}
+
+function placePracticeCore(slot) {
+  if (!practiceSelected) return;
+  practiceRevealed = false;
+  if (practiceCores.some(core => core !== practiceSelected && core.parentElement === slot)) {
+    practiceMessage = 'spark.game.occupiedCopy';
+  } else {
+    moveCore(practiceSelected, slot);
+    practiceMessage = practiceCores.every(core => practiceSlots.includes(core.parentElement)) ? 'spark.game.practiceMismatch' : 'spark.game.practiceHint';
+  }
+  renderPractice();
+  practiceSelected.focus();
+}
+
+practiceCores.forEach(core => {
+  setRotation(core, 0);
+  core.addEventListener('click', () => selectPracticeCore(core));
+  core.addEventListener('dragstart', event => {
+    selectPracticeCore(core);
+    event.dataTransfer.setData('application/x-novaland-spark-practice', core.dataset.sparkPracticeCore);
+    event.dataTransfer.effectAllowed = 'move';
+  });
+  core.addEventListener('dragend', () => practiceSlots.forEach(slot => slot.classList.remove('is-drop-target')));
+});
+practiceSlots.forEach(slot => {
+  slot.querySelector('.spark-slot__target').addEventListener('click', () => placePracticeCore(slot));
+  slot.addEventListener('dragover', event => {
+    if (!practiceSelected) return;
+    event.preventDefault();
+    slot.classList.add('is-drop-target');
+    event.dataTransfer.dropEffect = 'move';
+  });
+  slot.addEventListener('dragleave', () => slot.classList.remove('is-drop-target'));
+  slot.addEventListener('drop', event => {
+    event.preventDefault();
+    slot.classList.remove('is-drop-target');
+    const id = event.dataTransfer.getData('application/x-novaland-spark-practice');
+    const core = practiceCores.find(item => item.dataset.sparkPracticeCore === id);
+    if (!core) return;
+    selectPracticeCore(core);
+    placePracticeCore(slot);
+  });
+});
+practiceReveal.addEventListener('click', () => { practiceRevealed = true; practiceMessage = ''; renderPractice(); });
+practiceRotate.addEventListener('click', () => {
+  if (practiceSelected?.dataset.sparkPracticeCore !== 'triangle') return;
+  practiceRevealed = false;
+  practiceRotation = (practiceRotation + 1) % 4;
+  setRotation(practiceSelected, practiceRotation);
+  practiceMessage = 'spark.game.practiceMismatch';
+  renderPractice();
+});
+practiceReset.addEventListener('click', () => {
+  practiceCores.forEach(core => { moveCore(core, practiceHomes.get(core)); setRotation(core, 0); });
+  practiceSelected = null;
+  practiceRevealed = true;
+  practiceRotation = 0;
+  practiceMessage = '';
+  renderPractice();
+  practiceReveal.focus();
 });
 renderPractice();
 

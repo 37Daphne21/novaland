@@ -6,7 +6,7 @@ import vm from 'node:vm';
 const read = name => readFileSync(new URL(`../assets/js/${name}.js`, import.meta.url), 'utf8').replace(/^import .*;\r?$/gm, '').replace(/^export /gm, '');
 const state = vm.runInNewContext(`${read('spark-game-state')}; ({ sparkStages, normalizeSparkCheckpoint, isSparkStageCorrect, isSparkRotatableCore, createSparkPreviewCheckpoint })`);
 
-function fixture(checkpoint = null, language = 'ko') {
+function fixture(checkpoint = null, language = 'ko', preview = '') {
   const elements = new Map();
   const messages = [];
   const listeners = new Map();
@@ -43,16 +43,21 @@ function fixture(checkpoint = null, language = 'ko') {
     storageSlot.append(core); return core;
   });
   const slots = Array.from({ length: 6 }, (_, index) => element(`[data-slot="${index}"]`));
+  const practiceCores = ['circle', 'triangle'].map(id => {
+    const core = element(`[data-spark-practice-core="${id}"]`); core.dataset.sparkPracticeCore = id;
+    element(`practice-home-${id}`).append(core); return core;
+  });
+  const practiceSlots = Array.from({ length: 4 }, (_, index) => element(`[data-spark-practice-slot="${index}"]`));
   const document = {
     hidden: false, documentElement: {}, body: element("body"),
     querySelector: selector => selector === "dialog[open]" ? [...elements.values()].find(node => node.open) ?? null : element(selector),
-    querySelectorAll: selector => selector === '[data-core]' ? cores : selector === '[data-slot]' ? slots : [],
+    querySelectorAll: selector => selector === '[data-core]' ? cores : selector === '[data-slot]' ? slots : selector === '[data-spark-practice-core]' ? practiceCores : selector === '[data-spark-practice-slot]' ? practiceSlots : [],
     addEventListener: (name, handler) => listeners.set(name, handler)
   };
   const parent = { postMessage: message => messages.push(JSON.parse(JSON.stringify(message))) };
   const window = {
     requestAnimationFrame: callback => callback(), localStorage: { getItem: () => language },
-    parent, location: { search: '?embedded=1', origin: 'http://localhost', assign() {} },
+    parent, location: { search: '?embedded=1&mission-preview=' + preview, origin: 'http://localhost', assign() {} },
     addEventListener: (name, handler) => listeners.set(name, handler),
     setTimeout: (callback, duration) => { timers.set(++timerId, { callback, remaining: duration }); return timerId; },
     clearTimeout: id => timers.delete(id)
@@ -99,7 +104,8 @@ test('SPARK preview checkpoints enter each play stage and the final launch test'
   assert.equal(testing.stageIndex, 3);
   assert.equal(testing.phase, 'charged');
   assert.equal(state.isSparkStageCorrect(3, testing.placements), true);
-  assert.equal(state.createSparkPreviewCheckpoint('completed'), null);
+  assert.equal(state.createSparkPreviewCheckpoint('completed').phase, 'charged');
+  assert.equal(state.isSparkStageCorrect(3, state.createSparkPreviewCheckpoint('completed').placements), true);
 });
 
 test('SPARK launch-test preview reaches completion through the launch button', async () => {
@@ -110,6 +116,7 @@ test('SPARK launch-test preview reaches completion through the launch button', a
   await game.tick(1800);
   assert.equal(game.phase(), 'complete');
   assert.equal(game.element('[data-spark-complete]').hidden, false);
+  assert.equal(game.element('[data-spark-launch]').hidden, true);
   assert.equal(game.messages.filter(message => message.complete).length, 1);
 });
 
@@ -241,9 +248,11 @@ test('SPARK guide practice preserves the live checkpoint and pause exits use exp
   game.place('triangle', 3, 1);
   game.element('[data-spark-guide-open]').dispatch('click');
   const before = JSON.stringify(game.messages.at(-1).checkpoint);
-  game.element('[data-spark-practice-core]').dispatch('click');
-  game.element('[data-spark-practice-slot]').dispatch('click');
-  game.element('[data-spark-practice-rotate]').dispatch('click');
+  for (const [id, slot] of [['circle', 0], ['triangle', 3]]) {
+    game.element(`[data-spark-practice-core="${id}"]`).dispatch('click');
+    game.element(`[data-spark-practice-slot="${slot}"] .spark-slot__target`).dispatch('click');
+    if (id === 'triangle') game.element('[data-spark-practice-rotate]').dispatch('click');
+  }
   assert.equal(game.element('[data-spark-practice]').classList.contains('is-connected'), true);
   game.element('[data-spark-practice-reset]').dispatch('click');
   assert.equal(JSON.stringify(game.messages.at(-1).checkpoint), before);
@@ -269,4 +278,73 @@ test('SPARK restart clears all stages and cancels a suspended charge transition'
   await game.tick(6500);
   assert.equal(game.phase(), 'play');
   assert.equal(game.messages.at(-1).checkpoint.stageIndex, 0);
+});
+
+
+test('SPARK completed preview publishes the final record without replaying the launch', () => {
+  const game = fixture(state.createSparkPreviewCheckpoint('completed'), 'en', 'completed');
+  assert.equal(game.phase(), 'complete');
+  assert.equal(game.element('[data-spark-complete]').hidden, false);
+  assert.equal(game.element('[data-spark-launch]').hidden, true);
+  assert.equal(game.element('[data-spark-status-title]').textContent, 'The energy tower is operational');
+  assert.equal(game.messages.filter(message => message.complete).length, 1);
+});
+
+
+test('SPARK guide reveals an isolated two-Core four-Slot array and supports correction, rotation and reset', () => {
+  const game = fixture({ stageIndex: 1, phase: 'play' });
+  const before = JSON.stringify(game.messages);
+  assert.equal(game.element('[data-spark-practice-core="circle"]').disabled, false);
+  assert.equal(game.element('[data-spark-practice]').classList.contains('is-revealing'), true);
+  const select = id => game.element(`[data-spark-practice-core="${id}"]`).dispatch('click');
+  const place = slot => game.element(`[data-spark-practice-slot="${slot}"] .spark-slot__target`).dispatch('click');
+  select('circle');
+  assert.equal(game.element('[data-spark-practice]').classList.contains('is-revealing'), false);
+  game.element('[data-spark-practice-reveal]').dispatch('click');
+  assert.equal(game.element('[data-spark-practice]').classList.contains('is-revealing'), true);
+  place(0);
+  assert.equal(game.element('[data-spark-practice]').classList.contains('is-revealing'), false);
+  select('triangle'); place(0);
+  assert.equal(game.element('[data-spark-practice-feedback]').textContent, '다른 빈 Slot을 선택해 주세요.');
+  place(2);
+  assert.equal(game.element('[data-spark-practice]').classList.contains('is-connected'), false);
+  select('triangle'); place(3); game.element('[data-spark-practice-rotate]').dispatch('click');
+  assert.equal(game.element('[data-spark-practice]').classList.contains('is-connected'), true);
+  game.element('[data-spark-practice-reveal]').dispatch('click');
+  game.changeLanguage('en');
+  assert.equal(game.element('[data-spark-practice-core="triangle"]').dataset.rotation, '1');
+  game.element('[data-spark-practice-reset]').dispatch('click');
+  assert.equal(game.element('[data-spark-practice-core="triangle"]').parentElement, game.element('practice-home-triangle'));
+  assert.equal(game.element('[data-spark-practice-core="triangle"]').dataset.rotation, '0');
+  assert.equal(game.element('[data-spark-practice]').classList.contains('is-connected'), false);
+  assert.equal(JSON.stringify(game.messages), before);
+});
+
+
+test('SPARK guide drag and drop stays isolated and rejects occupied Slots and foreign payloads', () => {
+  const game = fixture({ stageIndex: 1, phase: 'play' });
+  const before = JSON.stringify(game.messages);
+  const payload = new Map();
+  const dataTransfer = { setData: (type, value) => payload.set(type, value), getData: type => payload.get(type) ?? '' };
+  const circle = game.element('[data-spark-practice-core="circle"]');
+  const triangle = game.element('[data-spark-practice-core="triangle"]');
+  const slot = game.element('[data-spark-practice-slot="0"]');
+  circle.dispatch('dragstart', { dataTransfer });
+  assert.equal(payload.get('application/x-novaland-spark-practice'), 'circle');
+  assert.equal(game.element('[data-spark-practice]').classList.contains('is-revealing'), false);
+  game.element('[data-spark-practice-reveal]').dispatch('click');
+  circle.dispatch('dragstart', { dataTransfer });
+  slot.dispatch('dragover', { dataTransfer });
+  assert.equal(slot.classList.contains('is-drop-target'), true);
+  slot.dispatch('drop', { dataTransfer });
+  assert.equal(circle.parentElement, slot);
+  assert.equal(slot.classList.contains('is-drop-target'), false);
+  triangle.dispatch('dragstart', { dataTransfer });
+  slot.dispatch('drop', { dataTransfer });
+  assert.equal(triangle.parentElement, game.element('practice-home-triangle'));
+  assert.equal(game.element('[data-spark-practice-feedback]').textContent, '다른 빈 Slot을 선택해 주세요.');
+  payload.clear(); payload.set('text/plain', 'triangle');
+  game.element('[data-spark-practice-slot="3"]').dispatch('drop', { dataTransfer });
+  assert.equal(triangle.parentElement, game.element('practice-home-triangle'));
+  assert.equal(JSON.stringify(game.messages), before);
 });

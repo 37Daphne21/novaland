@@ -51,8 +51,8 @@ export function isSparkStageCorrect(stageIndex, placements) {
 }
 
 export function createSparkPreviewCheckpoint(phase, stageIndex = 0) {
-  if (!sparkStages[stageIndex] || !['play', 'testing'].includes(phase)) return null;
-  const testing = phase === 'testing';
+  if (!sparkStages[stageIndex] || !['play', 'testing', 'completed'].includes(phase)) return null;
+  const testing = ['testing', 'completed'].includes(phase);
   const previewStageIndex = testing ? sparkStages.length - 1 : stageIndex;
   const placements = Object.fromEntries(Object.entries(sparkStages[previewStageIndex].answers).map(([id, answer]) => [id, testing ? answer : { slot: null, rotation: 0 }]));
   return normalizeSparkCheckpoint({ stageIndex: previewStageIndex, phase: testing ? 'charged' : 'play', placements });

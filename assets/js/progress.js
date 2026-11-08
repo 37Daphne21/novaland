@@ -148,7 +148,7 @@ export function getMissionPreview() {
   const phases = {
     coaster: ['control-room', 'control-room-completed', 'guide', 'countdown', 'play', 'failed', 'testing', 'completed'],
     luna: ['control-room', 'guide', 'play', 'completed'],
-    spark: ['control-room', 'control-room-completed', 'guide', 'play', 'testing']
+    spark: ['control-room', 'control-room-completed', 'guide', 'play', 'testing', 'completed']
   };
   const stage = params.get('stage');
   const stagedSparkPhase = facility === 'spark' && phase === 'play';

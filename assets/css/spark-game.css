@@ -488,6 +488,13 @@
   cursor: default;
 }
 
+.spark-game[data-spark-phase="complete"] .spark-core-bank,
+.spark-game[data-spark-phase="complete"] .spark-game__controls,
+.spark-game[data-spark-phase="complete"] .spark-game__status,
+.spark-game[data-spark-phase="complete"] .spark-game__footer {
+  display: none;
+}
+
 .spark-game__launch {
   position: absolute;
   left: 50%;
@@ -605,86 +612,115 @@
 }
 
 .spark-guide__board {
+  --spark-core-size: 3rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1rem;
+  padding-block: 1rem;
+}
+
+.spark-guide__bank {
+  display: grid;
+  justify-items: center;
+  gap: .5rem;
+}
+
+.spark-guide__bank h4 {
+  font-size: .8125rem;
+  text-align: center;
+}
+
+.spark-guide__bank > div {
   position: relative;
   display: grid;
   place-items: center;
-  height: 10rem;
-}
-
-.spark-guide__board .spark-core {
-  position: absolute;
-  left: 25%;
-  transform: translateX(-50%);
-  width: 5rem;
-  flex: none;
-}
-
-.spark-guide__target {
-  position: absolute;
-  left: 75%;
-  transform: translateX(-50%);
-  width: 5rem;
+  width: var(--spark-core-size);
   aspect-ratio: 1;
-  border: 2px dashed #ffc14d;
+  border: 1px dashed rgba(255, 195, 78, .3);
   border-radius: 50%;
-  background: rgba(255, 184, 74, .08);
 }
 
-.spark-guide__target::after {
+.spark-guide .spark-core {
+  position: relative;
+  width: var(--spark-core-size);
+  transform: none;
+}
+
+.spark-guide__bank > div > .spark-core {
   position: absolute;
-  right: -.5rem;
-  top: calc(50% - .125rem);
-  width: .75rem;
-  height: .25rem;
-  background: #ffc14d;
-  content: "";
+}
+
+.spark-guide .spark-core > i,
+.spark-guide .spark-hint-core > i {
+  width: 1.5rem;
+}
+
+.spark-guide .spark-core > span {
+  display: none;
+}
+
+.spark-guide__tower {
+  display: grid;
+  grid-template-columns: repeat(2, 4rem);
+  gap: .75rem;
+}
+
+.spark-guide__slot {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  border: 1px solid #9f7939;
+  border-radius: 50%;
+  background: rgba(255, 184, 74, .06);
+}
+
+.spark-guide__slot::before {
+  position: absolute;
+  top: -.25rem;
+  left: -.25rem;
+  padding: .125rem .35rem;
+  border-radius: 50%;
+  color: #f2dfbd;
+  background: #07101a;
+  font-size: .8125rem;
+  content: attr(data-slot-number);
+}
+
+.spark-guide__slot .spark-hint-core {
+  opacity: .45;
+  animation: none;
+  pointer-events: none;
+}
+
+.spark-guide:not(.is-revealing) .spark-hint-core {
+  display: none;
+}
+
+.spark-guide__slot.is-drop-target,
+.spark-guide__slot.is-charged {
+  border-color: #ffe07a;
+  box-shadow: 0 0 1rem rgba(255, 184, 74, .45);
 }
 
 .spark-game__dialog .mission-guide__content h3 {
   font-size: 1rem;
 }
 
-.spark-guide.is-placed .spark-guide__board .spark-core {
-  position: absolute;
-  left: 75%;
-  transform: translateX(-50%);
-}
-
-.spark-guide.is-connected .spark-guide__target {
-  border-style: solid;
-  box-shadow: 0 0 1.5rem rgba(255, 184, 74, .5);
-}
-
 .spark-game__complete {
-  position: absolute;
+  position: fixed;
   z-index: 20;
   inset: 0;
   display: grid;
-  place-content: center;
-  justify-items: center;
+  overflow: auto;
+  padding: 2rem 1rem;
   text-align: center;
-  background: radial-gradient(circle at 50% 42%, rgba(255, 193, 72, .18), rgba(1, 6, 12, .72) 36%, rgba(1, 6, 12, .9));
+  background: rgba(1, 6, 12, .72);
 }
 
 .spark-game__complete[hidden] {
   display: none;
-}
-
-.spark-game__complete > span {
-  color: #ffc34e;
-  font: 600 .8125rem var(--font-numeric);
-  letter-spacing: .16em;
-}
-
-.spark-game__complete h2 {
-  margin-top: .45rem;
-  color: #fff0c8;
-  font: 500 2rem var(--font-display);
-}
-
-.spark-game__complete p {
-  margin-block: .6rem 1.25rem;
-  color: #d8c4a3;
 }
 
 .spark-game.is-launching .spark-chamber::after {
@@ -746,6 +782,34 @@
   .spark-game__footer {
     left: 1.5rem;
     bottom: 1rem;
+  }
+}
+
+@media (max-height: 38rem) and (min-width: 56.0625rem), (min-width: 56.0625rem) and (min-aspect-ratio: 2 / 1) {
+  .spark-game__header {
+    inset: .8rem 1.5rem auto;
+    grid-template-columns: 1fr auto;
+  }
+
+  .spark-game__identity {
+    justify-self: start;
+  }
+
+  .spark-game__progress {
+    position: absolute;
+    top: 3.25rem;
+    right: 0;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: .5rem;
+    width: 11.5rem;
+    min-width: 0;
+    padding: .5rem;
+  }
+
+  .spark-game__controls {
+    top: 9.5rem;
+    right: 1.5rem;
+    transform: none;
   }
 }
 

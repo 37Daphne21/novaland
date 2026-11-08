@@ -336,7 +336,7 @@ test('facility preview routes isolate saves, unlock prerequisites and reject uns
   for (const facility of ['coaster', 'luna', 'spark']) {
     const phases = facility === 'coaster' ? ['control-room', 'control-room-completed', 'guide', 'countdown', 'play', 'failed', 'testing', 'completed']
       : facility === 'luna' ? ['control-room', 'guide', 'play', 'completed']
-      : ['control-room', 'control-room-completed', 'guide', 'play', 'testing'];
+      : ['control-room', 'control-room-completed', 'guide', 'play', 'testing', 'completed'];
     for (const phase of phases) {
       const api = progressFixture(`?facility=${facility}&mission-preview=${phase}`);
       api.window.localStorage.setItem('novaLandProgress', 'existing-user-data');
@@ -356,7 +356,7 @@ test('facility preview routes isolate saves, unlock prerequisites and reject uns
     assert.equal(preview.valid, true);
     assert.equal(preview.stageIndex, stage - 1);
   }
-  for (const query of ['?facility=spark&mission-preview=countdown', '?facility=spark&mission-preview=reveal', '?facility=spark&mission-preview=charging', '?facility=spark&mission-preview=charged', '?facility=spark&mission-preview=completed', '?facility=spark&mission-preview=failed', '?facility=spark&mission-preview=paused', '?facility=spark&mission-preview=play&stage=0', '?facility=spark&mission-preview=play&stage=5', '?facility=spark&mission-preview=testing&stage=2', '?facility=luna&mission-preview=testing', '?facility=coaster&mission-preview=unknown', '?facility=coaster&mission-preview=paused', '?facility=luna&mission-preview=paused', '?mission-preview=guide']) {
+  for (const query of ['?facility=spark&mission-preview=countdown', '?facility=spark&mission-preview=reveal', '?facility=spark&mission-preview=charging', '?facility=spark&mission-preview=charged', '?facility=spark&mission-preview=failed', '?facility=spark&mission-preview=paused', '?facility=spark&mission-preview=play&stage=0', '?facility=spark&mission-preview=play&stage=5', '?facility=spark&mission-preview=testing&stage=2', '?facility=luna&mission-preview=testing', '?facility=coaster&mission-preview=unknown', '?facility=coaster&mission-preview=paused', '?facility=luna&mission-preview=paused', '?mission-preview=guide']) {
     assert.equal(progressFixture(query).getMissionPreview().valid, false);
   }
   assert.equal(progressFixture('?mission-preview=completed&control-room=luna').getMissionPreview().valid, false);
