@@ -54,6 +54,10 @@
   pointer-events: auto;
 }
 
+.spark-game[data-spark-phase="countdown"] .spark-game__header {
+  z-index: 31;
+}
+
 .spark-game__identity {
   text-shadow: 0 2px 6px #050b13, 0 0 20px #050b13;
 }
@@ -197,6 +201,10 @@
   transition: border-color .18s ease, box-shadow .18s ease, opacity .25s ease, transform .25s ease;
 }
 
+.spark-core-bank .spark-core {
+  padding-bottom: 1rem;
+}
+
 .spark-core:hover,
 .spark-core:focus-visible,
 .spark-core.is-selected {
@@ -219,6 +227,10 @@
   transition: transform .28s var(--ease-out);
 }
 
+.spark-core-bank .spark-core > i {
+  width: min(2.25rem, calc(var(--spark-core-size) - 2rem));
+}
+
 .spark-core > i::after,
 .spark-hint-core > i::after {
   position: absolute;
@@ -238,6 +250,7 @@
   bottom: .25rem;
   color: #d7b879;
   font-size: .8125rem;
+  line-height: 1;
 }
 
 .spark-core--circle > i {
