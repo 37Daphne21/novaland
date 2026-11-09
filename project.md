@@ -1165,6 +1165,7 @@ Control Room, Guide, Countdown, Play, Pause, Fail과 Complete는 공통 Mission 
 - 복구 결과: Core 활성화, 전력 공급과 도시 조명 복구
 - 관제실은 2560×1440 WebP 배경 `assets/images/control-room/bg-control-room-spark.webp`를 사용한다. MAP 왼쪽 아래 에너지 타워 내부에서 도시 전력망과 중앙 에너지 Core를 조망하는 구도이며, 코스터·루나와 같은 금속·유리 재질과 야간 도시 분위기를 유지한다. 청록 야경 위에 Amber Orange 에너지 조명을 사용하고 좌우 정보 Panel과 하단 미션 Button이 배경의 Core·관제 Table을 가리지 않도록 구성한다.
 - SPARK 관제실은 공통 Control Room 구조를 재사용하고 시설 고유 문구·상태·아이콘·Amber Theme만 분리한다. MISSION START는 간단한 3단계 Guide를 거쳐 카운트다운·정답 공개·Core 배치 화면으로 진입한다. 관제실의 추가 시각 디벨롭은 게임 화면과 전체 SPARK Flow를 완성한 뒤 진행한다.
+- 스파크의 MISSION START와 계속하기 버튼은 금빛 프레임 안쪽에 가는 앰버 광선을 4초 주기로 통과시킨다. 완료·비활성·모션 감소 상태에는 광선을 표시하지 않는다.
 
 
 ### WONDER PARADE HALL
@@ -1178,6 +1179,7 @@ Control Room, Guide, Countdown, Play, Pause, Fail과 Complete는 공통 Mission 
 - 완료: 모든 위치와 순서를 만족하고 Stage 활성화
 - 스파크 복구 후 MAP에서 원더 관제실을 연다. 공통 관제실에 핑크 테마를 적용하고 EVE가 대열 문제를 안내한다. 복구 현황에는 무대 상태·출연진 배치 수·행진 순서 확인 상태를 표시한다.
 - 관제실 배경은 2560×1440 WebP를 사용한다. 금속과 유리로 된 관제실 너머로 MAP의 곡면 홀과 관람차, 행진을 기다리는 분홍색 야간 광장을 보여준다.
+- 원더의 MISSION START와 계속하기 버튼은 넓은 로즈골드 조명이 5초 주기로 부드럽게 지나간다. 완료·비활성·모션 감소 상태에는 광선을 표시하지 않는다.
 - 배치가 끝난 뒤 `퍼레이드 시작`을 눌러 배열을 검사하며, 맞으면 같은 무대에서 조명을 켜고 행진을 시작한다. 배치는 저장하고 관제실 복귀 및 새로고침 후 `계속하기`에서 복원한다. 첫 판의 행진은 다시 재생할 수 있다. 시설 전체 복구와 Stamp는 별도 완료 흐름에 연결한다. Preview는 실제 저장과 분리한다.
 - 난이도: Character 수, 유사한 외형, Hint 감소와 제한 시간으로 상승
 - 복구 결과: Stage 조명, 공연과 Parade 재개
