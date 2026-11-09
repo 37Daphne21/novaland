@@ -1174,7 +1174,11 @@ Control Room, Guide, Countdown, Play, Pause, Fail과 Complete는 공통 Mission 
 - 장르: Parade Arrangement Puzzle
 - 핵심 조작: Character를 지정 위치와 행진 순서에 맞게 Drag
 - 규칙: 빈 위치에만 배치, 잘못 배치한 Character는 재이동 가능
+- 첫 배열은 북 연주자·깃발 기수·별 무용수 세 캐릭터로 구성한다. 단서를 보고 첫 박자 → 깃발 → 마지막 별의 순서로 배치한다. 드래그와 선택 후 자리 누르기를 함께 지원하고, 가득 찬 대열은 캐릭터 하나를 빼서 교정할 수 있다.
 - 완료: 모든 위치와 순서를 만족하고 Stage 활성화
+- 스파크 복구 후 MAP에서 원더 관제실을 연다. 공통 관제실에 핑크 테마를 적용하고 EVE가 대열 문제를 안내한다. 복구 현황에는 무대 상태·출연진 배치 수·행진 순서 확인 상태를 표시한다.
+- 관제실 배경은 2560×1440 WebP를 사용한다. 금속과 유리로 된 관제실 너머로 MAP의 곡면 홀과 관람차, 행진을 기다리는 분홍색 야간 광장을 보여준다.
+- 배치가 끝난 뒤 `퍼레이드 시작`을 눌러 배열을 검사하며, 맞으면 같은 무대에서 조명을 켜고 행진을 시작한다. 배치는 저장하고 관제실 복귀 및 새로고침 후 `계속하기`에서 복원한다. 첫 판의 행진은 다시 재생할 수 있다. 시설 전체 복구와 Stamp는 별도 완료 흐름에 연결한다. Preview는 실제 저장과 분리한다.
 - 난이도: Character 수, 유사한 외형, Hint 감소와 제한 시간으로 상승
 - 복구 결과: Stage 조명, 공연과 Parade 재개
 
@@ -1247,6 +1251,8 @@ Control Room, Guide, Countdown, Play, Pause, Fail과 Complete는 공통 Mission 
 | spark | guide | Core 배열 Guide |
 | spark | play | Core 배치 직접 진입 |
 | spark | testing | 4단계 충전 100%에서 발사 테스트 → 완료·Passport 기록 |
+| wonder | play | 캐릭터 세 명의 대열 배치 → 퍼레이드 시작 |
+| wonder | control-room | 복구 전 관제실 → 첫 판 시작 |
 
 SPARK의 `play`에는 `&stage=1`부터 `&stage=4`까지 붙여 해당 단계의 배치 화면에 진입한다. 생략하면 1단계다. `testing`은 4단계 충전 완료에서 시작하며 LAUNCH Button으로 발사 연출과 완료·Passport 기록까지 확인한다. 실패 화면은 시간 제한이 없는 SPARK에 없다.
 

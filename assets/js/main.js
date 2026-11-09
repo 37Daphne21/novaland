@@ -15,6 +15,7 @@ import { createProfileEditor } from './profile-editor.js';
 import { clearProgress, getMissionPreview, isMissionPreview, readProgress, updateMissionProgress } from './progress.js';
 import { createSettingsController } from './settings.js';
 import { createSparkPreviewCheckpoint, isSparkStageCorrect, normalizeSparkCheckpoint, sparkStages } from './spark-game-state.js';
+import { normalizeParadeLineup } from './wonder-game-state.js';
 import { createDialogController, createModalController, createOverlayController, createToast } from './ui.js';
 
 initializeLanguage();
@@ -126,6 +127,7 @@ function createEmbeddedMission(facilityId) {
 
 const { entry: lunaEntry, frame: lunaFrame, open: openLuna, close: closeLuna } = createEmbeddedMission('luna');
 const { entry: sparkEntry, frame: sparkFrame, open: openSpark, close: closeSpark } = createEmbeddedMission('spark');
+const { entry: wonderEntry, frame: wonderFrame, open: openWonder, close: closeWonder } = createEmbeddedMission('wonder');
 
 function openMissionRecord(facilityId) {
   navigation.replace({ screen: 'map' });
@@ -141,6 +143,18 @@ function exitEmbeddedMission(destination) {
 }
 window.addEventListener('message', (event) => {
   if (event.origin !== window.location.origin) return;
+  if (event.source === wonderFrame.contentWindow && wonderEntry.open) {
+    const progress = readProgress(currentExplorer);
+    if (event.data?.type === 'novaland:wonder-ready') {
+      wonderFrame.contentWindow.postMessage({ type: 'novaland:wonder-restore', lineup: progress.missions.wonder.checkpoint?.lineup }, window.location.origin);
+    }
+    if (event.data?.type === 'novaland:wonder-state' && progress.facilities.wonder.status === 'available') {
+      const lineup = normalizeParadeLineup(event.data.lineup);
+      updateMissionProgress(progress, 'wonder', { phase: 'playing', checkpoint: { lineup } });
+    }
+    if (event.data?.type === 'novaland:wonder-exit') exitEmbeddedMission(event.data.destination);
+    return;
+  }
   if (event.source === sparkFrame.contentWindow && sparkEntry.open) {
     if (event.data?.type === 'novaland:spark-ready') {
       const progress = readProgress(currentExplorer);
@@ -283,6 +297,7 @@ function applyNavigationRoute(route, { previousRoute, source } = {}) {
   overlay.close();
   if (!route.lunaPlay) closeLuna();
   if (!route.sparkPlay) closeSpark();
+  if (!route.wonderPlay) closeWonder();
   mobileMap.reset();
   if (mission.isOpen()) {
     mission.close();
@@ -335,6 +350,9 @@ function applyNavigationRoute(route, { previousRoute, source } = {}) {
   if (route.screen === 'control-room' && route.facilityId === 'spark' && route.sparkPlay) {
     openSpark(route.previewPhase);
   }
+  if (route.screen === 'control-room' && route.facilityId === 'wonder' && route.wonderPlay && readProgress(currentExplorer).facilities.wonder.status === 'available') {
+    openWonder(route.previewPhase);
+  }
 }
 
 navigation = createNavigationController({ button: appBackButton, onNavigate: applyNavigationRoute });
@@ -354,6 +372,10 @@ async function handleDocumentClick(event) {
   }
   if (missionOpenButton && controlFacility?.id === 'spark') {
     navigation.push({ screen: 'control-room', facilityId: 'spark', sparkPlay: true });
+    return;
+  }
+  if (missionOpenButton && controlFacility?.id === 'wonder' && readProgress(currentExplorer).facilities.wonder.status === 'available') {
+    navigation.push({ screen: 'control-room', facilityId: 'wonder', wonderPlay: true });
     return;
   }
 
@@ -507,7 +529,7 @@ if (shouldPreviewMission) {
     controlRoom.show(facility);
     navigation?.push({ screen: 'control-room', facilityId: facility.id }, { applyRoute: false });
     if (!['control-room', 'control-room-completed'].includes(missionPreview.phase)) {
-      if (facility.id === 'luna' || facility.id === 'spark') {
+      if (['luna', 'spark', 'wonder'].includes(facility.id)) {
         navigation.push({ screen: 'control-room', facilityId: facility.id, [`${facility.id}Play`]: true, previewPhase: missionPreview.phase });
       } else {
         window.setTimeout(() => mission.open(facility, controlRoom.getFocusTarget(), { previewPhase: missionPreview.phase }), 120);
@@ -523,7 +545,7 @@ document.addEventListener('keydown', handleKeydown);
 document.addEventListener('fullscreenchange', settings.syncFullscreenToggle);
 window.addEventListener('novaland:languagechange', handleLanguageChange);
 window.addEventListener('storage', (event) => {
-  if (event.key === 'novaLandLanguage' && (lunaEntry.open || sparkEntry.open)) {
+  if (event.key === 'novaLandLanguage' && (lunaEntry.open || sparkEntry.open || wonderEntry.open)) {
     initializeLanguage();
     handleLanguageChange();
   }

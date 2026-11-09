@@ -82,6 +82,7 @@ export const facilities = [
     glow: { x: 72, y: 55 },
     mobileGlow: { x: 76, y: 61 },
     messageKey: 'facility.wonder.message',
+    resumeMessageKey: 'facility.wonder.resume',
     lockedMessageKey: 'facility.wonder.locked',
     controlRoomMessageKey: 'facility.wonder.control',
     completionMessageKey: 'facility.wonder.complete',

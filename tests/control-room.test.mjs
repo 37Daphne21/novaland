@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
+import { isParadeReady, normalizeParadeLineup } from '../assets/js/wonder-game-state.js';
 
 function fixture() {
   const nodes = new Map();
@@ -14,6 +15,7 @@ function fixture() {
   const create = vm.runInNewContext(`${source}; createControlRoomController`, {
     document: { querySelector: element, querySelectorAll: () => [] },
     readProgress: () => progress, t: key => key, getFacilityText: (facility, key) => `${facility.id}.${key}`,
+    isParadeReady, normalizeParadeLineup,
     createEveController: () => ({ speak() {}, cancel() {}, refreshLanguage() {} })
   });
   return { room: create(), element, progress };
@@ -92,4 +94,25 @@ test('SPARK shows saved charge and completed operation without allowing a restar
   assert.equal(element('[data-mission-open]').hidden, true);
   assert.equal(element('[data-control-room-operation]').hidden, false);
   assert.equal(element('[data-control-room-operation] strong').textContent, 'control.sparkOperationTitle');
+});
+
+test('WONDER control room gates mission entry and shows saved placement and confirmed order', () => {
+  const { room, element, progress } = fixture();
+  const wonder = { id: 'wonder', name: 'WONDER PARADE HALL' };
+  progress.facilities.wonder = { status: 'locked' };
+  room.show(wonder);
+  assert.equal(element('[data-mission-open]').hidden, true);
+  assert.equal(element('[data-control-room-connection-label]').textContent, 'control.wonderStage');
+  assert.equal(element('[data-control-room-step]').textContent, '0 / 3');
+  assert.equal(element('.control-room__segments').hidden, true);
+  progress.facilities.wonder.status = 'available';
+  progress.missions.wonder = { checkpoint: { lineup: ['drummer', 'drummer', null] } };
+  room.refreshState();
+  assert.equal(element('[data-mission-open]').hidden, false);
+  assert.equal(element('[data-mission-open] strong').textContent, 'mission.resume');
+  assert.equal(element('[data-control-room-step]').textContent, '1 / 3');
+  assert.equal(element('[data-control-room-check]').textContent, 'control.wonderPending');
+  progress.missions.wonder.checkpoint.lineup = ['drummer', 'flag', 'star'];
+  room.refreshState();
+  assert.equal(element('[data-control-room-check]').textContent, 'control.wonderReady');
 });

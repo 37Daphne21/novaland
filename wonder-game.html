@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>WONDER PARADE HALL</title>
+  <link rel="stylesheet" href="./assets/css/reset.css">
+  <link rel="stylesheet" href="./assets/css/common.css">
+  <link rel="stylesheet" href="./assets/css/style.css">
+  <link rel="stylesheet" href="./assets/css/wonder-game.css">
+</head>
+<body class="wonder-game">
+  <header class="wonder-game__header">
+    <h1 tabindex="-1" data-wonder-title>WONDER PARADE HALL</h1>
+    <button class="ui-button ui-button--secondary" type="button" data-wonder-exit data-i18n="mission.toControlRoom">관제실</button>
+  </header>
+  <main class="wonder-game__board">
+    <section class="ui-panel wonder-stage" data-wonder-stage aria-labelledby="wonder-stage-title">
+      <header><span class="ui-panel__eyebrow">PARADE LINEUP</span><h2 id="wonder-stage-title" data-i18n="wonder.game.title">행진 대열을 복구하세요</h2><p data-i18n="wonder.game.clue">북이 첫 박자를 열고, 깃발이 그 뒤를 따라요. 별은 마지막에 무대를 밝혀요.</p></header>
+      <ol class="wonder-stage__lineup" data-wonder-lineup></ol>
+    </section>
+    <section class="ui-panel wonder-cast" aria-labelledby="wonder-cast-title">
+      <header><h2 id="wonder-cast-title" data-i18n="wonder.game.cast">출연진</h2><p data-i18n="wonder.game.instructions">캐릭터를 빈 자리로 드래그하거나, 선택한 뒤 자리를 눌러 배치하세요.</p></header>
+      <ul class="wonder-cast__list" data-wonder-cast></ul>
+      <p class="wonder-game__status" data-wonder-status role="status" aria-atomic="true"></p>
+      <div class="wonder-game__actions"><button class="ui-button ui-button--secondary" type="button" data-wonder-return data-i18n="wonder.game.return" disabled>선택한 캐릭터 빼기</button><button class="ui-button ui-button--primary" type="button" data-wonder-launch data-i18n="wonder.game.launch" disabled>퍼레이드 시작</button></div>
+    </section>
+  </main>
+  <script type="module" src="./assets/js/wonder-game.js"></script>
+</body>
+</html>

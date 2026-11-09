@@ -2122,8 +2122,46 @@
   grid-column: 1;
 }
 
+.control-room[data-facility="wonder"] .control-room__backdrop {
+  position: fixed;
+  background-color: #140b1b;
+  background-image: url("../images/control-room/bg-control-room-wonder.webp");
+}
+
+.control-room[data-facility="wonder"] .control-room__title h1 {
+  max-width: 13ch;
+  font-size: clamp(1.85rem, 3vw, 3.5rem);
+  line-height: 1.05;
+}
+
+.control-room[data-facility="wonder"] .control-room__start {
+  border: 1px solid var(--color-wonder);
+  border-radius: .75rem;
+  background: radial-gradient(ellipse at center, #552644, #1d1326 80%);
+}
+
+.control-room[data-facility="wonder"] .control-room__start::before,
+.control-room[data-facility="wonder"] .control-room__start::after {
+  content: none;
+}
+
+.control-room[data-facility="wonder"] .control-room__start:not(.control-room__operation):hover {
+  background: radial-gradient(ellipse at center, #6b3056, #23162e 80%);
+}
+
+.control-room[data-facility="wonder"] .control-room__start-mark {
+  border-left-color: var(--color-wonder);
+  filter: none;
+}
+
+.control-room[data-facility="wonder"] .control-room__start small {
+  color: var(--color-wonder);
+}
+
+
 .luna-entry,
-.spark-entry {
+.spark-entry,
+.wonder-entry {
   width: 100%;
   height: 100svh;
   max-width: none;
@@ -2136,13 +2174,15 @@
 }
 
 .luna-entry[open],
-.spark-entry[open] {
+.spark-entry[open],
+.wonder-entry[open] {
   display: grid;
   grid-template-rows: minmax(0, 1fr);
 }
 
 .luna-entry iframe,
-.spark-entry iframe {
+.spark-entry iframe,
+.wonder-entry iframe {
   width: 100%;
   height: 100%;
   min-height: 0;

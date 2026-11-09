@@ -1,0 +1,124 @@
+.wonder-game {
+  min-height: 100dvh;
+  padding: clamp(1rem, 4vw, 3rem);
+  background: radial-gradient(ellipse at top, #33152d, #100b18 65%);
+}
+
+.wonder-game__header,
+.wonder-game__board {
+  width: min(100%, 62rem);
+  margin-inline: auto;
+}
+
+.wonder-game__header,
+.wonder-game__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+}
+
+.wonder-game__header h1 {
+  font-size: clamp(1rem, 3vw, 1.5rem);
+}
+
+.wonder-game__board {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.wonder-stage,
+.wonder-cast {
+  display: grid;
+  gap: 1rem;
+  padding: clamp(1rem, 3vw, 2rem);
+}
+
+.wonder-stage {
+  background: radial-gradient(ellipse at center top, #402038, #171021 72%);
+}
+
+.wonder-stage header,
+.wonder-cast header {
+  display: grid;
+  gap: .35rem;
+}
+
+.wonder-stage .ui-panel__eyebrow {
+  color: var(--color-wonder);
+}
+
+.wonder-stage h2,
+.wonder-cast h2 {
+  font-size: 1.125rem;
+}
+
+.wonder-stage p,
+.wonder-cast header p {
+  color: var(--color-text-subtle);
+}
+
+.wonder-stage__lineup,
+.wonder-cast__list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(.35rem, 2vw, 1rem);
+}
+
+.wonder-stage__lineup .ui-button,
+.wonder-cast__list .ui-button {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  min-height: 5.5rem;
+  padding: .5rem;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.wonder-stage__lineup .ui-button {
+  min-height: 7rem;
+  border-style: dashed;
+}
+
+.wonder-game [draggable="true"] {
+  cursor: grab;
+}
+
+.wonder-game [aria-pressed="true"],
+.wonder-game .is-drop-target {
+  border-color: var(--color-wonder);
+  background: rgba(255, 110, 182, .18);
+}
+
+.wonder-game__symbol {
+  color: var(--color-wonder);
+  font-size: 1.5rem;
+}
+
+.wonder-stage.is-running {
+  border-color: var(--color-wonder);
+  background: radial-gradient(ellipse at center top, #672f55, #211129 75%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .wonder-stage.is-running .wonder-game__symbol {
+    animation: wonder-march .7s ease-in-out 3 alternate;
+  }
+
+  .wonder-stage.is-running li:nth-child(2) .wonder-game__symbol {
+    animation-delay: .12s;
+  }
+
+  .wonder-stage.is-running li:nth-child(3) .wonder-game__symbol {
+    animation-delay: .24s;
+  }
+}
+
+@keyframes wonder-march {
+  to {
+    transform: translateY(-.5rem);
+  }
+}

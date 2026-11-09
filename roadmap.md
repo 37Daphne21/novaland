@@ -413,14 +413,19 @@ SPARK ENERGY TOWER의 4단계 Core 게임은 공통 Checkpoint에 위치·회전
 
 ## Phase 4. WONDER PARADE HALL
 
-상태: 예정
+상태: 일반 MAP에서 원더 관제실 → 첫 판 → 관제실 복귀와 배치 이어하기까지 연결했다. 시설 전체 완료와 복구 기록은 후속 작업이다.
 
-- [ ] 시설 배경과 Pink Theme
-- [ ] Character 확인
-- [ ] 위치와 행진 순서 배치
-- [ ] Stage 활성화와 Parade 시작
+- [x] 공통 관제실에 Pink Theme와 2560×1440 WebP 배경, EVE 안내, 무대·배치·순서 상태 적용
+- [ ] 첫 판의 CSS 무대와 캐릭터 임시 그래픽을 최종 아트로 교체
+- [x] 북 연주자·깃발 기수·별 무용수와 첫 배열 단서
+- [x] 빈자리 배치·재이동·빼기와 행진 순서 판정
+- [x] 첫 판의 Stage 점등과 Parade 시작 표현
 - [ ] 난이도별 Character와 Hint
+- [x] 일반 미션 진입·관제실 왕복·Checkpoint 및 이어하기
+- [ ] Guide·Pause
 - [ ] MAP과 Archive 갱신
+
+관제실은 `index.html?facility=wonder&mission-preview=control-room`, 첫 판은 `index.html?facility=wonder&mission-preview=play`에서 확인한다. 자동 테스트 70개 통과. 스파크까지 복구한 검수 계정의 일반 MAP에서 첫 판에 진입해 배치 1/3 저장·새로고침 복원·행진 시작·관제실 3/3·MAP 3/4를 확인했다. 390px 관제실에서 가로 넘침 없이 첫 판에 진입했다. 실제 마우스 드래그와 모바일 기기 터치는 미검수다.
 
 ---
 

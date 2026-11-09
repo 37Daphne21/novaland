@@ -2,6 +2,7 @@ import { getFacilityText } from './data.js';
 import { createEveController } from './eve.js';
 import { t } from './locales.js';
 import { readProgress } from './progress.js';
+import { isParadeReady, normalizeParadeLineup } from './wonder-game-state.js';
 
 const COASTER_STAGE_CONNECTIONS = [2, 3, 4];
 
@@ -52,6 +53,10 @@ export function createControlRoomController({ getExplorer, onShowScreen, showToa
   let facility = null;
 
   function getMessage(nextFacility, isCompleted) {
+    if (nextFacility.id === 'wonder') {
+      if (isCompleted) return t('facility.wonder.restored');
+      return t(readProgress(getExplorer?.()).missions.wonder?.checkpoint ? 'facility.wonder.resume' : 'control.wonderEve');
+    }
     if (isCompleted) {
       const restoredKey = nextFacility.id === 'luna' ? 'control.lunaRestoredEve' : nextFacility.id === 'spark' ? 'control.sparkRestoredEve' : 'control.restoredEve';
       return t(restoredKey, { facility: nextFacility.name });
@@ -69,14 +74,18 @@ export function createControlRoomController({ getExplorer, onShowScreen, showToa
   function render(nextFacility) {
     facility = nextFacility;
     const progress = readProgress(getExplorer?.());
-    const isCompleted = progress.facilities[nextFacility.id]?.status === 'completed';
+    const facilityStatus = progress.facilities[nextFacility.id]?.status;
+    const isCompleted = facilityStatus === 'completed';
     const isCoaster = nextFacility.id === 'coaster';
     const isLuna = nextFacility.id === 'luna';
     const isSpark = nextFacility.id === 'spark';
+    const isWonder = nextFacility.id === 'wonder';
     const checkpoint = progress.missions[nextFacility.id]?.checkpoint;
+    const wonderLineup = isWonder ? normalizeParadeLineup(checkpoint?.lineup) : [];
+    const wonderReady = isWonder && (isCompleted || isParadeReady(wonderLineup));
     const sparkSteps = isCompleted ? 4 : checkpoint ? checkpoint.stageIndex + (checkpoint.phase === 'charged' ? 1 : 0) : 0;
     const restoredPrefix = isLuna ? 'control.lunaRestored' : isSpark ? 'control.sparkRestored' : 'control.restored';
-    const objectivePrefix = isCompleted ? (isLuna ? 'lunaRestoredObjective' : isSpark ? 'sparkRestoredObjective' : 'restoredObjective') : isLuna ? 'lunaObjective' : isSpark ? 'sparkObjective' : 'objective';
+    const objectivePrefix = isWonder ? 'wonderObjective' : isCompleted ? (isLuna ? 'lunaRestoredObjective' : isSpark ? 'sparkRestoredObjective' : 'restoredObjective') : isLuna ? 'lunaObjective' : isSpark ? 'sparkObjective' : 'objective';
     const detail = document.querySelector('[data-control-room-detail]');
     const objectivePanel = document.querySelector('.control-room__objective');
     const statusPanel = document.querySelector('.control-room__status');
@@ -102,19 +111,19 @@ export function createControlRoomController({ getExplorer, onShowScreen, showToa
       type.textContent = getFacilityText(nextFacility, 'type');
     }
     if (alert) {
-      alert.textContent = t(isCompleted ? `${restoredPrefix}Alert` : isLuna ? 'control.lunaAlert' : isSpark ? 'control.sparkAlert' : 'control.systemAlert');
+      alert.textContent = t(isWonder ? (isCompleted ? 'control.wonderRunning' : 'control.wonderAlert') : isCompleted ? `${restoredPrefix}Alert` : isLuna ? 'control.lunaAlert' : isSpark ? 'control.sparkAlert' : 'control.systemAlert');
     }
     if (status) {
-      status.textContent = t(isCompleted ? `${restoredPrefix}Status` : checkpoint ? 'control.inProgress' : isLuna ? 'control.lunaStatus' : isSpark ? 'control.sparkStatus' : isCoaster ? 'control.coasterStatus' : 'control.pendingStatus');
+      status.textContent = t(isWonder ? (isCompleted ? 'control.wonderRunning' : checkpoint ? 'control.inProgress' : 'control.wonderStatus') : isCompleted ? `${restoredPrefix}Status` : checkpoint ? 'control.inProgress' : isLuna ? 'control.lunaStatus' : isSpark ? 'control.sparkStatus' : isCoaster ? 'control.coasterStatus' : 'control.pendingStatus');
     }
     if (objectiveEyebrow) {
       objectiveEyebrow.textContent = t(isCompleted ? 'control.restoredObjectiveEyebrow' : 'control.objectiveEyebrow');
     }
     if (objectiveTitle) {
-      objectiveTitle.textContent = t(isCompleted ? `${restoredPrefix}ObjectiveTitle` : isLuna ? 'control.lunaObjectiveTitle' : isSpark ? 'control.sparkObjectiveTitle' : 'control.objectiveTitle');
+      objectiveTitle.textContent = t(isWonder ? (isCompleted ? 'control.wonderRunning' : 'control.wonderObjectiveTitle') : isCompleted ? `${restoredPrefix}ObjectiveTitle` : isLuna ? 'control.lunaObjectiveTitle' : isSpark ? 'control.sparkObjectiveTitle' : 'control.objectiveTitle');
     }
     if (objective) {
-      objective.textContent = t(isCompleted ? `${restoredPrefix}Objective` : isLuna ? 'control.lunaObjective' : isSpark ? 'control.sparkObjective' : isCoaster ? 'control.coasterObjective' : 'control.pendingObjective');
+      objective.textContent = t(isWonder ? (isCompleted ? 'facility.wonder.restored' : 'control.wonderObjective') : isCompleted ? `${restoredPrefix}Objective` : isLuna ? 'control.lunaObjective' : isSpark ? 'control.sparkObjective' : isCoaster ? 'control.coasterObjective' : 'control.pendingObjective');
     }
     objectiveSteps.forEach((step) => {
       if (step.title) {
@@ -125,35 +134,36 @@ export function createControlRoomController({ getExplorer, onShowScreen, showToa
       }
     });
     if (service) {
-      service.textContent = t(isLuna ? (isCompleted ? 'control.lunaRestored' : 'control.lunaService') : isSpark ? (isCompleted ? 'control.sparkRestored' : 'control.sparkService') : isCompleted ? 'control.trainRunning' : 'control.trainStopped');
+      service.textContent = t(isWonder ? (isCompleted ? 'control.wonderRunning' : 'control.wonderService') : isLuna ? (isCompleted ? 'control.lunaRestored' : 'control.lunaService') : isSpark ? (isCompleted ? 'control.sparkRestored' : 'control.sparkService') : isCompleted ? 'control.trainRunning' : 'control.trainStopped');
     }
     if (rail) {
-      rail.textContent = isLuna ? t('control.lunaPrisms') : isSpark ? t(isCompleted ? 'control.sparkCoreStable' : 'control.sparkCoreUnstable') : `${coasterProgress.connections} / 9`;
+      rail.textContent = isWonder ? t(isCompleted ? 'control.wonderStageActive' : 'control.wonderStandby') : isLuna ? t('control.lunaPrisms') : isSpark ? t(isCompleted ? 'control.sparkCoreStable' : 'control.sparkCoreUnstable') : `${coasterProgress.connections} / 9`;
     }
     railSegments.forEach((segment, index) => { segment.classList.toggle('is-active', index < coasterProgress.connections); });
-    document.querySelector('.control-room__segments').hidden = isLuna || isSpark;
-    [['connection', 'railConnection', 'lunaConnection', 'sparkConnection'], ['step', 'restorationStep', 'lunaFlowers', 'sparkSequence'], ['check', 'systemCheck', 'lunaLotus', 'sparkCharge']].forEach(([name, commonKey, lunaKey, sparkKey]) => {
+    document.querySelector('.control-room__segments').hidden = isLuna || isSpark || isWonder;
+    [['connection', 'railConnection', 'lunaConnection', 'sparkConnection', 'wonderStage'], ['step', 'restorationStep', 'lunaFlowers', 'sparkSequence', 'wonderCast'], ['check', 'systemCheck', 'lunaLotus', 'sparkCharge', 'wonderOrder']].forEach(([name, commonKey, lunaKey, sparkKey, wonderKey]) => {
       const label = document.querySelector(`[data-control-room-${name}-label]`);
-      label.textContent = t(`control.${isLuna ? lunaKey : isSpark ? sparkKey : commonKey}`);
+      label.textContent = t(`control.${isWonder ? wonderKey : isLuna ? lunaKey : isSpark ? sparkKey : commonKey}`);
     });
-    document.querySelector('[data-control-room-start-description]').textContent = t(isLuna ? 'control.lunaStartDescription' : isSpark ? 'control.sparkStartDescription' : 'control.startDescription');
+    document.querySelector('[data-control-room-start-description]').textContent = t(isLuna ? 'control.lunaStartDescription' : isSpark ? 'control.sparkStartDescription' : isWonder ? 'wonder.game.title' : 'control.startDescription');
     const roomIcons = screen.querySelectorAll('use');
     roomIcons.forEach(icon => {
       if (!icon.dataset.originalHref) icon.dataset.originalHref = icon.getAttribute('href');
       const original = icon.dataset.originalHref;
-      const facilityIcon = isLuna || isSpark ? original.replace('#icon-rail', '#icon-signal').replace('#icon-shield', '#icon-mission') : original;
+      const facilityIcon = isLuna || isSpark || isWonder ? original.replace('#icon-rail', '#icon-signal').replace('#icon-shield', '#icon-mission') : original;
       icon.setAttribute('href', facilityIcon);
     });
     if (step) {
-      step.textContent = isLuna ? `${isCompleted ? 3 : checkpoint?.collected?.length ?? 0} / 3` : isSpark ? `${sparkSteps} / 4` : `${coasterProgress.steps} / 3`;
+      step.textContent = isWonder ? `${isCompleted ? wonderLineup.length : wonderLineup.filter(Boolean).length} / ${wonderLineup.length}` : isLuna ? `${isCompleted ? 3 : checkpoint?.collected?.length ?? 0} / 3` : isSpark ? `${sparkSteps} / 4` : `${coasterProgress.steps} / 3`;
     }
-    checkItem?.classList.toggle('is-warning', !isCompleted);
+    checkItem?.classList.toggle('is-warning', isWonder ? !wonderReady : !isCompleted);
     if (check) {
       check.textContent = t(isLuna ? (isCompleted ? 'control.lunaBloom' : checkpoint?.collected?.length === 3 ? 'control.lunaReady' : 'control.lunaSleeping') : isSpark ? (isCompleted ? 'control.sparkChargeComplete' : 'control.sparkChargeEmpty') : isCompleted ? 'control.inspectionComplete' : 'control.inspectionRequired');
       if (isSpark) check.textContent = `${sparkSteps * 25}%`;
+      if (isWonder) check.textContent = t(wonderReady ? 'control.wonderReady' : 'control.wonderPending');
     }
     if (missionStart) {
-      missionStart.hidden = (!isCoaster && !isLuna && !isSpark) || isCompleted;
+      missionStart.hidden = (!isCoaster && !isLuna && !isSpark && !(isWonder && facilityStatus === 'available')) || isCompleted;
       missionStart.disabled = false;
       missionStart.classList.toggle('is-pending', false);
       const label = missionStart.querySelector('strong');
@@ -161,10 +171,10 @@ export function createControlRoomController({ getExplorer, onShowScreen, showToa
       label.textContent = t(label.dataset.i18n);
     }
     if (operationStatus) {
-      operationStatus.hidden = (!isCoaster && !isLuna && !isSpark) || !isCompleted;
+      operationStatus.hidden = (!isCoaster && !isLuna && !isSpark && !isWonder) || !isCompleted;
       ['Title', 'Description'].forEach(suffix => {
         const label = operationStatus.querySelector(suffix === 'Title' ? 'strong' : '.control-room__start-copy > span');
-        label.dataset.i18n = 'control.' + (isLuna ? 'lunaOperation' : isSpark ? 'sparkOperation' : 'operation') + suffix;
+        label.dataset.i18n = 'control.' + (isWonder ? 'wonderOperation' : isLuna ? 'lunaOperation' : isSpark ? 'sparkOperation' : 'operation') + suffix;
         label.textContent = t(label.dataset.i18n);
       });
     }
