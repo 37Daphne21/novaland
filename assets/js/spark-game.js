@@ -1,4 +1,4 @@
-import { isSparkRotatableCore, normalizeSparkCheckpoint, sparkStages } from './spark-game-state.js';
+import { isSparkArrayCorrect, isSparkRotatableCore, normalizeSparkCheckpoint, sparkStages } from './spark-game-state.js';
 import { createModalController } from './ui.js';
 import { renderMissionPause } from './mission-pause.js';
 import { applyDocumentLanguage, initializeLanguage, t } from './locales.js';
@@ -10,7 +10,6 @@ const viewport = document.querySelector('.spark-game__viewport');
 const cores = [...document.querySelectorAll('[data-core]')];
 const storageSlots = new Map(cores.map(core => [core.dataset.core, core.parentElement]));
 const slots = [...document.querySelectorAll('[data-slot]')];
-const coreDragType = 'application/x-novaland-spark-core';
 const guide = document.querySelector('[data-spark-guide]');
 const pausePanel = document.querySelector('[data-spark-pause-dialog]');
 const pauseContent = document.querySelector('[data-spark-pause-panel]');
@@ -46,7 +45,6 @@ const embedded = new URLSearchParams(window.location.search).get('embedded') ===
 let phase = 'guide';
 let stageIndex = 0;
 let selectedCore = null;
-let draggedCore = null;
 let hintTimer = null;
 let started = false;
 let pausedPhase = 'play';
@@ -56,7 +54,6 @@ let currentStatus = null;
 let practiceSelected = null;
 let practiceRevealed = true;
 let practiceMessage = '';
-let practiceRotation = 0;
 
 async function wait(duration, sequence = sequenceId) {
   let elapsed = 0;
@@ -89,7 +86,7 @@ function setPhase(nextPhase) {
   phase = nextPhase;
   game.dataset.sparkPhase = nextPhase;
   const playing = nextPhase === 'play';
-  if (!playing) clearCoreDrag();
+  if (!playing) clearGameDrag();
   cores.forEach(core => { core.disabled = !playing; });
   slots.forEach(slot => { slot.querySelector('.spark-slot__target').disabled = !playing; });
   hintButton.disabled = !playing || Boolean(hintTimer);
@@ -102,15 +99,20 @@ function setPhase(nextPhase) {
   publishState();
 }
 
-function createCheckpoint(checkpointPhase = phase) {
+function readPlacements(boardCores, boardSlots, coreIdKey) {
   const placements = {};
-  getActiveCores().forEach((core) => {
-    const slot = slots.indexOf(core.parentElement);
-    placements[core.dataset.core] = {
+  boardCores.forEach(core => {
+    const slot = boardSlots.indexOf(core.parentElement);
+    placements[core.dataset[coreIdKey]] = {
       slot: slot >= 0 ? slot : null,
       rotation: Number(core.dataset.rotation)
     };
   });
+  return placements;
+}
+
+function createCheckpoint(checkpointPhase = phase) {
+  const placements = readPlacements(getActiveCores(), slots, 'core');
   return normalizeSparkCheckpoint({ stageIndex, phase: checkpointPhase, placements });
 }
 
@@ -181,9 +183,55 @@ function moveCore(core, destination) {
   if (core.dataset.core) updateCoreLabel(core);
 }
 
-function clearCoreDrag() {
-  draggedCore = null;
-  slots.forEach(slot => slot.classList.remove('is-drop-target'));
+function placeCoreInSlot(core, slot, boardCores, boardSlots, homeOf) {
+  const occupied = boardCores.find(item => item !== core && item.parentElement === slot);
+  if (occupied) {
+    const origin = core.parentElement;
+    moveCore(occupied, boardSlots.includes(origin) ? origin : homeOf(occupied));
+  }
+  moveCore(core, slot);
+}
+
+function bindCoreDrag(boardCores, boardSlots, { type, coreIdKey, canDrag, select, place }) {
+  let draggedCore = null;
+
+  function clearDrag() {
+    draggedCore = null;
+    boardSlots.forEach(slot => slot.classList.remove('is-drop-target'));
+  }
+
+  boardCores.forEach(core => {
+    core.addEventListener('dragstart', event => {
+      if (!canDrag(core) || !event.dataTransfer) {
+        event.preventDefault();
+        return;
+      }
+      select(core);
+      draggedCore = core;
+      event.dataTransfer.setData(type, core.dataset[coreIdKey]);
+      event.dataTransfer.effectAllowed = 'move';
+    });
+    core.addEventListener('dragend', clearDrag);
+  });
+
+  boardSlots.forEach(slot => {
+    slot.addEventListener('dragover', event => {
+      if (!draggedCore || !canDrag(draggedCore) || !event.dataTransfer?.types.includes(type)) return;
+      event.preventDefault();
+      event.dataTransfer.dropEffect = 'move';
+      slot.classList.add('is-drop-target');
+    });
+    slot.addEventListener('dragleave', () => slot.classList.remove('is-drop-target'));
+    slot.addEventListener('drop', event => {
+      event.preventDefault();
+      const core = draggedCore;
+      clearDrag();
+      if (!core || !canDrag(core) || event.dataTransfer?.getData(type) !== core.dataset[coreIdKey]) return;
+      select(core);
+      place(slot);
+    });
+  });
+  return clearDrag;
 }
 
 function clearHints() {
@@ -217,13 +265,6 @@ function updateProgress() {
   stageNumber.textContent = String(stageIndex + 1);
   coreCount.textContent = String(countPlacedCores());
   coreTotal.textContent = String(getActiveCoreIds().length);
-}
-
-function isCorrect() {
-  return Object.entries(getStage().answers).every(([id, answer]) => {
-    const core = document.querySelector(`[data-core="${id}"]`);
-    return core.parentElement === slots[answer.slot] && Number(core.dataset.rotation) === answer.rotation;
-  });
 }
 
 function showPlayStatus() {
@@ -270,7 +311,7 @@ function validatePlacement() {
   updateProgress();
   publishState();
   if (countPlacedCores() < getActiveCoreIds().length || phase !== 'play') return;
-  if (isCorrect()) {
+  if (isSparkArrayCorrect(getStage().answers, readPlacements(getActiveCores(), slots, 'core'))) {
     completeStage();
     return;
   }
@@ -280,7 +321,7 @@ function validatePlacement() {
 
 function resetPlacement() {
   clearHints();
-  clearCoreDrag();
+  clearGameDrag();
   clearSelection();
   const activeIds = getActiveCoreIds();
   cores.forEach(core => {
@@ -329,12 +370,7 @@ async function startCountdown() {
 
 function placeSelectedCore(slot) {
   if (phase !== 'play' || !selectedCore) return;
-  const occupied = slot.querySelector('[data-core]');
-  if (occupied && occupied !== selectedCore) {
-    const origin = selectedCore.parentElement;
-    moveCore(occupied, slots.includes(origin) ? origin : storageSlots.get(occupied.dataset.core));
-  }
-  moveCore(selectedCore, slot);
+  placeCoreInSlot(selectedCore, slot, cores, slots, core => storageSlots.get(core.dataset.core));
   returnButton.disabled = false;
   validatePlacement();
 }
@@ -347,36 +383,15 @@ cores.forEach(core => {
     if (phase !== 'play') return;
     selectCore(core);
   });
-  core.addEventListener('dragstart', event => {
-    if (phase !== 'play' || core.hidden || !getActiveCoreIds().includes(core.dataset.core) || !event.dataTransfer) {
-      event.preventDefault();
-      return;
-    }
-    selectCore(core);
-    draggedCore = core;
-    event.dataTransfer.setData(coreDragType, core.dataset.core);
-    event.dataTransfer.effectAllowed = 'move';
-  });
-  core.addEventListener('dragend', clearCoreDrag);
 });
 
 slots.forEach(slot => {
   slot.addEventListener('click', () => placeSelectedCore(slot));
-  slot.addEventListener('dragover', event => {
-    if (phase !== 'play' || !draggedCore || !event.dataTransfer?.types.includes(coreDragType)) return;
-    event.preventDefault();
-    event.dataTransfer.dropEffect = 'move';
-    slot.classList.add('is-drop-target');
-  });
-  slot.addEventListener('dragleave', () => slot.classList.remove('is-drop-target'));
-  slot.addEventListener('drop', event => {
-    event.preventDefault();
-    const core = draggedCore;
-    clearCoreDrag();
-    if (phase !== 'play' || !core || core.hidden || !getActiveCoreIds().includes(core.dataset.core) || event.dataTransfer?.getData(coreDragType) !== core.dataset.core) return;
-    selectCore(core);
-    placeSelectedCore(slot);
-  });
+});
+const clearGameDrag = bindCoreDrag(cores, slots, {
+  type: 'application/x-novaland-spark-core', coreIdKey: 'core',
+  canDrag: core => phase === 'play' && !core.hidden && getActiveCoreIds().includes(core.dataset.core),
+  select: selectCore, place: placeSelectedCore
 });
 
 rotateButton.addEventListener('click', () => {
@@ -435,6 +450,7 @@ function pauseGame() {
 }
 
 function resumeGame() {
+  if (!guide.open) clearPracticeDrag();
   if (phase === 'paused' && !guide.open && !pausePanel.open) setPhase(pausedPhase);
 }
 
@@ -536,15 +552,8 @@ function restoreCheckpoint(value) {
   }
 }
 
-function isPracticeCorrect() {
-  return practiceCores.every(core => {
-    const answer = practiceAnswers[core.dataset.sparkPracticeCore];
-    return core.parentElement === practiceSlots[answer.slot] && Number(core.dataset.rotation) === answer.rotation;
-  });
-}
-
 function renderPractice() {
-  const connected = isPracticeCorrect();
+  const connected = isSparkArrayCorrect(practiceAnswers, readPlacements(practiceCores, practiceSlots, 'sparkPracticeCore'));
   practice.classList.toggle('is-connected', connected);
   practice.classList.toggle('is-revealing', practiceRevealed);
   practiceCores.forEach(core => {
@@ -552,7 +561,7 @@ function renderPractice() {
     core.disabled = false;
     core.classList.toggle('is-selected', core === practiceSelected);
     core.setAttribute('aria-pressed', String(core === practiceSelected));
-    core.setAttribute('aria-label', t(`spark.game.${id}Label`) + (id === 'triangle' ? '. ' + t('spark.game.directions').split(',')[practiceRotation] : ''));
+    core.setAttribute('aria-label', t(`spark.game.${id}Label`) + (id === 'triangle' ? '. ' + t('spark.game.directions').split(',')[Number(core.dataset.rotation)] : ''));
   });
   practiceSlots.forEach((slot, index) => {
     const target = slot.querySelector('.spark-slot__target');
@@ -577,12 +586,7 @@ function selectPracticeCore(core) {
 function placePracticeCore(slot) {
   if (!practiceSelected) return;
   practiceRevealed = false;
-  const occupied = practiceCores.find(core => core !== practiceSelected && core.parentElement === slot);
-  if (occupied) {
-    const origin = practiceSelected.parentElement;
-    moveCore(occupied, practiceSlots.includes(origin) ? origin : practiceHomes.get(occupied));
-  }
-  moveCore(practiceSelected, slot);
+  placeCoreInSlot(practiceSelected, slot, practiceCores, practiceSlots, core => practiceHomes.get(core));
   practiceMessage = practiceCores.every(core => practiceSlots.includes(core.parentElement)) ? 'spark.game.practiceMismatch' : 'spark.game.practiceHint';
   renderPractice();
   practiceSelected.focus();
@@ -591,46 +595,28 @@ function placePracticeCore(slot) {
 practiceCores.forEach(core => {
   setRotation(core, 0);
   core.addEventListener('click', () => selectPracticeCore(core));
-  core.addEventListener('dragstart', event => {
-    selectPracticeCore(core);
-    event.dataTransfer.setData('application/x-novaland-spark-practice', core.dataset.sparkPracticeCore);
-    event.dataTransfer.effectAllowed = 'move';
-  });
-  core.addEventListener('dragend', () => practiceSlots.forEach(slot => slot.classList.remove('is-drop-target')));
 });
 practiceSlots.forEach(slot => {
   slot.querySelector('.spark-slot__target').addEventListener('click', () => placePracticeCore(slot));
-  slot.addEventListener('dragover', event => {
-    if (!practiceSelected) return;
-    event.preventDefault();
-    slot.classList.add('is-drop-target');
-    event.dataTransfer.dropEffect = 'move';
-  });
-  slot.addEventListener('dragleave', () => slot.classList.remove('is-drop-target'));
-  slot.addEventListener('drop', event => {
-    event.preventDefault();
-    slot.classList.remove('is-drop-target');
-    const id = event.dataTransfer.getData('application/x-novaland-spark-practice');
-    const core = practiceCores.find(item => item.dataset.sparkPracticeCore === id);
-    if (!core) return;
-    selectPracticeCore(core);
-    placePracticeCore(slot);
-  });
+});
+const clearPracticeDrag = bindCoreDrag(practiceCores, practiceSlots, {
+  type: 'application/x-novaland-spark-practice', coreIdKey: 'sparkPracticeCore',
+  canDrag: core => guide.open && !core.hidden && !core.disabled,
+  select: selectPracticeCore, place: placePracticeCore
 });
 practiceReveal.addEventListener('click', () => { practiceRevealed = true; practiceMessage = ''; renderPractice(); });
 practiceRotate.addEventListener('click', () => {
   if (practiceSelected?.dataset.sparkPracticeCore !== 'triangle') return;
   practiceRevealed = false;
-  practiceRotation = (practiceRotation + 1) % 4;
-  setRotation(practiceSelected, practiceRotation);
+  setRotation(practiceSelected, Number(practiceSelected.dataset.rotation) + 1);
   practiceMessage = 'spark.game.practiceMismatch';
   renderPractice();
 });
 practiceReset.addEventListener('click', () => {
+  clearPracticeDrag();
   practiceCores.forEach(core => { moveCore(core, practiceHomes.get(core)); setRotation(core, 0); });
   practiceSelected = null;
   practiceRevealed = true;
-  practiceRotation = 0;
   practiceMessage = '';
   renderPractice();
   practiceReveal.focus();

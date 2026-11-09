@@ -483,8 +483,8 @@
   opacity: .3;
 }
 
-.spark-game:not([data-spark-phase="play"]) .spark-core,
-.spark-game:not([data-spark-phase="play"]) .spark-slot {
+.spark-game:not([data-spark-phase="play"]) .spark-chamber .spark-core,
+.spark-game:not([data-spark-phase="play"]) .spark-chamber .spark-slot {
   cursor: default;
 }
 

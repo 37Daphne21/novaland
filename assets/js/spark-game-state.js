@@ -46,8 +46,12 @@ export function isSparkRotatableCore(coreId) {
   return rotatableCoreIds.has(coreId);
 }
 
+export function isSparkArrayCorrect(answers, placements) {
+  return Object.entries(answers).every(([coreId, answer]) => placements[coreId]?.slot === answer.slot && placements[coreId]?.rotation === answer.rotation);
+}
+
 export function isSparkStageCorrect(stageIndex, placements) {
-  return Object.entries(sparkStages[stageIndex].answers).every(([coreId, answer]) => placements[coreId]?.slot === answer.slot && placements[coreId]?.rotation === answer.rotation);
+  return isSparkArrayCorrect(sparkStages[stageIndex].answers, placements);
 }
 
 export function createSparkPreviewCheckpoint(phase, stageIndex = 0) {
