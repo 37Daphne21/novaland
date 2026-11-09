@@ -10,6 +10,7 @@ const viewport = document.querySelector('.spark-game__viewport');
 const cores = [...document.querySelectorAll('[data-core]')];
 const storageSlots = new Map(cores.map(core => [core.dataset.core, core.parentElement]));
 const slots = [...document.querySelectorAll('[data-slot]')];
+const coreDragType = 'application/x-novaland-spark-core';
 const guide = document.querySelector('[data-spark-guide]');
 const pausePanel = document.querySelector('[data-spark-pause-dialog]');
 const pauseContent = document.querySelector('[data-spark-pause-panel]');
@@ -45,6 +46,7 @@ const embedded = new URLSearchParams(window.location.search).get('embedded') ===
 let phase = 'guide';
 let stageIndex = 0;
 let selectedCore = null;
+let draggedCore = null;
 let hintTimer = null;
 let started = false;
 let pausedPhase = 'play';
@@ -87,6 +89,7 @@ function setPhase(nextPhase) {
   phase = nextPhase;
   game.dataset.sparkPhase = nextPhase;
   const playing = nextPhase === 'play';
+  if (!playing) clearCoreDrag();
   cores.forEach(core => { core.disabled = !playing; });
   slots.forEach(slot => { slot.querySelector('.spark-slot__target').disabled = !playing; });
   hintButton.disabled = !playing || Boolean(hintTimer);
@@ -140,6 +143,15 @@ function setRotation(core, rotation) {
   const normalized = ((rotation % 4) + 4) % 4;
   core.dataset.rotation = String(normalized);
   core.style.setProperty('--core-rotation', `${normalized * 90}deg`);
+  if (core.dataset.core) updateCoreLabel(core);
+}
+
+function updateCoreLabel(core) {
+  const slot = slots.indexOf(core.parentElement);
+  const location = slot < 0 ? t('spark.game.storage') : t('spark.game.slot', { number: slot + 1 });
+  const label = [t(`spark.game.${core.dataset.core}Label`), location];
+  if (isRotatableCore(core)) label.push(t('spark.game.coreDirection', { direction: t('spark.game.directions').split(',')[Number(core.dataset.rotation)] }));
+  core.setAttribute('aria-label', label.join(', '));
 }
 
 function selectCore(core) {
@@ -166,6 +178,12 @@ function clearSelection() {
 function moveCore(core, destination) {
   destination.append(core);
   core.hidden = false;
+  if (core.dataset.core) updateCoreLabel(core);
+}
+
+function clearCoreDrag() {
+  draggedCore = null;
+  slots.forEach(slot => slot.classList.remove('is-drop-target'));
 }
 
 function clearHints() {
@@ -173,6 +191,7 @@ function clearHints() {
   if (hintTimer) window.clearTimeout(hintTimer);
   hintTimer = null;
   hintButton.disabled = phase !== 'play';
+  if (currentStatus?.titleKey === 'spark.game.hintTitle') showPlayStatus();
 }
 
 function renderHints() {
@@ -180,16 +199,14 @@ function renderHints() {
   Object.entries(getStage().answers).forEach(([id, answer]) => {
     const ghost = document.createElement('span');
     ghost.className = `spark-hint-core spark-core--${id}`;
+    ghost.setAttribute('aria-hidden', 'true');
     ghost.append(document.createElement('i'));
     ghost.style.setProperty('--core-rotation', `${answer.rotation * 90}deg`);
     slots[answer.slot].append(ghost);
   });
   hintButton.disabled = true;
   setStatus('HINT SCAN', 'spark.game.hintTitle', 'spark.game.hintCopy', 'spark.game.hintEve', { stage: stageIndex + 1 });
-  hintTimer = window.setTimeout(() => {
-    clearHints();
-    showPlayStatus();
-  }, 3000);
+  hintTimer = window.setTimeout(clearHints, 3000);
 }
 
 function countPlacedCores() {
@@ -230,6 +247,7 @@ async function completeStage() {
   if (!await wait(350)) return;
   setPhase('charged');
   showChargedStatus();
+  launchButton.focus();
 }
 
 function showChargedStatus() {
@@ -245,7 +263,6 @@ function showChargedStatus() {
   }
   label.textContent = t('spark.game.launch');
   description.textContent = t('spark.game.launchDescription');
-  launchButton.focus();
   setStatus('CHARGE COMPLETE', 'spark.game.chargedTitle', 'spark.game.readyCopy', 'spark.game.readyEve', { stage: stageIndex + 1, charge: value });
 }
 
@@ -263,6 +280,7 @@ function validatePlacement() {
 
 function resetPlacement() {
   clearHints();
+  clearCoreDrag();
   clearSelection();
   const activeIds = getActiveCoreIds();
   cores.forEach(core => {
@@ -330,29 +348,33 @@ cores.forEach(core => {
     selectCore(core);
   });
   core.addEventListener('dragstart', event => {
-    if (phase !== 'play') {
+    if (phase !== 'play' || core.hidden || !getActiveCoreIds().includes(core.dataset.core) || !event.dataTransfer) {
       event.preventDefault();
       return;
     }
     selectCore(core);
-    event.dataTransfer.setData('text/plain', core.dataset.core);
+    draggedCore = core;
+    event.dataTransfer.setData(coreDragType, core.dataset.core);
     event.dataTransfer.effectAllowed = 'move';
   });
+  core.addEventListener('dragend', clearCoreDrag);
 });
 
 slots.forEach(slot => {
   slot.addEventListener('click', () => placeSelectedCore(slot));
   slot.addEventListener('dragover', event => {
-    if (phase !== 'play') return;
+    if (phase !== 'play' || !draggedCore || !event.dataTransfer?.types.includes(coreDragType)) return;
     event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
     slot.classList.add('is-drop-target');
   });
   slot.addEventListener('dragleave', () => slot.classList.remove('is-drop-target'));
   slot.addEventListener('drop', event => {
     event.preventDefault();
-    slot.classList.remove('is-drop-target');
-    const core = document.querySelector(`[data-core="${event.dataTransfer.getData('text/plain')}"]`);
-    if (core) selectCore(core);
+    const core = draggedCore;
+    clearCoreDrag();
+    if (phase !== 'play' || !core || core.hidden || !getActiveCoreIds().includes(core.dataset.core) || event.dataTransfer?.getData(coreDragType) !== core.dataset.core) return;
+    selectCore(core);
     placeSelectedCore(slot);
   });
 });
@@ -507,6 +529,7 @@ function restoreCheckpoint(value) {
     Object.values(getStage().answers).forEach(answer => slots[answer.slot].classList.add('is-charged'));
     showChargedStatus();
     if (preview === 'completed') finishMission();
+    else launchButton.focus();
   } else {
     showPlayStatus();
     validatePlacement();
@@ -616,6 +639,7 @@ renderPractice();
 
 function refreshLanguage() {
   applyDocumentLanguage();
+  cores.forEach(updateCoreLabel);
   renderPractice();
   slots.forEach((slot, index) => slot.querySelector('.spark-slot__target').setAttribute('aria-label', t('spark.game.slot', { number: index + 1 })));
   if (phase === 'charged' || phase === 'paused' && pausedPhase === 'charged') showChargedStatus();

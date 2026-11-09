@@ -12,6 +12,7 @@ function fixture(checkpoint = null, language = 'ko', preview = '') {
   const listeners = new Map();
   const timers = new Map();
   let timerId = 0;
+  let nodeId = 0;
   function element(key) {
     if (elements.has(key)) return elements.get(key);
     const events = new Map();
@@ -28,10 +29,12 @@ function fixture(checkpoint = null, language = 'ko', preview = '') {
       },
       querySelector(selector) {
         if (selector === '[data-core]') return node.children.find(child => child.dataset.core) ?? null;
-        if (selector === '.spark-hint-core') return null;
+        if (selector === '.spark-hint-core') return node.children.find(child => child.className?.startsWith('spark-hint-core ')) ?? null;
         return element(`${key} ${selector}`);
       },
-      focus() {}, showModal() { node.open = true; }, close() { node.open = false; node.dispatch('close'); }
+      remove() { node.parentElement.children = node.parentElement.children.filter(child => child !== node); node.parentElement = null; },
+      focus() { if (!node.hidden && !node.disabled) document.activeElement = node; },
+      showModal() { node.open = true; }, close() { node.open = false; node.dispatch('close'); }
     };
     elements.set(key, node);
     return node;
@@ -50,6 +53,7 @@ function fixture(checkpoint = null, language = 'ko', preview = '') {
   const practiceSlots = Array.from({ length: 4 }, (_, index) => element(`[data-spark-practice-slot="${index}"]`));
   const document = {
     hidden: false, documentElement: {}, body: element("body"),
+    createElement: () => element(`created-${++nodeId}`),
     querySelector: selector => selector === "dialog[open]" ? [...elements.values()].find(node => node.open) ?? null : element(selector),
     querySelectorAll: selector => selector === '[data-core]' ? cores : selector === '[data-slot]' ? slots : selector === '[data-spark-practice-core]' ? practiceCores : selector === '[data-spark-practice-slot]' ? practiceSlots : [],
     addEventListener: (name, handler) => listeners.set(name, handler)
@@ -80,6 +84,11 @@ function fixture(checkpoint = null, language = 'ko', preview = '') {
     slots[slot].dispatch('click');
   }
   return { element, messages, tick, place, document, restore, changeLanguage(value) { language = value; listeners.get('storage')({ key: 'novaLandLanguage' }); }, phase: () => element('.spark-game').dataset.sparkPhase };
+}
+
+function dragData() {
+  const payload = new Map();
+  return { setData: (type, value) => payload.set(type, value), getData: type => payload.get(type) ?? '', get types() { return [...payload.keys()]; } };
 }
 
 test('SPARK checkpoints reject invalid slots, duplicate placements and unearned charge', () => {
@@ -189,8 +198,9 @@ test('SPARK swaps occupied Slots with rotations intact and saves only the final 
     game.place(id, id === 'circle' ? answers.triangle.slot : id === 'triangle' ? answers.circle.slot : answer.slot, answer.rotation);
   }
   const circle = game.element('[data-core="circle"]');
-  circle.dispatch('dragstart', { dataTransfer: { setData() {} } });
-  game.element(`[data-slot="${answers.circle.slot}"]`).dispatch('drop', { dataTransfer: { getData: () => 'circle' } });
+  const dataTransfer = dragData();
+  circle.dispatch('dragstart', { dataTransfer });
+  game.element(`[data-slot="${answers.circle.slot}"]`).dispatch('drop', { dataTransfer });
   assert.equal(game.messages.some(message => message.checkpoint?.placements.circle.slot === answers.circle.slot && message.checkpoint?.placements.triangle.slot === answers.triangle.slot), true);
   assert.equal(Number(game.element('[data-core="triangle"]').dataset.rotation), answers.triangle.rotation);
   await game.tick(1600);
@@ -213,6 +223,7 @@ test('SPARK plays all four stages and publishes completion only after the launch
     await game.tick(1600);
     assert.equal(game.phase(), 'charged');
     assert.equal(game.element('[data-spark-charge]').textContent, `${(stageIndex + 1) * 25}%`);
+    assert.equal(game.document.activeElement, game.element('[data-spark-launch]'));
     assert.equal(game.element('[data-spark-bank]').children.length, 6);
     game.element('[data-spark-launch]').dispatch('click');
     if (stageIndex < 3) {
@@ -227,6 +238,82 @@ test('SPARK plays all four stages and publishes completion only after the launch
   assert.equal(game.messages.filter(message => message.complete).length, 1);
   game.element('[data-spark-record]').dispatch('click');
   assert.equal(game.messages.at(-1).type, 'novaland:spark-record');
+});
+
+test('SPARK clears hint ghosts and both announcements when Pause or Guide interrupts a hint', async () => {
+  const game = fixture({ stageIndex: 0, phase: 'play' });
+  const hint = game.element('[data-spark-hint]');
+  const title = game.element('[data-spark-status-title]');
+  const eve = game.element('[data-spark-eve]');
+  const slot = game.element('[data-slot="0"]');
+  const normal = [title.textContent, eve.textContent];
+  for (const [opener, dialog] of [['pause', 'pause-dialog'], ['guide-open', 'guide']]) {
+    hint.dispatch('click');
+    assert.notEqual(title.textContent, normal[0]);
+    assert.notEqual(eve.textContent, normal[1]);
+    assert.equal(slot.querySelector('.spark-hint-core').getAttribute('aria-hidden'), 'true');
+    game.element(`[data-spark-${opener}]`).dispatch('click');
+    game.element(`[data-spark-${dialog}]`).close();
+    assert.equal(game.phase(), 'play');
+    assert.equal(hint.disabled, false);
+    assert.equal(slot.querySelector('.spark-hint-core'), null);
+    assert.deepEqual([title.textContent, eve.textContent], normal);
+  }
+  hint.dispatch('click');
+  await game.tick(3000);
+  assert.deepEqual([title.textContent, eve.textContent], normal);
+  assert.equal(slot.querySelector('.spark-hint-core'), null);
+});
+
+test('SPARK Core names track restored position, swap, rotation, return and language', () => {
+  const game = fixture({ stageIndex: 1, phase: 'play', placements: { triangle: { slot: 0, rotation: 1 }, circle: { slot: 1, rotation: 0 } } });
+  const triangle = game.element('[data-core="triangle"]');
+  const circle = game.element('[data-core="circle"]');
+  assert.equal(triangle.getAttribute('aria-label'), '삼각 Core, Core Slot 1, 방향: 오른쪽');
+  game.place('triangle', 1, 1);
+  assert.equal(triangle.getAttribute('aria-label'), '삼각 Core, Core Slot 2, 방향: 아래');
+  assert.equal(circle.getAttribute('aria-label'), '원형 Core, Core Slot 1');
+  game.element('[data-spark-return]').dispatch('click');
+  game.changeLanguage('en');
+  assert.equal(triangle.getAttribute('aria-label'), 'Triangle Core, Core storage, Facing down');
+});
+
+test('SPARK rejects foreign, malformed, inactive and cancelled drags without moving a selected Core', () => {
+  const game = fixture({ stageIndex: 0, phase: 'play' });
+  const circle = game.element('[data-core="circle"]');
+  const slot = game.element('[data-slot="0"]');
+  circle.dispatch('click');
+  const before = game.messages.length;
+  const dataTransfer = dragData();
+  dataTransfer.setData('text/plain', 'circle');
+  slot.dispatch('dragover', { dataTransfer });
+  assert.equal(slot.classList.contains('is-drop-target'), false);
+  slot.dispatch('drop', { dataTransfer });
+
+  let prevented = false;
+  game.element('[data-core="star"]').dispatch('dragstart', { dataTransfer, preventDefault: () => { prevented = true; } });
+  assert.equal(prevented, true);
+  circle.dispatch('dragstart', { dataTransfer });
+  const type = dataTransfer.types.find(item => item !== 'text/plain');
+  dataTransfer.setData(type, '\"]');
+  slot.dispatch('drop', { dataTransfer });
+
+  circle.dispatch('dragstart', { dataTransfer });
+  slot.dispatch('dragover', { dataTransfer });
+  assert.equal(slot.classList.contains('is-drop-target'), true);
+  circle.dispatch('dragend');
+  assert.equal(slot.classList.contains('is-drop-target'), false);
+  slot.dispatch('drop', { dataTransfer });
+  assert.equal(game.messages.length, before);
+
+  circle.dispatch('dragstart', { dataTransfer });
+  game.element('[data-spark-pause]').dispatch('click');
+  game.element('[data-spark-pause-dialog]').close();
+  const resumed = game.messages.length;
+  slot.dispatch('drop', { dataTransfer });
+  assert.equal(game.messages.length, resumed);
+  assert.equal(circle.parentElement, game.element('storage-circle'));
+  assert.equal(circle.getAttribute('aria-pressed'), 'true');
 });
 
 test('SPARK restores partial placements and charged stages without replaying the guide', async () => {

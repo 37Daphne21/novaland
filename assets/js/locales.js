@@ -5,6 +5,7 @@ const translations = {
   ko: {
     'spark.game.pausedCopy': '현재 단계의 Core 배치와 방향, 충전 상태가 저장됐어요.',
     'spark.game.directions': '위,오른쪽,아래,왼쪽',
+    'spark.game.coreDirection': '방향: {direction}',
     'spark.game.practiceHint': 'Core를 Slot으로 드래그하거나 선택 후 Slot을 누르세요. 다른 Core가 있으면 자리를 바꿔요.',
     'spark.game.practiceShow': '정답 배열 다시 보기',
     'spark.game.practiceObserve': '연한 정답은 원 1번·삼각 4번 오른쪽이에요. Core를 옮기기 시작하면 잔상이 사라져요.',
@@ -517,6 +518,7 @@ const translations = {
   en: {
     'spark.game.pausedCopy': 'Your current Core positions, directions and charge are saved.',
     'spark.game.directions': 'up,right,down,left',
+    'spark.game.coreDirection': 'Facing {direction}',
     'spark.game.practiceHint': 'Drag a Core to a Slot, or select it and press the Slot. Occupied Slots swap Cores.',
     'spark.game.practiceShow': 'Show correct array again',
     'spark.game.practiceObserve': 'Faint targets: circle in Slot 1; triangle in Slot 4, facing right. Start moving a Core to hide the hints.',
