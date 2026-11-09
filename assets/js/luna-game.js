@@ -10,6 +10,7 @@ const garden = document.querySelector('[data-luna-garden]');
 const viewport = document.querySelector('.luna-game__viewport');
 const scene = document.querySelector('[data-luna-scene]');
 const completion = document.querySelector('[data-luna-completion]');
+const recordButton = document.querySelector('[data-luna-record]');
 const rays = document.querySelector('[data-luna-rays]');
 const board = LUNA_GAME_BOARD;
 // Gold-foot centroids measured in each 543px-wide crystal atlas cell.
@@ -156,6 +157,8 @@ function render(state = game.read()) {
   if (state.complete && !completionShown) {
     completionShown = true;
     window.requestAnimationFrame(() => {
+      if (completion.hidden) return;
+      recordButton.focus({ preventScroll: true });
       if (viewport.scrollWidth > viewport.clientWidth) {
         completion.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'nearest', inline: 'center' });
       }
@@ -290,7 +293,7 @@ pausePanel.querySelector('[data-mission-restart]').addEventListener('click', () 
 });
 pausePanel.querySelector('[data-mission-control-room]').addEventListener('click', () => leaveGame('control-room'));
 pausePanel.querySelector('[data-mission-exit]').addEventListener('click', () => leaveGame('map'));
-document.querySelector('[data-luna-record]').addEventListener('click', openPassportRecord);
+recordButton.addEventListener('click', openPassportRecord);
 document.querySelector('[data-luna-guide-close]').addEventListener('click', () => started ? modal.close() : leaveGame('control-room'));
 guideResume.addEventListener('click', () => {
   focusBoardAfterClose = !started;

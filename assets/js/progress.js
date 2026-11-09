@@ -7,6 +7,7 @@ const STORAGE_KEY = 'novaLandProgress';
 const SCHEMA_VERSION = 1;
 const LOG_LIMIT = 100;
 let previewProgress = null;
+let unsavedProgress = null;
 const FACILITY_STATUSES = new Set(['available', 'locked', 'completed']);
 const facilityIds = facilities.map((facility) => facility.id);
 
@@ -189,8 +190,11 @@ export function saveProgress(progress) {
   }
   try {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(normalized));
+    unsavedProgress = null;
   } catch {
-    // 저장소 접근이 제한된 환경에서도 현재 세션의 진행은 유지한다.
+    const firstFailure = unsavedProgress?.explorerId !== normalized.explorerId;
+    unsavedProgress = cloneProgress(normalized);
+    if (firstFailure) window.dispatchEvent(new Event('novaland:progress-save-failed'));
   }
   return normalized;
 }
@@ -206,6 +210,9 @@ export function readProgress(explorer = null) {
     if (preview.valid && preview.facility === 'spark') previewProgress = recordFacilityCompletion(previewProgress, facilities.find((facility) => facility.id === 'luna'));
     if (preview.valid && preview.facility === 'spark' && preview.phase === 'control-room-completed') previewProgress = recordFacilityCompletion(previewProgress, facilities.find((facility) => facility.id === 'spark'));
     return cloneProgress(previewProgress);
+  }
+  if (unsavedProgress && (!explorer?.id || unsavedProgress.explorerId === explorer.id)) {
+    return isRestoredPreview() ? createRestoredPreview(unsavedProgress) : cloneProgress(unsavedProgress);
   }
   let progress = null;
   let shouldSave = false;
@@ -238,6 +245,7 @@ export function readProgress(explorer = null) {
 }
 
 export function clearProgress() {
+  unsavedProgress = null;
   try {
     window.localStorage.removeItem(STORAGE_KEY);
   } catch {

@@ -30,6 +30,7 @@ const explorerProfileImage = document.querySelector('.explorer-profile__image');
 const appBackButton = document.querySelector('[data-app-back]');
 const worldTitle = document.querySelector('#world-title');
 const toast = createToast();
+window.addEventListener('novaland:progress-save-failed', () => toast.show(t('progress.saveFailed')));
 const dialog = createDialogController();
 let navigation = null;
 let pendingStampAward = false;
@@ -94,28 +95,50 @@ controlRoom = createControlRoomController({
   showToast: toast.show
 });
 
-const lunaEntry = document.querySelector('[data-luna-entry]');
-const lunaFrame = document.querySelector('[data-luna-frame]');
-const lunaModal = createModalController(lunaEntry, {
-  onCancel: () => lunaFrame.contentWindow.postMessage({ type: 'novaland:luna-pause' }, window.location.origin),
-  onClose: () => {
-    if (!lunaEntry.open) {
-      lunaFrame.contentWindow.location.replace('about:blank');
-      controlRoom.refreshLanguage();
+function createEmbeddedMission(facilityId) {
+  const entry = document.querySelector(`[data-${facilityId}-entry]`);
+  const frame = document.querySelector(`[data-${facilityId}-frame]`);
+  const modal = createModalController(entry, {
+    onCancel: () => frame.contentWindow.postMessage({ type: `novaland:${facilityId}-pause` }, window.location.origin),
+    onClose: () => {
+      if (!entry.open) {
+        frame.contentWindow.location.replace('about:blank');
+        controlRoom.refreshLanguage();
+      }
     }
-  }
-});
-const sparkEntry = document.querySelector('[data-spark-entry]');
-const sparkFrame = document.querySelector('[data-spark-frame]');
-const sparkModal = createModalController(sparkEntry, {
-  onCancel: () => sparkFrame.contentWindow.postMessage({ type: 'novaland:spark-pause' }, window.location.origin),
-  onClose: () => {
-    if (!sparkEntry.open) {
-      sparkFrame.contentWindow.location.replace('about:blank');
-      controlRoom.refreshLanguage();
+  });
+
+  function open(previewPhase) {
+    if (entry.open) return;
+    controlRoom.cancel();
+    // Replace the child document without adding an extra browser Back entry.
+    const frameUrl = new URL(`./${facilityId}-game.html`, window.location.href);
+    frameUrl.searchParams.set('embedded', '1');
+    if (previewPhase && previewPhase !== 'guide') {
+      frameUrl.searchParams.set('facility', facilityId);
+      frameUrl.searchParams.set('mission-preview', previewPhase);
     }
+    frame.contentWindow.location.replace(frameUrl.href);
+    modal.open({ focusTarget: frame, opener: document.querySelector('[data-mission-open]') });
   }
-});
+  return { entry, frame, open, close: modal.close };
+}
+
+const { entry: lunaEntry, frame: lunaFrame, open: openLuna, close: closeLuna } = createEmbeddedMission('luna');
+const { entry: sparkEntry, frame: sparkFrame, open: openSpark, close: closeSpark } = createEmbeddedMission('spark');
+
+function openMissionRecord(facilityId) {
+  navigation.replace({ screen: 'map' });
+  navigation.push({ screen: 'map', overlay: 'explorer-archive-overlay', archiveTab: 'passport', archiveStamp: facilityId });
+}
+
+function exitEmbeddedMission(destination) {
+  if (destination === 'control-room') navigation.back();
+  else if (destination === 'map') {
+    navigation.replace({ screen: 'map' });
+    map.focusReturnTarget();
+  }
+}
 window.addEventListener('message', (event) => {
   if (event.origin !== window.location.origin) return;
   if (event.source === sparkFrame.contentWindow && sparkEntry.open) {
@@ -135,14 +158,10 @@ window.addEventListener('message', (event) => {
       }
     }
     if (event.data?.type === 'novaland:spark-record' && readProgress(currentExplorer).facilities.spark.status === 'completed') {
-      navigation.replace({ screen: 'map' });
-      navigation.push({ screen: 'map', overlay: 'explorer-archive-overlay', archiveTab: 'passport', archiveStamp: 'spark' });
+      openMissionRecord('spark');
     }
     if (event.data?.type === 'novaland:spark-exit') {
-      if (event.data.destination === 'map') {
-        navigation.replace({ screen: 'map' });
-        map.focusReturnTarget();
-      } else if (event.data.destination === 'control-room') navigation.back();
+      exitEmbeddedMission(event.data.destination);
     }
     return;
   }
@@ -164,16 +183,11 @@ window.addEventListener('message', (event) => {
     return;
   }
   if (event.data?.type === 'novaland:luna-record') {
-    navigation.replace({ screen: 'map' });
-    navigation.push({ screen: 'map', overlay: 'explorer-archive-overlay', archiveTab: 'passport', archiveStamp: 'luna' });
+    openMissionRecord('luna');
     return;
   }
   if (event.data?.type !== 'novaland:luna-exit') return;
-  if (event.data.destination === 'control-room') navigation.back();
-  else if (event.data.destination === 'map') {
-    navigation.replace({ screen: 'map' });
-    map.focusReturnTarget();
-  }
+  exitEmbeddedMission(event.data.destination);
 });
 
 function enterMap(explorer, { focusMap = false } = {}) {
@@ -267,8 +281,8 @@ function applyNavigationRoute(route, { previousRoute, source } = {}) {
   }
 
   overlay.close();
-  if (!route.lunaPlay) lunaModal.close();
-  if (!route.sparkPlay) sparkModal.close();
+  if (!route.lunaPlay) closeLuna();
+  if (!route.sparkPlay) closeSpark();
   mobileMap.reset();
   if (mission.isOpen()) {
     mission.close();
@@ -315,28 +329,11 @@ function applyNavigationRoute(route, { previousRoute, source } = {}) {
     }
     overlay.open(document.querySelector(`#${route.overlay}`));
   }
-  if (route.screen === 'control-room' && route.facilityId === 'luna' && route.lunaPlay && !lunaEntry.open) {
-    controlRoom.cancel();
-    // Replace the child document without adding an extra browser Back entry.
-    const frameUrl = new URL('./luna-game.html', window.location.href);
-    frameUrl.searchParams.set('embedded', '1');
-    if (route.previewPhase && route.previewPhase !== 'guide') {
-      frameUrl.searchParams.set('facility', 'luna');
-      frameUrl.searchParams.set('mission-preview', route.previewPhase);
-    }
-    lunaFrame.contentWindow.location.replace(frameUrl.href);
-    lunaModal.open({ focusTarget: lunaFrame, opener: document.querySelector('[data-mission-open]') });
+  if (route.screen === 'control-room' && route.facilityId === 'luna' && route.lunaPlay) {
+    openLuna(route.previewPhase);
   }
-  if (route.screen === 'control-room' && route.facilityId === 'spark' && route.sparkPlay && !sparkEntry.open) {
-    controlRoom.cancel();
-    const frameUrl = new URL('./spark-game.html', window.location.href);
-    frameUrl.searchParams.set('embedded', '1');
-    if (route.previewPhase && route.previewPhase !== 'guide') {
-      frameUrl.searchParams.set('facility', 'spark');
-      frameUrl.searchParams.set('mission-preview', route.previewPhase);
-    }
-    sparkFrame.contentWindow.location.replace(frameUrl.href);
-    sparkModal.open({ focusTarget: sparkFrame, opener: document.querySelector('[data-mission-open]') });
+  if (route.screen === 'control-room' && route.facilityId === 'spark' && route.sparkPlay) {
+    openSpark(route.previewPhase);
   }
 }
 

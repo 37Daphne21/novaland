@@ -48,10 +48,40 @@ const { isPreviewLocation } = load('preview-location.js', ['isPreviewLocation'])
 const missionState = load('mission-state.js', ['MISSION_PHASES', 'getMissionRestoreState', 'findRestorableMissionId']);
 function progressFixture(search = '') {
   const localStorage = storage();
-  const window = { location: { hostname: 'localhost', search }, localStorage };
-  const api = load('progress.js', ['getMissionPreview', 'createProgress', 'readProgress', 'saveProgress', 'recordFacilityCompletion', 'updateMissionProgress', 'getRestorationState'], { facilities, window, isPreviewLocation, ...missionState, getLanguage: () => 'ko', t: key => key });
-  return { ...api, window, explorer: { id: 'regression', issuedAt: '2026-09-05T00:00:00Z' } };
+  const events = [];
+  const window = { location: { hostname: 'localhost', search }, localStorage, dispatchEvent: event => events.push(event.type) };
+  const api = load('progress.js', ['getMissionPreview', 'createProgress', 'readProgress', 'saveProgress', 'clearProgress', 'recordFacilityCompletion', 'updateMissionProgress', 'getRestorationState'], { facilities, window, isPreviewLocation, ...missionState, Event, getLanguage: () => 'ko', t: key => key });
+  return { ...api, window, events, explorer: { id: 'regression', issuedAt: '2026-09-05T00:00:00Z' } };
 }
+
+test('failed progress writes retain checkpoints and unlocks in the tab until storage recovers', () => {
+  const api = progressFixture();
+  const { localStorage } = api.window;
+  const initial = api.readProgress(api.explorer);
+  const write = localStorage.setItem;
+  localStorage.setItem = () => { throw new Error('write blocked'); };
+  api.updateMissionProgress(initial, 'coaster', { phase: 'playing', checkpoint: { stage: 1 } });
+  const checkpoint = api.readProgress(api.explorer);
+  assert.equal(checkpoint.missions.coaster.checkpoint.stage, 1);
+  checkpoint.missions.coaster.checkpoint.stage = 2;
+  assert.equal(api.readProgress(api.explorer).missions.coaster.checkpoint.stage, 1);
+  api.recordFacilityCompletion(api.readProgress(api.explorer), facilities[0]);
+  const completed = api.readProgress(api.explorer);
+  assert.equal(completed.facilities.luna.status, 'available');
+  assert.equal(completed.stamps.length, 1);
+  assert.equal(JSON.parse(localStorage.getItem('novaLandProgress')).facilities.luna.status, 'locked');
+  assert.deepEqual(api.events, ['novaland:progress-save-failed']);
+
+  localStorage.setItem = write;
+  api.updateMissionProgress(completed, 'luna', { phase: 'playing', checkpoint: { collected: [] } });
+  assert.equal(JSON.parse(localStorage.getItem('novaLandProgress')).facilities.luna.status, 'available');
+  localStorage.setItem = () => { throw new Error('write blocked again'); };
+  api.recordFacilityCompletion(api.readProgress(api.explorer), facilities[1]);
+  assert.equal(api.readProgress(api.explorer).facilities.spark.status, 'available');
+  assert.equal(api.events.length, 2);
+  api.clearProgress();
+  assert.equal(api.readProgress(api.explorer).facilities.luna.status, 'locked');
+});
 test('completion counts 0..4, sequential unlock, one stamp/coupon and no duplicate rewards', () => {
   const api = progressFixture(); let progress = api.createProgress(api.explorer);
   assert.equal(api.recordFacilityCompletion(progress, facilities[3]), progress);
