@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
-import { isParadeReady, normalizeParadeLineup } from '../assets/js/wonder-game-state.js';
+import { normalizeParadeCheckpoint } from '../assets/js/wonder-game-state.js';
 
 function fixture() {
   const nodes = new Map();
@@ -15,7 +15,7 @@ function fixture() {
   const create = vm.runInNewContext(`${source}; createControlRoomController`, {
     document: { querySelector: element, querySelectorAll: () => [] },
     readProgress: () => progress, t: key => key, getFacilityText: (facility, key) => `${facility.id}.${key}`,
-    isParadeReady, normalizeParadeLineup,
+    normalizeParadeCheckpoint,
     createEveController: () => ({ speak() {}, cancel() {}, refreshLanguage() {} })
   });
   return { room: create(), element, progress };
@@ -114,5 +114,16 @@ test('WONDER control room gates mission entry and shows saved placement and conf
   assert.equal(element('[data-control-room-check]').textContent, 'control.wonderPending');
   progress.missions.wonder.checkpoint.lineup = ['drummer', 'flag', 'star'];
   room.refreshState();
+  assert.equal(element('[data-control-room-check]').textContent, 'control.wonderPending');
+  assert.equal(element('[data-control-room-alert]').textContent, 'control.wonderAlert');
+  assert.equal(element('[data-control-room-rail]').textContent, 'control.wonderStandby');
+  progress.missions.wonder.checkpoint.launched = true;
+  room.refreshState();
   assert.equal(element('[data-control-room-check]').textContent, 'control.wonderReady');
+  assert.equal(element('[data-control-room-alert]').textContent, 'control.wonderLineupConfirmed');
+  assert.equal(element('[data-control-room-rail]').textContent, 'control.wonderStageActive');
+  assert.equal(element('[data-control-room-service]').textContent, 'control.wonderLaunched');
+  progress.missions.wonder.checkpoint.lineup = ['drummer', null, 'star'];
+  room.refreshState();
+  assert.equal(element('[data-control-room-check]').textContent, 'control.wonderPending');
 });

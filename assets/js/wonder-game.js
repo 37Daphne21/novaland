@@ -60,8 +60,8 @@ function render() {
   status.textContent = t(`wonder.game.${feedback}`, { count, total: lineup.length, name: selected ? t(`wonder.game.${selected}`) : '' });
 }
 
-function saveLineup() {
-  if (embedded) window.parent.postMessage({ type: 'novaland:wonder-state', lineup }, window.location.origin);
+function saveLineup(launched = false) {
+  if (embedded) window.parent.postMessage({ type: 'novaland:wonder-state', checkpoint: { lineup, launched } }, window.location.origin);
 }
 
 function selectCharacter(character) {
@@ -164,6 +164,7 @@ function exitMission() {
 }
 
 exitButton.addEventListener('click', exitMission);
+  saveLineup(true);
 document.addEventListener('keydown', event => {
   if (event.key !== 'Escape' || event.repeat) return;
   event.preventDefault();

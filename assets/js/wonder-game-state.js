@@ -20,3 +20,8 @@ export function placeParadeCharacter(lineup, character, position) {
 export function isParadeReady(lineup) {
   return paradeOrder.every((character, position) => lineup[position] === character);
 }
+
+export function normalizeParadeCheckpoint(value) {
+  const lineup = normalizeParadeLineup(value?.lineup);
+  return { lineup, launched: value?.launched === true && isParadeReady(lineup) };
+}

@@ -421,6 +421,7 @@ SPARK ENERGY TOWER의 4단계 Core 게임은 공통 Checkpoint에 위치·회전
 - [x] 북 연주자·깃발 기수·별 무용수와 첫 배열 단서
 - [x] 빈자리 배치·재이동·빼기와 행진 순서 판정
 - [x] 첫 판의 Stage 점등과 Parade 시작 표현
+- [x] 첫 행진 시작 결과를 저장하고 관제실의 대열 확인·무대 점등·행진 상태에 반영. Preview에서 시작 전·후와 배치 변경 후 상태 확인
 - [ ] 난이도별 Character와 Hint
 - [x] 일반 미션 진입·관제실 왕복·Checkpoint 및 이어하기
 - [ ] Guide·Pause
