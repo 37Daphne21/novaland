@@ -19,7 +19,6 @@ const recordButton = document.querySelector('[data-wonder-record]');
 const arrows = { ArrowLeft: '←', ArrowUp: '↑', ArrowDown: '↓', ArrowRight: '→' };
 const stage = document.querySelector('[data-wonder-stage]');
 const status = document.querySelector('[data-wonder-status]');
-const shuffleButton = document.querySelector('[data-wonder-shuffle]');
 const referenceButton = document.querySelector('[data-wonder-reference]');
 const directions = ['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'];
 const exitButton = document.querySelector('[data-wonder-exit]');
@@ -40,7 +39,12 @@ let phase = 'reveal';
 let showingReference = false;
 let round = 0;
 let beat = 0;
-let rhythmPhase = 'ready';
+const patternDuration = 4000;
+let rhythmPhase = 'input';
+let rhythmTimer;
+let demoTimer;
+let positionTimer;
+let practiceTimer;
 let rhythmRetry = false;
 let restored = !embedded;
 let started = previewPhase === 'play';
@@ -106,15 +110,13 @@ function render() {
     roundLabel.textContent = t('wonder.game.round', { current: round + 1, name: t('wonder.game.' + paradeOrder[round]) });
     renderBeatSlots(patternLabel, pattern, rhythmPhase === 'show' ? pattern.length : beat);
     patternLabel.classList.toggle('is-error', rhythmRetry);
-    rhythmStart.hidden = rhythmPhase === 'input';
-    rhythmStart.textContent = t(rhythmPhase === 'show' ? 'wonder.game.repeat' : 'wonder.game.listen');
+    rhythmStart.disabled = rhythmPhase === 'show';
     rhythmInput.hidden = rhythmPhase !== 'input';
   }
   referenceButton.hidden = phase !== 'swap';
-  referenceButton.textContent = t(showingReference ? 'wonder.game.backToPuzzle' : 'wonder.game.showReference');
+  referenceButton.disabled = showingReference;
+  referenceButton.textContent = t(showingReference ? 'wonder.game.referenceActive' : 'wonder.game.showReference');
   stage.classList.toggle('is-reference', showingReference);
-  shuffleButton.hidden = phase !== 'reveal';
-  shuffleButton.disabled = !restored;
   guideOpenButton.disabled = !restored || !started;
   stage.classList.toggle('is-shuffling', phase === 'shuffling');
   stage.classList.toggle('is-restored', phase === 'restored');
@@ -147,7 +149,7 @@ function swap(from, target) {
   }
   saveLineup();
   render();
-  if (phase === 'restored') rhythmStart.focus();
+  if (phase === 'restored') revealRhythm();
   else positions[target].button.focus();
 }
 
@@ -222,25 +224,34 @@ function renderDemoRhythm() {
     ? describePattern(demoPattern)
     : t('wonder.game.' + message);
   demoFeedback.classList.toggle('is-error', demoPhase === 'retry');
-  demoStart.hidden = demoPhase === 'input';
-  demoStart.textContent = t(demoPhase === 'show' ? 'wonder.game.repeat' : demoPhase === 'success' ? 'mission.demoReset' : 'wonder.game.listen');
-  demoInput.hidden = demoPhase !== 'input';
+  demoStart.disabled = demoPhase === 'show';
+  demoStart.textContent = t(demoPhase === 'success' ? 'mission.demoReset' : 'wonder.game.hint');
+  demoInput.hidden = demoPhase === 'show' || demoPhase === 'success' || demoPhase === 'ready';
 }
 
 function enterDemoBeat(key) {
-  if (demoPhase !== 'input') return;
-  if (key !== demoPattern[demoBeat]) demoPhase = 'retry';
+  if (demoPhase !== 'input' && demoPhase !== 'retry') return;
+  demoPhase = 'input';
+  if (key !== demoPattern[demoBeat]) {
+    demoBeat = 0;
+    demoPhase = 'retry';
+  }
   else if (++demoBeat === demoPattern.length) demoPhase = 'success';
   renderDemoRhythm();
   if (demoPhase !== 'input') demoStart.focus();
 }
 
-demoStart.addEventListener('click', () => {
-  demoBeat = 0;
-  demoPhase = demoPhase === 'show' ? 'input' : 'show';
+function revealDemo() {
+  if (demoPhase === 'success') demoBeat = 0;
+  window.clearTimeout(demoTimer);
+  demoPhase = 'show';
   renderDemoRhythm();
-  if (demoPhase === 'input') demoInput.querySelector('button').focus();
-});
+  demoTimer = window.setTimeout(() => {
+    demoPhase = 'input';
+    renderDemoRhythm();
+  }, patternDuration);
+}
+demoStart.addEventListener('click', revealDemo);
 
 demoInput.addEventListener('click', event => {
   const button = event.target.closest('[data-beat]');
@@ -248,7 +259,7 @@ demoInput.addEventListener('click', event => {
 });
 
 guide.addEventListener('keydown', event => {
-  if (practiceMode !== 'rhythm' || demoPhase !== 'input' || !directions.includes(event.key)) return;
+  if (practiceMode !== 'rhythm' || !['input', 'retry'].includes(demoPhase) || !directions.includes(event.key)) return;
   event.preventDefault();
   if (!event.repeat) enterDemoBeat(event.key);
 });
@@ -256,9 +267,14 @@ guide.addEventListener('keydown', event => {
 const practiceTabs = [...guide.querySelectorAll('[data-practice-mode]')];
 const practicePanels = [...guide.querySelectorAll('[data-practice-panel]')];
 function selectPractice(mode) {
+  const previous = practiceMode;
   practiceMode = mode;
   practiceTabs.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.practiceMode === mode)));
   practicePanels.forEach(panel => { panel.hidden = panel.dataset.practicePanel !== mode; });
+  if (mode === 'rhythm' && previous !== mode) revealDemo();
+  else if (mode !== 'rhythm') window.clearTimeout(demoTimer);
+  window.clearTimeout(practiceTimer);
+  if (mode === 'position' && practiceReveal) schedulePracticeShuffle();
 }
 
 practiceTabs.forEach(button => button.addEventListener('click', () => selectPractice(button.dataset.practiceMode)));
@@ -273,7 +289,8 @@ function renderPractice() {
     label.textContent = t('wonder.game.position', { number: index + 1, name: t('wonder.game.' + character) });
     button.setAttribute('aria-pressed', String(index === practiceSelected));
   });
-  practiceReset.textContent = t(practiceReveal ? 'wonder.game.shuffle' : 'mission.demoReset');
+  practiceReset.disabled = practiceReveal;
+  practiceReset.textContent = t('mission.demoReset');
   practiceStatus.textContent = t(practiceReveal ? 'wonder.game.reveal' : solved ? 'wonder.game.restored' : 'wonder.game.practiceSwap');
 }
 
@@ -305,49 +322,70 @@ practicePositions.forEach(({ button }, index) => {
   });
 });
 bindSwapDrag(practiceBoard, practicePositions, swapPractice);
+function schedulePracticeShuffle() {
+  window.clearTimeout(practiceTimer);
+  practiceTimer = window.setTimeout(() => {
+    practiceReveal = false;
+    [practiceLineup[0], practiceLineup[1]] = [practiceLineup[1], practiceLineup[0]];
+    renderPractice();
+  }, patternDuration);
+}
+
 practiceReset.addEventListener('click', () => {
-  if (!practiceReveal) {
-    resetPractice();
-    return;
-  }
-  practiceReveal = false;
-  [practiceLineup[0], practiceLineup[1]] = [practiceLineup[1], practiceLineup[0]];
-  renderPractice();
-  practicePositions[0].button.focus();
+  resetPractice();
+  schedulePracticeShuffle();
 });
 
 referenceButton.addEventListener('click', () => {
-  showingReference = !showingReference;
+  showingReference = true;
   selected = -1;
-  render();
-  if (!showingReference) positions[0].button.focus();
+  schedulePosition();
 });
 
-shuffleButton.addEventListener('click', () => {
-  phase = 'shuffling';
+function schedulePosition() {
+  window.clearTimeout(positionTimer);
   render();
-  const delay = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 450;
-  window.setTimeout(() => {
-    lineup = [paradeOrder[3], paradeOrder[0], paradeOrder[1], paradeOrder[2]];
-    phase = 'swap';
-    saveLineup();
+  positionTimer = window.setTimeout(() => {
+    if (showingReference) {
+      showingReference = false;
+      render();
+      positions[0].button.focus();
+      return;
+    }
+    phase = 'shuffling';
     render();
-    if (!guide.open) positions[0].button.focus();
-  }, delay);
-});
+    const delay = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 450;
+    positionTimer = window.setTimeout(() => {
+      lineup = [paradeOrder[3], paradeOrder[0], paradeOrder[1], paradeOrder[2]];
+      phase = 'swap';
+      saveLineup();
+      render();
+      positions[0].button.focus();
+    }, delay);
+  }, patternDuration);
+}
 
-rhythmStart.addEventListener('click', () => {
+function resumePosition() {
+  if (phase === 'shuffling') phase = 'reveal';
+  if (phase === 'reveal' || showingReference) schedulePosition();
+}
+
+function revealRhythm() {
+  window.clearTimeout(rhythmTimer);
   rhythmRetry = false;
-  rhythmPhase = rhythmPhase === 'show' ? 'input' : 'show';
+  rhythmPhase = 'show';
   render();
-  if (rhythmPhase === 'input') rhythmInput.querySelector('button').focus();
-});
+  rhythmTimer = window.setTimeout(() => {
+    rhythmPhase = 'input';
+    render();
+  }, patternDuration);
+}
+rhythmStart.addEventListener('click', revealRhythm);
 
 function enterBeat(key) {
   if (phase !== 'restored' || rhythmPhase !== 'input' || guide.open) return;
   if (key !== paradeRhythms[round][beat]) {
     beat = 0;
-    rhythmPhase = 'ready';
     rhythmRetry = true;
     render();
     rhythmStart.focus();
@@ -360,14 +398,13 @@ function enterBeat(key) {
   }
   beat = 0;
   round += 1;
-  rhythmPhase = 'ready';
   if (round === paradeRhythms.length) phase = 'completed';
   saveLineup();
   render();
   if (phase === 'completed') {
     if (embedded) recordButton.focus();
     else finale.querySelector('h2').focus();
-  } else rhythmStart.focus();
+  } else revealRhythm();
 }
 
 rhythmInput.addEventListener('click', event => {
@@ -386,6 +423,8 @@ function exitMission() {
 }
 
 function openGuide() {
+  window.clearTimeout(positionTimer);
+  window.clearTimeout(rhythmTimer);
   resetPractice();
   selectPractice('position');
   demoPhase = 'ready';
@@ -396,7 +435,13 @@ function openGuide() {
 }
 
 function closeGuide() {
-  if (started) guideModal.close();
+  window.clearTimeout(practiceTimer);
+  window.clearTimeout(demoTimer);
+  if (started) {
+    guideModal.close();
+    resumePosition();
+    if (phase === 'restored' && rhythmPhase === 'show') revealRhythm();
+  }
   else exitMission();
 }
 
@@ -408,12 +453,20 @@ guideStartButton.addEventListener('click', () => {
   render();
   guideModal.close();
   title.focus({ preventScroll: true });
+  window.clearTimeout(practiceTimer);
+  resumePosition();
 });
 exitButton.addEventListener('click', exitMission);
 function openPause() {
   if (!started || pause.open || guide.open) return;
+  window.clearTimeout(rhythmTimer);
+  window.clearTimeout(positionTimer);
   pauseModal.open({ focusTarget: resumeButton, opener: document.activeElement });
 }
+pause.addEventListener('close', () => {
+  resumePosition();
+  if (phase === 'restored' && rhythmPhase === 'show') revealRhythm();
+});
 pauseButton.addEventListener('click', openPause);
 resumeButton.addEventListener('click', pauseModal.close);
 document.querySelector('[data-wonder-pause-exit]').addEventListener('click', exitMission);
@@ -449,7 +502,9 @@ window.addEventListener('message', event => {
     restored = true;
     started = previewPhase === 'play' || Boolean(checkpoint);
     render();
-    if (!started) openGuide();
+    if (phase === 'restored') revealRhythm();
+    else if (!started) openGuide();
+    else resumePosition();
   }
 });
 window.addEventListener('storage', event => {
@@ -467,3 +522,4 @@ render();
 title.focus();
 if (embedded) window.parent.postMessage({ type: 'novaland:wonder-ready' }, window.location.origin);
 else if (!started) openGuide();
+else resumePosition();

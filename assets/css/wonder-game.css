@@ -238,6 +238,13 @@
   box-shadow: inset 0 0 1.75rem rgba(255, 193, 142, .12);
 }
 
+.wonder-cast [data-wonder-reference]:disabled {
+  border-color: #ffc18e;
+  background: #583246;
+  color: #ffe1bb;
+  opacity: 1;
+}
+
 .wonder-rhythm [data-wonder-round] {
   color: #ffc9df;
   font-weight: 700;
