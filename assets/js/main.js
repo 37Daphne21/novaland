@@ -115,7 +115,7 @@ function createEmbeddedMission(facilityId) {
     // Replace the child document without adding an extra browser Back entry.
     const frameUrl = new URL(`./${facilityId}-game.html`, window.location.href);
     frameUrl.searchParams.set('embedded', '1');
-    if (previewPhase && previewPhase !== 'guide') {
+    if (previewPhase && (previewPhase !== 'guide' || facilityId === 'wonder')) {
       frameUrl.searchParams.set('facility', facilityId);
       frameUrl.searchParams.set('mission-preview', previewPhase);
     }

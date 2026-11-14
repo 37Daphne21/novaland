@@ -34,6 +34,7 @@ const previewPhase = params.get('mission-preview');
 let lineup = [...paradeOrder];
 let selected = -1;
 let drag = null;
+let swapping = false;
 let phase = 'reveal';
 let showingReference = false;
 let round = 0;
@@ -97,16 +98,16 @@ function renderPosition({ button, label }, index, character, selectedIndex, poin
 
 function render() {
   document.body.dataset.scene = showingReference ? 'reveal' : phase;
-  const correctCount = lineup.filter((character, index) => character === paradeOrder[index]).length;
-  stageProgress.textContent = phase === 'restored' ? `${round + 1} / ${paradeRhythms.length}` : `${phase === 'swap' || phase === 'completed' ? correctCount : 0} / ${paradeOrder.length}`;
+  const correctCount = swapping ? null : lineup.filter((character, index) => character === paradeOrder[index]).length;
+  if (!swapping) stageProgress.textContent = phase === 'restored' ? `${round + 1} / ${paradeRhythms.length}` : `${phase === 'swap' || phase === 'completed' ? correctCount : 0} / ${paradeOrder.length}`;
   positions.forEach((card, index) => {
     const character = (showingReference ? paradeOrder : lineup)[index];
     card.button.classList.toggle('is-performing', phase === 'restored' && index === round);
     card.button.classList.toggle('is-on-beat', phase === 'restored' && index === round && beat % 2 === 1);
     card.symbol.dataset.character = character;
-    const correct = !showingReference && ['swap', 'restored', 'completed'].includes(phase) && character === paradeOrder[index];
+    const correct = !swapping && !showingReference && ['swap', 'restored', 'completed'].includes(phase) && character === paradeOrder[index];
     card.button.classList.toggle('is-correct', correct);
-    card.button.disabled = !restored || showingReference || phase !== 'swap';
+    card.button.disabled = swapping || !restored || showingReference || phase !== 'swap';
     renderPosition(card, index, character, selected, drag, correct);
   });
   stageTitle.textContent = t(phase === 'completed' ? 'wonder.game.finale' : phase === 'restored' ? 'wonder.game.rhythmTitle' : 'wonder.game.title');
@@ -124,10 +125,10 @@ function render() {
     rhythmInput.hidden = rhythmPhase !== 'input';
   }
   referenceButton.hidden = phase !== 'swap';
-  referenceButton.disabled = showingReference;
+  referenceButton.disabled = swapping || showingReference;
   referenceButton.textContent = t(showingReference ? 'wonder.game.referenceActive' : 'wonder.game.showReference');
   stage.classList.toggle('is-reference', showingReference);
-  guideOpenButton.disabled = !restored || !started;
+  guideOpenButton.disabled = swapping || !restored || !started;
   stage.classList.toggle('is-shuffling', phase === 'shuffling');
   stage.classList.toggle('is-restored', phase === 'restored');
   if (phase === 'restored') {
@@ -146,32 +147,33 @@ function saveLineup() {
   if (embedded) window.parent.postMessage({ type: 'novaland:wonder-state', checkpoint: { lineup, round } }, window.location.origin);
 }
 
-function swap(from, target) {
-  if (phase !== 'swap' || showingReference || guide.open) return;
+async function swap(from, target) {
+  if (swapping || phase !== 'swap' || showingReference || guide.open || pause.open) return;
   if (target < 0 || from === target) return;
   [lineup[from], lineup[target]] = [lineup[target], lineup[from]];
-  selected = target;
-  if (isParadeReady(lineup)) {
-    selected = -1;
-    phase = 'restored';
-  }
-  saveLineup();
-  render();
   if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    swapping = true;
+    render();
     const first = positions[from].symbol.getBoundingClientRect();
     const second = positions[target].symbol.getBoundingClientRect();
     const dx = second.left - first.left;
     const dy = second.top - first.top;
-    [from, target].forEach((index, order) => {
+    await Promise.allSettled([from, target].map((index, order) => {
       const direction = order === 0 ? 1 : -1;
       positions[index].symbol.getAnimations().forEach(animation => animation.cancel());
-      positions[index].symbol.animate([
+      return positions[index].symbol.animate([
         { transform: `translate(${dx * direction}px, ${dy * direction}px)` },
         { transform: `translate(${dx * direction / 2}px, ${dy * direction / 2 - direction * 22}px)` },
         { transform: 'none' }
-      ], { duration: 300, easing: 'ease-out' });
-    });
+      ], { duration: 300, easing: 'ease-out' }).finished;
+    }));
+    swapping = false;
   }
+  const solved = isParadeReady(lineup);
+  selected = solved ? -1 : target;
+  if (solved) phase = 'restored';
+  saveLineup();
+  render();
   if (phase === 'restored') revealRhythm();
   else positions[target].button.focus();
 }
@@ -492,6 +494,7 @@ guideStartButton.addEventListener('click', () => {
   resumePosition();
 });
 function openPause() {
+  if (swapping) return;
   if (!started || pause.open || guide.open) return;
   window.clearTimeout(rhythmTimer);
   window.clearTimeout(positionTimer);
@@ -527,7 +530,7 @@ window.addEventListener('message', event => {
     else openPause();
   }
   if (event.data?.type === 'novaland:wonder-restore' && !restored) {
-    const checkpoint = normalizeParadeCheckpoint(event.data.checkpoint ?? (previewPhase === 'rhythm' ? { lineup: paradeOrder } : null));
+    const checkpoint = previewPhase === 'guide' ? null : normalizeParadeCheckpoint(event.data.checkpoint ?? (previewPhase === 'rhythm' ? { lineup: paradeOrder } : null));
     if (checkpoint) {
       lineup = checkpoint.lineup;
       round = checkpoint.round;

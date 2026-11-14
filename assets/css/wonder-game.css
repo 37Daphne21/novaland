@@ -317,10 +317,6 @@
   background-position: right bottom;
 }
 
-.wonder-guide__lineup .wonder-game__symbol {
-  width: min(100%, 5rem);
-}
-
 .wonder-stage.is-shuffling > .wonder-stage__lineup {
   visibility: hidden;
 }
@@ -391,12 +387,28 @@
 .wonder-guide__lineup .ui-button {
   min-height: 0;
   padding: .35rem;
-  row-gap: .75rem;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(2rem, auto);
+  row-gap: .5rem;
+}
+
+.wonder-guide__lineup .wonder-game__symbol {
+  width: 5rem;
+  max-width: 100%;
 }
 
 .wonder-guide__lineup .ui-button::before {
-  bottom: 1.45rem;
+  bottom: 2.4rem;
+  left: 50%;
+  width: min(80%, 6rem);
   height: .85rem;
+  transform: translateX(-50%);
+}
+
+.wonder-guide__lineup .ui-button > span:last-child {
+  align-self: center;
+  line-height: 1rem;
+  text-align: center;
 }
 
 .wonder-guide [data-wonder-practice-status] {
