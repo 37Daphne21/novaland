@@ -531,6 +531,7 @@
   bottom: 1.5rem;
   z-index: 9;
   pointer-events: none;
+  width: min(35rem, calc(100% - 2 * var(--play-hud-inline)));
 }
 
 .spark-game__eve {
@@ -785,8 +786,8 @@
   }
 }
 
-@media (max-height: 38rem) and (min-width: 56.0625rem), (min-width: 56.0625rem) and (min-aspect-ratio: 2 / 1) {
-  .spark-game__header {
+@media (max-height: 38rem) and (min-width: 56.0625rem) {
+  body .spark-game__header {
     inset: .8rem 1.5rem auto;
     grid-template-columns: 1fr auto;
   }
@@ -828,15 +829,14 @@
     gap: .5rem;
   }
 
-  .spark-game__identity p {
-    display: none;
-  }
-
   .spark-game__progress {
     grid-column: 1 / -1;
     grid-row: 2;
     justify-self: center;
     min-width: min(20rem, 100%);
+    grid-template-columns: auto auto minmax(4rem, 1fr);
+    gap: .75rem;
+    max-width: 100%;
   }
 
   .spark-game__tools {
@@ -845,8 +845,8 @@
   }
 
   .spark-game__footer {
-    left: 1rem;
-    bottom: 1rem;
+    left: var(--play-hud-inline);
+    bottom: var(--play-hud-block);
   }
 
   .spark-game__eve {

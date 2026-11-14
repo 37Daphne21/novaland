@@ -1,12 +1,39 @@
 .wonder-game {
+  --wonder-light: 255, 149, 194;
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
   min-height: 100dvh;
-  padding: clamp(.75rem, 2.5dvh, 1.5rem) clamp(.875rem, 3vw, 2.5rem);
-  background: linear-gradient(180deg, rgba(18, 6, 22, .72), #100b18 90%), url("../images/control-room/bg-control-room-wonder.webp") center top / cover fixed;
+  padding: var(--play-hud-block) var(--play-hud-inline);
+  background: linear-gradient(180deg, #110a1bb8, transparent 23%, transparent 76%, #100817c9), url("../images/wonder/parade-stage.png") center center / 100% 100% no-repeat fixed;
+}
+
+.wonder-game[data-scene="reveal"],
+.wonder-game[data-scene="completed"] {
+  --wonder-light: 255, 197, 121;
+}
+
+.wonder-game[data-scene="shuffling"] {
+  --wonder-light: 162, 124, 255;
+}
+
+.wonder-game::before {
+  position: fixed;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 32% 41%, rgba(var(--wonder-light), .28), transparent 47%);
+  content: "";
+}
+
+.wonder-game[data-scene="shuffling"]::before {
+  background: linear-gradient(#130d2b99, #130d2b66), radial-gradient(ellipse at 32% 41%, rgba(var(--wonder-light), .24), transparent 47%);
 }
 
 .wonder-game__header,
 .wonder-game__board {
-  width: min(100%, 70rem);
+  width: 100%;
   margin-inline: auto;
 }
 
@@ -21,12 +48,31 @@
 }
 
 .wonder-game__tools {
+  justify-self: end;
   justify-content: flex-end;
 }
 
 .wonder-game__header {
-  padding: .75rem 0 1rem;
-  border-bottom: 1px solid rgba(255, 184, 210, .3);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  position: relative;
+  z-index: 5;
+  padding: 0;
+}
+
+.wonder-game__tools .ui-button {
+  min-height: 2.75rem;
+}
+
+.wonder-game__progress {
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  padding: .8rem 1.25rem;
+  border: 1px solid #ffb8d24d;
+  border-radius: .8rem;
+  background: #1b1025e8;
+  font-size: .75rem;
 }
 
 .wonder-game__header h1 {
@@ -35,11 +81,11 @@
 
 .wonder-game__board {
   display: grid;
-  gap: 1rem;
-  margin-top: 1rem;
-  grid-template-columns: minmax(0, 2fr) minmax(15rem, 1fr);
-  align-items: start;
-  grid-template-rows: auto 1fr;
+  gap: .75rem;
+  flex: 1;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-content: end;
+  align-items: end;
 }
 
 .wonder-stage,
@@ -50,9 +96,11 @@
 }
 
 .wonder-stage {
-  border-color: rgba(255, 110, 182, .45);
-  background: radial-gradient(ellipse at center top, #49223c, #1b101f 76%);
-  box-shadow: 0 1.25rem 3rem rgba(9, 4, 13, .35);
+  --wonder-stage-glow: rgba(var(--wonder-light), .23);
+  position: absolute;
+  inset: 0;
+  padding: 0;
+  pointer-events: none;
 }
 
 .wonder-cast {
@@ -67,12 +115,24 @@
   color: #fff4f7;
 }
 
-.wonder-stage {
-  grid-row: span 2;
+.wonder-game__board > .wonder-cast {
+  z-index: 4;
+  grid-column: 2;
+  grid-row: 1;
+  width: min(100%, 22rem);
+  justify-self: end;
+}
+
+.wonder-game__board > [data-wonder-controls] {
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .wonder-game__eve {
-  grid-column: 2;
+  z-index: 4;
+  grid-column: 1;
+  grid-row: 1;
 }
 
 .wonder-game__eve {
@@ -129,10 +189,36 @@
   color: var(--color-text-subtle);
 }
 
-.wonder-stage__lineup {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(.35rem, 2vw, 1rem);
+.wonder-stage > .wonder-stage__lineup {
+  position: absolute;
+  inset: 0;
+}
+
+.wonder-stage > .wonder-stage__lineup li {
+  position: absolute;
+  left: var(--spot-x);
+  top: var(--spot-y);
+  width: clamp(4rem, 14vw, 13rem);
+  transform: translate(-50%, -100%);
+  --spot-y: 47%;
+  --spot-x: 39%;
+}
+
+.wonder-stage > .wonder-stage__lineup li:nth-child(even) {
+  --spot-x: 61%;
+}
+
+.wonder-stage > .wonder-stage__lineup li:nth-child(3),
+.wonder-stage > .wonder-stage__lineup li:nth-child(4) {
+  --spot-y: 69%;
+}
+
+.wonder-stage > .wonder-stage__lineup li:nth-child(3) {
+  --spot-x: 32%;
+}
+
+.wonder-stage > .wonder-stage__lineup li:nth-child(4) {
+  --spot-x: 68%;
 }
 
 .wonder-stage__lineup .ui-button {
@@ -144,10 +230,12 @@
   justify-items: center;
   align-content: center;
   gap: .2rem;
-  min-height: clamp(6rem, 24dvh, 12rem);
-  border: 1px solid rgba(255, 110, 182, .36);
-  background: radial-gradient(ellipse at 50% 65%, rgba(231, 93, 159, .17), #150e1c 76%);
+  min-height: 0;
+  border: 0;
+  background: transparent;
+  pointer-events: auto;
   color: #fff0e9;
+  text-shadow: 0 1px 4px #100817;
   padding: .5rem;
   white-space: normal;
   overflow-wrap: anywhere;
@@ -156,15 +244,26 @@
 .wonder-stage__lineup .ui-button::before {
   position: absolute;
   z-index: -1;
-  bottom: 22%;
-  left: 25%;
-  width: 50%;
-  height: 12%;
-  border: 1px solid #ffc18e;
+  bottom: 8%;
+  left: 8%;
+  width: 84%;
+  height: 24%;
+  border: 2px solid #e7abc08c;
   border-radius: 50%;
-  background: radial-gradient(ellipse, #863e5b, #3a1e34 75%);
-  box-shadow: 0 .25rem 0 #793c52, 0 0 1rem rgba(255, 163, 109, .45);
+  background: radial-gradient(ellipse, #24112288, transparent 70%);
   content: "";
+}
+
+.wonder-stage__lineup .wonder-game__symbol {
+  width: clamp(3.5rem, min(13vw, 20dvh), 12rem);
+  filter: drop-shadow(0 .45rem .35rem #190b16aa);
+}
+
+.wonder-stage__lineup .ui-button.is-correct::before,
+.wonder-stage__lineup .ui-button.is-performing::before {
+  border-color: #ffda83;
+  background: radial-gradient(ellipse, #ffd16966, transparent 75%);
+  box-shadow: 0 0 1.25rem #ffc352b8, inset 0 0 .65rem #ffc352a0;
 }
 
 .wonder-stage__lineup .ui-button:disabled {
@@ -182,12 +281,17 @@
   cursor: grabbing;
 }
 
-.wonder-stage__lineup .ui-button.is-swap-target {
-  border-style: dashed;
+.wonder-stage__lineup .ui-button.is-swap-target::before {
   border-color: #f4a8cf;
 }
 
-.wonder-stage__lineup .ui-button[aria-pressed="true"] {
+.wonder-stage__lineup .ui-button > span:last-child {
+  min-block-size: 1.25rem;
+  line-height: 1.25rem;
+  font-size: .75rem;
+}
+
+.wonder-stage__lineup .ui-button[aria-pressed="true"]::before {
   border-color: #ffc18e;
   box-shadow: inset 0 0 0 2px #ffc18e, 0 0 1rem rgba(255, 159, 117, .3);
 }
@@ -217,14 +321,13 @@
   width: min(100%, 5rem);
 }
 
-.wonder-stage.is-shuffling .wonder-stage__lineup {
+.wonder-stage.is-shuffling > .wonder-stage__lineup {
   visibility: hidden;
 }
 
 .wonder-stage.is-restored,
 .wonder-stage.is-celebrating {
-  border-color: var(--color-wonder);
-  background: radial-gradient(ellipse at center top, #672f55, #211129 75%);
+  background: radial-gradient(ellipse 49% 9% at 50% 78%, #ffb4554d, transparent);
 }
 
 
@@ -288,6 +391,12 @@
 .wonder-guide__lineup .ui-button {
   min-height: 0;
   padding: .35rem;
+  row-gap: .75rem;
+}
+
+.wonder-guide__lineup .ui-button::before {
+  bottom: 1.45rem;
+  height: .85rem;
 }
 
 .wonder-guide [data-wonder-practice-status] {
@@ -295,13 +404,11 @@
 }
 
 .wonder-stage__lineup .ui-button.is-performing {
-  border-color: #ffc18e;
-  background: radial-gradient(ellipse at center, #763952, #231424 80%);
-  box-shadow: inset 0 0 1.5rem rgba(255, 193, 142, .22);
+  background: radial-gradient(ellipse at 50% 71%, #ffd19f55, transparent 68%);
 }
 
-.wonder-stage__lineup .ui-button.is-on-beat {
-  box-shadow: inset 0 0 2rem rgba(255, 193, 142, .48);
+.wonder-stage__lineup .ui-button.is-on-beat::before {
+  box-shadow: 0 0 2rem #ffcf71, inset 0 0 1rem #ffcf71;
 }
 
 .wonder-guide [data-practice-panel] {
@@ -385,11 +492,6 @@
   color: #ffc9df;
 }
 
-.wonder-stage.is-celebrating .wonder-stage__lineup .ui-button {
-  border-color: #ffc18e;
-  background: radial-gradient(ellipse at 50% 65%, #733450, #201321 78%);
-}
-
 @media (max-height: 36rem) and (min-width: 48.001rem) {
   .wonder-stage__lineup .ui-button {
     min-height: 0;
@@ -401,21 +503,31 @@
 }
 
 @media (max-width: 48rem) {
-  .wonder-game__board {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: none;
+  .wonder-game__header {
+    grid-template-columns: minmax(0, 1fr) auto;
   }
 
-  .wonder-stage {
-    grid-row: auto;
+  .wonder-game__progress {
+    grid-row: 2;
+    grid-column: 1 / -1;
+    justify-self: center;
+  }
+
+  .wonder-game {
+    background-size: auto 100dvh;
+  }
+
+  .wonder-game__board {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .wonder-game__board > .wonder-cast {
+    grid-column: 1;
+    grid-row: 1;
   }
 
   .wonder-game__eve {
-    grid-column: 1;
-  }
-
-  .wonder-stage .wonder-stage__lineup .ui-button {
-    min-height: clamp(7rem, 27vw, 9rem);
+    grid-row: 2;
   }
 }
 

@@ -5099,3 +5099,95 @@ html[lang="en"] .rail-repair__branch-terminal small {
   }
 
 }
+
+/* Facility play HUD */
+body:is(.luna-game, .spark-game, .wonder-game) {
+  --play-hud-inline: 2rem;
+  --play-hud-block: 1.5rem;
+}
+
+body :is(.luna-game__header, .spark-game__header, .wonder-game__header) {
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 1.5rem;
+}
+
+body :is(.luna-game__identity, .spark-game__identity, .wonder-game__identity) h1 {
+  font: 500 clamp(1rem, 1.25vw, 1.2rem)/1.4 var(--font-display);
+  letter-spacing: .025em;
+}
+
+body :is(.luna-game__identity, .spark-game__identity, .wonder-game__identity) p {
+  margin-top: .25rem;
+  font-size: .75rem;
+  line-height: 1.5;
+}
+
+body :is(.luna-game__tools, .spark-game__tools, .wonder-game__tools) {
+  justify-self: end;
+  gap: .65rem;
+}
+
+body :is(.luna-game__tools, .spark-game__tools, .wonder-game__tools) .ui-button {
+  min-height: 2.75rem;
+  font-size: .8125rem;
+}
+
+body :is(.luna-game__eve, .spark-game__eve, .wonder-game__eve) {
+  display: flex;
+  align-items: center;
+  width: min(35rem, 100%);
+  gap: .8rem;
+  padding: .65rem 1rem;
+  border-radius: .8rem;
+}
+
+body :is(.luna-game__eve, .spark-game__eve, .wonder-game__eve) > span {
+  flex: 0 0 3.25rem;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 50%;
+}
+
+body :is(.luna-game__eve, .spark-game__eve, .wonder-game__eve) b {
+  font: 500 .75rem var(--font-display);
+}
+
+body :is(.luna-game__eve, .spark-game__eve, .wonder-game__eve) p {
+  margin-top: .3rem;
+  font-size: .8125rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 56rem) {
+  body:is(.luna-game, .spark-game, .wonder-game) {
+    --play-hud-inline: .75rem;
+    --play-hud-block: .75rem;
+  }
+
+  body :is(.luna-game__header, .spark-game__header, .wonder-game__header) {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: .65rem;
+  }
+
+  body :is(.luna-game__identity, .spark-game__identity, .wonder-game__identity) {
+    grid-column: 1;
+  }
+
+  body :is(.luna-game__tools, .spark-game__tools, .wonder-game__tools) {
+    grid-column: 2;
+    grid-row: 1;
+    gap: .4rem;
+  }
+
+  body :is(.luna-game__progress, .spark-game__progress, .wonder-game__progress) {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: center;
+  }
+
+  body :is(.luna-game__tools, .spark-game__tools, .wonder-game__tools) .ui-button {
+    padding-inline: .65rem;
+  }
+}

@@ -4,7 +4,7 @@ import { getSwapTarget, isParadeReady, normalizeParadeCheckpoint, paradeOrder, p
 
 const rhythm = document.querySelector('[data-wonder-rhythm]');
 const stageTitle = document.querySelector('#wonder-stage-title');
-const stageCopy = stageTitle.nextElementSibling;
+const stageProgress = document.querySelector('[data-wonder-progress]');
 const pause = document.querySelector('[data-wonder-pause-dialog]');
 const pauseButton = document.querySelector('[data-wonder-pause]');
 const resumeButton = document.querySelector('[data-wonder-resume]');
@@ -21,7 +21,6 @@ const stage = document.querySelector('[data-wonder-stage]');
 const status = document.querySelector('[data-wonder-status]');
 const referenceButton = document.querySelector('[data-wonder-reference]');
 const directions = ['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'];
-const exitButton = document.querySelector('[data-wonder-exit]');
 const title = document.querySelector('[data-wonder-title]');
 const guide = document.querySelector('[data-wonder-guide]');
 const guideOpenButton = document.querySelector('[data-wonder-guide-open]');
@@ -84,23 +83,34 @@ function describePattern(pattern) {
   });
 }
 
+function renderPosition({ button, label }, index, character, selectedIndex, pointer, correct) {
+  const selected = !button.disabled && (pointer?.from ?? selectedIndex) === index;
+  const target = !button.disabled && pointer?.target === index;
+  button.classList.toggle('is-swap-target', target);
+  button.classList.toggle('is-correct', correct);
+  button.setAttribute('aria-pressed', String(selected));
+  const state = target ? t('wonder.game.dropSwap') : selected ? t('wonder.game.selection') : '';
+  label.textContent = [correct ? '✓' : '', state].filter(Boolean).join(' ');
+  const name = t('wonder.game.position', { number: index + 1, name: t('wonder.game.' + character) });
+  button.setAttribute('aria-label', correct ? name + ', ' + t('wonder.game.correctPosition') : name);
+}
+
 function render() {
+  document.body.dataset.scene = showingReference ? 'reveal' : phase;
+  const correctCount = lineup.filter((character, index) => character === paradeOrder[index]).length;
+  stageProgress.textContent = phase === 'restored' ? `${round + 1} / ${paradeRhythms.length}` : `${phase === 'swap' || phase === 'completed' ? correctCount : 0} / ${paradeOrder.length}`;
   positions.forEach((card, index) => {
     const character = (showingReference ? paradeOrder : lineup)[index];
-    const origin = drag?.from ?? selected;
-    const canSwap = drag ? index !== origin : directions.some(direction => getSwapTarget(origin, direction) === index);
-    const neighbor = !showingReference && phase === 'swap' && canSwap;
-    card.button.classList.toggle('is-swap-target', neighbor);
     card.button.classList.toggle('is-performing', phase === 'restored' && index === round);
     card.button.classList.toggle('is-on-beat', phase === 'restored' && index === round && beat % 2 === 1);
     card.symbol.dataset.character = character;
-    card.label.textContent = t('wonder.game.position', { number: index + 1, name: t(`wonder.game.${character}`) });
+    const correct = !showingReference && ['swap', 'restored', 'completed'].includes(phase) && character === paradeOrder[index];
+    card.button.classList.toggle('is-correct', correct);
     card.button.disabled = !restored || showingReference || phase !== 'swap';
-    card.button.setAttribute('aria-pressed', String(index === selected));
+    renderPosition(card, index, character, selected, drag, correct);
   });
   stageTitle.textContent = t(phase === 'completed' ? 'wonder.game.finale' : phase === 'restored' ? 'wonder.game.rhythmTitle' : 'wonder.game.title');
   pauseButton.disabled = !started;
-  stageCopy.hidden = phase === 'completed' || phase === 'restored';
   controls.hidden = phase === 'restored' || phase === 'completed';
   rhythm.hidden = phase !== 'restored';
   finale.hidden = phase !== 'completed';
@@ -129,9 +139,7 @@ function render() {
     else status.textContent = t('wonder.game.guideRhythm');
     return;
   }
-  status.textContent = t(showingReference ? 'wonder.game.reference' : selected >= 0 ? 'wonder.game.selected' : `wonder.game.${phase}`, {
-    name: selected >= 0 ? t(`wonder.game.${lineup[selected]}`) : ''
-  });
+  status.textContent = t(showingReference ? 'wonder.game.reference' : drag || selected >= 0 ? 'wonder.game.swapHelp' : `wonder.game.${phase}`);
 }
 
 function saveLineup() {
@@ -149,6 +157,21 @@ function swap(from, target) {
   }
   saveLineup();
   render();
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const first = positions[from].symbol.getBoundingClientRect();
+    const second = positions[target].symbol.getBoundingClientRect();
+    const dx = second.left - first.left;
+    const dy = second.top - first.top;
+    [from, target].forEach((index, order) => {
+      const direction = order === 0 ? 1 : -1;
+      positions[index].symbol.getAnimations().forEach(animation => animation.cancel());
+      positions[index].symbol.animate([
+        { transform: `translate(${dx * direction}px, ${dy * direction}px)` },
+        { transform: `translate(${dx * direction / 2}px, ${dy * direction / 2 - direction * 22}px)` },
+        { transform: 'none' }
+      ], { duration: 300, easing: 'ease-out' });
+    });
+  }
   if (phase === 'restored') revealRhythm();
   else positions[target].button.focus();
 }
@@ -168,8 +191,17 @@ function bindSwapDrag(board, positions, onDrop, onDrag = () => {}) {
     if (drag || !event.isPrimary || event.button !== 0) return;
     const from = positions.findIndex(({ button }) => button.contains(event.target));
     if (from < 0 || positions[from].button.disabled) return;
-    drag = { from, pointerId: event.pointerId };
+    drag = { from, pointerId: event.pointerId, target: -1 };
     positions[from].button.setPointerCapture(event.pointerId);
+    onDrag(drag);
+  });
+
+  board.addEventListener('pointermove', event => {
+    if (drag?.pointerId !== event.pointerId) return;
+    const hit = document.elementFromPoint(event.clientX, event.clientY);
+    const target = positions.findIndex(({ button }, index) => index !== drag.from && button.contains(hit));
+    if (target === drag.target) return;
+    drag.target = target;
     onDrag(drag);
   });
 
@@ -279,19 +311,19 @@ function selectPractice(mode) {
 
 practiceTabs.forEach(button => button.addEventListener('click', () => selectPractice(button.dataset.practiceMode)));
 let practiceSelected = -1;
+let practiceDrag = null;
 
 function renderPractice() {
   const solved = !practiceReveal && isParadeReady(practiceLineup);
-  practicePositions.forEach(({ button, symbol, label }, index) => {
+  practicePositions.forEach((card, index) => {
     const character = practiceLineup[index];
-    button.disabled = practiceReveal;
-    symbol.dataset.character = character;
-    label.textContent = t('wonder.game.position', { number: index + 1, name: t('wonder.game.' + character) });
-    button.setAttribute('aria-pressed', String(index === practiceSelected));
+    card.button.disabled = practiceReveal;
+    card.symbol.dataset.character = character;
+    renderPosition(card, index, character, practiceSelected, practiceDrag, !practiceReveal && character === paradeOrder[index]);
   });
   practiceReset.disabled = practiceReveal;
   practiceReset.textContent = t('mission.demoReset');
-  practiceStatus.textContent = t(practiceReveal ? 'wonder.game.reveal' : solved ? 'wonder.game.restored' : 'wonder.game.practiceSwap');
+  practiceStatus.textContent = t(practiceReveal ? 'wonder.game.reveal' : solved ? 'wonder.game.restored' : practiceDrag || practiceSelected >= 0 ? 'wonder.game.swapHelp' : 'wonder.game.practiceSwap');
 }
 
 function resetPractice() {
@@ -302,7 +334,7 @@ function resetPractice() {
 }
 
 function swapPractice(from, target) {
-  if (target < 0 || target === from || isParadeReady(practiceLineup)) return;
+  if (practiceReveal || target < 0 || target === from) return;
   [practiceLineup[from], practiceLineup[target]] = [practiceLineup[target], practiceLineup[from]];
   practiceSelected = target;
   renderPractice();
@@ -321,7 +353,10 @@ practicePositions.forEach(({ button }, index) => {
     if (!event.repeat) swapPractice(index, getSwapTarget(index, event.key));
   });
 });
-bindSwapDrag(practiceBoard, practicePositions, swapPractice);
+bindSwapDrag(practiceBoard, practicePositions, swapPractice, nextDrag => {
+  practiceDrag = nextDrag;
+  renderPractice();
+});
 function schedulePracticeShuffle() {
   window.clearTimeout(practiceTimer);
   practiceTimer = window.setTimeout(() => {
@@ -456,7 +491,6 @@ guideStartButton.addEventListener('click', () => {
   window.clearTimeout(practiceTimer);
   resumePosition();
 });
-exitButton.addEventListener('click', exitMission);
 function openPause() {
   if (!started || pause.open || guide.open) return;
   window.clearTimeout(rhythmTimer);

@@ -138,6 +138,7 @@ function renderStatus() {
   statusEyebrow.textContent = eyebrow;
   statusTitle.textContent = t(titleKey, values);
   statusCopy.textContent = t(copyKey, values);
+  statusCopy.hidden = copyKey === messageKey;
   eve.textContent = t(messageKey, values);
 }
 
