@@ -1,3 +1,4 @@
+import { createEveController } from './eve.js';
 import { initializeLanguage, t } from './locales.js';
 import { createModalController } from './ui.js';
 import { getSwapTarget, isParadeReady, normalizeParadeCheckpoint, paradeOrder, paradeRhythms } from './wonder-game-state.js';
@@ -5,6 +6,7 @@ import { getSwapTarget, isParadeReady, normalizeParadeCheckpoint, paradeOrder, p
 const rhythm = document.querySelector('[data-wonder-rhythm]');
 const stageTitle = document.querySelector('#wonder-stage-title');
 const stageProgress = document.querySelector('[data-wonder-progress]');
+const revealToast = document.querySelector('[data-wonder-reveal-toast]');
 const pause = document.querySelector('[data-wonder-pause-dialog]');
 const pauseButton = document.querySelector('[data-wonder-pause]');
 const resumeButton = document.querySelector('[data-wonder-resume]');
@@ -18,7 +20,14 @@ const finale = document.querySelector('[data-wonder-finale]');
 const recordButton = document.querySelector('[data-wonder-record]');
 const arrows = { ArrowLeft: '←', ArrowUp: '↑', ArrowDown: '↓', ArrowRight: '→' };
 const stage = document.querySelector('[data-wonder-stage]');
-const status = document.querySelector('[data-wonder-status]');
+const eve = createEveController(document.querySelector('.wonder-game__eve'), { persistent: true, focusMotion: false });
+let lastEveMessage = '';
+
+function speakEve(message) {
+  if (message === lastEveMessage) return;
+  lastEveMessage = message;
+  eve.speak(message);
+}
 const referenceButton = document.querySelector('[data-wonder-reference]');
 const directions = ['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'];
 const title = document.querySelector('[data-wonder-title]');
@@ -98,11 +107,14 @@ function renderPosition({ button, label }, index, character, selectedIndex, poin
 
 function render() {
   document.body.dataset.scene = showingReference ? 'reveal' : phase;
+  revealToast.hidden = !started || !['reveal', 'shuffling'].includes(phase);
+  revealToast.textContent = t(phase === 'shuffling' ? 'wonder.game.shuffling' : 'wonder.game.revealToast');
   const correctCount = swapping ? null : lineup.filter((character, index) => character === paradeOrder[index]).length;
   if (!swapping) stageProgress.textContent = phase === 'restored' ? `${round + 1} / ${paradeRhythms.length}` : `${phase === 'swap' || phase === 'completed' ? correctCount : 0} / ${paradeOrder.length}`;
   positions.forEach((card, index) => {
     const character = (showingReference ? paradeOrder : lineup)[index];
     card.button.classList.toggle('is-performing', phase === 'restored' && index === round);
+    card.button.parentElement.classList.toggle('is-in-formation', index < round);
     card.button.classList.toggle('is-on-beat', phase === 'restored' && index === round && beat % 2 === 1);
     card.symbol.dataset.character = character;
     const correct = !swapping && !showingReference && ['swap', 'restored', 'completed'].includes(phase) && character === paradeOrder[index];
@@ -132,15 +144,19 @@ function render() {
   stage.classList.toggle('is-shuffling', phase === 'shuffling');
   stage.classList.toggle('is-restored', phase === 'restored');
   if (phase === 'restored') {
-    if (rhythmPhase === 'show') status.textContent = describePattern(paradeRhythms[round]);
-    else if (rhythmRetry) status.textContent = t('wonder.game.practiceRhythmRetry');
-    else if (rhythmPhase === 'input') status.textContent = beat
+    if (rhythmPhase === 'show') {
+      const pattern = describePattern(paradeRhythms[round]);
+      speakEve(round === 0 ? t('wonder.game.firstRhythm', { pattern }) : pattern);
+    }
+    else if (rhythmRetry) speakEve(t('wonder.game.practiceRhythmRetry'));
+    else if (rhythmPhase === 'input') speakEve(beat
       ? t('wonder.game.beats', { count: beat, total: paradeRhythms[round].length })
-      : t('wonder.game.rhythmInputHelp');
-    else status.textContent = t('wonder.game.guideRhythm');
+      : t('wonder.game.rhythmInputHelp'));
+    else speakEve(t('wonder.game.guideRhythm'));
     return;
   }
-  status.textContent = t(showingReference ? 'wonder.game.reference' : drag || selected >= 0 ? 'wonder.game.swapHelp' : `wonder.game.${phase}`);
+  const messageKey = showingReference ? 'reference' : drag || selected >= 0 ? 'swapHelp' : phase === 'reveal' ? 'lineupStory' : phase;
+  speakEve(t(`wonder.game.${messageKey}`));
 }
 
 function saveLineup() {
@@ -391,14 +407,13 @@ function schedulePosition() {
     }
     phase = 'shuffling';
     render();
-    const delay = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 450;
     positionTimer = window.setTimeout(() => {
       lineup = [paradeOrder[3], paradeOrder[0], paradeOrder[1], paradeOrder[2]];
       phase = 'swap';
       saveLineup();
       render();
       positions[0].button.focus();
-    }, delay);
+    }, 1200);
   }, patternDuration);
 }
 
@@ -420,13 +435,25 @@ function revealRhythm() {
 rhythmStart.addEventListener('click', revealRhythm);
 
 function enterBeat(key) {
-  if (phase !== 'restored' || rhythmPhase !== 'input' || guide.open) return;
+  if (phase !== 'restored' || rhythmPhase !== 'input' || guide.open || pause.open) return;
   if (key !== paradeRhythms[round][beat]) {
     beat = 0;
     rhythmRetry = true;
     render();
     rhythmStart.focus();
     return;
+  }
+  const performer = positions[round].symbol;
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const distance = performer.offsetWidth * .24;
+    const x = key === 'ArrowLeft' ? -distance : key === 'ArrowRight' ? distance : 0;
+    const y = key === 'ArrowUp' ? -distance : key === 'ArrowDown' ? distance : 0;
+    performer.getAnimations().forEach(animation => animation.cancel());
+    performer.animate([
+      { transform: 'none' },
+      { transform: `translate(${x}px, ${y}px)`, offset: .4 },
+      { transform: 'none' }
+    ], { duration: 280, easing: 'ease-out' });
   }
   beat += 1;
   if (beat < paradeRhythms[round].length) {

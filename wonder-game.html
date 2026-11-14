@@ -19,6 +19,7 @@
   <main class="wonder-game__board">
     <section class="wonder-stage" data-wonder-stage aria-labelledby="wonder-stage-title">
       <ol class="wonder-stage__lineup" data-wonder-lineup></ol>
+      <p class="wonder-stage__reveal-toast" data-wonder-reveal-toast data-i18n="wonder.game.revealToast" aria-hidden="true" hidden>노바의 위치를 기억하세요</p>
     </section>
     <section class="wonder-cast" data-wonder-controls aria-label="Controls">
       <div class="wonder-game__actions"><button class="ui-button ui-button--secondary" type="button" data-wonder-reference hidden>원래 위치 다시 보기</button></div>
@@ -41,7 +42,7 @@
       <p data-i18n="wonder.game.finaleCopy">네 캐릭터가 무대에 올랐어요.</p>
       <button class="ui-button ui-button--primary" type="button" data-wonder-record data-i18n="wonder.game.record">Passport 기록 확인</button>
     </section>
-    <aside class="wonder-game__eve" aria-label="EVE" aria-live="polite" aria-atomic="true"><span><img src="./assets/images/common/eve.webp" alt=""></span><div><b>EVE</b><p data-wonder-status></p></div></aside>
+    <aside class="wonder-game__eve" aria-label="EVE" aria-live="polite" aria-atomic="true"><span><img src="./assets/images/common/eve.webp" alt=""></span><div><b>EVE</b><p data-eve-message></p></div></aside>
   </main>
   <dialog class="ui-dialog mission-dialog" data-phase="guide" data-wonder-guide aria-labelledby="wonder-guide-title">
     <section class="mission-flow ui-panel">

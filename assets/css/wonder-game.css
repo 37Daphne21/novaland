@@ -189,6 +189,24 @@
   color: var(--color-text-subtle);
 }
 
+.wonder-stage .wonder-stage__reveal-toast {
+  position: absolute;
+  z-index: 2;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+  width: max-content;
+  max-width: calc(100% - 2rem);
+  padding: .85rem 1.5rem;
+  border: 1px solid #ffca8866;
+  border-radius: .5rem;
+  background: #1b1025bf;
+  box-shadow: 0 .35rem 1.5rem #10081788;
+  color: #fff2dc;
+  font-size: clamp(1.0625rem, 2.2vw, 1.375rem);
+  font-weight: 700;
+  text-align: center;
+}
+
 .wonder-stage > .wonder-stage__lineup {
   position: absolute;
   inset: 0;
@@ -324,6 +342,27 @@
 .wonder-stage.is-restored,
 .wonder-stage.is-celebrating {
   background: radial-gradient(ellipse 49% 9% at 50% 78%, #ffb4554d, transparent);
+}
+
+.wonder-stage > .wonder-stage__lineup li.is-in-formation {
+  --spot-y: 63%;
+  --spot-x: 23%;
+}
+
+.wonder-stage > .wonder-stage__lineup li.is-in-formation:nth-child(2) {
+  --spot-x: 41%;
+}
+
+.wonder-stage > .wonder-stage__lineup li.is-in-formation:nth-child(3) {
+  --spot-x: 59%;
+}
+
+.wonder-stage > .wonder-stage__lineup li.is-in-formation:nth-child(4) {
+  --spot-x: 77%;
+}
+
+.wonder-stage.is-restored .ui-button.is-performing .wonder-game__symbol {
+  filter: drop-shadow(0 0 .8rem #ffc35288) drop-shadow(0 .45rem .35rem #190b16aa);
 }
 
 
@@ -515,6 +554,10 @@
 }
 
 @media (max-width: 48rem) {
+  .wonder-stage > .wonder-stage__lineup li.is-in-formation {
+    width: min(17vw, 6rem);
+  }
+
   .wonder-game__header {
     grid-template-columns: minmax(0, 1fr) auto;
   }
@@ -544,6 +587,10 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
+  .wonder-stage > .wonder-stage__lineup li {
+    transition: left .55s var(--ease-out), top .55s var(--ease-out);
+  }
+
   .wonder-stage.is-celebrating .wonder-game__symbol {
     animation: wonder-march .7s ease-in-out 3 alternate;
   }
