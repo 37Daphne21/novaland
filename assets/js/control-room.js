@@ -2,7 +2,7 @@ import { getFacilityText } from './data.js';
 import { createEveController } from './eve.js';
 import { t } from './locales.js';
 import { readProgress } from './progress.js';
-import { normalizeParadeCheckpoint } from './wonder-game-state.js';
+import { isParadeReady, normalizeParadeCheckpoint, paradeOrder } from './wonder-game-state.js';
 
 const COASTER_STAGE_CONNECTIONS = [2, 3, 4];
 
@@ -55,7 +55,7 @@ export function createControlRoomController({ getExplorer, onShowScreen, showToa
   function getMessage(nextFacility, isCompleted) {
     if (nextFacility.id === 'wonder') {
       if (isCompleted) return t('facility.wonder.restored');
-      return t(readProgress(getExplorer?.()).missions.wonder?.checkpoint ? 'facility.wonder.resume' : 'control.wonderEve');
+      return t(normalizeParadeCheckpoint(readProgress(getExplorer?.()).missions.wonder?.checkpoint) ? 'facility.wonder.resume' : 'control.wonderEve');
     }
     if (isCompleted) {
       const restoredKey = nextFacility.id === 'luna' ? 'control.lunaRestoredEve' : nextFacility.id === 'spark' ? 'control.sparkRestoredEve' : 'control.restoredEve';
@@ -80,9 +80,9 @@ export function createControlRoomController({ getExplorer, onShowScreen, showToa
     const isLuna = nextFacility.id === 'luna';
     const isSpark = nextFacility.id === 'spark';
     const isWonder = nextFacility.id === 'wonder';
-    const checkpoint = progress.missions[nextFacility.id]?.checkpoint;
-    const wonderCheckpoint = isWonder ? normalizeParadeCheckpoint(checkpoint) : null;
-    const wonderReady = isWonder && (isCompleted || wonderCheckpoint.launched);
+    const savedCheckpoint = progress.missions[nextFacility.id]?.checkpoint;
+    const checkpoint = isWonder ? normalizeParadeCheckpoint(savedCheckpoint) : savedCheckpoint;
+    const wonderReady = isWonder && (isCompleted || (checkpoint && isParadeReady(checkpoint.lineup)));
     const wonderService = isCompleted ? 'control.wonderRunning' : wonderReady ? 'control.wonderLaunched' : 'control.wonderService';
     const sparkSteps = isCompleted ? 4 : checkpoint ? checkpoint.stageIndex + (checkpoint.phase === 'charged' ? 1 : 0) : 0;
     const restoredPrefix = isLuna ? 'control.lunaRestored' : isSpark ? 'control.sparkRestored' : 'control.restored';
@@ -138,7 +138,7 @@ export function createControlRoomController({ getExplorer, onShowScreen, showToa
       service.textContent = t(isWonder ? wonderService : isLuna ? (isCompleted ? 'control.lunaRestored' : 'control.lunaService') : isSpark ? (isCompleted ? 'control.sparkRestored' : 'control.sparkService') : isCompleted ? 'control.trainRunning' : 'control.trainStopped');
     }
     if (rail) {
-      rail.textContent = isWonder ? t(wonderReady ? 'control.wonderStageActive' : 'control.wonderStandby') : isLuna ? t('control.lunaPrisms') : isSpark ? t(isCompleted ? 'control.sparkCoreStable' : 'control.sparkCoreUnstable') : `${coasterProgress.connections} / 9`;
+      rail.textContent = isWonder ? t(isCompleted ? 'control.wonderStageActive' : 'control.wonderStandby') : isLuna ? t('control.lunaPrisms') : isSpark ? t(isCompleted ? 'control.sparkCoreStable' : 'control.sparkCoreUnstable') : `${coasterProgress.connections} / 9`;
     }
     railSegments.forEach((segment, index) => { segment.classList.toggle('is-active', index < coasterProgress.connections); });
     document.querySelector('.control-room__segments').hidden = isLuna || isSpark || isWonder;
@@ -155,13 +155,13 @@ export function createControlRoomController({ getExplorer, onShowScreen, showToa
       icon.setAttribute('href', facilityIcon);
     });
     if (step) {
-      step.textContent = isWonder ? `${isCompleted ? wonderCheckpoint.lineup.length : wonderCheckpoint.lineup.filter(Boolean).length} / ${wonderCheckpoint.lineup.length}` : isLuna ? `${isCompleted ? 3 : checkpoint?.collected?.length ?? 0} / 3` : isSpark ? `${sparkSteps} / 4` : `${coasterProgress.steps} / 3`;
+      step.textContent = isWonder ? `${isCompleted ? paradeOrder.length : checkpoint?.lineup.filter((character, index) => character === paradeOrder[index]).length ?? 0} / ${paradeOrder.length}` : isLuna ? `${isCompleted ? 3 : checkpoint?.collected?.length ?? 0} / 3` : isSpark ? `${sparkSteps} / 4` : `${coasterProgress.steps} / 3`;
     }
     checkItem?.classList.toggle('is-warning', isWonder ? !wonderReady : !isCompleted);
     if (check) {
       check.textContent = t(isLuna ? (isCompleted ? 'control.lunaBloom' : checkpoint?.collected?.length === 3 ? 'control.lunaReady' : 'control.lunaSleeping') : isSpark ? (isCompleted ? 'control.sparkChargeComplete' : 'control.sparkChargeEmpty') : isCompleted ? 'control.inspectionComplete' : 'control.inspectionRequired');
       if (isSpark) check.textContent = `${sparkSteps * 25}%`;
-      if (isWonder) check.textContent = t(wonderReady ? 'control.wonderReady' : 'control.wonderPending');
+      if (isWonder) check.textContent = wonderReady && !isCompleted ? t('wonder.game.rhythmProgress', { count: checkpoint.round }) : t(wonderReady ? 'control.wonderReady' : 'control.wonderPending');
     }
     if (missionStart) {
       missionStart.hidden = (!isCoaster && !isLuna && !isSpark && !(isWonder && facilityStatus === 'available')) || isCompleted;

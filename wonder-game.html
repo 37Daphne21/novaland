@@ -13,20 +13,78 @@
 <body class="wonder-game">
   <header class="wonder-game__header">
     <h1 tabindex="-1" data-wonder-title>WONDER PARADE HALL</h1>
-    <button class="ui-button ui-button--secondary" type="button" data-wonder-exit data-i18n="mission.toControlRoom">관제실</button>
+    <nav class="wonder-game__tools"><button class="ui-button ui-button--secondary" type="button" data-wonder-guide-open data-i18n="mission.guideButton">가이드</button><button class="ui-button ui-button--secondary" type="button" data-wonder-exit data-i18n="mission.toControlRoom">관제실</button><button class="ui-button ui-button--icon" type="button" data-wonder-pause data-i18n-aria-label="mission.pause" aria-label="일시정지">Ⅱ</button></nav>
   </header>
   <main class="wonder-game__board">
     <section class="ui-panel wonder-stage" data-wonder-stage aria-labelledby="wonder-stage-title">
-      <header><span class="ui-panel__eyebrow">PARADE LINEUP</span><h2 id="wonder-stage-title" data-i18n="wonder.game.title">행진 대열을 복구하세요</h2><p data-i18n="wonder.game.clue">북이 첫 박자를 열고, 깃발이 그 뒤를 따라요. 별은 마지막에 무대를 밝혀요.</p></header>
+      <header><span class="ui-panel__eyebrow">PARADE LINEUP</span><h2 id="wonder-stage-title" data-i18n="wonder.game.title">행진 대열을 복구하세요</h2><p data-i18n="wonder.game.clue">캐릭터 네 명을 원래 위치로 돌려보내세요.</p></header>
       <ol class="wonder-stage__lineup" data-wonder-lineup></ol>
     </section>
-    <section class="ui-panel wonder-cast" aria-labelledby="wonder-cast-title">
-      <header><h2 id="wonder-cast-title" data-i18n="wonder.game.cast">출연진</h2><p data-i18n="wonder.game.instructions">캐릭터를 빈 자리로 드래그하거나, 선택한 뒤 자리를 눌러 배치하세요.</p></header>
-      <ul class="wonder-cast__list" data-wonder-cast></ul>
-      <p class="wonder-game__status" data-wonder-status role="status" aria-atomic="true"></p>
-      <div class="wonder-game__actions"><button class="ui-button ui-button--secondary" type="button" data-wonder-return data-i18n="wonder.game.return" disabled>선택한 캐릭터 빼기</button><button class="ui-button ui-button--primary" type="button" data-wonder-launch data-i18n="wonder.game.launch" disabled>퍼레이드 시작</button></div>
+    <section class="ui-panel wonder-cast" data-wonder-controls aria-labelledby="wonder-cast-title">
+      <header><h2 id="wonder-cast-title" data-i18n="wonder.game.cast">이동 조작</h2><p data-i18n="wonder.game.instructions">캐릭터를 바꿀 칸으로 드래그하거나, 선택한 뒤 방향키를 누르세요.</p></header>
+
+      <div class="wonder-game__actions"><button class="ui-button ui-button--primary" type="button" data-wonder-shuffle data-i18n="wonder.game.shuffle">위치 섞기</button><button class="ui-button ui-button--secondary" type="button" data-wonder-reference hidden>원래 위치 다시 보기</button></div>
     </section>
+    <section class="ui-panel wonder-cast wonder-rhythm" data-wonder-rhythm hidden aria-labelledby="wonder-rhythm-title">
+      <h2 id="wonder-rhythm-title" tabindex="-1" data-i18n="wonder.game.rhythmTitle">퍼레이드 리듬 맞추기</h2>
+      <p class="ui-panel__eyebrow" data-wonder-round></p>
+      <div class="wonder-rhythm__beats" data-wonder-pattern aria-hidden="true"></div>
+      <button class="ui-button ui-button--primary" type="button" data-wonder-rhythm-start data-i18n="wonder.game.listen">패턴 확인</button>
+      <div class="wonder-game__actions" data-wonder-rhythm-input hidden>
+        <button class="ui-button ui-button--secondary" type="button" data-beat="ArrowLeft" data-i18n-aria-label="wonder.game.left">←</button>
+        <button class="ui-button ui-button--secondary" type="button" data-beat="ArrowUp" data-i18n-aria-label="wonder.game.up">↑</button>
+        <button class="ui-button ui-button--secondary" type="button" data-beat="ArrowDown" data-i18n-aria-label="wonder.game.down">↓</button>
+        <button class="ui-button ui-button--secondary" type="button" data-beat="ArrowRight" data-i18n-aria-label="wonder.game.right">→</button>
+      </div>
+    </section>
+    <section class="ui-panel wonder-cast wonder-finale" data-wonder-finale hidden aria-labelledby="wonder-finale-title">
+      <img class="wonder-finale__stamp" src="./assets/images/common/stamp-wonder-restored.svg" width="96" height="96" alt="">
+      <h2 id="wonder-finale-title" tabindex="-1" data-i18n="wonder.game.finale">퍼레이드 시작!</h2>
+      <p data-i18n="wonder.game.finaleCopy">네 캐릭터가 무대에 올랐어요.</p>
+      <button class="ui-button ui-button--primary" type="button" data-wonder-record data-i18n="wonder.game.record">Passport 기록 확인</button>
+    </section>
+    <aside class="wonder-game__eve" aria-label="EVE" aria-live="polite" aria-atomic="true"><span><img src="./assets/images/common/eve.webp" alt=""></span><div><b>EVE</b><p data-wonder-status></p></div></aside>
   </main>
+  <dialog class="ui-dialog mission-dialog" data-phase="guide" data-wonder-guide aria-labelledby="wonder-guide-title">
+    <section class="mission-flow ui-panel">
+      <header class="mission-flow__header"><div class="mission-flow__identity"><span class="ui-panel__eyebrow">WONDER PARADE HALL</span><h2 data-i18n="mission.guideButton">가이드</h2></div><button class="ui-button ui-button--icon mission-guide__close" type="button" data-wonder-guide-close data-i18n-aria-label="mission.guideClose" aria-label="미션 가이드 닫기"><svg class="ui-icon" aria-hidden="true"><use href="./assets/images/common/icon-sprite.svg#icon-close"></use></svg></button></header>
+      <div class="mission-phase mission-guide">
+        <div class="mission-guide__visual wonder-guide">
+          <span class="ui-panel__eyebrow" data-i18n="wonder.game.guideExample">배치 예시</span>
+          <div class="wonder-guide__modes" role="group" data-i18n-aria-label="mission.guideButton">
+            <button class="ui-button ui-button--secondary" type="button" data-practice-mode="position" aria-pressed="true" data-i18n="control.wonderObjectiveTest"></button>
+            <button class="ui-button ui-button--secondary" type="button" data-practice-mode="rhythm" aria-pressed="false" data-i18n="wonder.game.rhythmTitle"></button>
+          </div>
+          <div data-practice-panel="position">
+          <ol class="wonder-stage__lineup wonder-guide__lineup" data-wonder-practice></ol>
+          <p data-wonder-practice-status role="status"></p>
+          <button class="ui-button ui-button--secondary" type="button" data-wonder-practice-reset>다시 연습</button>
+          </div>
+          <div data-practice-panel="rhythm" hidden>
+            <div class="wonder-rhythm__beats" data-practice-pattern aria-hidden="true"></div>
+            <p class="wonder-guide__feedback" data-practice-feedback role="status" aria-atomic="true"></p>
+            <button class="ui-button ui-button--primary" type="button" data-practice-rhythm-start></button>
+            <div class="wonder-game__actions" data-practice-rhythm-input hidden>
+        <button class="ui-button ui-button--secondary" type="button" data-beat="ArrowLeft" data-i18n-aria-label="wonder.game.left">←</button>
+        <button class="ui-button ui-button--secondary" type="button" data-beat="ArrowUp" data-i18n-aria-label="wonder.game.up">↑</button>
+        <button class="ui-button ui-button--secondary" type="button" data-beat="ArrowDown" data-i18n-aria-label="wonder.game.down">↓</button>
+        <button class="ui-button ui-button--secondary" type="button" data-beat="ArrowRight" data-i18n-aria-label="wonder.game.right">→</button>
+      </div>
+          </div>
+        </div>
+        <div class="mission-guide__content"><span class="ui-panel__eyebrow">WONDER PARADE HALL</span><h3 id="wonder-guide-title" data-i18n="wonder.game.title">행진 대열을 복구하세요</h3><ol class="ui-info-list ui-info-list--boxed ui-info-list--angular"><li class="ui-info-list__item"><b>01</b><span class="ui-info-list__content"><strong data-i18n="control.wonderObjectiveInspect"></strong><small data-i18n="control.wonderObjectiveInspectHelp"></small></span></li><li class="ui-info-list__item"><b>02</b><span class="ui-info-list__content"><strong data-i18n="control.wonderObjectiveRepair"></strong><small data-i18n="control.wonderObjectiveRepairHelp"></small></span></li><li class="ui-info-list__item"><b>03</b><span class="ui-info-list__content"><strong data-i18n="control.wonderObjectiveTest"></strong><small data-i18n="control.wonderObjectiveTestHelp"></small></span></li><li class="ui-info-list__item"><b>04</b><span class="ui-info-list__content"><strong data-i18n="wonder.game.rhythmTitle"></strong><small data-i18n="wonder.game.guideRhythm"></small></span></li></ol><button class="ui-button ui-button--primary" type="button" data-wonder-guide-start data-i18n="wonder.game.begin">게임 시작</button><button class="ui-button ui-button--secondary" type="button" data-wonder-guide-return data-i18n="mission.guideReturn" hidden>게임으로 돌아가기</button></div>
+      </div>
+    </section>
+  </dialog>
+  <dialog class="ui-dialog mission-dialog" data-wonder-pause-dialog aria-labelledby="wonder-pause-title">
+    <section class="ui-panel ui-overlay__dialog mission-result mission-result--paused">
+      <h2 id="wonder-pause-title" data-i18n="mission.pause">일시정지</h2>
+      <div class="wonder-game__actions">
+        <button class="ui-button ui-button--primary" type="button" data-wonder-resume data-i18n="mission.resume">계속하기</button>
+        <button class="ui-button ui-button--secondary" type="button" data-wonder-pause-exit data-i18n="mission.toControlRoom">관제실로 돌아가기</button>
+      </div>
+    </section>
+  </dialog>
   <script type="module" src="./assets/js/wonder-game.js"></script>
 </body>
 </html>

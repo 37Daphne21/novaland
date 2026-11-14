@@ -15,7 +15,7 @@ import { createProfileEditor } from './profile-editor.js';
 import { clearProgress, getMissionPreview, isMissionPreview, readProgress, updateMissionProgress } from './progress.js';
 import { createSettingsController } from './settings.js';
 import { createSparkPreviewCheckpoint, isSparkStageCorrect, normalizeSparkCheckpoint, sparkStages } from './spark-game-state.js';
-import { normalizeParadeCheckpoint } from './wonder-game-state.js';
+import { normalizeParadeCheckpoint, paradeOrder, paradeRhythms } from './wonder-game-state.js';
 import { createDialogController, createModalController, createOverlayController, createToast } from './ui.js';
 
 initializeLanguage();
@@ -146,12 +146,17 @@ window.addEventListener('message', (event) => {
   if (event.source === wonderFrame.contentWindow && wonderEntry.open) {
     const progress = readProgress(currentExplorer);
     if (event.data?.type === 'novaland:wonder-ready') {
-      wonderFrame.contentWindow.postMessage({ type: 'novaland:wonder-restore', lineup: progress.missions.wonder.checkpoint?.lineup }, window.location.origin);
+      wonderFrame.contentWindow.postMessage({ type: 'novaland:wonder-restore', checkpoint: progress.facilities.wonder.status === 'completed' ? { lineup: paradeOrder, round: paradeRhythms.length } : progress.missions.wonder.checkpoint }, window.location.origin);
     }
     if (event.data?.type === 'novaland:wonder-state' && progress.facilities.wonder.status === 'available') {
       const checkpoint = normalizeParadeCheckpoint(event.data.checkpoint);
-      updateMissionProgress(progress, 'wonder', { phase: 'playing', checkpoint });
+      if (checkpoint) {
+        if (checkpoint.round === paradeRhythms.length) {
+          if (map.completeFacility('wonder')) pendingStampAward = true;
+        } else updateMissionProgress(progress, 'wonder', { phase: 'playing', checkpoint });
+      }
     }
+    if (event.data?.type === 'novaland:wonder-record' && progress.facilities.wonder.status === 'completed') openMissionRecord('wonder');
     if (event.data?.type === 'novaland:wonder-exit') exitEmbeddedMission(event.data.destination);
     return;
   }
@@ -350,7 +355,7 @@ function applyNavigationRoute(route, { previousRoute, source } = {}) {
   if (route.screen === 'control-room' && route.facilityId === 'spark' && route.sparkPlay) {
     openSpark(route.previewPhase);
   }
-  if (route.screen === 'control-room' && route.facilityId === 'wonder' && route.wonderPlay && readProgress(currentExplorer).facilities.wonder.status === 'available') {
+  if (route.screen === 'control-room' && route.facilityId === 'wonder' && route.wonderPlay && readProgress(currentExplorer).facilities.wonder.status !== 'locked') {
     openWonder(route.previewPhase);
   }
 }

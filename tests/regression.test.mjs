@@ -108,17 +108,19 @@ test('SPARK preview unlocks its prerequisites and keeps checkpoints out of real 
   assert.equal(api.window.localStorage.getItem('novaLandProgress'), null);
 });
 
-test('WONDER play preview unlocks the hall without restoring it or writing to storage', () => {
-  const api = progressFixture('?facility=wonder&mission-preview=play');
-  const saved = JSON.stringify(api.createProgress(api.explorer));
-  api.window.localStorage.setItem('novaLandProgress', saved);
-  assert.equal(api.getMissionPreview().valid, true);
-  const progress = api.readProgress(api.explorer);
-  assert.equal(progress.facilities.spark.status, 'completed');
-  assert.equal(progress.facilities.wonder.status, 'available');
-  assert.equal(api.getRestorationState(progress).completed, 3);
-  assert.equal(api.window.localStorage.getItem('novaLandProgress'), saved);
-  assert.equal(progressFixture('?facility=wonder&mission-preview=control-room').readProgress(api.explorer).facilities.wonder.status, 'available');
+test('WONDER control room, guide and play previews unlock the hall without writing to storage', () => {
+  for (const phase of ['control-room', 'guide', 'play', 'rhythm', 'completed', 'control-room-completed']) {
+    const api = progressFixture(`?facility=wonder&mission-preview=${phase}`);
+    const saved = JSON.stringify(api.createProgress(api.explorer));
+    api.window.localStorage.setItem('novaLandProgress', saved);
+    assert.equal(api.getMissionPreview().valid, true);
+    const progress = api.readProgress(api.explorer);
+    assert.equal(progress.facilities.spark.status, 'completed');
+    const completed = phase.includes('completed');
+    assert.equal(progress.facilities.wonder.status, completed ? 'completed' : 'available');
+    assert.equal(api.getRestorationState(progress).completed, completed ? 4 : 3);
+    assert.equal(api.window.localStorage.getItem('novaLandProgress'), saved);
+  }
   assert.equal(progressFixture('?facility=wonder&mission-preview=testing').getMissionPreview().valid, false);
 });
 

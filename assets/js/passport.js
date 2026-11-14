@@ -26,6 +26,7 @@ export function renderPassportData(root, explorer) {
   setText(root, '[data-passport-spark-coupon]', sparkCoupon ? t('passport.couponPending') : '—');
   const coasterStamp = restoration.stamps.find((stamp) => stamp.facilityId === 'coaster');
   const lunaStamp = restoration.stamps.find((stamp) => stamp.facilityId === 'luna');
+  const wonderStamp = restoration.stamps.find((stamp) => stamp.facilityId === 'wonder');
   const sparkStamp = restoration.stamps.find((stamp) => stamp.facilityId === 'spark');
   setText(root, '[data-passport-name]', explorer.name);
   setText(root, '[data-passport-id]', explorer.id);
@@ -35,6 +36,7 @@ export function renderPassportData(root, explorer) {
   setText(root, '[data-passport-coaster-date]', coasterStamp ? new Intl.DateTimeFormat('en-CA').format(new Date(coasterStamp.earnedAt)).replaceAll('-', '.') : '—');
   setText(root, '[data-passport-luna-date]', lunaStamp ? new Intl.DateTimeFormat('en-CA').format(new Date(lunaStamp.earnedAt)).replaceAll('-', '.') : '—');
   setText(root, '[data-passport-spark-date]', sparkStamp ? new Intl.DateTimeFormat('en-CA').format(new Date(sparkStamp.earnedAt)).replaceAll('-', '.') : '—');
+  setText(root, '[data-passport-wonder-date]', wonderStamp ? new Intl.DateTimeFormat('en-CA').format(new Date(wonderStamp.earnedAt)).replaceAll('-', '.') : '—');
   setText(root, '[data-passport-cover-name]', explorer.name);
   setText(root, '[data-passport-serial]', `${explorer.id} · INITIAL ISSUE`);
   root.querySelectorAll('[data-passport-portrait]').forEach((element) => {

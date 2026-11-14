@@ -1,20 +1,19 @@
-export const paradeOrder = ['drummer', 'flag', 'star'];
+export const paradeOrder = ['drummer', 'flag', 'star', 'robot'];
 
-export function normalizeParadeLineup(value) {
-  const used = new Set();
-  return paradeOrder.map((_, index) => {
-    const character = Array.isArray(value) ? value[index] : null;
-    if (!paradeOrder.includes(character) || used.has(character)) return null;
-    used.add(character);
-    return character;
-  });
-}
+export const paradeRhythms = [
+  ['ArrowUp', 'ArrowRight'],
+  ['ArrowLeft', 'ArrowDown', 'ArrowUp'],
+  ['ArrowRight', 'ArrowUp', 'ArrowLeft', 'ArrowDown'],
+  ['ArrowDown', 'ArrowRight', 'ArrowUp', 'ArrowLeft', 'ArrowUp']
+];
 
-export function placeParadeCharacter(lineup, character, position) {
-  if (!paradeOrder.includes(character) || !Number.isInteger(position) || position < 0 || position >= paradeOrder.length || lineup[position] !== null) return lineup;
-  const next = lineup.map(item => item === character ? null : item);
-  next[position] = character;
-  return next;
+export function getSwapTarget(position, direction) {
+  if (!Number.isInteger(position) || position < 0 || position >= paradeOrder.length) return -1;
+  if (direction === 'ArrowLeft' && position % 2 === 1) return position - 1;
+  if (direction === 'ArrowRight' && position % 2 === 0) return position + 1;
+  if (direction === 'ArrowUp' && position >= 2) return position - 2;
+  if (direction === 'ArrowDown' && position < 2) return position + 2;
+  return -1;
 }
 
 export function isParadeReady(lineup) {
@@ -22,6 +21,10 @@ export function isParadeReady(lineup) {
 }
 
 export function normalizeParadeCheckpoint(value) {
-  const lineup = normalizeParadeLineup(value?.lineup);
-  return { lineup, launched: value?.launched === true && isParadeReady(lineup) };
+  const lineup = value?.lineup;
+  if (!Array.isArray(lineup) || lineup.length !== paradeOrder.length
+    || !paradeOrder.every(character => lineup.includes(character))) return null;
+  const round = isParadeReady(lineup) && Number.isInteger(value.round)
+    ? Math.max(0, Math.min(paradeRhythms.length, value.round)) : 0;
+  return { lineup: [...lineup], round };
 }
